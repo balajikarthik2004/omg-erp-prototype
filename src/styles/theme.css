@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+@theme {
+  /* Base surfaces: sandalwood, never pure white */
+  --color-sandal-50:  #FFFBF4;   /* page background */
+  --color-sandal-100: #FBF3E4;   /* cards on page, table headers */
+  --color-sandal-200: #F2E4C9;   /* borders, dividers */
+  --color-sandal-300: #E3CDA4;   /* strong borders, disabled */
+
+  /* Ink: temple-stone brown, used for text */
+  --color-stone-900: #2B1A12;    /* headings, primary text */
+  --color-stone-700: #5A4032;    /* body text */
+  --color-stone-500: #8A7062;    /* muted text, captions */
+
+  /* Kumkum: primary brand, main actions */
+  --color-kumkum-50:  #FCEBEA;
+  --color-kumkum-100: #F7D0CD;
+  --color-kumkum-500: #B3261E;
+  --color-kumkum-600: #9A1F18;   /* primary button */
+  --color-kumkum-700: #7A1712;   /* hover / sidebar */
+  --color-kumkum-900: #4A0E0B;   /* sidebar background */
+
+  /* Turmeric / brass: accent, highlights, gold rules */
+  --color-turmeric-50:  #FFF6DD;
+  --color-turmeric-100: #FDE8A8;
+  --color-turmeric-400: #E9B12E;
+  --color-turmeric-500: #D4971A;   /* accent, active nav indicator */
+  --color-turmeric-700: #9A6A0C;   /* accent text on light */
+
+  /* Tulsi: success, money received, approved */
+  --color-tulsi-50:  #E9F5EC;
+  --color-tulsi-500: #2E7D4F;
+  --color-tulsi-700: #1F5A38;
+
+  /* Peacock: info, links, Tamil Sangam */
+  --color-peacock-50:  #E6F1F5;
+  --color-peacock-500: #1C6E8C;
+  --color-peacock-700: #134E64;
+
+  /* Semantic: warning and danger */
+  --color-marigold-50:  #FFF1E0;
+  --color-marigold-500: #E07B12;  /* pending, awaiting approval */
+  --color-danger-50:    #FDECEC;
+  --color-danger-600:   #C0352B;  /* rejected, overdue, over budget */
+
+  /* Typography */
+  --font-display: "Marcellus", Georgia, serif;
+  --font-sans: "Hind Madurai", system-ui, sans-serif;   /* supports Tamil + Latin */
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-card: 14px;
+  --shadow-card: 0 1px 2px rgb(43 26 18 / 0.06), 0 4px 16px rgb(43 26 18 / 0.05);
+
+  /* --- Derived, for depth and motion. The palette above is unchanged. --- */
+
+  /* Deeper sanctum tones, for the sidebar and the donor hero. */
+  --color-sanctum-900: #3A0B08;
+  --color-sanctum-950: #2A0806;
+
+  /* One elevation scale, so cards do not all shout at once. */
+  --shadow-flat: 0 1px 1px rgb(43 26 18 / 0.04);
+  --shadow-lift: 0 2px 4px rgb(43 26 18 / 0.06), 0 12px 32px rgb(43 26 18 / 0.08);
+  --shadow-sheet: 0 -2px 8px rgb(43 26 18 / 0.04), 0 24px 56px rgb(43 26 18 / 0.14);
+
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-sandal-50);
+    color: var(--color-stone-700);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    color: var(--color-stone-900);
+    font-weight: 400;
+  }
+
+  /* Marcellus sits better with a touch of negative tracking at display sizes. */
+  .font-display {
+    letter-spacing: -0.01em;
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-sandal-50), 0 0 0 4px var(--color-turmeric-400);
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background-color: var(--color-turmeric-100);
+    color: var(--color-stone-900);
+  }
+
+  /* Numbers line up in every table without extra classes. */
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  /* Thin turmeric gold rule under page titles — the one ornament. */
+  .gold-rule {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      var(--color-turmeric-400) 0%,
+      var(--color-turmeric-400) 28%,
+      color-mix(in srgb, var(--color-turmeric-400) 30%, transparent) 100%
+    );
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-sandal-300) transparent;
+  }
+
+  /* Faint sandalwood grain. Keeps large warm fields from reading as flat plastic. */
+  .texture-sandal {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgb(233 177 46 / 0.07) 0, transparent 45%),
+      radial-gradient(circle at 85% 0%, rgb(154 31 24 / 0.05) 0, transparent 40%);
+  }
+
+  /* The deep sanctum field behind the hero and the sidebar. */
+  .surface-sanctum {
+    background-color: var(--color-kumkum-900);
+    background-image:
+      radial-gradient(ellipse at 15% 0%, rgb(212 151 26 / 0.16) 0, transparent 55%),
+      radial-gradient(ellipse at 100% 100%, rgb(179 38 30 / 0.4) 0, transparent 60%);
+  }
+
+  /* A hairline brass edge, used where gold should read as inlay rather than fill. */
+  .edge-brass {
+    box-shadow: inset 0 1px 0 rgb(253 232 168 / 0.35);
+  }
+
+  .animate-rise {
+    animation: omg-rise 280ms var(--ease-out-soft) both;
+  }
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes omg-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes omg-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes omg-slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes omg-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+/* The lamp flame on the donor hero. Subtle — it must never pull focus. */
+@keyframes omg-flicker {
+  0%, 100% { opacity: 0.9; transform: scaleY(1); }
+  50%      { opacity: 1; transform: scaleY(1.06); }
+}
