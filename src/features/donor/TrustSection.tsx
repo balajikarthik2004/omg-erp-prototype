@@ -24,7 +24,7 @@ export function TrustSection() {
     >
       {/* Left seamless faded devotional lamp visual */}
       <div
-        className="pointer-events-none absolute inset-y-0 left-0 z-0 hidden w-[340px] lg:block xl:w-[390px] 2xl:w-[430px]"
+        className="pointer-events-none absolute inset-y-0 left-0 z-0 hidden w-85 lg:block xl:w-97.5 2xl:w-107.5"
         aria-hidden
       >
         <img
@@ -37,7 +37,7 @@ export function TrustSection() {
       {/* Main Content Strip */}
       <div
         className={cn(
-          'relative z-10 mx-auto w-full max-w-[1440px] px-5 sm:px-8 xl:px-12',
+          'relative z-10 mx-auto w-full max-w-360 px-5 sm:px-8 xl:px-12',
           'reveal',
           seen && 'is-visible',
         )}
@@ -46,7 +46,7 @@ export function TrustSection() {
           
           {/* Column 1: Mobile image fallback / Desktop background spacer */}
           <div className="flex justify-center lg:hidden">
-            <div className="h-[220px] w-full max-w-[320px] overflow-hidden rounded-xl">
+            <div className="h-55 w-full max-w-[320px] overflow-hidden rounded-xl">
               <img
                 src="/images/kuthu-vilakku-trust.png"
                 alt="Traditional lit brass Kuthu Vilakku lamp"
@@ -64,7 +64,7 @@ export function TrustSection() {
             <h2 className="mt-2 font-heritage text-[30px] font-normal leading-[1.08] text-[#342018] sm:text-[34px]">
               Your offering<br />creates real change
             </h2>
-            <p className="mt-3 max-w-[280px] text-[13px] leading-[1.6] text-[#765E50]">
+            <p className="mt-3 max-w-70 text-[13px] leading-[1.6] text-[#765E50]">
               Transparency, accountability and devotion are at the heart of everything we do. Here's how your support makes a difference.
             </p>
           </div>
@@ -76,7 +76,7 @@ export function TrustSection() {
               
               {/* Step 01 */}
               <div className="flex flex-col items-start pr-1">
-                <span className="flex size-[48px] items-center justify-center rounded-full bg-[#FCECE8] text-[#B1241B] shadow-xs">
+                <span className="flex size-12 items-center justify-center rounded-full bg-[#FCECE8] text-[#B1241B] shadow-xs">
                   <ReceiptTrustIcon size={23} />
                 </span>
                 <span className="mt-2.5 text-[12.5px] font-bold tracking-wider text-[#A66A08]">
@@ -100,7 +100,7 @@ export function TrustSection() {
 
               {/* Step 02 */}
               <div className="flex flex-col items-start px-1">
-                <span className="flex size-[48px] items-center justify-center rounded-full bg-[#EAF5E5] text-[#2E7D32] shadow-xs">
+                <span className="flex size-12 items-center justify-center rounded-full bg-[#EAF5E5] text-[#2E7D32] shadow-xs">
                   <SignatureTrustIcon size={23} />
                 </span>
                 <span className="mt-2.5 text-[12.5px] font-bold tracking-wider text-[#A66A08]">
@@ -124,7 +124,7 @@ export function TrustSection() {
 
               {/* Step 03 */}
               <div className="flex flex-col items-start pl-1">
-                <span className="flex size-[48px] items-center justify-center rounded-full bg-[#F0EBFA] text-[#7C3AED] shadow-xs">
+                <span className="flex size-12 items-center justify-center rounded-full bg-[#F0EBFA] text-[#7C3AED] shadow-xs">
                   <ShieldTrustIcon size={23} />
                 </span>
                 <span className="mt-2.5 text-[12.5px] font-bold tracking-wider text-[#A66A08]">
@@ -143,7 +143,7 @@ export function TrustSection() {
             <div className="flex flex-wrap items-center gap-5 pt-2">
               <Link
                 to="/about#governance"
-                className="inline-flex h-[36px] items-center gap-1.5 rounded-full border border-[#D8A83E] bg-transparent px-4 text-[13px] font-medium text-[#795229] transition-colors hover:bg-[#F3E5C6]"
+                className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[#D8A83E] bg-transparent px-4 text-[13px] font-medium text-[#795229] transition-colors hover:bg-[#F3E5C6]"
               >
                 <span>Learn more about our process</span>
                 <span className="text-[15px] text-[#C48B18]">→</span>

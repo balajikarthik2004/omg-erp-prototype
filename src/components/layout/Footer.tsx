@@ -23,7 +23,7 @@ export function Footer() {
     <footer className="no-print relative isolate w-full overflow-hidden bg-[#2B1710] text-[#E9DCCB] pt-14 pb-8 sm:pt-16 sm:pb-9">
       {/* Decorative Layer: Far-left temple gopuram watermark (Faint 6% opacity) */}
       <div
-        className="pointer-events-none absolute bottom-0 left-0 z-0 hidden h-[340px] w-[220px] opacity-[0.06] lg:block"
+        className="pointer-events-none absolute bottom-0 left-0 z-0 hidden h-85 w-55 opacity-[0.06] lg:block"
         style={{ filter: 'brightness(1.5) sepia(1) hue-rotate(5deg)' }}
         aria-hidden
       >
@@ -36,19 +36,19 @@ export function Footer() {
 
       {/* Decorative Layer: Bottom-right sacred lotus watermark (Faint 6% opacity) */}
       <div
-        className="pointer-events-none absolute -bottom-4 -right-6 z-0 hidden h-[260px] w-[210px] opacity-[0.06] text-[#C89422] lg:block"
+        className="pointer-events-none absolute -bottom-4 -right-6 z-0 hidden h-65 w-52.5 opacity-[0.06] text-[#C89422] lg:block"
         aria-hidden
       >
         <LotusFooterArt className="h-full w-full" />
       </div>
 
       {/* Main Centered Content Container */}
-      <div className="relative z-10 mx-auto max-w-[1240px] px-5 sm:px-8 xl:px-12">
+      <div className="relative z-10 mx-auto max-w-310 px-5 sm:px-8 xl:px-12">
         {/* Main Grid: Left Brand (58%) & Right Navigation (42%) */}
         <div className="grid gap-10 lg:grid-cols-[58%_42%] items-start">
           
           {/* Left Column: Brand, Story & Prototype Label */}
-          <div className="max-w-[490px]">
+          <div className="max-w-122.5">
             <Link to="/" className="inline-flex items-center gap-3.5 group">
               <OmgMark size={52} className="shadow-xs" />
               <div>
@@ -61,7 +61,7 @@ export function Footer() {
               </div>
             </Link>
 
-            <p className="mt-4 max-w-[460px] text-[14.5px] sm:text-[15px] leading-[1.6] text-[#E9DCCB]">
+            <p className="mt-4 max-w-115 text-[14.5px] sm:text-[15px] leading-[1.6] text-[#E9DCCB]">
               Every offering is receipted the moment it is given, held in a named fund, and released only after two people have signed for it.
             </p>
 
@@ -71,9 +71,9 @@ export function Footer() {
           </div>
 
           {/* Right Column: Two Navigation Columns with Vertical Gold Divider */}
-          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] items-start gap-6 sm:gap-7 max-w-[340px] lg:ml-auto pt-0.5">
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] items-start gap-6 sm:gap-7 max-w-85 lg:ml-auto pt-0.5">
             {/* GIVE Column */}
-            <nav className="min-w-[120px]">
+            <nav className="min-w-30">
               <h4 className="text-[11px] font-semibold tracking-[0.2em] text-[#C89422] uppercase mb-3.5">
                 Give
               </h4>
@@ -98,14 +98,14 @@ export function Footer() {
             </nav>
 
             {/* Vertical Hairline Gold Divider with Center Diamond */}
-            <div className="hidden sm:flex flex-col items-center justify-center self-stretch py-1.5 min-h-[120px]" aria-hidden>
+            <div className="hidden sm:flex flex-col items-center justify-center self-stretch py-1.5 min-h-30" aria-hidden>
               <span className="w-px flex-1 bg-[rgba(200,148,34,0.35)]" />
               <span className="my-1.5 text-[10px] text-[#C89422]">✦</span>
               <span className="w-px flex-1 bg-[rgba(200,148,34,0.35)]" />
             </div>
 
             {/* ACCOUNT Column */}
-            <nav className="min-w-[130px]">
+            <nav className="min-w-32.5">
               <h4 className="text-[11px] font-semibold tracking-[0.2em] text-[#C89422] uppercase mb-3.5">
                 Account
               </h4>

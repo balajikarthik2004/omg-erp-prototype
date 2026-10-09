@@ -168,7 +168,7 @@ export function StatementPage() {
 
               <section className="mt-7">
                 <h2 className="mb-2 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Where it went, by fund</h2>
-                <ul className="flex flex-col divide-y divide-sandal-200 rounded-card border border-sandal-200">
+                <ul className="flex flex-col divide-y divide-sandal-200 rounded-card border">
                   {byFund.map((f) => (
                     <li key={f.fundId} className="flex items-center justify-between gap-3 px-4 py-2.5 text-[14px]">
                       <span className="text-stone-700">{FUNDS.find((x) => x.id === f.fundId)?.name ?? f.fundId}</span>

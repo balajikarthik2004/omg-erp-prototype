@@ -4,7 +4,7 @@ import { LayoutDashboard, LogIn, Menu, ShoppingBag, UserRound, X } from 'lucide-
 
 import { SECTOR_IDS, SECTORS } from '@/config'
 import { cn } from '@/lib/cn'
-import { Divider, Kolam, OmgMark } from '@/components/ui/Ornament'
+import { OmgMark } from '@/components/ui/Ornament'
 import { useDb } from '@/store/db'
 import { useSession } from '@/store/session'
 import { Footer } from './Footer'
@@ -34,11 +34,11 @@ export function DonorLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-sandal-50">
       <header className="no-print sticky top-0 z-30 border-b border-sandal-200 bg-sandal-50/90 backdrop-blur-md">
-        <div className="mx-auto flex h-[78px] max-w-6xl items-center gap-4 px-5 sm:px-8">
+        <div className="mx-auto flex h-19.5 max-w-6xl items-center gap-4 px-5 sm:px-8">
           <Link to="/" className="flex items-center gap-3" aria-label="OMG Platform, home">
             <OmgMark size={46} />
             <span className="leading-none">
-              <span className="block max-w-[260px] truncate font-heritage text-[29px] leading-none font-semibold tracking-wide text-stone-900">
+              <span className="block max-w-65 truncate font-heritage text-[29px] leading-none font-semibold tracking-wide text-stone-900">
                 {tenant?.name ?? 'OMG'}
               </span>
               <span className="mt-0.5 block text-[11px] tracking-[0.14em] text-stone-500 uppercase">
@@ -104,7 +104,7 @@ export function DonorLayout() {
                   : 'text-stone-700 hover:bg-sandal-100',
               )}
             >
-              <ShoppingBag className="size-[18px]" aria-hidden />
+              <ShoppingBag className="size-4.5" aria-hidden />
               {cart.length > 0 ? (
                 <span className="font-mono text-[13px] tabular-nums">{cart.length}</span>
               ) : null}

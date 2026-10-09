@@ -24,7 +24,7 @@ export function HomeHero() {
 
       {/* Authentic Hanging Brass Deepams Cutout (100% Transparent Background) */}
       <div
-        className="pointer-events-none absolute top-0 right-2 z-20 hidden h-[320px] w-[170px] lg:block xl:right-10 xl:h-[370px] xl:w-[200px]"
+        className="pointer-events-none absolute top-0 right-2 z-20 hidden h-80 w-42.5 lg:block xl:right-10 xl:h-92.5 xl:w-50"
         aria-hidden
       >
         <img
@@ -48,7 +48,7 @@ export function HomeHero() {
             <span className="block lg:whitespace-nowrap">to the lamp it lights.</span>
           </h1>
 
-          <p className="mt-6 max-w-[34rem] text-[16px] leading-[1.75] text-stone-700 sm:text-[17px]">
+          <p className="mt-6 max-w-136 text-[16px] leading-[1.75] text-stone-700 sm:text-[17px]">
             Offerings for the கோவில், the சேவாலயா and the தமிழ்ச்சங்கம், kept in one honest ledger. You can see
             the fund your gift sits in, and the work it paid for.
           </p>
@@ -79,10 +79,10 @@ export function HomeHero() {
         </div>
 
         {/* The Golden Arch Sanctum with Vintage Mandala Halo and Gopuram Etching */}
-        <div className="relative mx-auto w-full max-w-[380px] lg:mr-10 lg:ml-auto lg:max-w-[430px]">
+        <div className="relative mx-auto w-full max-w-95 lg:mr-10 lg:ml-auto lg:max-w-107.5">
           {/* Vintage Gopuram Etching on left of arch (Transparent PNG) */}
           <div
-            className="pointer-events-none absolute -bottom-2 -left-28 -z-0 hidden h-72 w-48 opacity-[0.18] xl:block"
+            className="pointer-events-none absolute -bottom-2 -left-28 z-0 hidden h-72 w-48 opacity-[0.18] xl:block"
             aria-hidden
           >
             <img
@@ -94,7 +94,7 @@ export function HomeHero() {
 
           {/* Authentic Vintage Mandala Etching shifted slightly down behind arch (Transparent PNG) */}
           <div
-            className="pointer-events-none absolute top-[62%] -right-16 -z-0 hidden h-[380px] w-[380px] -translate-y-[38%] opacity-[0.24] lg:block"
+            className="pointer-events-none absolute top-[62%] -right-16 z-0 hidden h-95 w-95 translate-y-[-38%] opacity-[0.24] lg:block"
             aria-hidden
           >
             <img
@@ -105,10 +105,10 @@ export function HomeHero() {
           </div>
 
           {/* Arch Finial Top */}
-          <Finial className="absolute -top-[20px] left-1/2 z-20 -translate-x-1/2" />
+          <Finial className="absolute -top-5 left-1/2 z-20 -translate-x-1/2" />
 
           <div className="relative border border-turmeric-500/80 bg-sandal-50 p-2 shadow-sm" style={{ borderRadius: ARCH }}>
-            <div className="aspect-[9/10] overflow-hidden" style={{ borderRadius: ARCH }}>
+            <div className="aspect-9/10 overflow-hidden" style={{ borderRadius: ARCH }}>
               <img
                 src={PHOTOS.temple.src}
                 alt={PHOTOS.temple.alt}
@@ -121,7 +121,7 @@ export function HomeHero() {
           </div>
 
           {/* Arch Finial Bottom */}
-          <Finial className="absolute -bottom-[16px] left-1/2 z-20 -translate-x-1/2 rotate-180" />
+          <Finial className="absolute -bottom-4 left-1/2 z-20 -translate-x-1/2 rotate-180" />
         </div>
       </div>
     </section>

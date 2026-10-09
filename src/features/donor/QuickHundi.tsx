@@ -34,11 +34,11 @@ export function QuickHundi() {
     <section id="quick-hundi" className="relative -mt-4 scroll-mt-20 bg-sandal-100 pb-8 lg:-mt-6">
       <div className="mx-auto max-w-[1560px] px-3 sm:px-6">
         <div className="animate-rise relative overflow-hidden rounded-[22px] border border-turmeric-500/50 bg-sandal-50/70 shadow-card">
-          <div className="pointer-events-none absolute inset-[5px] rounded-[18px] border border-turmeric-400/25" aria-hidden />
+          <div className="pointer-events-none absolute inset-1.25 rounded-[18px] border border-turmeric-400/25" aria-hidden />
 
           {/* Left corner faint temple gopuram etching (Transparent PNG) */}
           <div
-            className="pointer-events-none absolute -bottom-4 left-0 -z-0 hidden h-[95%] w-60 opacity-[0.16] lg:block"
+            className="pointer-events-none absolute -bottom-4 left-0 z-0 hidden h-[95%] w-60 opacity-[0.16] lg:block"
             aria-hidden
           >
             <img
@@ -61,7 +61,7 @@ export function QuickHundi() {
             {/* The lit diya lamp and what the gift is */}
             <div className="flex flex-col sm:flex-row items-center sm:items-end gap-5 px-6 pt-6 pb-6 lg:py-5 lg:pl-6 lg:pr-4">
               {/* Authentic lit brass diya image */}
-              <div className="relative h-[150px] w-[175px] shrink-0 overflow-hidden rounded-xl border border-turmeric-500/30 bg-gradient-to-b from-[#F5E6CC]/80 to-[#E4CEAA] shadow-inner sm:h-[160px] sm:w-[190px]">
+              <div className="relative h-37.5 w-43.75 shrink-0 overflow-hidden rounded-xl border border-turmeric-500/30 bg-linear-to-b from-[#F5E6CC]/80 to-[#E4CEAA] shadow-inner sm:h-40 sm:w-47.5">
                 <img
                   src="/images/diya-promise.jpg"
                   alt="A traditional lit brass diya oil lamp with bright flame and fragrant white jasmine flowers"
@@ -113,10 +113,10 @@ export function QuickHundi() {
                     >
                       {on ? (
                         <span
-                          className="absolute -top-2.5 -right-2.5 z-10 flex size-[22px] items-center justify-center rounded-full bg-sandal-50 text-kumkum-700 ring-1 ring-kumkum-700"
+                          className="absolute -top-2.5 -right-2.5 z-10 flex size-5.5 items-center justify-center rounded-full bg-sandal-50 text-kumkum-700 ring-1 ring-kumkum-700"
                           aria-hidden
                         >
-                          <Check className="size-3.5 stroke-[3]" />
+                          <Check className="size-3.5 stroke-3" />
                         </span>
                       ) : null}
                       <span className="font-heritage text-[27px] leading-none font-bold [font-variant-numeric:lining-nums_tabular-nums]">
@@ -152,7 +152,7 @@ export function QuickHundi() {
                       'focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:outline-none',
                     )}
                   >
-                    <Pencil className="size-[22px] shrink-0 text-turmeric-700" aria-hidden />
+                    <Pencil className="size-5.5 shrink-0 text-turmeric-700" aria-hidden />
                     <span className="text-[14px] leading-tight text-stone-900">
                       Choose
                       <br />
@@ -166,7 +166,7 @@ export function QuickHundi() {
               <Link
                 to={`/donate/temple/cat-tmp-hundi?amount=${amount}`}
                 className={cn(
-                  'group mt-4 flex h-[52px] w-full items-center justify-center gap-3 rounded-lg bg-kumkum-700 px-6 text-[18px] font-medium text-sandal-50 shadow-md',
+                  'group mt-4 flex h-13 w-full items-center justify-center gap-3 rounded-lg bg-kumkum-700 px-6 text-[18px] font-medium text-sandal-50 shadow-md',
                   'transition-all duration-200 hover:-translate-y-px hover:bg-kumkum-800 hover:shadow-lift active:bg-kumkum-900',
                   'focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:ring-offset-2 focus-visible:ring-offset-sandal-50 focus-visible:outline-none',
                 )}

@@ -48,7 +48,7 @@ export function FeaturedProjectSection() {
       {/* Background Etchings (Distinct & Non-Repetitive, Transparent PNGs) */}
       {/* Left Kanchipuram Gopuram Etching - Positioned Upwards */}
       <div
-        className="pointer-events-none absolute top-4 -left-20 -z-10 hidden h-[680px] w-[380px] opacity-[0.22] lg:block xl:-left-16"
+        className="pointer-events-none absolute top-4 -left-20 -z-10 hidden h-170 w-95 opacity-[0.22] lg:block xl:-left-16"
         aria-hidden
       >
         <img
@@ -60,7 +60,7 @@ export function FeaturedProjectSection() {
 
       {/* Right Corner Distinct Toranam & Jasmine Branch Watermark */}
       <div
-        className="pointer-events-none absolute top-4 -right-4 -z-10 hidden h-[480px] w-[280px] opacity-[0.22] lg:block xl:w-[320px]"
+        className="pointer-events-none absolute top-4 -right-4 -z-10 hidden h-120 w-70 opacity-[0.22] lg:block xl:w-[320px]"
         aria-hidden
       >
         <img
@@ -90,7 +90,7 @@ export function FeaturedProjectSection() {
             <div className="mt-8 flex flex-wrap items-center gap-6 sm:gap-8">
               {/* Badge 1 */}
               <div className="flex items-center gap-3.5">
-                <span className="flex size-[48px] shrink-0 items-center justify-center rounded-full bg-[#F8E6B8]/90 shadow-xs">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#F8E6B8]/90 shadow-xs">
                   <TempleTowerIcon size={24} />
                 </span>
                 <div>
@@ -101,7 +101,7 @@ export function FeaturedProjectSection() {
 
               {/* Badge 2 */}
               <div className="flex items-center gap-3.5">
-                <span className="flex size-[48px] shrink-0 items-center justify-center rounded-full bg-[#F8E6B8]/90 shadow-xs">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#F8E6B8]/90 shadow-xs">
                   <SthapatiChiselsIcon size={22} />
                 </span>
                 <div>
@@ -116,7 +116,7 @@ export function FeaturedProjectSection() {
               <Link to={`/donate/${featured.sectorId}/cat-tmp-raja`} className="inline-block">
                 <button
                   type="button"
-                  className="group flex h-[52px] items-center gap-3 rounded-xl bg-[#8A1710] px-7 text-[16px] font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-px hover:bg-[#72120C] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-turmeric-400"
+                  className="group flex h-13 items-center gap-3 rounded-xl bg-[#8A1710] px-7 text-[16px] font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-px hover:bg-[#72120C] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-turmeric-400"
                 >
                   <SacredOfferingHandIcon size={20} className="text-turmeric-300" />
                   <span>Give to this project</span>
@@ -127,13 +127,13 @@ export function FeaturedProjectSection() {
           </div>
 
           {/* Right Column: Arched Photo Showcase & Overlapping Stats Card */}
-          <div className="relative mx-auto w-full max-w-[480px] lg:max-w-none">
+          <div className="relative mx-auto w-full max-w-120 lg:max-w-none">
             {/* Top Finial */}
-            <Finial className="absolute -top-[18px] left-1/2 z-20 -translate-x-1/2" />
+            <Finial className="absolute -top-4.5 left-1/2 z-20 -translate-x-1/2" />
 
             {/* Arch Photo Container */}
             <div className="relative overflow-hidden rounded-t-[200px] rounded-b-[20px] border-2 border-turmeric-500/60 bg-sandal-100 p-2 shadow-sm">
-              <div className="aspect-[4/3.8] w-full overflow-hidden rounded-t-[190px] rounded-b-[14px]">
+              <div className="aspect-[4/3.8] w-full overflow-hidden rounded-t-[190px] rounded-b-card">
                 <img
                   src="/images/project-rajagopuram.webp"
                   alt="A temple gopuram under restoration, wrapped in bamboo scaffolding"
@@ -144,7 +144,7 @@ export function FeaturedProjectSection() {
             </div>
 
             {/* Bottom Finial */}
-            <Finial className="absolute bottom-[2px] left-1/2 z-0 -translate-x-1/2 rotate-180" />
+            <Finial className="absolute bottom-0.5 left-1/2 z-0 -translate-x-1/2 rotate-180" />
 
             {/* Overlapping Raised Stats Card - Shifted Upwards */}
             <div
@@ -158,7 +158,7 @@ export function FeaturedProjectSection() {
 
               {/* Watermark: Sacred Nandi & Shrine Etching - Shifted Upwards */}
               <div
-                className="pointer-events-none absolute top-2 right-0 -z-0 h-[145px] w-[225px] opacity-[0.24] sm:top-3 sm:h-[165px] sm:w-[255px]"
+                className="pointer-events-none absolute top-2 right-0 z-0 h-36.25 w-56.25 opacity-[0.24] sm:top-3 sm:h-41.25 sm:w-63.75"
                 aria-hidden
               >
                 <img
@@ -182,12 +182,12 @@ export function FeaturedProjectSection() {
 
                 {/* Progress Bar */}
                 <div
-                  className="mt-5 h-[10px] w-full overflow-hidden rounded-full bg-[#EADCC8]"
+                  className="mt-5 h-2.5 w-full overflow-hidden rounded-full bg-[#EADCC8]"
                   role="img"
                   aria-label={`${formatPct(progress, 0)} of the goal raised`}
                 >
                   <span
-                    className="block h-full rounded-full bg-gradient-to-r from-[#A8241A] to-[#8A1710] shadow-inner transition-all duration-700"
+                    className="block h-full rounded-full bg-linear-to-r from-[#A8241A] to-[#8A1710] shadow-inner transition-all duration-700"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
