@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Download, Search } from 'lucide-react'
+import { Download, ReceiptText, RefreshCw, Search } from 'lucide-react'
 
 import { formatDate, formatDateTime, formatMoney, titleCase } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
@@ -17,16 +17,28 @@ import { PageHeader } from '@/components/layout/PageHeader'
 import { SectorChip } from '@/components/layout/PhaseChip'
 import { CATALOG, FUNDS } from '@/mock/seed'
 import { useDb } from '@/store/db'
-import { useSession } from '@/store/session'
+import { currentUser, useSession } from '@/store/session'
 import { donorName, inSector } from '@/store/selectors'
 import type { Donation } from '@/types'
 
 const PAGE_SIZE = 25
 
+/** A donation waiting for Square's webhook is not "pending approval". It has its own label. */
+function statusKey(d: Donation): string {
+  if (d.disputed) return 'disputed'
+  return d.status === 'pending' ? 'awaiting_webhook' : d.status
+}
+
+const WEBHOOK_ROLES = ['sector_admin', 'ca_staff', 'ca_partner']
+
 export function DonationsPage() {
   const db = useDb()
   const filter = useSession((s) => s.sectorFilter)
   const [params, setParams] = useSearchParams()
+  const personaId = useSession((s) => s.personaId)
+  const user = currentUser(personaId)
+  const confirmDonationPayment = useDb((s) => s.confirmDonationPayment)
+  const issueReceipt = useDb((s) => s.issueReceipt)
 
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('all')
@@ -75,7 +87,7 @@ export function DonationsPage() {
     },
     { key: 'sector', header: 'Sector', cell: (d) => <SectorChip sectorId={d.sectorId} /> },
     { key: 'method', header: 'Method', cell: (d) => <span className="text-[14px]">{titleCase(d.method)}</span> },
-    { key: 'status', header: 'Status', cell: (d) => <StatusBadge status={d.disputed ? 'disputed' : d.status} /> },
+    { key: 'status', header: 'Status', cell: (d) => <StatusBadge status={statusKey(d)} /> },
     { key: 'amount', header: 'Amount', align: 'right', primary: true, cell: (d) => <Money value={d.gross} /> },
   ]
 
@@ -115,6 +127,7 @@ export function DonationsPage() {
             }}
             options={[
               { value: 'all', label: 'All statuses' },
+              { value: 'pending', label: 'Awaiting Square' },
               { value: 'paid', label: 'Paid' },
               { value: 'receipted', label: 'Receipted' },
               { value: 'reconciled', label: 'Reconciled' },
@@ -195,13 +208,44 @@ export function DonationsPage() {
       <Drawer
         open={Boolean(focused)}
         onClose={() => setParams({})}
-        title={focused?.receiptNo ?? ''}
+        title={focused && focused.receiptNo !== '—' ? focused.receiptNo : (focused?.id ?? '')}
         subtitle={focused ? formatDateTime(focused.createdAt) : undefined}
+        footer={
+          focused && (focused.status === 'pending' || (focused.status === 'paid' && focused.receiptNo === '—')) ? (
+            <div className="flex flex-col gap-2">
+              <p className="text-[13px] text-stone-500">
+                {focused.status === 'pending'
+                  ? 'This payment is not Paid until Square’s verified webhook arrives. If it never came, replay it.'
+                  : 'Square confirmed the payment, but the receipt has not been issued yet.'}
+              </p>
+              {focused.status === 'pending' ? (
+                <Button
+                  fullWidth
+                  icon={<RefreshCw className="size-4" aria-hidden />}
+                  disabled={!WEBHOOK_ROLES.includes(user.role)}
+                  title={WEBHOOK_ROLES.includes(user.role) ? undefined : 'Only a sector admin or the CA team can replay a webhook.'}
+                  onClick={() => confirmDonationPayment(focused.id, user)}
+                >
+                  Replay Square webhook
+                </Button>
+              ) : (
+                <Button
+                  fullWidth
+                  icon={<ReceiptText className="size-4" aria-hidden />}
+                  disabled={!WEBHOOK_ROLES.includes(user.role)}
+                  onClick={() => issueReceipt(focused.id, user)}
+                >
+                  Issue receipt
+                </Button>
+              )}
+            </div>
+          ) : null
+        }
       >
         {focused ? (
           <div className="flex flex-col gap-5">
             <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge status={focused.disputed ? 'disputed' : focused.status} />
+              <StatusBadge status={statusKey(focused)} />
               <SectorChip sectorId={focused.sectorId} withTamil />
             </div>
 
@@ -221,6 +265,13 @@ export function DonationsPage() {
                 value={<span className="font-mono text-[13px] tabular-nums">{focused.squarePaymentId ?? '—'}</span>}
               />
               <Field label="Fund" value={FUNDS.find((f) => f.id === focused.fundId)?.name ?? '—'} />
+              <Field
+                label="Webhook confirmed"
+                value={focused.webhookAt ? formatDateTime(focused.webhookAt) : focused.squarePaymentId ? 'Not yet' : 'Not applicable'}
+              />
+              {focused.cashCountId ? (
+                <Field label="Cash count" value={<span className="font-mono tabular-nums">{focused.cashCountId}</span>} />
+              ) : null}
             </dl>
 
             <div className="rounded-card border border-sandal-200 bg-sandal-100 p-4">
@@ -243,6 +294,7 @@ export function DonationsPage() {
                     <div className="flex items-center justify-between gap-3">
                       <span className="text-[14px] text-stone-900">
                         {CATALOG.find((c) => c.id === line.itemId)?.name ?? line.itemId}
+                        {line.quantity && line.quantity > 1 ? ` × ${line.quantity} tickets` : ''}
                       </span>
                       <Money value={line.amount} />
                     </div>

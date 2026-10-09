@@ -139,3 +139,60 @@ export function Deepam({ className, size = 20 }: { className?: string; size?: nu
     </svg>
   )
 }
+
+/** A divine ceremonial brass diya with glowing golden flame. */
+export function DiyaIcon({ className, size = 20 }: { className?: string; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden className={cn('shrink-0', className)}>
+      <defs>
+        <radialGradient id="flame-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#FFF4D0" />
+          <stop offset="60%" stopColor="#E9B12E" />
+          <stop offset="100%" stopColor="#B3261E" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <circle cx="12" cy="7" r="5" fill="url(#flame-glow)" opacity="0.65" />
+      <path
+        d="M12 2.5C13.5 4.5 14.5 6.2 14.5 7.8A2.5 2.5 0 1 1 9.5 7.8C9.5 6.2 10.5 4.5 12 2.5Z"
+        fill="#E9B12E"
+      />
+      <path
+        d="M12 4.5C12.7 5.7 13.2 6.7 13.2 7.7A1.2 1.2 0 1 1 10.8 7.7C10.8 6.7 11.3 5.7 12 4.5Z"
+        fill="#FFFBF4"
+      />
+      <path
+        d="M3.5 13.5C3.5 12.8 4.2 12.2 5.2 12.2H18.8C19.8 12.2 20.5 12.8 20.5 13.5C20.5 16.5 16.8 18.8 12 18.8C7.2 18.8 3.5 16.5 3.5 13.5Z"
+        fill="#D4971A"
+      />
+      <path
+        d="M9 18.5L8 21.5H16L15 18.5"
+        stroke="#9A6A0C"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+      <line x1="7" y1="21.5" x2="17" y2="21.5" stroke="#D4971A" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+/** Hanging temple brass lamps with fine link chains */
+export function HangingDeepams({ className }: { className?: string }) {
+  return (
+    <svg width="120" height="280" viewBox="0 0 120 280" fill="none" aria-hidden className={cn('pointer-events-none', className)}>
+      <g opacity="0.85">
+        <line x1="30" y1="0" x2="30" y2="120" stroke="#D4971A" strokeWidth="1" strokeDasharray="3 3" />
+        <circle cx="30" cy="120" r="3" fill="#9A6A0C" />
+        <path d="M30 114c1.2 1.8 2 3.2 2 4.5a2 2 0 1 1-4 0c0-1.3.8-2.7 2-4.5Z" fill="#E9B12E" />
+        <path d="M22 124c0-1.2 1.5-2.2 8-2.2s8 1 8 2.2c0 2-3.6 4-8 4s-8-2-8-4Z" fill="#D4971A" />
+        <circle cx="30" cy="131" r="2" fill="#9A6A0C" />
+      </g>
+      <g opacity="0.95">
+        <line x1="90" y1="0" x2="90" y2="160" stroke="#D4971A" strokeWidth="1" strokeDasharray="3 3" />
+        <circle cx="90" cy="160" r="3.5" fill="#9A6A0C" />
+        <path d="M90 153c1.5 2.2 2.5 3.8 2.5 5.5a2.5 2.5 0 1 1-5 0c0-1.7 1-3.3 2.5-5.5Z" fill="#E9B12E" />
+        <path d="M80 165c0-1.5 2-2.8 10-2.8s10 1.3 10 2.8c0 2.5-4.5 5-10 5s-10-2.5-10-5Z" fill="#D4971A" />
+        <circle cx="90" cy="173" r="2.5" fill="#9A6A0C" />
+      </g>
+    </svg>
+  )
+}

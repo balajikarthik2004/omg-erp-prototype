@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
 import { Kolam } from '@/components/ui/Ornament'
@@ -13,10 +14,10 @@ export function NotFoundPage() {
       </p>
       <div className="flex flex-wrap items-center justify-center gap-3">
         <Link to="/">
-          <Button>Donor home</Button>
+          <Button rightIcon={<ArrowRight className="size-4" aria-hidden />}>Donor home</Button>
         </Link>
         <Link to="/console">
-          <Button variant="secondary">Admin console</Button>
+          <Button variant="secondary" rightIcon={<ArrowRight className="size-4" aria-hidden />}>Admin console</Button>
         </Link>
       </div>
     </div>

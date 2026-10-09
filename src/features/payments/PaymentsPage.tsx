@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { MessageSquarePlus, Search, TriangleAlert } from 'lucide-react'
+import { Banknote, MessageSquarePlus, Search, TriangleAlert } from 'lucide-react'
 
 import { approvalTierLabel } from '@/config'
 import { formatDate, formatDue, formatMoney } from '@/lib/format'
@@ -19,6 +19,7 @@ import { SectorChip } from '@/components/layout/PhaseChip'
 import { ApprovalTimeline } from '@/components/flow/ApprovalTimeline'
 import { MakerCheckerNote } from '@/components/flow/MakerCheckerNote'
 import { approvalBlock, threeWayMatch, useDb } from '@/store/db'
+import { releaseBlock } from '@/store/rules'
 import { currentUser, useSession } from '@/store/session'
 import { inSector } from '@/store/selectors'
 import type { SupplierInvoice } from '@/types'
@@ -31,6 +32,7 @@ export function PaymentsPage() {
   const user = currentUser(personaId)
   const decidePayment = useDb((s) => s.decidePayment)
   const addCaComment = useDb((s) => s.addCaComment)
+  const releasePayment = useDb((s) => s.releasePayment)
 
   const [params, setParams] = useSearchParams()
   const [tab, setTab] = useState('open')
@@ -39,7 +41,7 @@ export function PaymentsPage() {
   const [caNote, setCaNote] = useState('')
 
   const all = useMemo(() => inSector(db.invoices, filter), [db.invoices, filter])
-  const open = all.filter((i) => ['received', 'matched', 'variance', 'payment_pending'].includes(i.status))
+  const open = all.filter((i) => ['received', 'matched', 'variance', 'payment_pending', 'approved'].includes(i.status))
   const settled = all.filter((i) => ['paid', 'rejected'].includes(i.status))
 
   const rows = useMemo(() => {
@@ -59,6 +61,7 @@ export function PaymentsPage() {
   const match = focusPo ? threeWayMatch(focusPo, focusGrns, focused) : null
   const block = focused ? approvalBlock(user, focused.preparedBy, focused.total, focused.approvals) : null
   const blockedByVariance = Boolean(match?.flagged && !focused?.caComment)
+  const relBlock = focused ? releaseBlock(user, focused) : null
 
   const columns: Column<SupplierInvoice>[] = [
     {
@@ -95,7 +98,7 @@ export function PaymentsPage() {
         )
       },
     },
-    { key: 'status', header: 'Status', cell: (i) => <StatusBadge status={i.status} /> },
+    { key: 'status', header: 'Status', cell: (i) => <StatusBadge status={i.status === 'approved' ? 'awaiting_release' : i.status} /> },
     { key: 'total', header: 'Total', align: 'right', primary: true, cell: (i) => <Money value={i.total} /> },
   ]
 
@@ -225,13 +228,33 @@ export function PaymentsPage() {
                 </Button>
               </div>
             </div>
+          ) : focused?.status === 'approved' ? (
+            <div className="flex flex-col gap-3">
+              <p className="text-[13px] text-stone-500">
+                Approved is not paid. A different person releases the money, and only then do the budget and the ledger move.
+              </p>
+              {relBlock ? <p className="text-[13px] text-marigold-500">{relBlock}</p> : null}
+              <Button
+                fullWidth
+                variant="success"
+                icon={<Banknote className="size-4" aria-hidden />}
+                disabled={Boolean(relBlock)}
+                title={relBlock ?? undefined}
+                onClick={() => {
+                  releasePayment(focused.id, user)
+                  setParams({})
+                }}
+              >
+                Release payment
+              </Button>
+            </div>
           ) : null
         }
       >
         {focused && focusPo && match ? (
           <div className="flex flex-col gap-5">
             <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge status={focused.status} />
+              <StatusBadge status={focused.status === 'approved' ? 'awaiting_release' : focused.status} />
               <SectorChip sectorId={focused.sectorId} />
               <Link
                 to={`/console/purchase-orders/${encodeURIComponent(focusPo.id)}`}

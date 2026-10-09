@@ -13,18 +13,21 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const user = useCurrentUser()
   const sectorFilter = useSession((s) => s.sectorFilter)
   const db = useDb()
-  const groups = visibleGroups(user.role)
+  const tenant = db.tenants.find((t) => t.id === db.activeTenantId)
+  const groups = visibleGroups(user.role, tenant?.modules)
   const myTasks = db.ready ? actionableTasks(db, sectorFilter, user).length : 0
 
   return (
-    <div className="flex h-full flex-col surface-sanctum text-sandal-100">
+    <div data-brand={tenant?.brand ?? 'kumkum'} className="flex h-full flex-col surface-sanctum text-sandal-100">
       <div className="flex items-center justify-between gap-2 px-5 py-5">
         <NavLink to="/console" className="flex items-center gap-3" onClick={onNavigate}>
           <OmgMark size={36} />
           <span className="leading-none">
-            <span className="block font-display text-[19px] tracking-wide text-sandal-50">OMG</span>
+            <span className="block max-w-[150px] truncate font-display text-[17px] tracking-wide text-sandal-50">
+              {tenant?.name ?? 'OMG'}
+            </span>
             <span className="mt-1 block text-[10px] tracking-[0.18em] text-turmeric-400/75 uppercase">
-              Console
+              OMG Console
             </span>
           </span>
         </NavLink>

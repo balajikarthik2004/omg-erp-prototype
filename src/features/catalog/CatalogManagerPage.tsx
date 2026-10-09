@@ -122,6 +122,8 @@ export function CatalogManagerPage() {
               { value: 'all', label: 'All categories' },
               { value: 'hundi', label: 'Hundi' },
               { value: 'pooja', label: 'Pooja' },
+              { value: 'event', label: 'Events' },
+              { value: 'membership', label: 'Membership' },
               { value: 'activity', label: 'Activities' },
               { value: 'project', label: 'Projects' },
             ]}

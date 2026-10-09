@@ -92,21 +92,51 @@ export function DashboardPage() {
           </div>
 
           <div className="grid items-start gap-6 xl:grid-cols-[1.55fr_1fr]">
-            <Card>
-              <CardHeader
-                title="Income against outgo"
-                description="Twelve months on one scale. Festival months lift income; procurement follows a month behind."
-              />
-              <IncomeOutgoChart data={data.series} />
-            </Card>
+            <div className="flex flex-col gap-6">
+              <Card>
+                <CardHeader
+                  title="Income against outgo"
+                  description="Twelve months on one scale. Festival months lift income; procurement follows a month behind."
+                />
+                <IncomeOutgoChart data={data.series} />
+              </Card>
+
+              <Card>
+                <CardHeader
+                  title="Budget heads near the limit"
+                  description="Anything above 85% of its allocation, worst first."
+                  action={
+                    <Link
+                      to="/console/budgets"
+                      className="inline-flex items-center gap-1 text-[13px] font-medium text-kumkum-700 hover:underline"
+                    >
+                      All budgets
+                      <ArrowRight className="size-3.5" aria-hidden />
+                    </Link>
+                  }
+                />
+                {data.tight.length === 0 ? (
+                  <EmptyState
+                    title="All budgets are comfortable"
+                    message="No head is above 85% of its allocation."
+                  />
+                ) : (
+                  <UtilisationBars heads={data.tight} limit={6} />
+                )}
+              </Card>
+            </div>
 
             <Card>
               <CardHeader
                 title="Fund balances"
                 description="What is held, by sector and by fund."
                 action={
-                  <Link to="/console/allotments" className="text-[13px] font-medium text-kumkum-700 hover:underline">
+                  <Link
+                    to="/console/allotments"
+                    className="inline-flex items-center gap-1 text-[13px] font-medium text-kumkum-700 hover:underline"
+                  >
                     Allot
+                    <ArrowRight className="size-3.5" aria-hidden />
                   </Link>
                 }
               />
@@ -167,55 +197,39 @@ export function DashboardPage() {
               )}
             </Card>
 
-            <Card>
-              <CardHeader
-                title="Budget heads near the limit"
-                description="Anything above 85% of its allocation, worst first."
-                action={
-                  <Link to="/console/budgets" className="text-[13px] font-medium text-kumkum-700 hover:underline">
-                    All budgets
-                  </Link>
-                }
-              />
-              {data.tight.length === 0 ? (
-                <EmptyState
-                  title="All budgets are comfortable"
-                  message="No head is above 85% of its allocation."
+            <Card padded={false}>
+              <div className="p-5 pb-0 sm:p-6 sm:pb-0">
+                <CardHeader
+                  title="Recent activity"
+                  description="Every action in the console is written to the audit log."
+                  action={
+                    <Link
+                      to="/console/audit"
+                      className="inline-flex items-center gap-1 text-[13px] font-medium text-kumkum-700 hover:underline"
+                    >
+                      Full audit log
+                      <ArrowRight className="size-3.5" aria-hidden />
+                    </Link>
+                  }
                 />
-              ) : (
-                <UtilisationBars heads={data.tight} limit={6} />
-              )}
+              </div>
+              <ul className="flex flex-col divide-y divide-sandal-200 border-t border-sandal-200">
+                {data.activity.map((event) => (
+                  <li
+                    key={event.id}
+                    className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-5 py-2.5 sm:px-6"
+                  >
+                    <span className="min-w-0 text-[14px] text-stone-700">
+                      <span className="font-medium text-stone-900">{userName(event.userId)}</span>{' '}
+                      {event.action.toLowerCase()}{' '}
+                      <span className="font-mono text-[13px] text-stone-900 tabular-nums">{event.entityId}</span>
+                    </span>
+                    <span className="shrink-0 text-[13px] text-stone-500">{formatAge(event.at)}</span>
+                  </li>
+                ))}
+              </ul>
             </Card>
           </div>
-
-          <Card padded={false}>
-            <div className="p-5 pb-0 sm:p-6 sm:pb-0">
-              <CardHeader
-                title="Recent activity"
-                description="Every action in the console is written to the audit log."
-                action={
-                  <Link to="/console/audit" className="text-[13px] font-medium text-kumkum-700 hover:underline">
-                    Full audit log
-                  </Link>
-                }
-              />
-            </div>
-            <ul className="flex flex-col divide-y divide-sandal-200 border-t border-sandal-200">
-              {data.activity.map((event) => (
-                <li
-                  key={event.id}
-                  className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-5 py-2.5 sm:px-6"
-                >
-                  <span className="min-w-0 text-[14px] text-stone-700">
-                    <span className="font-medium text-stone-900">{userName(event.userId)}</span>{' '}
-                    {event.action.toLowerCase()}{' '}
-                    <span className="font-mono text-[13px] text-stone-900 tabular-nums">{event.entityId}</span>
-                  </span>
-                  <span className="shrink-0 text-[13px] text-stone-500">{formatAge(event.at)}</span>
-                </li>
-              ))}
-            </ul>
-          </Card>
         </div>
       )}
     </div>

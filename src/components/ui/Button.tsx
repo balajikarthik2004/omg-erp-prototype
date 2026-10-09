@@ -30,11 +30,12 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size
   loading?: boolean
   icon?: ReactNode
+  rightIcon?: ReactNode
   fullWidth?: boolean
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant = 'primary', size = 'md', loading, icon, fullWidth, className, children, disabled, ...rest },
+  { variant = 'primary', size = 'md', loading, icon, rightIcon, fullWidth, className, children, disabled, ...rest },
   ref,
 ) {
   return (
@@ -55,6 +56,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     >
       {loading ? <Loader2 className="size-4 animate-spin" aria-hidden /> : icon}
       {children}
+      {rightIcon}
     </button>
   )
 })

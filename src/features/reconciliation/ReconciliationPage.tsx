@@ -5,6 +5,7 @@ import { formatDate, formatMoney } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Drawer } from '@/components/ui/Drawer'
+import { Textarea } from '@/components/ui/Input'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Money } from '@/components/ui/Money'
 import { Stat } from '@/components/ui/Stat'
@@ -14,6 +15,7 @@ import { TableSkeleton } from '@/components/ui/Skeleton'
 import { Tabs } from '@/components/ui/Tabs'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { useDb } from '@/store/db'
+import { payoutVariance } from '@/store/rules'
 import { currentUser, useSession } from '@/store/session'
 import { donorName } from '@/store/selectors'
 import type { SquarePayout } from '@/types'
@@ -24,6 +26,7 @@ export function ReconciliationPage() {
   const matchPayout = useDb((s) => s.matchPayout)
   const [tab, setTab] = useState('unmatched')
   const [openId, setOpenId] = useState<string | null>(null)
+  const [resolution, setResolution] = useState('')
 
   const unmatched = useMemo(() => db.payouts.filter((p) => p.status !== 'matched'), [db.payouts])
   const matched = useMemo(() => db.payouts.filter((p) => p.status === 'matched'), [db.payouts])
@@ -31,6 +34,7 @@ export function ReconciliationPage() {
 
   const open = db.payouts.find((p) => p.id === openId)
   const openDonations = open ? db.donations.filter((d) => open.donationIds.includes(d.id)) : []
+  const variance = open ? payoutVariance(open) : null
 
   const columns: Column<SquarePayout>[] = [
     {
@@ -48,6 +52,13 @@ export function ReconciliationPage() {
     { key: 'gross', header: 'Gross', align: 'right', cell: (p) => <Money value={p.gross} /> },
     { key: 'fee', header: 'Fee', align: 'right', hideOnMobile: true, cell: (p) => <Money value={p.fee} tone="muted" /> },
     { key: 'net', header: 'Net', align: 'right', primary: true, cell: (p) => <Money value={p.net} tone="in" /> },
+    {
+      key: 'bank',
+      header: 'Bank credit',
+      align: 'right',
+      hideOnMobile: true,
+      cell: (p) => <Money value={p.bankCredit ?? p.net} tone={payoutVariance(p).bank === 0 ? undefined : 'out'} />,
+    },
     { key: 'status', header: 'Status', cell: (p) => <StatusBadge status={p.status} /> },
   ]
 
@@ -58,7 +69,7 @@ export function ReconciliationPage() {
       <PageHeader
         phase="control"
         title="Reconciliation"
-        description="Square payouts set against the ledger. Anything that does not tie out stays here until someone explains it."
+        description="Each day's Square payout is set against the bank credit and the ledger. Anything that does not tie out stays here until someone explains it."
       >
         <Tabs
           value={tab}
@@ -114,26 +125,42 @@ export function ReconciliationPage() {
 
       <Drawer
         open={Boolean(open)}
-        onClose={() => setOpenId(null)}
+        onClose={() => {
+          setOpenId(null)
+          setResolution('')
+        }}
         title={open?.payoutRef ?? ''}
         subtitle={open ? `${formatDate(open.date)} · ${open.donationIds.length} donations` : undefined}
         width="lg"
         footer={
-          open && open.status !== 'matched' ? (
-            <Button
-              fullWidth
-              icon={<Link2 className="size-4" aria-hidden />}
-              onClick={() => {
-                matchPayout(open.id, currentUser(personaId))
-                setOpenId(null)
-              }}
-            >
-              Mark reconciled
-            </Button>
+          open && open.status !== 'matched' && variance ? (
+            <div className="flex flex-col gap-3">
+              {variance.tied ? null : (
+                <Textarea
+                  label="Why does it differ?"
+                  placeholder="e.g. Chargeback fee of $18.40 confirmed on the Square statement."
+                  value={resolution}
+                  onChange={(e) => setResolution(e.target.value)}
+                  hint="At least 10 characters. It is written to the audit log."
+                />
+              )}
+              <Button
+                fullWidth
+                icon={<Link2 className="size-4" aria-hidden />}
+                disabled={!variance.tied && resolution.trim().length < 10}
+                onClick={() => {
+                  matchPayout(open.id, currentUser(personaId), resolution)
+                  setOpenId(null)
+                  setResolution('')
+                }}
+              >
+                {variance.tied ? 'Mark reconciled' : 'Reconcile with explained difference'}
+              </Button>
+            </div>
           ) : null
         }
       >
-        {open ? (
+        {open && variance ? (
           <div className="flex flex-col gap-5">
             <StatusBadge status={open.status} />
 
@@ -141,6 +168,47 @@ export function ReconciliationPage() {
               <div className="rounded-lg border border-marigold-50 bg-marigold-50 px-3 py-2.5 text-[13px] text-marigold-500">
                 {open.note}
               </div>
+            ) : null}
+
+            <Card className="bg-sandal-100">
+              <h3 className="mb-3 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Three-way tie</h3>
+              <dl className="space-y-2 text-[14px]">
+                <div className="flex justify-between">
+                  <dt className="text-stone-700">Square net payout</dt>
+                  <dd>
+                    <Money value={open.net} />
+                  </dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-stone-700">
+                    Bank credit
+                    {open.bankRef ? <span className="ml-2 font-mono text-[12px] text-stone-500">{open.bankRef}</span> : null}
+                  </dt>
+                  <dd className="flex items-center gap-2">
+                    {variance.bank !== 0 ? <Money value={variance.bank} tone="out" className="text-[13px]" /> : null}
+                    <Money value={open.bankCredit ?? open.net} />
+                  </dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-stone-700">Ledger</dt>
+                  <dd className="flex items-center gap-2">
+                    {variance.ledger !== 0 ? <Money value={variance.ledger} tone="out" className="text-[13px]" /> : null}
+                    <Money value={open.ledgerNet ?? open.net} />
+                  </dd>
+                </div>
+                <div className="flex justify-between border-t border-sandal-200 pt-2">
+                  <dt className="font-medium text-stone-900">Result</dt>
+                  <dd className={variance.tied ? 'font-medium text-tulsi-700' : 'font-medium text-danger-600'}>
+                    {variance.tied ? 'Ties out' : 'Does not tie out'}
+                  </dd>
+                </div>
+              </dl>
+            </Card>
+
+            {open.resolution ? (
+              <p className="rounded-lg bg-sandal-100 px-3 py-2.5 text-[13px] text-stone-700">
+                <span className="font-medium">Accepted difference:</span> {open.resolution}
+              </p>
             ) : null}
 
             <Card className="bg-sandal-100">

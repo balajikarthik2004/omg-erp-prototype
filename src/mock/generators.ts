@@ -1,11 +1,12 @@
 import { addDays, differenceInDays, endOfMonth, format, startOfMonth, subDays, subMonths } from 'date-fns'
 
-import { APP } from '@/config'
+import { APP, DEFAULT_THRESHOLDS } from '@/config'
 import { createRng, SEED } from '@/lib/rng'
 import type {
   Allotment,
   AuditEvent,
   BudgetHead,
+  CashCount,
   Donation,
   DonationCategory,
   DonationLine,
@@ -16,6 +17,7 @@ import type {
   InventoryRequest,
   JournalEntry,
   PaymentMethod,
+  PeriodClose,
   POStatus,
   Project,
   PurchaseOrder,
@@ -23,6 +25,7 @@ import type {
   SquarePayout,
   Supplier,
   SupplierInvoice,
+  Tenant,
 } from '@/types'
 import {
   BUDGET_SPECS,
@@ -35,6 +38,7 @@ import {
   INVENTORY_SECTORS,
   PROJECTS,
   SUPPLIER_SPECS,
+  USERS,
 } from './seed'
 
 export interface Database {
@@ -53,7 +57,13 @@ export interface Database {
   invoices: SupplierInvoice[]
   payouts: SquarePayout[]
   audit: AuditEvent[]
+  cashCounts: CashCount[]
+  periodCloses: PeriodClose[]
+  tenants: Tenant[]
 }
+
+/** The one customer the demo ships with. */
+export const DEMO_TENANT_ID = 'ten-demo'
 
 /* --------------------------------------------------------------- helpers */
 
@@ -126,9 +136,11 @@ function makeDonors(rng: ReturnType<typeof createRng>, now: Date): Donor[] {
 /* ------------------------------------------------------------- donations */
 
 const CATEGORY_WEIGHT: [DonationCategory, number][] = [
-  ['hundi', 52],
-  ['pooja', 27],
-  ['activity', 13],
+  ['hundi', 44],
+  ['pooja', 25],
+  ['event', 7],
+  ['membership', 4],
+  ['activity', 12],
   ['project', 8],
 ]
 
@@ -211,16 +223,18 @@ function makeDonations(
       const dow = date.getDay()
 
       const sectorId = rng.weighted(SECTOR_WEIGHT)
-      const category = rng.weighted(
+      const wantedCategory = rng.weighted(
         FESTIVAL_MONTHS.has(monthStart.getMonth())
-          ? ([['hundi', 46], ['pooja', 26], ['activity', 20], ['project', 8]] as [DonationCategory, number][])
+          ? ([['hundi', 40], ['pooja', 24], ['event', 10], ['membership', 2], ['activity', 16], ['project', 8]] as [DonationCategory, number][])
           : CATEGORY_WEIGHT,
       )
 
-      const pool = CATALOG.filter((c) => c.sectorId === sectorId && c.category === category && c.active)
-      const item = pool.length > 0 ? rng.pick(pool) : rng.pick(CATALOG.filter((c) => c.sectorId === sectorId))
+      const pool = CATALOG.filter((c) => c.sectorId === sectorId && c.category === wantedCategory && c.active)
+      const item = pool.length > 0 ? rng.pick(pool) : rng.pick(CATALOG.filter((c) => c.sectorId === sectorId && c.category === 'hundi'))
+      const category = item.category
 
-      const amount = item.price ?? pickAmount(rng, category)
+      const tickets = item.ticketed ? rng.weighted([[1, 45], [2, 30], [3, 15], [4, 10]] as [number, number][]) : 1
+      const amount = (item.price ?? pickAmount(rng, category)) * tickets
 
       // Sunday hundi cash is counted and entered on the Monday.
       const sundayCash = dow === 1 && category === 'hundi' && rng.chance(0.28)
@@ -251,6 +265,8 @@ function makeDonations(
 
       const donor = rng.pick(donors)
       const line: DonationLine = { itemId: item.id, category, amount }
+      if (item.ticketed) line.quantity = tickets
+      if (item.recurring) line.recurring = item.recurring
       if (item.needsDedication) {
         line.dedication = {
           name: donor.anonymous ? 'Anonymous devotee' : donor.name,
@@ -261,8 +277,8 @@ function makeDonations(
       }
 
       const ageDays = differenceInDays(now, date)
-      let status: Donation['status'] =
-        ageDays > 20 ? 'reconciled' : ageDays > 6 ? 'receipted' : 'paid'
+      // Seed gifts already carry a receipt and a journal entry, so none of them is left at "paid".
+      let status: Donation['status'] = ageDays > 20 ? 'reconciled' : 'receipted'
       if (ageDays > 60 && rng.chance(0.55)) status = 'allotted'
 
       const year = date.getFullYear()
@@ -284,6 +300,7 @@ function makeDonations(
           ? `sqpmt_${Math.floor(rng.next() * 1e9).toString(36).toUpperCase().padStart(7, '0')}`
           : undefined,
         fundId: item.fundId,
+        webhookAt: isCardType ? iso(new Date(date.getTime() + 4_000)) : undefined,
       })
     }
   }
@@ -700,10 +717,17 @@ function makePayouts(rng: ReturnType<typeof createRng>, donations: Donation[], n
     (d) => d.squarePaymentId && d.status !== 'failed' && d.status !== 'refunded',
   )
 
-  // Weekly batches over the last 16 weeks.
-  for (let w = 15; w >= 0; w--) {
+  // Weekly batches for older weeks, daily payouts for the last three weeks.
+  const windows: { end: Date; start: Date; key: string }[] = []
+  for (let w = 15; w >= 3; w--) {
     const end = subDays(now, w * 7)
-    const start = subDays(end, 7)
+    windows.push({ end, start: subDays(end, 7), key: `w${w}` })
+  }
+  for (let d = 20; d >= 1; d--) {
+    const end = subDays(now, d)
+    windows.push({ end, start: subDays(end, 1), key: `d${d}` })
+  }
+  for (const { end, start, key } of windows) {
     const batch = cardDonations.filter((d) => {
       const t = new Date(d.createdAt).getTime()
       return t >= start.getTime() && t < end.getTime()
@@ -713,7 +737,7 @@ function makePayouts(rng: ReturnType<typeof createRng>, donations: Donation[], n
     const gross = batch.reduce((s, d) => s + d.gross, 0)
     const fee = batch.reduce((s, d) => s + d.fee, 0)
     payouts.push({
-      id: `payout-${w}`,
+      id: `payout-${key}`,
       payoutRef: `SQ-PO-${format(end, 'yyyyMMdd')}-${String(rng.int(100, 999))}`,
       date: iso(end),
       gross,
@@ -721,6 +745,10 @@ function makePayouts(rng: ReturnType<typeof createRng>, donations: Donation[], n
       net: gross - fee,
       donationIds: batch.map((d) => d.id),
       status: 'matched',
+      ledgerNet: gross - fee,
+      bankCredit: gross - fee,
+      bankRef: `ACH-${format(end, 'MMdd')}-${rng.int(10000, 99999)}`,
+      bankDate: iso(addDays(end, 1)),
     })
   }
 
@@ -733,7 +761,13 @@ function makePayouts(rng: ReturnType<typeof createRng>, donations: Donation[], n
   payouts.slice(-4, -1).forEach((payout, i) => {
     payout.status = i === 1 ? 'partial' : 'unmatched'
     payout.note = unmatchedNotes[i]
-    if (i === 0) payout.net -= 1840
+    // Each one breaks on a different side of the three-way tie.
+    if (i === 0) payout.bankCredit = payout.net - 1840
+    if (i === 1) payout.bankCredit = Math.round(payout.net * 0.55)
+    if (i === 2) {
+      const missing = donations.filter((d) => payout.donationIds.slice(0, 2).includes(d.id))
+      payout.ledgerNet = payout.net - missing.reduce((s, d) => s + d.net, 0)
+    }
   })
 
   return payouts.reverse()
@@ -982,6 +1016,7 @@ export function generateDatabase(now = new Date()): Database {
   const { purchaseOrders, goodsReceipts, invoices } = makePurchaseOrders(rng, suppliers, budgets, now)
 
   forceRealCases(purchaseOrders, goodsReceipts, invoices, now)
+  stageReleaseCase(invoices)
 
   // Budget effects follow the same rules the store applies to live actions.
   const COMMITTED: POStatus[] = ['approved', 'sent', 'partially_received', 'received', 'invoiced', 'payment_pending']
@@ -1046,25 +1081,105 @@ export function generateDatabase(now = new Date()): Database {
 
   const journal = makeJournal(donations, allotments, purchaseOrders, invoices, funds, openingByFund)
   const audit = makeAudit(rng, purchaseOrders, allotments, now)
+  const cashCounts = makeCashCounts(now)
+  const periodCloses = makePeriodCloses(now)
+  const tenants = makeTenants(now)
 
   const inventory = INVENTORY.map((item) => ({ ...item }))
   const projects: Project[] = PROJECTS.map((p) => ({ ...p }))
 
+  const stamp = <T extends { tenantId?: string }>(rows: T[]): T[] =>
+    rows.map((r) => ({ ...r, tenantId: DEMO_TENANT_ID }))
+
   return {
     donors,
-    donations,
+    donations: stamp(donations),
     funds,
     projects,
-    journal,
+    journal: stamp(journal),
     budgets,
-    allotments,
+    allotments: stamp(allotments),
     inventory,
     inventoryRequests,
     suppliers,
-    purchaseOrders,
+    purchaseOrders: stamp(purchaseOrders),
     goodsReceipts,
-    invoices,
+    invoices: stamp(invoices),
     payouts,
-    audit,
+    audit: stamp(audit),
+    cashCounts,
+    periodCloses,
+    tenants,
   }
+}
+
+/* ------------------------------------------------ flow-alignment seed data */
+
+/** One invoice that is fully approved and waiting for someone to release the money. */
+function stageReleaseCase(invoices: SupplierInvoice[]): void {
+  const candidate = invoices.find((inv) => inv.status === 'payment_pending' && inv.approvals.every((a) => a.decision !== 'rejected'))
+  if (!candidate) return
+  candidate.approvals = candidate.approvals.map((step) => ({
+    ...step,
+    userId: step.role === 'trustee' ? 'u-tru' : step.role === 'ca_partner' ? 'u-cap' : 'u-cas',
+    decision: 'approved' as const,
+    at: candidate.date,
+  }))
+  candidate.status = 'approved'
+}
+
+/** Counter cash waiting for the second person to confirm the count. */
+function makeCashCounts(now: Date): CashCount[] {
+  const at = (hoursAgo: number) => iso(new Date(now.getTime() - hoursAgo * 3_600_000))
+  return [
+    { id: 'cc-seed-1', sectorId: 'temple', itemId: 'cat-tmp-hundi', amount: 184_200, note: 'Sunday hundi, main sanctum. Notes and coins counted together.', countedBy: 'u-store', countedAt: at(20), status: 'pending' },
+    { id: 'cc-seed-2', sectorId: 'temple', itemId: 'cat-tmp-hundi', amount: 61_500, note: 'Annadhanam hall box.', countedBy: 'u-adm', countedAt: at(44), status: 'pending' },
+    { id: 'cc-seed-3', sectorId: 'sangam', itemId: 'cat-sgm-support', amount: 38_000, note: 'Cash collected at the Sunday class counter.', countedBy: 'u-store', countedAt: at(70), status: 'pending' },
+  ]
+}
+
+/** Twelve months of period state. The last month is still open for the CA to close. */
+function makePeriodCloses(now: Date): PeriodClose[] {
+  const closes: PeriodClose[] = []
+  for (let i = 11; i >= 0; i--) {
+    const start = startOfMonth(subMonths(now, i))
+    const closedAt = addDays(endOfMonth(start), 4)
+    const closed = i >= 2
+    closes.push({
+      id: `pc-${format(start, 'yyyy-MM')}`,
+      period: format(start, 'yyyy-MM'),
+      status: closed ? 'closed' : 'open',
+      preparedBy: closed ? 'u-cas' : undefined,
+      preparedAt: closed ? iso(subDays(closedAt, 1)) : undefined,
+      closedBy: closed ? 'u-cap' : undefined,
+      closedAt: closed ? iso(closedAt) : undefined,
+    })
+  }
+  return closes
+}
+
+function makeTenants(now: Date): Tenant[] {
+  return [
+    {
+      id: DEMO_TENANT_ID,
+      name: 'Kaveri Heritage',
+      address: '14 Temple Street, Madurai 625001',
+      domain: 'give.kaveritrust.org',
+      brand: 'kumkum',
+      logoText: 'KH',
+      verticals: ['temple', 'sevalaya', 'sangam'],
+      modules: ['donations', 'reconciliation', 'budgets', 'inventory', 'procurement', 'payments', 'reports'],
+      squareLocationId: 'L8K2M4Q7ZP',
+      thresholds: { ...DEFAULT_THRESHOLDS },
+      users: USERS.filter((u) => u.role !== 'devotee' && u.role !== 'super_admin').map((u) => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.role,
+      })),
+      catalogLoaded: true,
+      status: 'live',
+      createdAt: iso(subMonths(now, 14)),
+    },
+  ]
 }

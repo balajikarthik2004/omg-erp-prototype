@@ -1,19 +1,28 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Loader2, ShoppingBag, Trash2 } from 'lucide-react'
+import { Check, Loader2, ShoppingBag, Trash2 } from 'lucide-react'
 
 import { APP, SECTORS } from '@/config'
+import { cn } from '@/lib/cn'
 import { formatDate } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Input } from '@/components/ui/Input'
 import { Money } from '@/components/ui/Money'
 import { api } from '@/mock/api'
-import { CATALOG } from '@/mock/seed'
+import { CATALOG, SQUARE_WEBHOOK } from '@/mock/seed'
 import { useDb } from '@/store/db'
 import { cartTotal, currentUser, useSession } from '@/store/session'
 import type { PaymentMethod } from '@/types'
 import { PaymentSheet } from './PaymentSheet'
+
+/** The donation is only Paid once Square's verified webhook arrives. Then the receipt is issued. */
+const PAY_STAGES = [
+  'Card authorised with Square',
+  'Waiting for the Square webhook',
+  'Webhook verified, payment marked Paid',
+  'Receipt issued, journal posted to the fund',
+]
 
 export function CheckoutPage() {
   const navigate = useNavigate()
@@ -22,21 +31,33 @@ export function CheckoutPage() {
   const clearCart = useSession((s) => s.clearCart)
   const personaId = useSession((s) => s.personaId)
   const recordDonation = useDb((s) => s.recordDonation)
+  const confirmDonationPayment = useDb((s) => s.confirmDonationPayment)
+  const issueReceipt = useDb((s) => s.issueReceipt)
 
   const [donorName, setDonorName] = useState('')
   const [busy, setBusy] = useState(false)
+  const [stage, setStage] = useState(0)
 
   const gross = cartTotal(cart)
 
   async function pay(method: PaymentMethod) {
     setBusy(true)
-    await api.process(1500)
+    setStage(0)
     const donation = recordDonation({
       lines: cart,
       method,
       donorName: donorName.trim() || 'Devotee',
       actor: currentUser(personaId),
     })
+    await api.process(900)
+    setStage(1)
+    await api.process(900)
+    confirmDonationPayment(donation.id, SQUARE_WEBHOOK)
+    setStage(2)
+    await api.process(700)
+    issueReceipt(donation.id, SQUARE_WEBHOOK)
+    setStage(3)
+    await api.process(500)
     clearCart()
     setBusy(false)
     navigate(`/receipt/${encodeURIComponent(donation.id)}`)
@@ -94,6 +115,14 @@ export function CheckoutPage() {
                         For {line.dedication.name}
                         {line.dedication.nakshatra ? ` · ${line.dedication.nakshatra}` : ''}
                         {line.dedication.gothram ? ` · ${line.dedication.gothram} gothram` : ''}
+                      </p>
+                    ) : null}
+                    {line.quantity && line.quantity > 1 ? (
+                      <p className="mt-1.5 text-[13px] text-stone-700">{line.quantity} tickets</p>
+                    ) : null}
+                    {line.recurring ? (
+                      <p className="text-[13px] text-stone-500">
+                        Renews {line.recurring === 'annual' ? 'every year' : 'every month'}
                       </p>
                     ) : null}
                     {line.serviceDate ? (
@@ -157,10 +186,35 @@ export function CheckoutPage() {
       </div>
 
       {busy ? (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-sandal-50/90">
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-sandal-50/95 px-6"
+        >
           <Loader2 className="size-7 animate-spin text-kumkum-600" aria-hidden />
           <p className="font-display text-[22px] text-stone-900">Processing your offering</p>
-          <p className="text-[14px] text-stone-500">Please do not close this page.</p>
+          <ol className="flex w-full max-w-xs flex-col gap-2.5">
+            {PAY_STAGES.map((label, i) => (
+              <li
+                key={label}
+                className={cn(
+                  'flex items-center gap-2.5 text-[14px] transition-colors duration-200',
+                  i < stage ? 'text-tulsi-700' : i === stage ? 'font-medium text-stone-900' : 'text-stone-500',
+                )}
+              >
+                <span
+                  className={cn(
+                    'flex size-5 shrink-0 items-center justify-center rounded-full border',
+                    i < stage ? 'border-tulsi-500 bg-tulsi-50' : i === stage ? 'border-turmeric-500' : 'border-sandal-300',
+                  )}
+                >
+                  {i < stage ? <Check className="size-3" aria-hidden /> : null}
+                </span>
+                {label}
+              </li>
+            ))}
+          </ol>
+          <p className="text-[13px] text-stone-500">Please do not close this page.</p>
         </div>
       ) : null}
     </div>

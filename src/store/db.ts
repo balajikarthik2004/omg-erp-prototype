@@ -1,17 +1,36 @@
 import { create } from 'zustand'
 
-import { APP, MATCH_TOLERANCE, OVERRIDE_REASON_MIN, requiredApprovals } from '@/config'
+import { format } from 'date-fns'
+
+import { APP, applyThresholds, MATCH_TOLERANCE, OVERRIDE_REASON_MIN, requiredApprovals } from '@/config'
 import { formatMoney } from '@/lib/format'
 import { toast } from '@/lib/toast'
-import { api, type Database } from '@/mock/api'
-import { CATALOG, userById, userName } from '@/mock/seed'
+import { api, loadDatabase, type Database } from '@/mock/api'
+import { DEMO_TENANT_ID } from '@/mock/generators'
+import { BUDGET_SPECS, CATALOG, FUNDS, INVENTORY, PROJECTS, userById, userName } from '@/mock/seed'
+import {
+  cashConfirmBlock,
+  cashCountBlock,
+  closedPeriodError,
+  inventoryApprovalBlock,
+  payoutVariance,
+  periodApproveBlock,
+  periodChecks,
+  periodLabel,
+  periodPrepareBlock,
+  periodSequenceError,
+  releaseBlock,
+} from './rules'
 import type {
   Allotment,
+  ApprovalKind,
   ApprovalStep,
   AuditEvent,
   BudgetHead,
+  CashCount,
   Donation,
   DonationLine,
+  Donor,
   Fund,
   GoodsReceipt,
   InventoryRequest,
@@ -19,21 +38,29 @@ import type {
   PaymentMethod,
   POLine,
   PurchaseOrder,
+  Role,
   SectorId,
   SupplierInvoice,
+  Tenant,
   User,
 } from '@/types'
 import type { CartLine } from './session'
 
-const EMPTY: Database = {
+const EMPTY_DATA = {
   donors: [], donations: [], funds: [], projects: [], journal: [], budgets: [], allotments: [],
   inventory: [], inventoryRequests: [], suppliers: [], purchaseOrders: [], goodsReceipts: [],
-  invoices: [], payouts: [], audit: [],
-}
+  invoices: [], payouts: [], audit: [], cashCounts: [], periodCloses: [],
+} satisfies Omit<Database, 'tenants'>
+
+const EMPTY: Database = { ...EMPTY_DATA, tenants: [] }
 
 export interface DbState extends Database {
   ready: boolean
   loading: boolean
+  /** The customer whose books are on screen. */
+  activeTenantId: string
+  /** Other customers' books, parked while one is active. */
+  vault: Record<string, Omit<Database, 'tenants'>>
 
   load: () => Promise<void>
 
@@ -44,6 +71,16 @@ export interface DbState extends Database {
     donorName: string
     actor: User
   }) => Donation
+  confirmDonationPayment: (id: string, actor: User) => void
+  issueReceipt: (id: string, actor: User) => void
+  createCashCount: (input: {
+    sectorId: SectorId
+    itemId: string
+    amount: number
+    note?: string
+    actor: User
+  }) => { ok: boolean; error?: string }
+  decideCashCount: (id: string, decision: 'approved' | 'rejected', actor: User, comment?: string) => void
 
   /* control */
   createAllotment: (input: {
@@ -54,7 +91,11 @@ export interface DbState extends Database {
     actor: User
   }) => { ok: boolean; error?: string }
   decideAllotment: (id: string, decision: 'approved' | 'rejected', actor: User, comment?: string) => void
-  matchPayout: (payoutId: string, actor: User) => void
+  matchPayout: (payoutId: string, actor: User, resolution?: string) => void
+  preparePeriodClose: (period: string, actor: User, note?: string) => { ok: boolean; error?: string }
+  decidePeriodClose: (period: string, decision: 'approved' | 'rejected', actor: User, comment?: string) => void
+  reopenPeriod: (period: string, actor: User, reason: string) => { ok: boolean; error?: string }
+  escalateTask: (kind: ApprovalKind, id: string, actor: User) => void
 
   /* spend */
   createInventoryRequest: (input: {
@@ -84,6 +125,14 @@ export interface DbState extends Database {
   recordInvoice: (poId: string, lines: POLine[], invoiceNo: string, actor: User) => void
   addCaComment: (invoiceId: string, comment: string, actor: User) => void
   decidePayment: (invoiceId: string, decision: 'approved' | 'rejected', actor: User, comment?: string) => void
+  releasePayment: (invoiceId: string, actor: User) => void
+
+  /* onboarding */
+  onboardTenant: (
+    input: Omit<Tenant, 'id' | 'createdAt' | 'status' | 'catalogLoaded'>,
+    actor: User,
+  ) => { ok: boolean; error?: string; tenantId?: string }
+  switchTenant: (id: string) => void
 }
 
 /* --------------------------------------------------------------- helpers */
@@ -110,6 +159,7 @@ function audit(
     sectorId: extra?.sectorId,
     before: extra?.before,
     after: extra?.after,
+    tenantId: useDb.getState().activeTenantId,
   }
 }
 
@@ -121,7 +171,115 @@ function journalEntry(
   lines: JournalEntry['lines'],
   sourceRef: string,
 ): JournalEntry {
-  return { id, date, sectorId, memo, lines, sourceRef }
+  return { id, date, sectorId, memo, lines, sourceRef, tenantId: useDb.getState().activeTenantId }
+}
+
+
+const SECTOR_CODE: Record<SectorId, string> = { temple: 'TMP', sevalaya: 'SEV', sangam: 'SGM' }
+
+/** Four-eyes needs every approver role filled before a customer can go live. */
+const REQUIRED_TENANT_ROLES: Role[] = ['sector_admin', 'ca_staff', 'ca_partner', 'trustee']
+
+export type TenantData = Omit<Database, 'tenants'>
+
+function pickTenantData(s: DbState): TenantData {
+  return {
+    donors: s.donors, donations: s.donations, funds: s.funds, projects: s.projects, journal: s.journal,
+    budgets: s.budgets, allotments: s.allotments, inventory: s.inventory, inventoryRequests: s.inventoryRequests,
+    suppliers: s.suppliers, purchaseOrders: s.purchaseOrders, goodsReceipts: s.goodsReceipts, invoices: s.invoices,
+    payouts: s.payouts, audit: s.audit, cashCounts: s.cashCounts, periodCloses: s.periodCloses,
+  }
+}
+
+/** Template load for a new customer: their verticals' funds, budget heads, stock and the supplier master, all at zero. */
+function buildTenantData(tenant: Tenant): TenantData {
+  const year = new Date().getFullYear()
+  const now = new Date()
+  const key = (d: Date) => format(d, 'yyyy-MM')
+  const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  return {
+    ...EMPTY_DATA,
+    funds: FUNDS.filter((f) => tenant.verticals.includes(f.sectorId)).map((f) => ({ ...f, balance: 0 })),
+    projects: PROJECTS.filter((p) => tenant.verticals.includes(p.sectorId)).map((p) => ({ ...p, raised: 0 })),
+    budgets: BUDGET_SPECS.filter((b) => tenant.verticals.includes(b.sectorId)).map((b) => ({
+      id: b.id, sectorId: b.sectorId, name: b.name, period: `FY ${year}`, fundId: b.fundId,
+      allocated: 0, committed: 0, spent: 0, projectId: b.projectId,
+    })),
+    inventory: INVENTORY.filter((i) => tenant.verticals.includes(i.sectorId)).map((i) => ({ ...i, stock: 0 })),
+    suppliers: loadDatabase().suppliers.filter((s) => s.status !== 'blocked'),
+    periodCloses: [prev, now].map((d) => ({ id: `pc-${key(d)}`, period: key(d), status: 'open' as const })),
+  }
+}
+
+function ensureDonor(donors: Donor[], id: string, name: string, anonymous: boolean): Donor[] {
+  if (donors.some((d) => d.id === id)) return donors
+  return [...donors, { id, name, email: '', phone: '', city: '', anonymous, since: new Date().toISOString() }]
+}
+
+function nextReceiptNo(donations: Donation[], sectorId: SectorId): string {
+  const year = new Date().getFullYear()
+  const seq = donations.filter((d) => d.sectorId === sectorId && d.receiptNo !== PENDING_RECEIPT).length + 2000
+  return `RCP-${SECTOR_CODE[sectorId]}-${String(year).slice(2)}-${String(seq).padStart(5, '0')}`
+}
+
+/** A receipt number is only issued once the payment is Paid. Until then the donation carries this placeholder. */
+export const PENDING_RECEIPT = '—'
+
+function buildDonation(
+  existing: Donation[],
+  input: {
+    sectorId: SectorId
+    fundId: string
+    method: PaymentMethod
+    donorId: string
+    status: Donation['status']
+    lines: DonationLine[]
+  },
+): Donation {
+  const gross = input.lines.reduce((sum, l) => sum + l.amount, 0)
+  const isCardType = input.method === 'card' || input.method === 'apple_pay' || input.method === 'google_pay'
+  const fee = isCardType ? cardFee(gross) : 0
+  const year = new Date().getFullYear()
+  return {
+    id: `DN-${year}-${String(existing.length + 1).padStart(6, '0')}`,
+    receiptNo: PENDING_RECEIPT,
+    sectorId: input.sectorId,
+    donorId: input.donorId,
+    lines: input.lines,
+    gross,
+    fee,
+    net: gross - fee,
+    method: input.method,
+    status: input.status,
+    createdAt: new Date().toISOString(),
+    squarePaymentId: isCardType ? `sqpmt_${Date.now().toString(36).toUpperCase()}` : undefined,
+    fundId: input.fundId,
+    tenantId: useDb.getState().activeTenantId,
+  }
+}
+
+/** Fund balance, project total and journal for a donation that now has a receipt. */
+function postDonation(s: DbState, donation: Donation): Pick<DbState, 'funds' | 'projects' | 'journal'> {
+  const { fundId, gross, fee, net } = donation
+  return {
+    projects: s.projects.map((p) => (p.fundId === fundId ? { ...p, raised: p.raised + net } : p)),
+    funds: s.funds.map((f) => (f.id === fundId ? { ...f, balance: f.balance + net } : f)),
+    journal: [
+      journalEntry(
+        `je-${donation.id}`,
+        new Date().toISOString(),
+        donation.sectorId,
+        `Donation received — ${donation.receiptNo}`,
+        [
+          { account: 'Bank', fundId, debit: net, credit: 0 },
+          ...(fee > 0 ? [{ account: 'Payment processing fees', fundId, debit: fee, credit: 0 }] : []),
+          { account: 'Donation income', fundId, debit: 0, credit: gross },
+        ],
+        donation.id,
+      ),
+      ...s.journal,
+    ],
+  }
 }
 
 function cardFee(gross: number): number {
@@ -234,12 +392,16 @@ export const useDb = create<DbState>((set, get) => ({
   ...EMPTY,
   ready: false,
   loading: false,
+  activeTenantId: DEMO_TENANT_ID,
+  vault: {},
 
   load: async () => {
     if (get().ready || get().loading) return
     set({ loading: true })
     const data = await api.fetchAll()
-    set({ ...data, ready: true, loading: false })
+    const tenant = data.tenants.find((t) => t.id === DEMO_TENANT_ID)
+    if (tenant) applyThresholds(tenant.thresholds.staffMax, tenant.thresholds.partnerMax)
+    set({ ...data, ready: true, loading: false, activeTenantId: DEMO_TENANT_ID, vault: {} })
   },
 
   /* ------------------------------------------------------------ collect */
@@ -248,91 +410,153 @@ export const useDb = create<DbState>((set, get) => ({
     const state = get()
     const sectorId = lines[0]?.sectorId ?? 'temple'
     const first = CATALOG.find((c) => c.id === lines[0]?.itemId)
-    const fundId = first?.fundId ?? 'fund-tmp-gen'
-    const gross = lines.reduce((sum, l) => sum + l.amount, 0)
-    const isCardType = method === 'card' || method === 'apple_pay' || method === 'google_pay'
-    const fee = isCardType ? cardFee(gross) : 0
-
-    const year = new Date().getFullYear()
-    const seq = state.donations.length + 1
-    const code = sectorId === 'temple' ? 'TMP' : sectorId === 'sevalaya' ? 'SEV' : 'SGM'
-    const receiptSeq = state.donations.filter((d) => d.sectorId === sectorId).length + 2000
-
-    const donationLines: DonationLine[] = lines.map((l) => {
-      const item = CATALOG.find((c) => c.id === l.itemId)
-      return {
+    const donation = buildDonation(state.donations, {
+      sectorId,
+      fundId: first?.fundId ?? 'fund-tmp-gen',
+      method,
+      donorId: 'dnr-live',
+      status: 'pending',
+      lines: lines.map((l) => ({
         itemId: l.itemId,
-        category: item?.category ?? 'hundi',
+        category: CATALOG.find((c) => c.id === l.itemId)?.category ?? 'hundi',
         amount: l.amount,
         dedication: l.dedication,
-      }
+        quantity: l.quantity,
+        recurring: l.recurring,
+      })),
     })
 
-    const donation: Donation = {
-      id: `DN-${year}-${String(seq).padStart(6, '0')}`,
-      receiptNo: `RCP-${code}-${String(year).slice(2)}-${String(receiptSeq).padStart(5, '0')}`,
-      sectorId,
-      donorId: 'dnr-live',
-      lines: donationLines,
-      gross,
-      fee,
-      net: gross - fee,
-      method,
-      status: 'receipted',
-      createdAt: new Date().toISOString(),
-      squarePaymentId: isCardType ? `sqpmt_${Date.now().toString(36).toUpperCase()}` : undefined,
-      fundId,
-    }
-
-    set((s) => {
-      const donors = s.donors.some((d) => d.id === 'dnr-live')
-        ? s.donors
-        : [
-            ...s.donors,
-            {
-              id: 'dnr-live',
-              name: donorName || 'You',
-              email: '',
-              phone: '',
-              city: '',
-              anonymous: false,
-              since: new Date().toISOString(),
-            },
-          ]
-
-      // Project totals move with the gift.
-      const projects = s.projects.map((p) =>
-        p.fundId === fundId ? { ...p, raised: p.raised + donation.net } : p,
-      )
-
-      return {
-        donors,
-        projects,
-        donations: [donation, ...s.donations],
-        funds: s.funds.map((f) => (f.id === fundId ? { ...f, balance: f.balance + donation.net } : f)),
-        journal: [
-          journalEntry(
-            `je-${donation.id}`,
-            donation.createdAt,
-            sectorId,
-            `Donation received — ${donation.receiptNo}`,
-            [
-              { account: 'Bank', fundId, debit: donation.net, credit: 0 },
-              ...(fee > 0 ? [{ account: 'Payment processing fees', fundId, debit: fee, credit: 0 }] : []),
-              { account: 'Donation income', fundId, debit: 0, credit: gross },
-            ],
-            donation.id,
-          ),
-          ...s.journal,
-        ],
-        audit: [
-          audit(actor, 'Recorded donation', 'Donation', donation.receiptNo, { sectorId, after: 'receipted' }),
-          ...s.audit,
-        ],
-      }
-    })
+    set((s) => ({
+      donors: ensureDonor(s.donors, 'dnr-live', donorName || 'You', false),
+      donations: [donation, ...s.donations],
+      audit: [
+        audit(actor, 'Payment started, waiting for Square', 'Donation', donation.id, { sectorId, after: 'pending' }),
+        ...s.audit,
+      ],
+    }))
 
     return donation
+  },
+
+  /** Step 4: the verified Square webhook is the only thing that makes a donation Paid. */
+  confirmDonationPayment: (id, actor) => {
+    const donation = get().donations.find((d) => d.id === id)
+    if (!donation || donation.status !== 'pending') return
+    const at = new Date().toISOString()
+    set((s) => ({
+      donations: s.donations.map((d) => (d.id === id ? { ...d, status: 'paid', webhookAt: at } : d)),
+      audit: [
+        audit(actor, 'Square webhook verified, payment marked Paid', 'Donation', donation.id, {
+          sectorId: donation.sectorId,
+          before: 'pending',
+          after: 'paid',
+        }),
+        ...s.audit,
+      ],
+    }))
+    toast.success('Payment confirmed', `Square confirmed ${formatMoney(donation.gross)} for ${donation.id}. It is now Paid.`)
+  },
+
+  /** Step 5: receipt number issued and the journal posted to the right fund. */
+  issueReceipt: (id, actor) => {
+    const donation = get().donations.find((d) => d.id === id)
+    if (!donation || donation.status !== 'paid' || donation.receiptNo !== PENDING_RECEIPT) return
+    const receiptNo = nextReceiptNo(get().donations, donation.sectorId)
+    const receipted: Donation = { ...donation, receiptNo, status: 'receipted' }
+    set((s) => ({
+      donations: s.donations.map((d) => (d.id === id ? receipted : d)),
+      ...postDonation(s, receipted),
+      audit: [
+        audit(actor, 'Receipt issued and journal posted', 'Donation', receiptNo, {
+          sectorId: donation.sectorId,
+          before: 'paid',
+          after: 'receipted',
+        }),
+        ...s.audit,
+      ],
+    }))
+  },
+
+  createCashCount: ({ sectorId, itemId, amount, note, actor }) => {
+    const block = cashCountBlock(actor)
+    if (block) return { ok: false, error: block }
+    const item = CATALOG.find((c) => c.id === itemId)
+    if (!item || item.sectorId !== sectorId) return { ok: false, error: 'Pick an offering that belongs to this sector.' }
+    if (!(amount > 0)) return { ok: false, error: 'Enter the amount you counted, above zero.' }
+
+    const count: CashCount = {
+      id: `cc-${Date.now().toString(36)}`,
+      sectorId,
+      itemId,
+      amount,
+      note: note?.trim() || undefined,
+      countedBy: actor.id,
+      countedAt: new Date().toISOString(),
+      status: 'pending',
+    }
+    set((s) => ({
+      cashCounts: [count, ...s.cashCounts],
+      audit: [audit(actor, 'Recorded counter cash count', 'Cash count', count.id, { sectorId, after: 'pending' }), ...s.audit],
+    }))
+    toast.success('Count recorded', `${formatMoney(amount)} is waiting for a second person to confirm it.`)
+    return { ok: true }
+  },
+
+  decideCashCount: (id, decision, actor, comment) => {
+    const state = get()
+    const count = state.cashCounts.find((c) => c.id === id)
+    if (!count || count.status !== 'pending') return
+
+    if (decision === 'approved') {
+      const block = cashConfirmBlock(actor, count)
+      if (block) {
+        toast.warning('Cannot confirm', block)
+        return
+      }
+      const at = new Date().toISOString()
+      const closed = closedPeriodError(state.periodCloses, at)
+      if (closed) {
+        toast.danger('Period is closed', closed)
+        return
+      }
+      const item = CATALOG.find((c) => c.id === count.itemId)
+      const base = buildDonation(state.donations, {
+        sectorId: count.sectorId,
+        fundId: item?.fundId ?? 'fund-tmp-gen',
+        method: 'cash',
+        donorId: 'dnr-counter',
+        status: 'receipted',
+        lines: [{ itemId: count.itemId, category: item?.category ?? 'hundi', amount: count.amount }],
+      })
+      const donation: Donation = { ...base, receiptNo: nextReceiptNo(state.donations, count.sectorId), cashCountId: id }
+      set((s) => ({
+        donors: ensureDonor(s.donors, 'dnr-counter', 'Counter cash', true),
+        donations: [donation, ...s.donations],
+        cashCounts: s.cashCounts.map((c) =>
+          c.id === id ? { ...c, status: 'confirmed', confirmedBy: actor.id, confirmedAt: at, donationId: donation.id } : c,
+        ),
+        ...postDonation(s, donation),
+        audit: [
+          audit(actor, 'Confirmed counter cash count', 'Cash count', id, { sectorId: count.sectorId, before: 'pending', after: 'confirmed' }),
+          ...s.audit,
+        ],
+      }))
+      toast.success('Cash count confirmed', `${formatMoney(count.amount)} posted to ${item?.name ?? 'the fund'} as ${donation.receiptNo}.`)
+      return
+    }
+
+    set((s) => ({
+      cashCounts: s.cashCounts.map((c) =>
+        c.id === id
+          ? { ...c, status: 'rejected', confirmedBy: actor.id, confirmedAt: new Date().toISOString(), note: comment ? `${c.note ?? ''} Rejected: ${comment}`.trim() : c.note }
+          : c,
+      ),
+      audit: [
+        audit(actor, 'Rejected counter cash count', 'Cash count', id, { sectorId: count.sectorId, before: 'pending', after: 'rejected' }),
+        ...s.audit,
+      ],
+    }))
+    toast.danger('Cash count rejected', 'The count will be redone. Nothing was posted.')
   },
 
   /* ------------------------------------------------------------ control */
@@ -362,6 +586,7 @@ export const useDb = create<DbState>((set, get) => ({
       preparedAt: new Date().toISOString(),
       status: 'pending',
       approvals: requiredApprovals(amount).map((role) => ({ role })),
+      tenantId: state.activeTenantId,
     }
 
     set((s) => ({
@@ -391,6 +616,11 @@ export const useDb = create<DbState>((set, get) => ({
     }
 
     const at = new Date().toISOString()
+    const closed = decision === 'approved' ? closedPeriodError(state.periodCloses, at) : null
+    if (closed) {
+      toast.danger('Period is closed', closed)
+      return
+    }
     const approvals = allotment.approvals.map((step) =>
       step.role === actor.role && !step.decision
         ? { ...step, userId: actor.id, decision, at, comment }
@@ -453,22 +683,159 @@ export const useDb = create<DbState>((set, get) => ({
     }
   },
 
-  matchPayout: (payoutId, actor) => {
-    const payout = get().payouts.find((p) => p.id === payoutId)
+  matchPayout: (payoutId, actor, resolution) => {
+    const state = get()
+    const payout = state.payouts.find((p) => p.id === payoutId)
     if (!payout) return
+
+    const closed = closedPeriodError(state.periodCloses, payout.date)
+    if (closed) {
+      toast.danger('Period is closed', closed)
+      return
+    }
+
+    const variance = payoutVariance(payout)
+    if (!variance.tied && (resolution ?? '').trim().length < 10) {
+      toast.danger(
+        'Does not tie out',
+        'Square, the bank and the ledger disagree. Write down why (at least 10 characters) before you reconcile it.',
+      )
+      return
+    }
+
     set((s) => ({
-      payouts: s.payouts.map((p) => (p.id === payoutId ? { ...p, status: 'matched', note: undefined } : p)),
+      payouts: s.payouts.map((p) =>
+        p.id === payoutId
+          ? { ...p, status: 'matched', note: undefined, resolution: variance.tied ? undefined : resolution?.trim() }
+          : p,
+      ),
       donations: s.donations.map((d) =>
-        payout.donationIds.includes(d.id) && d.status !== 'refunded' && d.status !== 'failed'
+        payout.donationIds.includes(d.id) && d.status !== 'refunded' && d.status !== 'failed' && d.status !== 'pending'
           ? { ...d, status: 'reconciled' }
           : d,
       ),
-      audit: [audit(actor, 'Reconciled Square payout', 'Payout', payout.payoutRef, { after: 'matched' }), ...s.audit],
+      audit: [
+        audit(actor, 'Reconciled Square payout', 'Payout', payout.payoutRef, {
+          before: payout.status,
+          after: variance.tied ? 'matched' : `matched with explained difference: ${resolution?.trim()}`,
+        }),
+        ...s.audit,
+      ],
     }))
     toast.success(
       `${payout.payoutRef} reconciled`,
       `${payout.donationIds.length} donations marked reconciled, ${formatMoney(payout.net)} net.`,
     )
+  },
+
+  preparePeriodClose: (period, actor, note) => {
+    const state = get()
+    const row = state.periodCloses.find((p) => p.period === period)
+    if (!row || row.status !== 'open') return { ok: false, error: 'This period is not open.' }
+    const roleBlock = periodPrepareBlock(actor)
+    if (roleBlock) return { ok: false, error: roleBlock }
+    const sequence = periodSequenceError(state.periodCloses, period)
+    if (sequence) return { ok: false, error: sequence }
+    const blockers = periodChecks(state, period).filter((c) => c.blocking && !c.ok)
+    if (blockers.length > 0) {
+      return { ok: false, error: `Clear these first: ${blockers.map((b) => b.label.toLowerCase()).join('; ')}.` }
+    }
+
+    const at = new Date().toISOString()
+    set((s) => ({
+      periodCloses: s.periodCloses.map((p) =>
+        p.period === period ? { ...p, status: 'pending', preparedBy: actor.id, preparedAt: at, note: note?.trim() || undefined } : p,
+      ),
+      audit: [audit(actor, 'Prepared period close', 'Period', period, { before: 'open', after: 'pending' }), ...s.audit],
+    }))
+    toast.success(`${periodLabel(period)} sent for close`, 'The CA Partner must review and lock it.')
+    return { ok: true }
+  },
+
+  decidePeriodClose: (period, decision, actor, comment) => {
+    const state = get()
+    const row = state.periodCloses.find((p) => p.period === period)
+    if (!row || row.status !== 'pending') return
+
+    if (decision === 'approved') {
+      const block = periodApproveBlock(actor, row)
+      if (block) {
+        toast.warning('Cannot close', block)
+        return
+      }
+      const blockers = periodChecks(state, period).filter((c) => c.blocking && !c.ok)
+      if (blockers.length > 0) {
+        toast.danger('Cannot close', `Something changed since this was prepared: ${blockers.map((b) => b.label.toLowerCase()).join('; ')}.`)
+        return
+      }
+    }
+
+    const at = new Date().toISOString()
+    set((s) => ({
+      periodCloses: s.periodCloses.map((p) =>
+        p.period === period
+          ? decision === 'approved'
+            ? { ...p, status: 'closed', closedBy: actor.id, closedAt: at }
+            : { ...p, status: 'open', note: comment?.trim() ? `Returned: ${comment.trim()}` : p.note }
+          : p,
+      ),
+      audit: [
+        audit(actor, decision === 'approved' ? 'Closed and locked period' : 'Returned period close', 'Period', period, {
+          before: 'pending',
+          after: decision === 'approved' ? 'closed' : 'open',
+        }),
+        ...s.audit,
+      ],
+    }))
+    if (decision === 'approved') {
+      toast.success(`${periodLabel(period)} closed`, 'The month is locked. Nothing more can be posted to it.')
+    } else {
+      toast.info(`${periodLabel(period)} returned`, 'The period is open again for the preparer to fix.')
+    }
+  },
+
+  reopenPeriod: (period, actor, reason) => {
+    const state = get()
+    const row = state.periodCloses.find((p) => p.period === period)
+    if (!row || row.status !== 'closed') return { ok: false, error: 'This period is not closed.' }
+    if (actor.role !== 'ca_partner') return { ok: false, error: 'Only a CA Partner can reopen a closed period.' }
+    if (reason.trim().length < 10) return { ok: false, error: 'Give a reason of at least 10 characters.' }
+    const later = state.periodCloses.find((p) => p.period > period && p.status === 'closed')
+    if (later) return { ok: false, error: `${periodLabel(later.period)} is also closed. Reopen the latest closed month first.` }
+
+    set((s) => ({
+      periodCloses: s.periodCloses.map((p) =>
+        p.period === period
+          ? { ...p, status: 'open', closedBy: undefined, closedAt: undefined, preparedBy: undefined, preparedAt: undefined, note: `Reopened: ${reason.trim()}` }
+          : p,
+      ),
+      audit: [audit(actor, 'Reopened closed period', 'Period', period, { before: 'closed', after: `open (${reason.trim()})` }), ...s.audit],
+    }))
+    toast.warning(`${periodLabel(period)} reopened`, 'This is recorded in the audit log.')
+    return { ok: true }
+  },
+
+  escalateTask: (kind, id, actor) => {
+    const at = new Date().toISOString()
+    if (kind === 'allotment') {
+      const a = get().allotments.find((x) => x.id === id)
+      if (!a || a.status !== 'pending') return
+      set((s) => ({
+        allotments: s.allotments.map((x) => (x.id === id ? { ...x, status: 'escalated', escalatedAt: at } : x)),
+        audit: [audit(actor, 'Escalated overdue allotment to the Trustee', 'Allotment', id, { sectorId: a.sectorId, before: 'pending', after: 'escalated' }), ...s.audit],
+      }))
+    } else if (kind === 'inventory_request') {
+      const r = get().inventoryRequests.find((x) => x.id === id)
+      if (!r || r.status !== 'pending') return
+      set((s) => ({
+        inventoryRequests: s.inventoryRequests.map((x) => (x.id === id ? { ...x, status: 'escalated', escalatedAt: at } : x)),
+        audit: [audit(actor, 'Escalated overdue store request to the Trustee', 'Inventory request', id, { sectorId: r.sectorId, before: 'pending', after: 'escalated' }), ...s.audit],
+      }))
+    } else {
+      toast.info('Not escalated', 'Only allotments and store requests can be escalated.')
+      return
+    }
+    toast.warning('Escalated', 'The Trustee has been notified. The item stays in the inbox, marked escalated.')
   },
 
   /* -------------------------------------------------------------- spend */
@@ -498,8 +865,9 @@ export const useDb = create<DbState>((set, get) => ({
   decideInventoryRequest: (id, decision, actor) => {
     const request = get().inventoryRequests.find((r) => r.id === id)
     if (!request) return
-    if (decision === 'approved' && request.requestedBy === actor.id) {
-      toast.warning('Cannot approve', 'You prepared this. Another approver must review it.')
+    const block = inventoryApprovalBlock(actor, request)
+    if (block) {
+      toast.warning('Cannot decide', block)
       return
     }
     const item = get().inventory.find((i) => i.id === request.itemId)
@@ -508,7 +876,7 @@ export const useDb = create<DbState>((set, get) => ({
       audit: [
         audit(actor, decision === 'approved' ? 'Approved inventory request' : 'Rejected inventory request', 'Inventory request', id, {
           sectorId: request.sectorId,
-          before: 'pending',
+          before: request.status,
           after: decision,
         }),
         ...s.audit,
@@ -571,6 +939,7 @@ export const useDb = create<DbState>((set, get) => ({
       approvals: requiredApprovals(total).map((role) => ({ role })),
       requestId,
       expectedBy,
+      tenantId: state.activeTenantId,
     }
 
     set((s) => ({
@@ -750,6 +1119,7 @@ export const useDb = create<DbState>((set, get) => ({
       status: 'received',
       preparedBy: actor.id,
       approvals: requiredApprovals(total).map((role) => ({ role })),
+      tenantId: get().activeTenantId,
     }
     set((s) => ({
       invoices: [invoice, ...s.invoices],
@@ -801,59 +1171,40 @@ export const useDb = create<DbState>((set, get) => ({
       step.role === actor.role && !step.decision ? { ...step, userId: actor.id, decision, at, comment } : step,
     )
     const fullyApproved = decision === 'approved' && approvals.every((s) => s.decision === 'approved')
+    const nextStatus: SupplierInvoice['status'] =
+      decision === 'rejected' ? 'rejected' : fullyApproved ? 'approved' : 'payment_pending'
     const head = state.budgets.find((b) => b.id === po.budgetHeadId)
 
+    // Approval alone moves no money. Budget and ledger change only on release.
     set((s) => ({
-      invoices: s.invoices.map((i) =>
-        i.id === invoiceId
-          ? { ...i, approvals, status: decision === 'rejected' ? 'rejected' : fullyApproved ? 'paid' : 'payment_pending' }
-          : i,
-      ),
+      invoices: s.invoices.map((i) => (i.id === invoiceId ? { ...i, approvals, status: nextStatus } : i)),
       purchaseOrders: s.purchaseOrders.map((p) =>
         p.id === po.id
           ? {
               ...p,
-              status: decision === 'rejected' ? p.status : fullyApproved ? 'paid' : 'payment_pending',
+              status: decision === 'rejected' ? p.status : 'payment_pending',
               timeline: [
                 ...p.timeline,
                 {
                   at,
                   by: actor.id,
-                  action: decision === 'rejected' ? 'Payment rejected' : fullyApproved ? 'Payment approved and released' : 'Payment approval step recorded',
+                  action:
+                    decision === 'rejected'
+                      ? 'Payment rejected'
+                      : fullyApproved
+                        ? 'Payment approved, waiting for release'
+                        : 'Payment approval step recorded',
                   note: comment,
                 },
               ],
             }
           : p,
       ),
-      budgets: fullyApproved
-        ? s.budgets.map((b) =>
-            b.id === po.budgetHeadId
-              ? { ...b, committed: Math.max(0, b.committed - po.total), spent: b.spent + invoice.total }
-              : b,
-          )
-        : s.budgets,
-      journal: fullyApproved
-        ? [
-            journalEntry(
-              `je-${invoice.id}`,
-              at,
-              invoice.sectorId,
-              `Supplier payment — ${invoice.invoiceNo} against ${po.poNo}`,
-              [
-                { account: 'Programme expenditure', fundId: head?.fundId ?? po.budgetHeadId, debit: invoice.total, credit: 0 },
-                { account: 'Bank', fundId: head?.fundId ?? po.budgetHeadId, debit: 0, credit: invoice.total },
-              ],
-              invoice.id,
-            ),
-            ...s.journal,
-          ]
-        : s.journal,
       audit: [
         audit(actor, decision === 'approved' ? 'Approved supplier payment' : 'Rejected supplier payment', 'Invoice', invoice.invoiceNo, {
           sectorId: invoice.sectorId,
-          before: 'payment_pending',
-          after: decision === 'rejected' ? 'rejected' : fullyApproved ? 'paid' : 'payment_pending',
+          before: invoice.status,
+          after: nextStatus,
         }),
         ...s.audit,
       ],
@@ -863,13 +1214,133 @@ export const useDb = create<DbState>((set, get) => ({
       toast.danger(`${invoice.invoiceNo} rejected`, comment || 'Payment will not be released.')
     } else if (fullyApproved) {
       toast.success(
-        `${invoice.invoiceNo} paid`,
-        `${formatMoney(invoice.total)} released. ${formatMoney(po.total)} released from committed, ${formatMoney(invoice.total)} recorded as spent on ${head?.name ?? 'the budget head'}.`,
+        `${invoice.invoiceNo} approved`,
+        `${formatMoney(invoice.total)} to ${head?.name ?? 'the supplier'} is approved. A different person must release it.`,
       )
     } else {
       const next = approvals.find((s) => !s.decision)
       toast.info('Your approval is recorded', `Now waiting on ${roleLabel(next?.role ?? 'the next approver')}.`)
     }
+  },
+
+  /** Step 14: release. Committed falls, Spent rises, the ledger posts. */
+  releasePayment: (invoiceId, actor) => {
+    const state = get()
+    const invoice = state.invoices.find((i) => i.id === invoiceId)
+    if (!invoice || invoice.status !== 'approved') return
+    const po = state.purchaseOrders.find((p) => p.id === invoice.poId)
+    if (!po) return
+
+    const block = releaseBlock(actor, invoice)
+    if (block) {
+      toast.warning('Cannot release', block)
+      return
+    }
+    const at = new Date().toISOString()
+    const closed = closedPeriodError(state.periodCloses, at)
+    if (closed) {
+      toast.danger('Period is closed', closed)
+      return
+    }
+    const head = state.budgets.find((b) => b.id === po.budgetHeadId)
+
+    set((s) => ({
+      invoices: s.invoices.map((i) => (i.id === invoiceId ? { ...i, status: 'paid', releasedBy: actor.id, releasedAt: at } : i)),
+      purchaseOrders: s.purchaseOrders.map((p) =>
+        p.id === po.id
+          ? { ...p, status: 'paid', timeline: [...p.timeline, { at, by: actor.id, action: 'Payment released', note: invoice.invoiceNo }] }
+          : p,
+      ),
+      budgets: s.budgets.map((b) =>
+        b.id === po.budgetHeadId ? { ...b, committed: Math.max(0, b.committed - po.total), spent: b.spent + invoice.total } : b,
+      ),
+      journal: [
+        journalEntry(
+          `je-${invoice.id}`,
+          at,
+          invoice.sectorId,
+          `Supplier payment — ${invoice.invoiceNo} against ${po.poNo}`,
+          [
+            { account: 'Programme expenditure', fundId: head?.fundId ?? po.budgetHeadId, debit: invoice.total, credit: 0 },
+            { account: 'Bank', fundId: head?.fundId ?? po.budgetHeadId, debit: 0, credit: invoice.total },
+          ],
+          invoice.id,
+        ),
+        ...s.journal,
+      ],
+      audit: [
+        audit(actor, 'Released supplier payment', 'Invoice', invoice.invoiceNo, {
+          sectorId: invoice.sectorId,
+          before: 'approved',
+          after: 'paid',
+        }),
+        ...s.audit,
+      ],
+    }))
+
+    toast.success(
+      `${invoice.invoiceNo} released`,
+      `${formatMoney(invoice.total)} paid. ${formatMoney(po.total)} left committed, ${formatMoney(invoice.total)} recorded as spent on ${head?.name ?? 'the budget head'}.`,
+    )
+  },
+
+  /* ------------------------------------------------------------ tenants */
+
+  onboardTenant: (input, actor) => {
+    const state = get()
+    const name = input.name.trim()
+    if (name.length < 3) return { ok: false, error: 'Give the customer a name of at least 3 characters.' }
+    if (input.verticals.length === 0) return { ok: false, error: 'Enable at least one vertical.' }
+    if (input.modules.length === 0) return { ok: false, error: 'Enable at least one module.' }
+    if (input.squareLocationId.trim().length < 6) return { ok: false, error: 'Enter the Square location ID.' }
+    if (!(input.thresholds.staffMax > 0) || input.thresholds.partnerMax <= input.thresholds.staffMax) {
+      return { ok: false, error: 'The Partner threshold must be higher than the Staff threshold.' }
+    }
+    const domain = input.domain.trim().toLowerCase()
+    if (domain.length < 4 || !domain.includes('.')) return { ok: false, error: 'Enter a domain such as give.example.org.' }
+    if (state.tenants.some((t) => t.domain === domain)) return { ok: false, error: `${domain} is already used by another customer.` }
+    const missing = REQUIRED_TENANT_ROLES.filter((role) => !input.users.some((u) => u.role === role))
+    if (missing.length > 0) {
+      return {
+        ok: false,
+        error: `Add a user for ${missing.map(roleLabel).join(', ')}. Four-eyes control needs every approver role filled.`,
+      }
+    }
+
+    const id = `ten-${Date.now().toString(36)}`
+    const tenant: Tenant = {
+      ...input,
+      id,
+      name,
+      domain,
+      catalogLoaded: true,
+      status: 'live',
+      createdAt: new Date().toISOString(),
+    }
+    const data = buildTenantData(tenant)
+
+    set((s) => ({
+      tenants: [...s.tenants, tenant],
+      vault: { ...s.vault, [id]: data },
+      audit: [audit(actor, 'Onboarded customer', 'Tenant', name, { after: 'live' }), ...s.audit],
+    }))
+    toast.success(
+      `${name} is live`,
+      `${data.funds.length} funds, ${data.budgets.length} budget heads and ${data.inventory.length} stock items loaded from the template.`,
+    )
+    return { ok: true, tenantId: id }
+  },
+
+  switchTenant: (id) => {
+    const s = get()
+    if (id === s.activeTenantId) return
+    const target = s.tenants.find((t) => t.id === id)
+    const data = s.vault[id]
+    if (!target || !data) return
+    const vault = { ...s.vault, [s.activeTenantId]: pickTenantData(s) }
+    applyThresholds(target.thresholds.staffMax, target.thresholds.partnerMax)
+    set({ ...data, vault, activeTenantId: id })
+    toast.info(`Switched to ${target.name}`, 'Every screen now shows only this customer’s books, users and approvers.')
   },
 }))
 

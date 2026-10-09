@@ -55,6 +55,13 @@ const TONES: Record<StatusTone, { className: string; icon: LucideIcon; dotClass:
 
 /** Every status string in the app maps to exactly one tone + label here. */
 const MAP: Record<string, { label: string; tone: StatusTone; icon?: LucideIcon }> = {
+  // flow alignment
+  awaiting_webhook: { label: 'Awaiting Square', tone: 'pending', icon: Hourglass },
+  awaiting_release: { label: 'Approved, awaiting release', tone: 'committed' },
+  open: { label: 'Open', tone: 'info' },
+  confirmed: { label: 'Confirmed', tone: 'done' },
+  live: { label: 'Live', tone: 'done' },
+
   // generic
   draft: { label: 'Draft', tone: 'draft' },
   pending: { label: 'Pending approval', tone: 'pending' },

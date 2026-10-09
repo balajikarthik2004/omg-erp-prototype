@@ -1,6 +1,18 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Boxes, ClipboardCheck, Landmark, Receipt, ShoppingCart, type LucideIcon } from 'lucide-react'
+import {
+  ArrowRight,
+  ArrowUpCircle,
+  BookLock,
+  Boxes,
+  Banknote,
+  ClipboardCheck,
+  Coins,
+  Landmark,
+  Receipt,
+  ShoppingCart,
+  type LucideIcon,
+} from 'lucide-react'
 
 import { cn } from '@/lib/cn'
 import { formatAge, formatDue } from '@/lib/format'
@@ -13,9 +25,9 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { Tabs } from '@/components/ui/Tabs'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { SectorChip } from '@/components/layout/PhaseChip'
-import { approvalBlock, roleLabel, useDb } from '@/store/db'
+import { roleLabel, useDb } from '@/store/db'
 import { currentUser, useSession } from '@/store/session'
-import { approvalTasks, approvalsForTask } from '@/store/selectors'
+import { approvalTasks, taskBlock } from '@/store/selectors'
 import { userName } from '@/mock/seed'
 import type { ApprovalKind, ApprovalTask } from '@/types'
 
@@ -23,6 +35,9 @@ const GROUPS: { kind: ApprovalKind; label: string; icon: LucideIcon }[] = [
   { kind: 'allotment', label: 'Fund allotments', icon: Landmark },
   { kind: 'purchase_order', label: 'Purchase orders', icon: ShoppingCart },
   { kind: 'payment', label: 'Supplier payments', icon: Receipt },
+  { kind: 'payment_release', label: 'Payments to release', icon: Banknote },
+  { kind: 'cash_count', label: 'Counter cash counts', icon: Coins },
+  { kind: 'period_close', label: 'Period close', icon: BookLock },
   { kind: 'inventory_request', label: 'Inventory requests', icon: Boxes },
   { kind: 'refund', label: 'Refunds and disputes', icon: Receipt },
 ]
@@ -33,6 +48,7 @@ export function ApprovalsPage() {
   const personaId = useSession((s) => s.personaId)
   const user = currentUser(personaId)
   const [tab, setTab] = useState('mine')
+  const escalateTask = useDb((s) => s.escalateTask)
 
   const tasks = useMemo(() => (db.ready ? approvalTasks(db, filter) : []), [db, filter])
 
@@ -40,7 +56,7 @@ export function ApprovalsPage() {
     () =>
       tasks.map((task) => ({
         task,
-        block: approvalBlock(user, task.preparedBy, task.amount, approvalsForTask(db, task)),
+        block: taskBlock(db, task, user),
       })),
     [tasks, user, db],
   )
@@ -49,6 +65,11 @@ export function ApprovalsPage() {
   const rows = tab === 'mine' ? mine : withBlock
 
   const overdue = tasks.filter((t) => formatDue(t.dueAt).overdue).length
+  const escalatable = withBlock.filter(
+    ({ task }) =>
+      (task.kind === 'allotment' || task.kind === 'inventory_request') && !task.escalated && formatDue(task.dueAt).overdue,
+  )
+  const canEscalate = user.role !== 'devotee' && user.role !== 'super_admin'
   const totalValue = tasks.reduce((s, t) => s + t.amount, 0)
 
   return (
@@ -57,6 +78,17 @@ export function ApprovalsPage() {
         phase="control"
         title="Approvals"
         description={`Everything waiting on a decision. You are signed in as ${roleLabel(user.role)}.`}
+        actions={
+          canEscalate && escalatable.length > 0 ? (
+            <Button
+              variant="secondary"
+              icon={<ArrowUpCircle className="size-4" aria-hidden />}
+              onClick={() => escalatable.forEach(({ task }) => escalateTask(task.kind, task.id, user))}
+            >
+              Escalate {escalatable.length} overdue to the Trustee
+            </Button>
+          ) : undefined
+        }
       >
         <Tabs
           value={tab}
@@ -117,7 +149,18 @@ export function ApprovalsPage() {
                   <ul className="flex flex-col gap-3">
                     {items.map(({ task, block }) => (
                       <li key={`${task.kind}-${task.id}`}>
-                        <TaskRow task={task} block={block} />
+                        <TaskRow
+                          task={task}
+                          block={block}
+                          onEscalate={
+                            canEscalate &&
+                            !task.escalated &&
+                            (task.kind === 'allotment' || task.kind === 'inventory_request') &&
+                            formatDue(task.dueAt).overdue
+                              ? () => escalateTask(task.kind, task.id, user)
+                              : undefined
+                          }
+                        />
                       </li>
                     ))}
                   </ul>
@@ -131,7 +174,15 @@ export function ApprovalsPage() {
   )
 }
 
-function TaskRow({ task, block }: { task: ApprovalTask; block: string | null }) {
+function TaskRow({
+  task,
+  block,
+  onEscalate,
+}: {
+  task: ApprovalTask
+  block: string | null
+  onEscalate?: () => void
+}) {
   const due = formatDue(task.dueAt)
   return (
     <Card
@@ -142,7 +193,13 @@ function TaskRow({ task, block }: { task: ApprovalTask; block: string | null }) 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-[15px] font-medium text-stone-900">{task.title}</h3>
-            <SectorChip sectorId={task.sectorId} />
+            {task.kind !== 'period_close' ? <SectorChip sectorId={task.sectorId} /> : null}
+            {task.escalated ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-marigold-50 bg-marigold-50 px-2 py-0.5 text-[12px] font-medium text-marigold-500">
+                <ArrowUpCircle className="size-3.5" aria-hidden />
+                Escalated to the Trustee
+              </span>
+            ) : null}
           </div>
           <p className="mt-1 text-[14px] text-stone-700">{task.subtitle}</p>
           <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px]">
@@ -155,9 +212,18 @@ function TaskRow({ task, block }: { task: ApprovalTask; block: string | null }) 
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-2">
-          <Money value={task.amount} className="text-[18px]" />
+          {task.kind !== 'period_close' ? <Money value={task.amount} className="text-[18px]" /> : null}
+          {onEscalate ? (
+            <Button size="sm" variant="ghost" icon={<ArrowUpCircle className="size-4" aria-hidden />} onClick={onEscalate}>
+              Escalate
+            </Button>
+          ) : null}
           <Link to={task.href}>
-            <Button size="sm" variant={block ? 'secondary' : 'primary'}>
+            <Button
+              size="sm"
+              variant={block ? 'secondary' : 'primary'}
+              rightIcon={<ArrowRight className="size-3.5" aria-hidden />}
+            >
               {block ? 'View' : 'Review and decide'}
             </Button>
           </Link>

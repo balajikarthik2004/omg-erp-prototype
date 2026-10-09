@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, PackageCheck, Send, Sparkles, TriangleAlert, XCircle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, PackageCheck, Send, Sparkles, TriangleAlert, XCircle } from 'lucide-react'
 
 import { approvalTierLabel } from '@/config'
 import { formatDate, formatDateTime, formatMoney } from '@/lib/format'
@@ -327,7 +327,7 @@ export function PurchaseOrderDetailPage() {
               </Button>
             ) : invoice ? (
               <Link to={`/console/payments?focus=${invoice.id}`}>
-                <Button fullWidth variant="secondary">
+                <Button fullWidth variant="secondary" rightIcon={<ArrowRight className="size-4" aria-hidden />}>
                   Open the payment for {invoice.invoiceNo}
                 </Button>
               </Link>

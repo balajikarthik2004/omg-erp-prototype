@@ -16,7 +16,7 @@ import { IncomeOutgoChart, SectorIncomeChart } from '@/components/charts/IncomeO
 import { UtilisationBars } from '@/components/charts/UtilisationBars'
 import { available, budgetHealth, useDb, utilisation } from '@/store/db'
 import { useSession } from '@/store/session'
-import { categoryBreakdown, inSector, methodBreakdown, monthlySeries } from '@/store/selectors'
+import { categoryBreakdown, fundFlow, inSector, methodBreakdown, monthlySeries } from '@/store/selectors'
 
 export function ReportsPage() {
   const db = useDb()
@@ -29,6 +29,7 @@ export function ReportsPage() {
       series,
       categories: categoryBreakdown(db, filter),
       methods: methodBreakdown(db, filter),
+      funds: fundFlow(db, filter),
       budgets: inSector(db.budgets, filter).slice().sort((a, b) => utilisation(b) - utilisation(a)),
       projects: inSector(db.projects, filter),
       income: series.reduce((s, p) => s + p.income, 0),
@@ -88,6 +89,54 @@ export function ReportsPage() {
           <Card>
             <CardHeader title="Income by sector" description="Stacked monthly, so the mix is visible." />
             <SectorIncomeChart data={data.series} height={300} />
+          </Card>
+
+          <Card>
+            <CardHeader
+              title="Income and outgo by fund"
+              description="What each fund received, what was allotted out of it, what its budget heads spent, and what is left."
+            />
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-[14px]">
+                <thead>
+                  <tr className="bg-sandal-100">
+                    {['Fund', 'Type'].map((h) => (
+                      <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">
+                        {h}
+                      </th>
+                    ))}
+                    {['Income', 'Allotted out', 'Spent', 'Balance'].map((h) => (
+                      <th key={h} className="px-3 py-2 text-right text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.funds.map((f) => (
+                    <tr key={f.id} className="border-t border-sandal-200">
+                      <td className="px-3 py-2.5 text-stone-900">
+                        {f.name}
+                        <span className="block text-[12px] text-stone-500">{SECTORS[f.sectorId].name}</span>
+                      </td>
+                      <td className="px-3 py-2.5 text-stone-700 capitalize">{f.type}</td>
+                      <td className="px-3 py-2.5 text-right">
+                        <Money value={f.income} tone="in" />
+                      </td>
+                      <td className="px-3 py-2.5 text-right">
+                        <Money value={f.allotted} />
+                      </td>
+                      <td className="px-3 py-2.5 text-right">
+                        <Money value={f.outgo} tone="out" />
+                      </td>
+                      <td className="px-3 py-2.5 text-right">
+                        <Money value={f.balance} className="font-medium" />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </Card>
 
           <div className="grid gap-6 xl:grid-cols-2">

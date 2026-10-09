@@ -1,6 +1,6 @@
 import { endOfMonth, format, isWithinInterval, startOfMonth, subMonths } from 'date-fns'
 
-import { CATEGORY_COLORS, SECTORS } from '@/config'
+import { CATEGORY_COLORS, CATEGORY_LABEL, SECTORS } from '@/config'
 import { CATALOG } from '@/mock/seed'
 import type {
   ApprovalTask,
@@ -12,6 +12,7 @@ import type {
   User,
 } from '@/types'
 import { available, approvalBlock, budgetHealth, type DbState } from './db'
+import { cashConfirmBlock, inventoryApprovalBlock, periodApproveBlock, releaseBlock } from './rules'
 import type { SectorFilter } from './session'
 
 export function inSector<T extends { sectorId: SectorId }>(rows: T[], filter: SectorFilter): T[] {
@@ -28,7 +29,7 @@ export function catalogName(itemId: string): string {
 
 /** Donations that actually represent money kept. */
 export function countedDonations(donations: Donation[]): Donation[] {
-  return donations.filter((d) => d.status !== 'failed' && d.status !== 'refunded')
+  return donations.filter((d) => d.status !== 'failed' && d.status !== 'refunded' && d.status !== 'pending')
 }
 
 /* ------------------------------------------------------------------- KPIs */
@@ -138,8 +139,11 @@ const DUE_DAYS: Record<ApprovalTask['kind'], number> = {
   allotment: 5,
   purchase_order: 3,
   payment: 7,
+  payment_release: 3,
   refund: 2,
   inventory_request: 4,
+  cash_count: 2,
+  period_close: 5,
 }
 
 function dueFrom(iso: string, kind: ApprovalTask['kind']): string {
@@ -151,7 +155,7 @@ export function approvalTasks(db: DbState, filter: SectorFilter): ApprovalTask[]
   const tasks: ApprovalTask[] = []
 
   for (const a of inSector(db.allotments, filter)) {
-    if (a.status !== 'pending') continue
+    if (a.status !== 'pending' && a.status !== 'escalated') continue
     const head = db.budgets.find((b) => b.id === a.toBudgetHeadId)
     tasks.push({
       kind: 'allotment',
@@ -164,6 +168,7 @@ export function approvalTasks(db: DbState, filter: SectorFilter): ApprovalTask[]
       preparedAt: a.preparedAt,
       dueAt: dueFrom(a.preparedAt, 'allotment'),
       href: `/console/allotments?focus=${a.id}`,
+      escalated: a.status === 'escalated',
     })
   }
 
@@ -202,7 +207,7 @@ export function approvalTasks(db: DbState, filter: SectorFilter): ApprovalTask[]
   }
 
   for (const req of inSector(db.inventoryRequests, filter)) {
-    if (req.status !== 'pending') continue
+    if (req.status !== 'pending' && req.status !== 'escalated') continue
     const item = db.inventory.find((i) => i.id === req.itemId)
     tasks.push({
       kind: 'inventory_request',
@@ -215,6 +220,56 @@ export function approvalTasks(db: DbState, filter: SectorFilter): ApprovalTask[]
       preparedAt: req.requestedAt,
       dueAt: dueFrom(req.requestedAt, 'inventory_request'),
       href: `/console/inventory?focus=${req.id}`,
+      escalated: req.status === 'escalated',
+    })
+  }
+
+  for (const inv of inSector(db.invoices, filter)) {
+    if (inv.status !== 'approved') continue
+    const supplier = db.suppliers.find((s) => s.id === inv.supplierId)
+    tasks.push({
+      kind: 'payment_release',
+      id: inv.id,
+      title: `Release ${inv.invoiceNo} · ${supplier?.name ?? 'Supplier'}`,
+      subtitle: 'Approved. A different person must release the money.',
+      sectorId: inv.sectorId,
+      amount: inv.total,
+      preparedBy: inv.preparedBy,
+      preparedAt: inv.date,
+      dueAt: inv.dueDate,
+      href: `/console/payments?focus=${inv.id}`,
+    })
+  }
+
+  for (const c of inSector(db.cashCounts, filter)) {
+    if (c.status !== 'pending') continue
+    tasks.push({
+      kind: 'cash_count',
+      id: c.id,
+      title: `Cash count · ${catalogName(c.itemId)}`,
+      subtitle: c.note ?? 'Counter cash waiting for a second person',
+      sectorId: c.sectorId,
+      amount: c.amount,
+      preparedBy: c.countedBy,
+      preparedAt: c.countedAt,
+      dueAt: dueFrom(c.countedAt, 'cash_count'),
+      href: `/console/cash-counts?focus=${c.id}`,
+    })
+  }
+
+  for (const p of db.periodCloses) {
+    if (p.status !== 'pending') continue
+    tasks.push({
+      kind: 'period_close',
+      id: p.period,
+      title: `Close books for ${p.period}`,
+      subtitle: p.note ?? 'Prepared by the CA team. The CA Partner locks the month.',
+      sectorId: 'temple',
+      amount: 0,
+      preparedBy: p.preparedBy ?? '',
+      preparedAt: p.preparedAt ?? new Date().toISOString(),
+      dueAt: dueFrom(p.preparedAt ?? new Date().toISOString(), 'period_close'),
+      href: `/console/period-close?focus=${p.period}`,
     })
   }
 
@@ -237,12 +292,35 @@ export function approvalTasks(db: DbState, filter: SectorFilter): ApprovalTask[]
   return tasks.sort((a, b) => a.dueAt.localeCompare(b.dueAt))
 }
 
+/** Why this person cannot act on a task, or null when they can. */
+export function taskBlock(db: DbState, task: ApprovalTask, user: User): string | null {
+  switch (task.kind) {
+    case 'inventory_request': {
+      const req = db.inventoryRequests.find((r) => r.id === task.id)
+      return req ? inventoryApprovalBlock(user, req) : null
+    }
+    case 'cash_count': {
+      const count = db.cashCounts.find((c) => c.id === task.id)
+      return count ? cashConfirmBlock(user, count) : null
+    }
+    case 'period_close': {
+      const row = db.periodCloses.find((p) => p.period === task.id)
+      return row ? periodApproveBlock(user, row) : null
+    }
+    case 'payment_release': {
+      const inv = db.invoices.find((i) => i.id === task.id)
+      return inv ? releaseBlock(user, inv) : null
+    }
+    case 'refund':
+      return user.role === 'ca_partner' || user.role === 'ca_staff' ? null : 'Refunds are decided by the CA team.'
+    default:
+      return approvalBlock(user, task.preparedBy, task.amount, approvalsForTask(db, task))
+  }
+}
+
 /** The subset this persona can actually act on right now. */
 export function actionableTasks(db: DbState, filter: SectorFilter, user: User): ApprovalTask[] {
-  return approvalTasks(db, filter).filter((task) => {
-    const approvals = approvalsForTask(db, task)
-    return approvalBlock(user, task.preparedBy, task.amount, approvals) === null
-  })
+  return approvalTasks(db, filter).filter((task) => taskBlock(db, task, user) === null)
 }
 
 export function approvalsForTask(db: DbState, task: ApprovalTask) {
@@ -252,6 +330,7 @@ export function approvalsForTask(db: DbState, task: ApprovalTask) {
     case 'purchase_order':
       return db.purchaseOrders.find((p) => p.id === task.id)?.approvals ?? []
     case 'payment':
+    case 'payment_release':
       return db.invoices.find((i) => i.id === task.id)?.approvals ?? []
     default:
       return []
@@ -289,16 +368,47 @@ export function budgetsNearLimit(db: DbState, filter: SectorFilter): BudgetHead[
 }
 
 export function categoryBreakdown(db: DbState, filter: SectorFilter) {
-  const totals: Record<string, number> = { hundi: 0, pooja: 0, activity: 0, project: 0 }
+  const totals: Record<string, number> = { hundi: 0, pooja: 0, event: 0, membership: 0, activity: 0, project: 0 }
   for (const d of countedDonations(inSector(db.donations, filter))) {
     for (const line of d.lines) totals[line.category] = (totals[line.category] ?? 0) + line.amount
   }
-  return [
-    { key: 'hundi', label: 'Hundi', value: totals.hundi!, color: CATEGORY_COLORS.hundi! },
-    { key: 'pooja', label: 'Pooja', value: totals.pooja!, color: CATEGORY_COLORS.pooja! },
-    { key: 'activity', label: 'Activities', value: totals.activity!, color: CATEGORY_COLORS.activity! },
-    { key: 'project', label: 'Projects', value: totals.project!, color: CATEGORY_COLORS.project! },
-  ]
+  return Object.keys(CATEGORY_LABEL).map((key) => ({
+    key,
+    label: CATEGORY_LABEL[key]!,
+    value: totals[key] ?? 0,
+    color: CATEGORY_COLORS[key]!,
+  }))
+}
+
+export interface FundFlowRow {
+  id: string
+  name: string
+  sectorId: SectorId
+  type: string
+  /** Net donations received into the fund. */
+  income: number
+  /** Approved allotments moved out to budget heads. */
+  allotted: number
+  /** Spent by the budget heads this fund pays for. */
+  outgo: number
+  balance: number
+}
+
+/** Income vs outgo by fund (deck step 15). */
+export function fundFlow(db: DbState, filter: SectorFilter): FundFlowRow[] {
+  const donations = countedDonations(inSector(db.donations, filter))
+  return inSector(db.funds, filter)
+    .map((fund) => ({
+      id: fund.id,
+      name: fund.name,
+      sectorId: fund.sectorId,
+      type: fund.type,
+      income: donations.filter((d) => d.fundId === fund.id).reduce((s, d) => s + d.net, 0),
+      allotted: db.allotments.filter((a) => a.status === 'approved' && a.fromFundId === fund.id).reduce((s, a) => s + a.amount, 0),
+      outgo: db.budgets.filter((b) => b.fundId === fund.id).reduce((s, b) => s + b.spent, 0),
+      balance: fund.balance,
+    }))
+    .sort((a, b) => b.income - a.income)
 }
 
 export function methodBreakdown(db: DbState, filter: SectorFilter) {
@@ -327,6 +437,28 @@ export function invoiceForPo(db: DbState, poId: string): SupplierInvoice | undef
 
 export function lowStock(db: DbState, filter: SectorFilter) {
   return inSector(db.inventory, filter).filter((i) => i.stock <= i.reorderLevel)
+}
+
+/**
+ * The signed-in devotee's gifts: this session's, plus the most generous seeded
+ * donor's history, so the annual statement has a real year behind it.
+ */
+export function myDonorIds(donations: Donation[], donors: { id: string; anonymous: boolean }[]): string[] {
+  const anonymous = new Set(donors.filter((d) => d.anonymous).map((d) => d.id))
+  const counts = new Map<string, number>()
+  for (const d of donations) {
+    if (d.donorId === 'dnr-live' || d.donorId === 'dnr-counter' || anonymous.has(d.donorId)) continue
+    counts.set(d.donorId, (counts.get(d.donorId) ?? 0) + 1)
+  }
+  let best = ''
+  let most = 0
+  for (const [id, n] of counts) {
+    if (n > most) {
+      best = id
+      most = n
+    }
+  }
+  return best ? ['dnr-live', best] : ['dnr-live']
 }
 
 export function donorName(db: DbState, donorId: string): string {

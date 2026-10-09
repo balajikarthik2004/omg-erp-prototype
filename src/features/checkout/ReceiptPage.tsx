@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
-import { CheckCircle2, Download, Printer } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Download, Printer } from 'lucide-react'
 
 import { SECTORS } from '@/config'
 import { formatDate, formatDateTime, formatMoney, titleCase } from '@/lib/format'
@@ -16,6 +16,7 @@ export function ReceiptPage() {
   const donations = useDb((s) => s.donations)
   const donors = useDb((s) => s.donors)
   const donation = donations.find((d) => d.id === donationId)
+  const tenantName = useDb((s) => s.tenants.find((t) => t.id === s.activeTenantId)?.name ?? 'OMG Platform')
 
   if (!donation) {
     return (
@@ -36,6 +37,7 @@ export function ReceiptPage() {
   const sector = SECTORS[donation.sectorId]
   const donor = donors.find((d) => d.id === donation.donorId)
   const fund = FUNDS.find((f) => f.id === donation.fundId)
+  const settled = donation.status !== 'pending' && donation.status !== 'paid'
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
@@ -44,10 +46,12 @@ export function ReceiptPage() {
           <CheckCircle2 className="size-7 text-tulsi-700" aria-hidden />
         </span>
         <h1 className="mt-4 font-display text-[30px] leading-tight text-stone-900 sm:text-[34px]">
-          Your offering is received
+          {settled ? 'Your offering is received' : donation.status === 'paid' ? 'Payment confirmed' : 'Waiting for Square'}
         </h1>
         <p className="mt-2 max-w-md text-[15px] text-stone-500">
-          A copy has gone to your email. Keep the receipt number for your records.
+          {settled
+            ? 'A copy has gone to your email. Keep the receipt number for your records.'
+            : 'The receipt is issued once Square confirms the payment.'}
         </p>
       </div>
 
@@ -59,7 +63,7 @@ export function ReceiptPage() {
             <div>
               <div className="flex items-center gap-2.5">
                 <OmgMark size={30} />
-                <span className="font-display text-[17px] tracking-wide">OMG Platform</span>
+                <span className="font-display text-[17px] tracking-wide">{tenantName}</span>
               </div>
               <p className="mt-4 font-display text-[24px] leading-tight sm:text-[27px]">
                 {sector.name}
@@ -100,7 +104,15 @@ export function ReceiptPage() {
                 return (
                   <tr key={`${line.itemId}-${i}`} className="border-t border-sandal-200">
                     <td className="py-3 pr-4">
-                      <p className="text-[15px] text-stone-900">{item?.name ?? line.itemId}</p>
+                      <p className="text-[15px] text-stone-900">
+                        {item?.name ?? line.itemId}
+                        {line.quantity && line.quantity > 1 ? ` × ${line.quantity} tickets` : ''}
+                      </p>
+                      {line.recurring ? (
+                        <p className="mt-1 text-[13px] text-stone-500">
+                          Renews {line.recurring === 'annual' ? 'every year' : 'every month'} until you stop it.
+                        </p>
+                      ) : null}
                       {line.dedication ? (
                         <p className="mt-1 text-[13px] leading-relaxed text-stone-500">
                           For {line.dedication.name}
@@ -160,7 +172,7 @@ export function ReceiptPage() {
           Print
         </Button>
         <Link to="/my/donations">
-          <Button variant="ghost">View all my donations</Button>
+          <Button variant="ghost" rightIcon={<ArrowRight className="size-4" aria-hidden />}>View all my donations</Button>
         </Link>
       </div>
     </div>

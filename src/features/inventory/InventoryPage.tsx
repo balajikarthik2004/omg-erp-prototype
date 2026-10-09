@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { PackagePlus, Search, TriangleAlert } from 'lucide-react'
+import { ArrowRight, PackagePlus, Search, TriangleAlert } from 'lucide-react'
 
 import { formatAge, formatDate } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
@@ -19,6 +19,7 @@ import { PageHeader } from '@/components/layout/PageHeader'
 import { SectorChip } from '@/components/layout/PhaseChip'
 import { MakerCheckerNote } from '@/components/flow/MakerCheckerNote'
 import { useDb } from '@/store/db'
+import { inventoryApprovalBlock } from '@/store/rules'
 import { currentUser, useSession } from '@/store/session'
 import { inSector, lowStock } from '@/store/selectors'
 import { userName } from '@/mock/seed'
@@ -50,13 +51,14 @@ export function InventoryPage() {
   }, [db.inventory, filter, query, category])
 
   const requests = useMemo(() => inSector(db.inventoryRequests, filter), [db.inventoryRequests, filter])
-  const pendingRequests = requests.filter((r) => r.status === 'pending')
+  const pendingRequests = requests.filter((r) => r.status === 'pending' || r.status === 'escalated')
   const low = lowStock(db, filter)
   const categories = [...new Set(db.inventory.map((i) => i.category))].sort()
 
   const focusId = params.get('focus')
   const focusedRequest = db.inventoryRequests.find((r) => r.id === focusId)
   const focusedItem = focusedRequest ? db.inventory.find((i) => i.id === focusedRequest.itemId) : undefined
+  const reqBlock = focusedRequest ? inventoryApprovalBlock(user, focusedRequest) : null
 
   const itemColumns: Column<InventoryItem>[] = [
     { key: 'name', header: 'Item', primary: true, cell: (i) => <span className="text-stone-900">{i.name}</span> },
@@ -209,7 +211,7 @@ export function InventoryPage() {
                 {low.length > 3 ? ` and ${low.length - 3} more` : ''}.
               </p>
               <Link to="/console/procurement">
-                <Button size="sm">Start a purchase order</Button>
+                <Button size="sm" rightIcon={<ArrowRight className="size-3.5" aria-hidden />}>Start a purchase order</Button>
               </Link>
             </div>
           ) : null}
@@ -257,21 +259,15 @@ export function InventoryPage() {
         title={focusedItem?.name ?? 'Request'}
         subtitle={focusedRequest ? `${focusedRequest.id} · raised ${formatDate(focusedRequest.requestedAt)}` : undefined}
         footer={
-          focusedRequest?.status === 'pending' ? (
+          focusedRequest && (focusedRequest.status === 'pending' || focusedRequest.status === 'escalated') ? (
             <div className="flex flex-col gap-3">
-              <MakerCheckerNote
-                preparedBy={focusedRequest.requestedBy}
-                block={
-                  focusedRequest.requestedBy === user.id
-                    ? 'You prepared this. Another approver must review it.'
-                    : null
-                }
-              />
+              <MakerCheckerNote preparedBy={focusedRequest.requestedBy} block={reqBlock} />
               <div className="flex gap-2">
                 <Button
                   fullWidth
                   variant="success"
-                  disabled={focusedRequest.requestedBy === user.id}
+                  disabled={Boolean(reqBlock)}
+                  title={reqBlock ?? undefined}
                   onClick={() => {
                     decideInventoryRequest(focusedRequest.id, 'approved', user)
                     setParams({})
@@ -282,6 +278,8 @@ export function InventoryPage() {
                 <Button
                   fullWidth
                   variant="secondary"
+                  disabled={Boolean(reqBlock)}
+                  title={reqBlock ?? undefined}
                   onClick={() => {
                     decideInventoryRequest(focusedRequest.id, 'rejected', user)
                     setParams({})
@@ -334,7 +332,9 @@ export function InventoryPage() {
 
             {focusedRequest.status === 'approved' && !focusedRequest.poId ? (
               <Link to="/console/procurement">
-                <Button fullWidth variant="secondary">Raise a purchase order from this request</Button>
+                <Button fullWidth variant="secondary" rightIcon={<ArrowRight className="size-4" aria-hidden />}>
+                  Raise a purchase order from this request
+                </Button>
               </Link>
             ) : null}
           </div>

@@ -31,6 +31,16 @@ export function LoginPage() {
     toast.info('Code sent', `Use 1 0 8 1 0 8 to continue. This is a prototype — no message was actually sent.`)
   }
 
+  async function socialSignIn(provider: 'Apple' | 'Google') {
+    setError(undefined)
+    setBusy(true)
+    await api.process(900)
+    signIn()
+    setBusy(false)
+    toast.success(`Signed in with ${provider}`, 'Your donation history is available under My donations.')
+    navigate('/my/donations')
+  }
+
   async function verify() {
     if (otp.replace(/\s/g, '') !== '108108') {
       setError('That code does not match. Use 108108 in this prototype.')
@@ -109,10 +119,22 @@ export function LoginPage() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Button variant="secondary" fullWidth icon={<Apple className="size-4" aria-hidden />} onClick={toast.soon}>
+          <Button
+            variant="secondary"
+            fullWidth
+            disabled={busy}
+            icon={<Apple className="size-4" aria-hidden />}
+            onClick={() => void socialSignIn('Apple')}
+          >
             Continue with Apple
           </Button>
-          <Button variant="secondary" fullWidth icon={<Globe className="size-4" aria-hidden />} onClick={toast.soon}>
+          <Button
+            variant="secondary"
+            fullWidth
+            disabled={busy}
+            icon={<Globe className="size-4" aria-hidden />}
+            onClick={() => void socialSignIn('Google')}
+          >
             Continue with Google
           </Button>
         </div>

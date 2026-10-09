@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { FileText, HandCoins } from 'lucide-react'
+import { ArrowRight, FileText, HandCoins } from 'lucide-react'
 
 import { SECTORS } from '@/config'
 import { formatDate, formatMoney } from '@/lib/format'
@@ -10,20 +10,24 @@ import { Money } from '@/components/ui/Money'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Table, type Column } from '@/components/ui/Table'
 import { TableSkeleton } from '@/components/ui/Skeleton'
-import { toast } from '@/lib/toast'
 import { SectorChip } from '@/components/layout/PhaseChip'
 import { CATALOG } from '@/mock/seed'
 import { useDb } from '@/store/db'
 import { useSession } from '@/store/session'
+import { myDonorIds } from '@/store/selectors'
 import type { Donation } from '@/types'
 
 export function MyDonationsPage() {
   const ready = useDb((s) => s.ready)
   const donations = useDb((s) => s.donations)
+  const donors = useDb((s) => s.donors)
   const signedIn = useSession((s) => s.signedIn)
 
-  /** In this prototype "mine" means the gifts made in this session. */
-  const mine = useMemo(() => donations.filter((d) => d.donorId === 'dnr-live'), [donations])
+  /** In this prototype "mine" is this session's gifts plus one seeded donor's history. */
+  const mine = useMemo(() => {
+    const ids = myDonorIds(donations, donors)
+    return donations.filter((d) => ids.includes(d.donorId))
+  }, [donations, donors])
 
   const yearTotal = mine.reduce((sum, d) => sum + (d.status === 'refunded' ? 0 : d.gross), 0)
 
@@ -56,7 +60,11 @@ export function MyDonationsPage() {
         </Link>
       ),
     },
-    { key: 'status', header: 'Status', cell: (d) => <StatusBadge status={d.status} /> },
+    {
+      key: 'status',
+      header: 'Status',
+      cell: (d) => <StatusBadge status={d.status === 'pending' ? 'awaiting_webhook' : d.status} />,
+    },
     { key: 'amount', header: 'Amount', align: 'right', primary: true, cell: (d) => <Money value={d.gross} /> },
   ]
 
@@ -76,16 +84,18 @@ export function MyDonationsPage() {
           <div>
             <h1 className="font-display text-[30px] leading-tight text-stone-900">My donations</h1>
             <p className="mt-1 text-[15px] text-stone-500">
-              {signedIn ? 'Signed in. ' : ''}Every receipt you have taken through this prototype.
+              {signedIn ? 'Signed in. ' : ''}Every receipt, with a printable annual statement for your tax records.
             </p>
           </div>
-          <Button
-            variant="secondary"
-            icon={<FileText className="size-4" aria-hidden />}
-            onClick={() => toast.info('Coming in the next build', 'Annual statements are compiled at year end.')}
-          >
-            Annual statement
-          </Button>
+          <Link to="/my/statement">
+            <Button
+              variant="secondary"
+              icon={<FileText className="size-4" aria-hidden />}
+              rightIcon={<ArrowRight className="size-3.5" aria-hidden />}
+            >
+              Annual statement
+            </Button>
+          </Link>
         </div>
         <div className="gold-rule mt-4" />
       </header>
@@ -93,7 +103,7 @@ export function MyDonationsPage() {
       {mine.length > 0 ? (
         <div className="mb-6 grid gap-4 sm:grid-cols-3">
           <div className="rounded-card border border-sandal-200 bg-sandal-50 p-4">
-            <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Given this session</p>
+            <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Given in total</p>
             <p className="mt-1.5 font-display text-[30px] leading-none text-stone-900">{formatMoney(yearTotal)}</p>
           </div>
           <div className="rounded-card border border-sandal-200 bg-sandal-50 p-4">
@@ -119,7 +129,7 @@ export function MyDonationsPage() {
           message="Once you complete an offering it will appear here with its receipt. The prototype resets on reload."
           action={
             <Link to="/">
-              <Button>Make an offering</Button>
+              <Button rightIcon={<ArrowRight className="size-4" aria-hidden />}>Make an offering</Button>
             </Link>
           }
         />

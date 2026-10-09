@@ -41,6 +41,8 @@ export function ItemDetailPage() {
   const [gothram, setGothram] = useState('')
   const [serviceDate, setServiceDate] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [qty, setQty] = useState(1)
+  const [renew, setRenew] = useState(true)
 
   if (!item || !sector) return <Navigate to="/donate/temple" replace />
 
@@ -48,10 +50,11 @@ export function ItemDetailPage() {
   const fund = FUNDS.find((f) => f.id === item.fundId)
   const presets = item.presets ?? (item.price ? [item.price] : [])
   const anyAmount = item.price === null
+  const total = item.ticketed ? (item.price ?? 0) * qty : amount
 
   function submit() {
     const next: Record<string, string> = {}
-    if (amount < 100) next.amount = 'Enter at least $1.00.'
+    if (total < 100) next.amount = 'Enter at least $1.00.'
     if (item!.needsDedication && name.trim().length < 2) next.name = 'Enter the name to be recited.'
     if (item!.needsDate && !serviceDate) next.date = 'Pick the date for this service.'
     setErrors(next)
@@ -60,13 +63,15 @@ export function ItemDetailPage() {
     addToCart({
       itemId: item!.id,
       sectorId,
-      amount,
+      amount: total,
+      quantity: item!.ticketed ? qty : undefined,
+      recurring: item!.recurring && renew ? item!.recurring : undefined,
       serviceDate: serviceDate || undefined,
       dedication: item!.needsDedication
         ? { name: name.trim(), nakshatra: nakshatra || undefined, gothram: gothram.trim() || undefined, date: serviceDate || undefined }
         : undefined,
     })
-    toast.success('Added to your offering', `${item!.name} · ${formatMoney(amount)}`)
+    toast.success('Added to your offering', `${item!.name} · ${formatMoney(total)}`)
     navigate('/checkout')
   }
 
@@ -92,8 +97,60 @@ export function ItemDetailPage() {
 
       <div className="grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-start">
         <div className="flex flex-col gap-6">
+          {/* Tickets */}
+          {item.ticketed ? (
+            <section className="rounded-card border border-sandal-200 bg-sandal-50 p-5">
+              <h2 className="mb-3 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Tickets</h2>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  aria-label="Fewer tickets"
+                  disabled={qty <= 1}
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  className="flex size-11 items-center justify-center rounded-lg border border-sandal-300 text-[20px] text-stone-700 transition-colors duration-150 hover:border-turmeric-400 disabled:opacity-40"
+                >
+                  −
+                </button>
+                <span className="w-10 text-center font-mono text-[20px] tabular-nums" aria-live="polite">
+                  {qty}
+                </span>
+                <button
+                  type="button"
+                  aria-label="More tickets"
+                  disabled={qty >= 10}
+                  onClick={() => setQty((q) => Math.min(10, q + 1))}
+                  className="flex size-11 items-center justify-center rounded-lg border border-sandal-300 text-[20px] text-stone-700 transition-colors duration-150 hover:border-turmeric-400 disabled:opacity-40"
+                >
+                  +
+                </button>
+                <span className="text-[14px] text-stone-500">{formatMoney(item.price ?? 0)} per ticket · up to 10</span>
+              </div>
+            </section>
+          ) : null}
+
+          {/* Membership plan */}
+          {item.recurring ? (
+            <section className="rounded-card border border-sandal-200 bg-sandal-50 p-5">
+              <h2 className="mb-3 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Renewal</h2>
+              <label className="flex cursor-pointer items-start gap-3 text-[14px] text-stone-700">
+                <input
+                  type="checkbox"
+                  checked={renew}
+                  onChange={(e) => setRenew(e.target.checked)}
+                  className="mt-1 size-4 accent-kumkum-600"
+                />
+                <span>
+                  Renew automatically every {item.recurring === 'annual' ? 'year' : 'month'}.
+                  <span className="block text-[13px] text-stone-500">
+                    You can stop it any time from My donations. Each renewal is a separate receipt.
+                  </span>
+                </span>
+              </label>
+            </section>
+          ) : null}
+
           {/* Amount */}
-          <section className="rounded-card border border-sandal-200 bg-sandal-50 p-5">
+          <section className={cn('rounded-card border border-sandal-200 bg-sandal-50 p-5', item.ticketed && 'hidden')}>
             <h2 className="mb-3 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Amount</h2>
             {presets.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -201,8 +258,12 @@ export function ItemDetailPage() {
         <aside className="md:sticky md:top-20">
           <div className="relative overflow-hidden rounded-card border border-sandal-200 bg-sandal-100 p-5 shadow-card texture-sandal">
             <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">You are giving</p>
-            <p className="mt-2 font-display text-[34px] leading-none text-stone-900">{formatMoney(amount)}</p>
-            <p className="mt-2 text-[14px] text-stone-700">{item.name}</p>
+            <p className="mt-2 font-display text-[34px] leading-none text-stone-900">{formatMoney(total)}</p>
+            <p className="mt-2 text-[14px] text-stone-700">
+              {item.name}
+              {item.ticketed ? ` × ${qty} ticket${qty === 1 ? '' : 's'}` : ''}
+              {item.recurring && renew ? ` · renews ${item.recurring === 'annual' ? 'yearly' : 'monthly'}` : ''}
+            </p>
 
             <dl className="mt-4 space-y-2 border-t border-sandal-200 pt-4 text-[13px]">
               <div className="flex justify-between gap-3">

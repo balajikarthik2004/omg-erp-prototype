@@ -12,6 +12,7 @@ import { Tabs } from '@/components/ui/Tabs'
 import { Photo } from '@/components/ui/Photo'
 import type { PhotoKey } from '@/lib/photos'
 import { CATALOG } from '@/mock/seed'
+import { useDb } from '@/store/db'
 import type { CatalogItem, DonationCategory } from '@/types'
 
 /**
@@ -45,33 +46,43 @@ const SECTOR_BANNER: Record<
 const TABS: { id: DonationCategory; label: string; blurb: string }[] = [
   { id: 'hundi', label: 'Hundi', blurb: 'A general offering. Give whatever feels right.' },
   { id: 'pooja', label: 'Pooja', blurb: 'Archanai and homam performed in your name, on a day you choose.' },
+  { id: 'event', label: 'Events', blurb: 'Festivals, concerts and community evenings. Choose how many tickets.' },
+  { id: 'membership', label: 'Membership', blurb: 'Join, and renew each year or each month.' },
   { id: 'activity', label: 'Activities', blurb: 'Festivals, classes and community work through the year.' },
   { id: 'project', label: 'Projects', blurb: 'Larger works that take months, and every gift towards them.' },
 ]
 
 export function CatalogPage() {
   const { sector } = useParams<{ sector: string }>()
-  const [tab, setTab] = useState<DonationCategory>('hundi')
+  const [chosenTab, setTab] = useState<DonationCategory>('hundi')
   const [query, setQuery] = useState('')
+  const tenant = useDb((s) => s.tenants.find((t) => t.id === s.activeTenantId))
 
   const valid = sector === 'temple' || sector === 'sevalaya' || sector === 'sangam'
   const sectorId = (valid ? sector : 'temple') as SectorId
 
   const items = useMemo(() => CATALOG.filter((c) => c.sectorId === sectorId && c.active), [sectorId])
 
-  const visible = useMemo(() => {
+  // A sector only shows the categories it actually offers.
+  const tabs = TABS.filter((t) => items.some((i) => i.category === t.id))
+  const tab = tabs.some((t) => t.id === chosenTab) ? chosenTab : (tabs[0]?.id ?? 'hundi')
+
+  const visible = (() => {
     const q = query.trim().toLowerCase()
     return items.filter(
       (item) =>
         item.category === tab &&
         (q === '' || item.name.toLowerCase().includes(q) || item.description.toLowerCase().includes(q)),
     )
-  }, [items, tab, query])
+  })()
 
-  if (!valid) return <Navigate to="/donate/temple" replace />
+  // A customer only offers the verticals it enabled at onboarding.
+  if (!valid || (tenant && !tenant.verticals.includes(sectorId))) {
+    return <Navigate to={`/donate/${tenant?.verticals[0] ?? 'temple'}`} replace />
+  }
 
   const meta = SECTORS[sectorId]
-  const activeTab = TABS.find((t) => t.id === tab)!
+  const activeTab = TABS.find((t) => t.id === tab) ?? TABS[0]!
 
   return (
     <div>
@@ -113,7 +124,7 @@ export function CatalogPage() {
             className="flex-1"
             value={tab}
             onChange={(id) => setTab(id as DonationCategory)}
-            items={TABS.map((t) => ({
+            items={tabs.map((t) => ({
               id: t.id,
               label: t.label,
               count: items.filter((i) => i.category === t.id).length,
@@ -202,6 +213,12 @@ function OfferingCard({ item, sectorId }: { item: CatalogItem; sectorId: SectorI
         ) : (
           <span className="font-mono text-[20px] leading-none text-stone-900 tabular-nums">
             {formatMoney(item.price)}
+            {item.ticketed ? <span className="ml-1.5 font-sans text-[12px] text-stone-500">per ticket</span> : null}
+            {item.recurring ? (
+              <span className="ml-1.5 font-sans text-[12px] text-stone-500">
+                {item.recurring === 'annual' ? 'a year' : 'a month'}
+              </span>
+            ) : null}
           </span>
         )}
         <span className="inline-flex items-center gap-1 text-[14px] font-medium text-kumkum-700">

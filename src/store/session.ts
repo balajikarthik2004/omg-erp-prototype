@@ -12,6 +12,10 @@ export interface CartLine {
   amount: number
   dedication?: Dedication
   serviceDate?: string
+  /** Tickets, for ticketed events. */
+  quantity?: number
+  /** Membership renewal plan. */
+  recurring?: 'monthly' | 'annual'
 }
 
 export type SectorFilter = SectorId | 'all'
@@ -85,6 +89,7 @@ export function useCurrentRole(): Role {
 }
 
 export const CONSOLE_ROLES: Role[] = [
+  'super_admin',
   'sector_admin',
   'store_keeper',
   'procurement_officer',

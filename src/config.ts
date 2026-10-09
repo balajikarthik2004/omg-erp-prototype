@@ -29,7 +29,7 @@ export const SECTORS: Record<SectorId, SectorMeta> = {
     id: 'temple',
     name: 'Temple',
     tamil: 'கோவில்',
-    blurb: 'Hundi, poojas, festivals and temple projects.',
+    blurb: 'Hundi, poojas, festivals and temple projects that preserve our heritage.',
     tone: 'kumkum',
     chipClass: 'bg-kumkum-50 text-kumkum-700 border-kumkum-100',
     dotClass: 'bg-kumkum-600',
@@ -40,7 +40,7 @@ export const SECTORS: Record<SectorId, SectorMeta> = {
     id: 'sevalaya',
     name: 'Sevalaya',
     tamil: 'சேவாலயா',
-    blurb: 'Annadhanam, education and welfare programmes.',
+    blurb: 'Annadhanam, education and welfare programmes for all.',
     tone: 'tulsi',
     chipClass: 'bg-tulsi-50 text-tulsi-700 border-tulsi-50',
     dotClass: 'bg-tulsi-500',
@@ -63,7 +63,7 @@ export const SECTORS: Record<SectorId, SectorMeta> = {
 export const SECTOR_IDS: SectorId[] = ['temple', 'sevalaya', 'sangam']
 
 /** The four phases of the money flow. Drives header chips and sidebar groups. */
-export type Phase = 'collect' | 'control' | 'spend' | 'report'
+export type Phase = 'onboard' | 'collect' | 'control' | 'spend' | 'report'
 
 export interface PhaseMeta {
   id: Phase
@@ -75,6 +75,14 @@ export interface PhaseMeta {
 }
 
 export const PHASES: Record<Phase, PhaseMeta> = {
+  onboard: {
+    id: 'onboard',
+    label: 'Onboard',
+    meaning: 'Setting up a customer',
+    chipClass: 'bg-sandal-100 text-stone-700 border-sandal-300',
+    markerClass: 'bg-stone-700',
+    textClass: 'text-stone-700',
+  },
   collect: {
     id: 'collect',
     label: 'Collect',
@@ -121,6 +129,15 @@ export const APPROVAL_MATRIX: ApprovalTier[] = [
   { maxCents: 1_000_000, roles: ['ca_partner'], label: 'CA Partner' },
   { maxCents: Number.POSITIVE_INFINITY, roles: ['ca_partner', 'trustee'], label: 'CA Partner + Trustee' },
 ]
+
+/**
+ * Each customer (tenant) sets its own thresholds at onboarding. The active
+ * tenant's values are applied here so every approval step uses them.
+ */
+export function applyThresholds(staffMax: number, partnerMax: number): void {
+  APPROVAL_MATRIX[0]!.maxCents = staffMax
+  APPROVAL_MATRIX[1]!.maxCents = partnerMax
+}
 
 /** Steps required for an amount, in order. */
 export function requiredApprovals(amountCents: number): string[] {
@@ -169,6 +186,20 @@ export const CHART = {
 export const CATEGORY_COLORS: Record<string, string> = {
   hundi: '#D4971A',
   pooja: '#9A1F18',
+  event: '#6B4E9B',
+  membership: '#8A7062',
   activity: '#2E7D4F',
   project: '#1A6FA8',
 }
+
+export const CATEGORY_LABEL: Record<string, string> = {
+  hundi: 'Hundi',
+  pooja: 'Pooja',
+  event: 'Events',
+  membership: 'Membership',
+  activity: 'Activities',
+  project: 'Projects',
+}
+
+/** Default tenant approval thresholds, in cents. */
+export const DEFAULT_THRESHOLDS = { staffMax: 100_000, partnerMax: 1_000_000 } as const

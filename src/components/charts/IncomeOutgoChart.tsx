@@ -10,6 +10,7 @@ import { ChartLegend, ChartTooltip } from './ChartKit'
 export function IncomeOutgoChart({ data, height = 280 }: { data: MonthPoint[]; height?: number }) {
   const totalIncome = data.reduce((s, d) => s + d.income, 0)
   const totalOutgo = data.reduce((s, d) => s + d.outgo, 0)
+  const totalNet = totalIncome - totalOutgo
 
   return (
     <div>
@@ -18,6 +19,7 @@ export function IncomeOutgoChart({ data, height = 280 }: { data: MonthPoint[]; h
         items={[
           { key: 'income', label: 'Income', value: totalIncome, color: CHART.income },
           { key: 'outgo', label: 'Outgo', value: totalOutgo, color: CHART.outgo },
+          { key: 'net', label: 'Net', value: totalNet, color: CHART.accent },
         ]}
       />
       <div style={{ height }}>
@@ -47,8 +49,26 @@ export function IncomeOutgoChart({ data, height = 280 }: { data: MonthPoint[]; h
                 ) : null
               }
             />
-            <Bar dataKey="income" fill={CHART.income} radius={[4, 4, 0, 0]} maxBarSize={18} />
-            <Bar dataKey="outgo" fill={CHART.outgo} radius={[4, 4, 0, 0]} maxBarSize={18} />
+            <Bar
+              dataKey="income"
+              fill={CHART.income}
+              radius={[4, 4, 0, 0]}
+              maxBarSize={18}
+              isAnimationActive={true}
+              animationDuration={800}
+              animationEasing="ease-out"
+              style={{ outline: 'none' }}
+            />
+            <Bar
+              dataKey="outgo"
+              fill={CHART.outgo}
+              radius={[4, 4, 0, 0]}
+              maxBarSize={18}
+              isAnimationActive={true}
+              animationDuration={800}
+              animationEasing="ease-out"
+              style={{ outline: 'none' }}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -105,7 +125,18 @@ export function SectorIncomeChart({ data, height = 280 }: { data: MonthPoint[]; 
             />
             {series.map((s) => (
               // A 2px surface gap keeps stacked segments from touching.
-              <Bar key={s.key} dataKey={s.key} stackId="sector" fill={s.color} stroke={CHART.surface} strokeWidth={2} maxBarSize={26} />
+              <Bar
+                key={s.key}
+                dataKey={s.key}
+                stackId="sector"
+                fill={s.color}
+                stroke={CHART.surface}
+                strokeWidth={2}
+                maxBarSize={26}
+                isAnimationActive={true}
+                animationDuration={800}
+                animationEasing="ease-out"
+              />
             ))}
           </BarChart>
         </ResponsiveContainer>

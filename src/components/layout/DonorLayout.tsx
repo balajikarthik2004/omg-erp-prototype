@@ -7,6 +7,7 @@ import { cn } from '@/lib/cn'
 import { Divider, Kolam, OmgMark } from '@/components/ui/Ornament'
 import { useDb } from '@/store/db'
 import { useSession } from '@/store/session'
+import { Footer } from './Footer'
 
 export function DonorLayout() {
   const load = useDb((s) => s.load)
@@ -23,7 +24,8 @@ export function DonorLayout() {
     window.scrollTo({ top: 0 })
   }, [pathname])
 
-  const links = SECTOR_IDS.map((id) => ({
+  const tenant = useDb((s) => s.tenants.find((t) => t.id === s.activeTenantId))
+  const links = SECTOR_IDS.filter((id) => !tenant || tenant.verticals.includes(id)).map((id) => ({
     to: `/donate/${id}`,
     label: SECTORS[id].name,
     tamil: SECTORS[id].tamil,
@@ -32,11 +34,13 @@ export function DonorLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-sandal-50">
       <header className="no-print sticky top-0 z-30 border-b border-sandal-200 bg-sandal-50/90 backdrop-blur-md">
-        <div className="mx-auto flex h-[68px] max-w-6xl items-center gap-4 px-5 sm:px-8">
+        <div className="mx-auto flex h-[78px] max-w-6xl items-center gap-4 px-5 sm:px-8">
           <Link to="/" className="flex items-center gap-3" aria-label="OMG Platform, home">
-            <OmgMark size={38} />
+            <OmgMark size={46} />
             <span className="leading-none">
-              <span className="block font-display text-[21px] tracking-wide text-stone-900">OMG</span>
+              <span className="block max-w-[260px] truncate font-heritage text-[29px] leading-none font-semibold tracking-wide text-stone-900">
+                {tenant?.name ?? 'OMG'}
+              </span>
               <span className="mt-0.5 block text-[11px] tracking-[0.14em] text-stone-500 uppercase">
                 Offerings
               </span>
@@ -146,73 +150,7 @@ export function DonorLayout() {
         <Outlet />
       </main>
 
-      <footer className="no-print mt-0 border-t border-sandal-200 bg-stone-900 text-sandal-100">
-        <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
-          <div className="flex flex-col gap-10 md:flex-row md:justify-between">
-            <div className="max-w-sm">
-              <div className="flex items-center gap-3">
-                <OmgMark size={34} />
-                <span className="font-display text-[20px] text-sandal-50">OMG Platform</span>
-              </div>
-              <p className="mt-4 text-[14px] leading-relaxed text-sandal-200/75">
-                Every offering is receipted the moment it is given, held in a named fund, and released only
-                after two people have signed for it.
-              </p>
-              <p className="mt-5 text-[12px] tracking-[0.08em] text-turmeric-400/70 uppercase">
-                Prototype build · mock data · no live payments
-              </p>
-            </div>
-
-            <div className="flex gap-12">
-              <nav>
-                <p className="mb-3 text-[11px] tracking-[0.14em] text-turmeric-400/80 uppercase">Give</p>
-                <ul className="flex flex-col gap-2">
-                  {links.map((link) => (
-                    <li key={link.to}>
-                      <Link
-                        to={link.to}
-                        className="text-[14px] text-sandal-100/85 transition-colors duration-150 hover:text-turmeric-400"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-              <nav>
-                <p className="mb-3 text-[11px] tracking-[0.14em] text-turmeric-400/80 uppercase">Account</p>
-                <ul className="flex flex-col gap-2">
-                  <li>
-                    <Link to="/my/donations" className="text-[14px] text-sandal-100/85 hover:text-turmeric-400">
-                      My donations
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/login" className="text-[14px] text-sandal-100/85 hover:text-turmeric-400">
-                      Sign in
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/console" className="text-[14px] text-sandal-100/85 hover:text-turmeric-400">
-                      Admin console
-                    </Link>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-          </div>
-
-          <Divider className="mt-10 opacity-40" />
-
-          <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-            <p className="font-display text-[15px] text-turmeric-400/80">
-              அறம் செய விரும்பு
-              <span className="ml-2 font-sans text-[13px] text-sandal-200/60">Desire to do good.</span>
-            </p>
-            <Kolam className="text-turmeric-400/35" size={52} />
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

@@ -29,6 +29,11 @@ import { ReportsPage } from '@/features/reports/ReportsPage'
 import { AuditPage } from '@/features/audit/AuditPage'
 import { CatalogManagerPage } from '@/features/catalog/CatalogManagerPage'
 import { NotFoundPage } from '@/features/donor/NotFoundPage'
+import { StatementPage } from '@/features/donor/StatementPage'
+import { CashCountsPage } from '@/features/cash-counts/CashCountsPage'
+import { PeriodClosePage } from '@/features/period-close/PeriodClosePage'
+import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
+import { OnboardingWizardPage } from '@/features/onboarding/OnboardingWizardPage'
 
 export function App() {
   return (
@@ -42,11 +47,16 @@ export function App() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/receipt/:donationId" element={<ReceiptPage />} />
           <Route path="/my/donations" element={<MyDonationsPage />} />
+          <Route path="/my/statement" element={<StatementPage />} />
         </Route>
 
         <Route path="/console" element={<ConsoleLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="donations" element={<DonationsPage />} />
+          <Route path="cash-counts" element={<CashCountsPage />} />
+          <Route path="period-close" element={<PeriodClosePage />} />
+          <Route path="onboarding" element={<OnboardingPage />} />
+          <Route path="onboarding/new" element={<OnboardingWizardPage />} />
           <Route path="reconciliation" element={<ReconciliationPage />} />
           <Route path="ledger" element={<LedgerPage />} />
           <Route path="allotments" element={<AllotmentsPage />} />
