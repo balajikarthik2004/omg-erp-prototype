@@ -1162,11 +1162,11 @@ function makeTenants(now: Date): Tenant[] {
   return [
     {
       id: DEMO_TENANT_ID,
-      name: 'Kaveri Heritage',
+      name: 'OMG',
       address: '14 Temple Street, Madurai 625001',
-      domain: 'give.kaveritrust.org',
+      domain: 'give.omgtrust.org',
       brand: 'kumkum',
-      logoText: 'KH',
+      logoText: 'OMG',
       verticals: ['temple', 'sevalaya', 'sangam'],
       modules: ['donations', 'reconciliation', 'budgets', 'inventory', 'procurement', 'payments', 'reports'],
       squareLocationId: 'L8K2M4Q7ZP',

@@ -271,7 +271,7 @@ section('Step 00: onboarding and tenant isolation')
   const base = { name: 'Test Trust', address: '1 Road', domain: 'give.testtrust.org', brand: 'tulsi', logoText: 'TT', verticals: ['sevalaya'], modules: ['donations', 'budgets'], squareLocationId: 'LTEST12345', thresholds: { staffMax: 50_000, partnerMax: 200_000 }, users: [] }
   ok(!db().onboardTenant(base, U['u-sup']).ok, 'refused without approver users')
   ok(!db().onboardTenant({ ...base, thresholds: { staffMax: 500, partnerMax: 400 } }, U['u-sup']).ok, 'refused when partner limit is below staff limit')
-  ok(!db().onboardTenant({ ...base, domain: 'give.kaveritrust.org' }, U['u-sup']).ok, 'refused for a duplicate domain')
+  ok(!db().onboardTenant({ ...base, domain: 'give.omgtrust.org' }, U['u-sup']).ok, 'refused for a duplicate domain')
   const users = [
     { id: 'a', name: 'A', email: 'a@x', role: 'sector_admin' },
     { id: 'b', name: 'B', email: 'b@x', role: 'ca_staff' },

@@ -17,7 +17,7 @@ export function Footer() {
     label: SECTORS[id].name,
   }))
 
-  const brandName = tenant?.name ?? 'Kaveri Heritage'
+  const brandName = tenant?.name ?? 'OMG'
 
   return (
     <footer className="no-print relative isolate w-full overflow-hidden bg-[#2B1710] text-[#E9DCCB] pt-14 pb-8 sm:pt-16 sm:pb-9">
