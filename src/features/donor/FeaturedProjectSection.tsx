@@ -158,13 +158,13 @@ export function FeaturedProjectSection() {
 
               {/* Watermark: Sacred Nandi & Shrine Etching - Shifted Upwards */}
               <div
-                className="pointer-events-none absolute right-0 bottom-5 -z-0 h-[135px] w-[215px] opacity-[0.24] sm:h-[155px] sm:w-[245px]"
+                className="pointer-events-none absolute top-2 right-0 -z-0 h-[145px] w-[225px] opacity-[0.24] sm:top-3 sm:h-[165px] sm:w-[255px]"
                 aria-hidden
               >
                 <img
                   src="/images/nandi-shrine-etching.png"
                   alt=""
-                  className="h-full w-full object-contain object-bottom-right"
+                  className="h-full w-full object-contain object-top-right"
                 />
               </div>
 

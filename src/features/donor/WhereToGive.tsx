@@ -99,12 +99,13 @@ export function WhereToGive() {
         />
       </div>
 
+      {/* Right Side Mandala Artwork (Soft Sepia Tone Matching Left Gopuram) */}
       <div
-        className="pointer-events-none absolute top-1/2 -right-6 -z-10 hidden h-[520px] w-[290px] -translate-y-[42%] opacity-[0.22] lg:block xl:w-[330px]"
+        className="pointer-events-none absolute top-1/2 -right-2 -z-10 hidden h-[540px] w-[380px] -translate-y-[45%] opacity-[0.22] lg:block xl:h-[580px] xl:w-[420px]"
         aria-hidden
       >
         <img
-          src="/images/bg-lotus-etching.png"
+          src="/images/bg-where-mandala.png"
           alt=""
           className="h-full w-full object-contain object-right"
         />
