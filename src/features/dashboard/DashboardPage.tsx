@@ -169,7 +169,7 @@ export function DashboardPage() {
                   />
                 </div>
               ) : (
-                <ul className="flex flex-col divide-y divide-sandal-200 border-t border-sandal-200">
+                <ul className="flex flex-col divide-y divide-sandal-200 border-t">
                   {data.tasks.slice(0, 6).map((task) => {
                     const due = formatDue(task.dueAt)
                     return (
@@ -213,7 +213,7 @@ export function DashboardPage() {
                   }
                 />
               </div>
-              <ul className="flex flex-col divide-y divide-sandal-200 border-t border-sandal-200">
+              <ul className="flex flex-col divide-y divide-sandal-200 border-t">
                 {data.activity.map((event) => (
                   <li
                     key={event.id}

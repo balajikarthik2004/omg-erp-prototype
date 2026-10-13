@@ -1,8 +1,10 @@
 import {
   BookLock,
   Boxes,
+  BarChart3,
   Building2,
   CalendarCheck,
+  CalendarDays,
   ClipboardCheck,
   Coins,
   FileSpreadsheet,
@@ -10,7 +12,9 @@ import {
   HandCoins,
   History,
   Landmark,
+  LayoutDashboard,
   PackageSearch,
+  QrCode,
   Receipt,
   ScrollText,
   Settings2,
@@ -32,7 +36,7 @@ export interface NavItem {
   roles: Role[]
   end?: boolean
   /** Shows the count of items waiting on this persona. */
-  badge?: 'approvals'
+  badge?: 'approvals' | 'eventApprovals'
   /** Hidden when the customer has not enabled this module. */
   module?: ModuleKey
 }
@@ -61,6 +65,20 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { to: '/console', label: 'Dashboard', icon: Gauge, phase: 'report', roles: WITH_PLATFORM, end: true },
       { to: '/console/approvals', label: 'Approvals', icon: ClipboardCheck, phase: 'control', roles: ALL, badge: 'approvals' },
+    ],
+  },
+  {
+    phase: 'collect',
+    label: 'Events',
+    items: [
+      { to: '/console/events/overview', label: 'Overview', icon: LayoutDashboard, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events' },
+      { to: '/console/events', label: 'All events', icon: CalendarDays, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events', end: true },
+      { to: '/console/events/budgets', label: 'Budgets & approvals', icon: Wallet, phase: 'control', roles: ADMIN_CA, module: 'events' },
+      { to: '/console/events/approvals', label: 'Approval center', icon: ClipboardCheck, phase: 'control', roles: ADMIN_CA, module: 'events', badge: 'eventApprovals' },
+      { to: '/console/events/studio', label: 'Poster studio', icon: Sparkles, phase: 'collect', roles: ADMIN_CA, module: 'events' },
+      { to: '/console/events/registrations', label: 'Registrations & QR', icon: QrCode, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events' },
+      { to: '/console/events/purchases', label: 'Purchases & orders', icon: ShoppingCart, phase: 'spend', roles: ADMIN_CA, module: 'events' },
+      { to: '/console/events/reports', label: 'Financial reports', icon: BarChart3, phase: 'report', roles: ADMIN_CA, module: 'events' },
     ],
   },
   {

@@ -90,7 +90,7 @@ export function WhereToGive() {
     <section ref={ref} id="sectors" className="relative isolate scroll-mt-20 overflow-hidden bg-sandal-50 py-16 sm:py-20">
       {/* Authentic Vintage Heritage Background Etchings (Zero background / transparent PNG) */}
       <div
-        className="pointer-events-none absolute top-8 -left-20 -z-10 hidden h-[680px] w-[360px] opacity-[0.22] lg:block xl:-left-16 xl:h-[720px] xl:w-[400px]"
+        className="pointer-events-none absolute top-8 -left-20 -z-10 hidden h-170 w-90 opacity-[0.22] lg:block xl:-left-16 xl:h-180 xl:w-100"
         aria-hidden
       >
         <Etching
@@ -100,14 +100,15 @@ export function WhereToGive() {
         />
       </div>
 
+      {/* Right Side Mandala Artwork (Soft Sepia Tone Matching Left Gopuram) */}
       <div
-        className="pointer-events-none absolute top-1/2 -right-6 -z-10 hidden h-[520px] w-[290px] -translate-y-[42%] opacity-[0.22] lg:block xl:w-[330px]"
+        className="pointer-events-none absolute top-1/2 -right-2 -z-10 hidden h-135 w-95 translate-y-[-45%] opacity-[0.22] lg:block xl:h-145 xl:w-105"
         aria-hidden
       >
-        <Etching
-          src="/images/bg-lotus-etching.png"
-          className="bg-navy-600"
-          position="right"
+        <img
+          src="/images/bg-where-mandala.png"
+          alt=""
+          className="h-full w-full object-contain object-right"
         />
       </div>
 
@@ -135,13 +136,13 @@ export function WhereToGive() {
                 <Link
                   to={`/donate/${id}`}
                   className={cn(
-                    'group relative flex h-full flex-col overflow-hidden rounded-[16px] border border-sandal-200 bg-sandal-50 shadow-card',
+                    'group relative flex h-full flex-col overflow-hidden rounded-2xl border border-sandal-200 bg-[#FFFDF8] shadow-card',
                     'transition-all duration-300 hover:-translate-y-1 hover:shadow-lift',
                     'focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 focus-visible:outline-none',
                   )}
                 >
                   {/* Card Image Header */}
-                  <div className="relative h-[182px] overflow-hidden bg-sandal-100">
+                  <div className="relative h-45.5 overflow-hidden bg-sandal-100">
                     <Photo
                       photo={config.photo}
                       position={config.position}
@@ -163,7 +164,7 @@ export function WhereToGive() {
                     <div className="flex items-center gap-4">
                       <span
                         className={cn(
-                          'flex size-[54px] shrink-0 items-center justify-center rounded-xl shadow-xs',
+                          'flex size-13.5 shrink-0 items-center justify-center rounded-xl shadow-xs',
                           config.tileBg,
                           config.tileColor,
                         )}
@@ -182,7 +183,7 @@ export function WhereToGive() {
 
                     <div className="mt-5 flex items-center justify-between border-t border-sandal-200/90 pt-4">
                       <span className="inline-flex items-center gap-2 text-[14px] text-stone-700">
-                        <Clock3 className="size-[17px] text-kumkum-600" aria-hidden />
+                        <Clock3 className="size-4.25 text-[#A8241A]" aria-hidden />
                         {waysDisplay}
                       </span>
                       <span className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-kumkum-600">

@@ -30,6 +30,17 @@ import { AuditPage } from '@/features/audit/AuditPage'
 import { CatalogManagerPage } from '@/features/catalog/CatalogManagerPage'
 import { NotFoundPage } from '@/features/donor/NotFoundPage'
 import { StatementPage } from '@/features/donor/StatementPage'
+import { EventsPage } from '@/features/events/EventsPage'
+import { EventsOverviewPage } from '@/features/events/EventsOverviewPage'
+import { BudgetsPlanningPage } from '@/features/events/BudgetsPlanningPage'
+import { ApprovalCenterPage } from '@/features/events/ApprovalCenterPage'
+import { PosterStudioPage } from '@/features/events/PosterStudioPage'
+import { RegistrationsPage } from '@/features/events/RegistrationsPage'
+import { PurchasesPage } from '@/features/events/PurchasesPage'
+import { EventReportsPage } from '@/features/events/EventReportsPage'
+import { EventDetailPage } from '@/features/events/EventDetailPage'
+import { PublicEventsPage } from '@/features/events/PublicEventsPage'
+import { RegisterPage } from '@/features/events/RegisterPage'
 import { CashCountsPage } from '@/features/cash-counts/CashCountsPage'
 import { PeriodClosePage } from '@/features/period-close/PeriodClosePage'
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
@@ -48,11 +59,22 @@ export function App() {
           <Route path="/receipt/:donationId" element={<ReceiptPage />} />
           <Route path="/my/donations" element={<MyDonationsPage />} />
           <Route path="/my/statement" element={<StatementPage />} />
+          <Route path="/events" element={<PublicEventsPage />} />
+          <Route path="/register/:eventId" element={<RegisterPage />} />
         </Route>
 
         <Route path="/console" element={<ConsoleLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="donations" element={<DonationsPage />} />
+          <Route path="events" element={<EventsPage />} />
+          <Route path="events/overview" element={<EventsOverviewPage />} />
+          <Route path="events/budgets" element={<BudgetsPlanningPage />} />
+          <Route path="events/approvals" element={<ApprovalCenterPage />} />
+          <Route path="events/studio" element={<PosterStudioPage />} />
+          <Route path="events/registrations" element={<RegistrationsPage />} />
+          <Route path="events/purchases" element={<PurchasesPage />} />
+          <Route path="events/reports" element={<EventReportsPage />} />
+          <Route path="events/:eventId" element={<EventDetailPage />} />
           <Route path="cash-counts" element={<CashCountsPage />} />
           <Route path="period-close" element={<PeriodClosePage />} />
           <Route path="onboarding" element={<OnboardingPage />} />

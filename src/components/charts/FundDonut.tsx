@@ -73,7 +73,7 @@ export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; heigh
           </PieChart>
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-3 transition-all duration-150">
-          <span className="truncate max-w-[130px] text-[11px] font-semibold tracking-[0.1em] text-stone-500 uppercase">
+          <span className="truncate max-w-32.5 text-[11px] font-semibold tracking-widest text-stone-500 uppercase">
             {activeSector ? activeSector.label : 'Held'}
           </span>
           <span className="font-display text-[20px] text-stone-900 leading-tight">
@@ -87,14 +87,14 @@ export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; heigh
         </div>
       </div>
 
-      <ul className="w-full space-y-2.5">
+      <ul className="w-full divide-y divide-sandal-200">
         {slices.slice(0, 6).map((slice) => {
           const isSectorActive = activeSector?.key === slice.sectorId
           return (
             <li
               key={slice.id}
               className={cn(
-                'flex items-baseline justify-between gap-3 border-b border-sandal-200 pb-2 transition-opacity duration-150 last:border-0 last:pb-0',
+                'flex items-baseline justify-between gap-3 py-2 transition-opacity duration-150',
                 activeIndex !== null && !isSectorActive ? 'opacity-40' : 'opacity-100',
               )}
             >

@@ -238,7 +238,7 @@ export function ReconciliationPage() {
               <h3 className="mb-2 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">
                 Donations in this payout
               </h3>
-              <ul className="flex flex-col divide-y divide-sandal-200 rounded-card border border-sandal-200">
+              <ul className="flex flex-col divide-y divide-sandal-200 rounded-card border">
                 {openDonations.slice(0, 30).map((d) => (
                   <li key={d.id} className="flex items-center justify-between gap-3 px-3 py-2.5">
                     <div className="min-w-0">

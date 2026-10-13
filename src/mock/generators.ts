@@ -1,6 +1,7 @@
 import { addDays, differenceInDays, endOfMonth, format, startOfMonth, subDays, subMonths } from 'date-fns'
 
 import { APP, DEFAULT_THRESHOLDS } from '@/config'
+import { makeEventsSeed } from './events'
 import { createRng, SEED } from '@/lib/rng'
 import type {
   Allotment,
@@ -26,6 +27,7 @@ import type {
   Supplier,
   SupplierInvoice,
   Tenant,
+  EventsData,
 } from '@/types'
 import {
   BUDGET_SPECS,
@@ -41,7 +43,7 @@ import {
   USERS,
 } from './seed'
 
-export interface Database {
+export interface Database extends EventsData {
   donors: Donor[]
   donations: Donation[]
   funds: Fund[]
@@ -1082,6 +1084,14 @@ export function generateDatabase(now = new Date()): Database {
   const journal = makeJournal(donations, allotments, purchaseOrders, invoices, funds, openingByFund)
   const audit = makeAudit(rng, purchaseOrders, allotments, now)
   const cashCounts = makeCashCounts(now)
+  const eventsSeed = makeEventsSeed(now)
+  for (const fund of funds) {
+    const gave = eventsSeed.generalFundDelta[fund.id]
+    if (gave) fund.balance -= gave
+  }
+  funds.push(...eventsSeed.funds)
+  journal.push(...eventsSeed.journal)
+  journal.sort((a, b) => b.date.localeCompare(a.date))
   const periodCloses = makePeriodCloses(now)
   const tenants = makeTenants(now)
 
@@ -1110,6 +1120,9 @@ export function generateDatabase(now = new Date()): Database {
     cashCounts,
     periodCloses,
     tenants,
+    ...eventsSeed.data,
+    events: eventsSeed.data.events.map((e) => ({ ...e, tenantId: DEMO_TENANT_ID })),
+    eventActuals: eventsSeed.data.eventActuals.map((a) => ({ ...a })),
   }
 }
 
@@ -1164,11 +1177,11 @@ function makeTenants(now: Date): Tenant[] {
       id: DEMO_TENANT_ID,
       name: 'OMG',
       address: '14 Temple Street, Madurai 625001',
-      domain: 'give.kaveritrust.org',
+      domain: 'give.omgtrust.org',
       brand: 'kumkum',
-      logoText: 'KH',
+      logoText: 'OMG',
       verticals: ['temple', 'sevalaya', 'sangam'],
-      modules: ['donations', 'reconciliation', 'budgets', 'inventory', 'procurement', 'payments', 'reports'],
+      modules: ['donations', 'reconciliation', 'budgets', 'inventory', 'procurement', 'payments', 'reports', 'events'],
       squareLocationId: 'L8K2M4Q7ZP',
       thresholds: { ...DEFAULT_THRESHOLDS },
       users: USERS.filter((u) => u.role !== 'devotee' && u.role !== 'super_admin').map((u) => ({

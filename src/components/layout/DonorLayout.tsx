@@ -25,16 +25,20 @@ export function DonorLayout() {
   }, [pathname])
 
   const tenant = useDb((s) => s.tenants.find((t) => t.id === s.activeTenantId))
-  const links = SECTOR_IDS.filter((id) => !tenant || tenant.verticals.includes(id)).map((id) => ({
+  const sectorLinks = SECTOR_IDS.filter((id) => !tenant || tenant.verticals.includes(id)).map((id) => ({
     to: `/donate/${id}`,
     label: SECTORS[id].name,
     tamil: SECTORS[id].tamil,
   }))
+  const links = [
+    ...sectorLinks,
+    ...(!tenant || tenant.modules.includes('events') ? [{ to: '/events', label: 'Events', tamil: 'நிகழ்வுகள்' }] : []),
+  ]
 
   return (
     <div className="flex min-h-screen flex-col bg-navy-50">
       <header className="no-print sticky top-0 z-30 border-b border-sandal-200 bg-sandal-50/90 backdrop-blur-md">
-        <div className="mx-auto flex h-[78px] max-w-6xl items-center gap-4 px-5 sm:px-8">
+        <div className="mx-auto flex h-19.5 max-w-6xl items-center gap-4 px-5 sm:px-8">
           <Link to="/" className="flex items-center gap-3" aria-label="OMG Platform, home">
             <OmgMark size={46} />
             <span className="leading-none">
@@ -104,7 +108,7 @@ export function DonorLayout() {
                   : 'text-stone-700 hover:bg-sandal-100',
               )}
             >
-              <ShoppingBag className="size-[18px]" aria-hidden />
+              <ShoppingBag className="size-4.5" aria-hidden />
               {cart.length > 0 ? (
                 <span className="font-mono text-[13px] tabular-nums">{cart.length}</span>
               ) : null}

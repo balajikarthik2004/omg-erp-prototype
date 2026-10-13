@@ -143,7 +143,7 @@ export function CatalogPage() {
 
         <p className="mt-4 max-w-2xl text-[14px] text-stone-500">{activeTab.blurb}</p>
 
-        <div className="mt-7 min-h-[320px]">
+        <div className="mt-7 min-h-80">
           {visible.length === 0 ? (
             <EmptyState
               title="Nothing matches that"
