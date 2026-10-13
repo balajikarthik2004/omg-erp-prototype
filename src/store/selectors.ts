@@ -344,7 +344,7 @@ export function approvalTasks(db: DbState, filter: SectorFilter): ApprovalTask[]
       preparedBy: o.preparedBy,
       preparedAt: o.createdAt,
       dueAt: dueFrom(o.createdAt, 'event_order'),
-      href: `/console/events/${e.id}?tab=run`,
+      href: `/console/events/${e.id}?tab=purchases`,
     })
   }
 

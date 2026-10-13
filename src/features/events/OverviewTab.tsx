@@ -114,7 +114,7 @@ export function OverviewTab({ view, goTo }: { view: EventView; goTo: (tab: strin
         <>
           <p className="text-[14px] text-stone-700">The poster is out and registration is open at <span className="font-mono text-[13px]">{registrationUrl(event.id)}</span>.</p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <Button variant="secondary" onClick={() => goTo('run')}>Tickets and orders</Button>
+            <Button variant="secondary" onClick={() => goTo('registrations')}>Tickets and orders</Button>
             <Button disabled={!isAdmin(user)} title={isAdmin(user) ? undefined : 'Only a Sector Admin starts the event.'} onClick={() => startEvent(event.id, user)}>Start event (event day)</Button>
           </div>
         </>
@@ -125,7 +125,7 @@ export function OverviewTab({ view, goTo }: { view: EventView; goTo: (tab: strin
         <>
           <p className="text-[14px] text-stone-700">The event is live. Check-in is open.</p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <Button onClick={() => goTo('run')}>Open check-in</Button>
+            <Button onClick={() => goTo('registrations')}>Open check-in</Button>
             <Button variant="secondary" disabled={!isAdmin(user)} title={isAdmin(user) ? undefined : 'Only a Sector Admin ends the event.'} onClick={() => endEvent(event.id, user)}>End event</Button>
           </div>
         </>
@@ -135,7 +135,7 @@ export function OverviewTab({ view, goTo }: { view: EventView; goTo: (tab: strin
       next = (
         <>
           <p className="text-[14px] text-stone-700">The event is over. The CA team reviews the figures and closes it.</p>
-          <Button className="mt-4" onClick={() => goTo('close')}>Review profit and loss</Button>
+          <Button className="mt-4" onClick={() => goTo('pnl')}>Review profit and loss</Button>
         </>
       )
       break

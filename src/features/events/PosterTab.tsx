@@ -4,16 +4,14 @@ import { Download, ExternalLink, ImageIcon, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { Textarea } from '@/components/ui/Input'
 import { StatusBadge } from '@/components/ui/StatusBadge'
-import { MakerCheckerNote } from '@/components/flow/MakerCheckerNote'
 import { userName } from '@/mock/seed'
 import { useDb } from '@/store/db'
 import { currentUser, useSession } from '@/store/session'
 import type { PosterDesign } from '@/types'
-import { gateBlock } from './logic/rules'
 import { canGeneratePoster, isAdmin } from './logic/stateMachine'
 import { VARIANTS } from './logic/poster'
+import { PosterDecisionPanel } from './PosterDecisionPanel'
 import { PosterPreview } from './PosterPreview'
 import { downloadSvg, openSvg, posterIsStale } from './posterTools'
 import { registrationUrl, type EventView } from './useEvent'
@@ -27,9 +25,7 @@ export function PosterTab({ view }: { view: EventView }) {
   const user = currentUser(personaId)
   const generatePosters = useDb((s) => s.generatePosters)
   const selectPoster = useDb((s) => s.selectPoster)
-  const decidePoster = useDb((s) => s.decidePoster)
   const [error, setError] = useState<string>()
-  const [comment, setComment] = useState('')
   const [svg, setSvg] = useState('')
 
   const guard = canGeneratePoster(event)
@@ -37,7 +33,6 @@ export function PosterTab({ view }: { view: EventView }) {
   const latest = designs.filter((d) => d.batchNo === batches[0])
   const earlier = designs.filter((d) => d.batchNo !== batches[0])
   const selected = designs.find((d) => d.id === event.selectedPosterDesignId)
-  const approveBlock = gateBlock(event, { type: 'APPROVE_POSTER' }, user)
   const slug = event.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
   const run = (r: { ok: boolean; error?: string }) => setError(r.ok ? undefined : r.error)
@@ -66,17 +61,7 @@ export function PosterTab({ view }: { view: EventView }) {
               {stale ? <span className="text-[13px] text-danger-600">The event details changed after this was made.</span> : null}
             </div>
 
-            {event.status === 'poster_pending' ? (
-              <div className="mt-4 flex flex-col gap-3">
-                <MakerCheckerNote preparedBy={event.lastPreparerId ?? event.createdBy} block={approveBlock} />
-                <Textarea label="Comment" placeholder="Required when sending the poster back." value={comment} onChange={(e) => { setComment(e.target.value); setError(undefined) }} />
-                {error ? <p role="alert" className="text-[13px] text-danger-600">{error}</p> : null}
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="success" disabled={Boolean(approveBlock)} title={approveBlock ?? undefined} onClick={() => run(decidePoster(event.id, 'approved', user, comment))}>Approve and publish</Button>
-                  <Button variant="secondary" disabled={!isAdmin(user) || comment.trim().length < 5} title={isAdmin(user) ? 'Add a comment explaining why.' : 'Only a Sector Admin decides on a poster.'} onClick={() => run(decidePoster(event.id, 'rejected', user, comment))}>Send back</Button>
-                </div>
-              </div>
-            ) : null}
+            {event.status === 'poster_pending' ? <div className="mt-4"><PosterDecisionPanel view={view} /></div> : null}
           </Card>
 
           <Card>

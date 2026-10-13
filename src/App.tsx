@@ -31,6 +31,13 @@ import { CatalogManagerPage } from '@/features/catalog/CatalogManagerPage'
 import { NotFoundPage } from '@/features/donor/NotFoundPage'
 import { StatementPage } from '@/features/donor/StatementPage'
 import { EventsPage } from '@/features/events/EventsPage'
+import { EventsOverviewPage } from '@/features/events/EventsOverviewPage'
+import { BudgetsPlanningPage } from '@/features/events/BudgetsPlanningPage'
+import { ApprovalCenterPage } from '@/features/events/ApprovalCenterPage'
+import { PosterStudioPage } from '@/features/events/PosterStudioPage'
+import { RegistrationsPage } from '@/features/events/RegistrationsPage'
+import { PurchasesPage } from '@/features/events/PurchasesPage'
+import { EventReportsPage } from '@/features/events/EventReportsPage'
 import { EventDetailPage } from '@/features/events/EventDetailPage'
 import { PublicEventsPage } from '@/features/events/PublicEventsPage'
 import { RegisterPage } from '@/features/events/RegisterPage'
@@ -60,6 +67,13 @@ export function App() {
           <Route index element={<DashboardPage />} />
           <Route path="donations" element={<DonationsPage />} />
           <Route path="events" element={<EventsPage />} />
+          <Route path="events/overview" element={<EventsOverviewPage />} />
+          <Route path="events/budgets" element={<BudgetsPlanningPage />} />
+          <Route path="events/approvals" element={<ApprovalCenterPage />} />
+          <Route path="events/studio" element={<PosterStudioPage />} />
+          <Route path="events/registrations" element={<RegistrationsPage />} />
+          <Route path="events/purchases" element={<PurchasesPage />} />
+          <Route path="events/reports" element={<EventReportsPage />} />
           <Route path="events/:eventId" element={<EventDetailPage />} />
           <Route path="cash-counts" element={<CashCountsPage />} />
           <Route path="period-close" element={<PeriodClosePage />} />

@@ -15,7 +15,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const db = useDb()
   const tenant = db.tenants.find((t) => t.id === db.activeTenantId)
   const groups = visibleGroups(user.role, tenant?.modules)
-  const myTasks = db.ready ? actionableTasks(db, sectorFilter, user).length : 0
+  const mine = db.ready ? actionableTasks(db, sectorFilter, user) : []
+  const myTasks = mine.length
+  const myEventTasks = mine.filter((t) => t.kind.startsWith('event_') && t.kind !== 'event_order').length
 
   return (
     <div data-brand={tenant?.brand ?? 'kumkum'} className="flex h-full flex-col surface-sanctum text-sandal-100">
@@ -87,9 +89,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                             aria-hidden
                           />
                           <span className="flex-1 truncate">{item.label}</span>
-                          {item.badge === 'approvals' && myTasks > 0 ? (
+                          {(item.badge === 'approvals' ? myTasks : item.badge === 'eventApprovals' ? myEventTasks : 0) > 0 ? (
                             <span className="rounded-full bg-turmeric-500 px-1.5 py-px font-mono text-[11px] font-semibold text-stone-900 tabular-nums">
-                              {myTasks}
+                              {item.badge === 'approvals' ? myTasks : myEventTasks}
                             </span>
                           ) : null}
                         </>

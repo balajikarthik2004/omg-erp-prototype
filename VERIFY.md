@@ -110,7 +110,7 @@ are. The store resets to seed data on every reload, so reload to start clean.
 ## 4. Events module (the six-step Events flow)
 
 Ported from the separate `OMG-Events` project (state machine, budget formula, poster composition, signed tickets, profit and loss).
-Console: **Events** in the sidebar (`/console/events`). Public: **Events** in the donor header (`/events`, `/register/:id`).
+Console: the **Events** group in the sidebar has Overview, All events, Budgets & approvals, **Approval center**, **Poster studio**, Registrations & QR, Purchases & orders and Financial reports (`/console/events/...`). Public: **Events** in the donor header (`/events`, `/register/:id`).
 Seed data has eleven events, one in every status. A second Sector Admin, **Lakshmi Priya**, exists so a poster can be approved by a different admin.
 
 ### Automated
@@ -125,7 +125,9 @@ poster, tickets, signed check-in, sponsors, orders against budget lines, close, 
 | Seed | **Events** (any CA or admin persona) | 11 events across Planning, Confirmed, Public and live, Finished. The Approvals badge counts event budgets, posters and orders. |
 | Budget example | Open **Navaratri Mahotsavam 2026** → **Budget** | Suggested lines total **$7,810.00** (last year $7,100.00 plus 10%). Approved total **$7,680.00**. Each line shows its past years and a plain reason. |
 | No history | Open **Thai Pongal Vizha 2027** → **Budget** | *No suggestion* on every line. First-time events start empty. |
-| 1 Create | **Saravanan** → **New event** | A draft appears. Only a Sector Admin can create. End before start, or a paid event with no price, is refused. |
+| 1 Create | **Saravanan** → **New event** | The form includes the **itemised service budget**: cost lines pre-filled from past events of that kind, a **Target** with **Auto-distribute**, a share per line and a live total. **Create event and save allocations** saves a draft with the budget lines. Only a Sector Admin can create. End before start, or a paid event with no price, is refused. |
+| Approval center | **Events → Approval center** | Pending budgets and posters with stage (CA review, Trustee approval, Sector admin review), amount, who submitted, age and priority; tabs All, Budget reviews, Poster reviews, Audit trail; search and sort; the **Switch role** pills change persona in one click; **View details** opens the lines and the decision form; a timeline and the four-eyes guidance sit on the right. |
+| Poster studio | **Events → Poster studio** | Pick a confirmed event: make three designs, choose one, and a different admin approves it. It is the same studio as the **AI poster studio** tab inside an event. |
 | 2 Budget | Draft → **Budget** | Lines pre-filled by formula. **Use this**, **Recalculate**, add or remove lines. **Submit for CA review** freezes the lines. |
 | 2 Gates | Switch to **Saravanan** on the submitted budget | The review panel is disabled: *You prepared this budget.* **Meenakshi** (Trustee) cannot give the CA review either. |
 | | **Anitha** (CA Staff) → **Pass to a Trustee** | Status *Awaiting Trustee*. Sending back needs a comment, and the draft shows the reason. |
@@ -143,6 +145,8 @@ poster, tickets, signed check-in, sponsors, orders against budget lines, close, 
 | 6 Close | **Overview → End event**, then **Profit and loss** | Spent against budget per line, cash in, cash out, profit or loss. **Close event** is refused while an order is open. |
 | | **Anitha** or **R. Balasubramanian** → **Close event** | Locked. Unspent fund returns to the sector, and the actual spend is saved. A new event of the same kind now sees this year in its past years. |
 | Cancel | A draft, confirmed or published event → **Cancel event** | Needs a reason. The fund returns, open orders cancel, paid tickets are marked for refund. |
+
+The event workspace tabs are Overview, Budget workspace, AI poster studio, Registrations and QR, Purchases and sponsors, Event P&L and Audit trail.
 
 ### Limits of the mock
 
