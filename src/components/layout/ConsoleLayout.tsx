@@ -18,11 +18,11 @@ export function ConsoleLayout() {
   }, [pathname])
 
   return (
-    <div className="flex min-h-screen bg-sandal-50">
+    <div className="flex min-h-screen bg-navy-50">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <main className="flex-1 bg-navy-50 px-4 py-6 sm:px-6 lg:px-8">
           <Outlet />
         </main>
       </div>

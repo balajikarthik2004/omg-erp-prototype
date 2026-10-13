@@ -4,7 +4,7 @@ import { cn } from '@/lib/cn'
 const FIELD =
   'w-full rounded-lg border border-sandal-300 bg-sandal-50 px-3 py-2 text-[15px] text-stone-900 ' +
   'placeholder:text-stone-500 transition-colors duration-150 ' +
-  'focus:border-turmeric-400 focus:ring-2 focus:ring-turmeric-400 focus:outline-none ' +
+  'focus:border-navy-400 focus:ring-2 focus:ring-navy-400 focus:outline-none ' +
   'disabled:bg-sandal-100 disabled:text-stone-500'
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {

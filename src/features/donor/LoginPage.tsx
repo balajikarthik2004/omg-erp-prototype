@@ -58,13 +58,13 @@ export function LoginPage() {
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-14 sm:px-6">
       <div className="flex justify-center">
-        <Kolam className="text-turmeric-500/70" size={80} />
+        <Kolam className="text-navy-300/70" size={80} />
       </div>
-      <h1 className="mt-4 text-center font-display text-[30px] text-stone-900">Sign in</h1>
+      <h1 className="mt-4 text-center font-display text-[22px] sm:text-[30px] text-stone-900">Sign in</h1>
       <p className="mt-1 text-center text-[15px] text-stone-500">
         So your receipts and annual statement stay in one place.
       </p>
-      <Divider className="mx-auto mt-6 w-40" />
+      <Divider tone="quiet" className="mx-auto mt-6 w-40" />
 
       <div className="mt-8 rounded-card border border-sandal-200 bg-sandal-50 p-6 shadow-lift">
         {step === 'contact' ? (

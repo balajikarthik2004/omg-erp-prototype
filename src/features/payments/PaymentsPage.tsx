@@ -258,7 +258,7 @@ export function PaymentsPage() {
               <SectorChip sectorId={focused.sectorId} />
               <Link
                 to={`/console/purchase-orders/${encodeURIComponent(focusPo.id)}`}
-                className="font-mono text-[13px] text-kumkum-700 tabular-nums hover:underline"
+                className="font-mono text-[13px] text-navy-600 tabular-nums hover:underline"
               >
                 {focusPo.poNo}
               </Link>
@@ -268,7 +268,7 @@ export function PaymentsPage() {
               <div className="flex items-end justify-between gap-3">
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Invoice total</p>
-                  <Money value={focused.total} className="mt-1 font-display text-[30px] text-stone-900" />
+                  <Money value={focused.total} className="mt-1 font-display text-[22px] sm:text-[30px] text-stone-900" />
                 </div>
                 <div className="text-right">
                   <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Ordered</p>

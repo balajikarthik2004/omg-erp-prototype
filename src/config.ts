@@ -34,7 +34,7 @@ export const SECTORS: Record<SectorId, SectorMeta> = {
     chipClass: 'bg-kumkum-50 text-kumkum-700 border-kumkum-100',
     dotClass: 'bg-kumkum-600',
     barClass: 'bg-kumkum-600',
-    chartColor: '#9A1F18',
+    chartColor: '#CE2219',
   },
   sevalaya: {
     id: 'sevalaya',
@@ -45,7 +45,7 @@ export const SECTORS: Record<SectorId, SectorMeta> = {
     chipClass: 'bg-tulsi-50 text-tulsi-700 border-tulsi-50',
     dotClass: 'bg-tulsi-500',
     barClass: 'bg-tulsi-500',
-    chartColor: '#2E7D4F',
+    chartColor: '#11865A',
   },
   sangam: {
     id: 'sangam',
@@ -56,7 +56,7 @@ export const SECTORS: Record<SectorId, SectorMeta> = {
     chipClass: 'bg-peacock-50 text-peacock-700 border-peacock-50',
     dotClass: 'bg-peacock-500',
     barClass: 'bg-peacock-500',
-    chartColor: '#1A6FA8',
+    chartColor: '#4F5BCA',
   },
 }
 
@@ -160,36 +160,34 @@ export const PRICE_ALERT_THRESHOLD = 0.1
 export const OVERRIDE_REASON_MIN = 10
 
 /**
- * Chart series colours. These are the sector tokens, with peacock nudged one
- * step bluer (#1A6FA8 rather than peacock-500 #1C6E8C) so tulsi green and
- * peacock blue stay apart for colour-blind readers. Chips, borders and dots
- * in the UI still use the peacock-500 token.
+ * Chart series colours, drawn from the OMG palette: brand red for Temple and
+ * outgo, green for Sevalaya and income, brand indigo for Sangam and projects.
  *
- * Validated as a categorical set against the sandal-50 surface: lightness band,
- * chroma floor, CVD separation, normal-vision floor and contrast all pass.
- * Turmeric sits below 3:1 against the page, so anything drawn in it always
- * carries a visible label or a table view beside it.
+ * Validated as a categorical set against the white card surface: lightness
+ * band, chroma floor, CVD separation and contrast all pass. Turmeric sits
+ * below 3:1 against the page, so anything drawn in it always carries a
+ * visible label or a table view beside it.
  */
 export const CHART = {
-  temple: '#9A1F18',
-  sevalaya: '#2E7D4F',
-  sangam: '#1A6FA8',
-  income: '#2E7D4F',
-  outgo: '#9A1F18',
-  accent: '#D4971A',
-  grid: '#F2E4C9',
-  axis: '#8A7062',
-  surface: '#FFFBF4',
+  temple: '#CE2219',
+  sevalaya: '#11865A',
+  sangam: '#4F5BCA',
+  income: '#11865A',
+  outgo: '#CE2219',
+  accent: '#FFC107',
+  grid: '#E4E4E7',
+  axis: '#71717A',
+  surface: '#FFFFFF',
 } as const
 
 /** Fixed order for the donation-category series. Never cycled. */
 export const CATEGORY_COLORS: Record<string, string> = {
-  hundi: '#D4971A',
-  pooja: '#9A1F18',
-  event: '#6B4E9B',
-  membership: '#8A7062',
-  activity: '#2E7D4F',
-  project: '#1A6FA8',
+  hundi: '#E5A800',
+  pooja: '#CE2219',
+  event: '#7C4DBD',
+  membership: '#6F7696',
+  activity: '#11865A',
+  project: '#4F5BCA',
 }
 
 export const CATEGORY_LABEL: Record<string, string> = {

@@ -148,7 +148,7 @@ export function ProcurementPage() {
                             {req.qty} {inv?.unit}
                           </p>
                           <p className="mt-1 text-[13px] text-stone-500">Needed by {formatDate(req.neededBy)}</p>
-                          <p className="mt-3 text-[13px] text-kumkum-700">Use this request →</p>
+                          <p className="mt-3 text-[13px] text-navy-600">Use this request →</p>
                         </Card>
                       </button>
                     </li>

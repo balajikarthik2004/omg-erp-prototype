@@ -41,7 +41,7 @@ export function FlowStepper({
                 className={cn(
                   'flex size-8 shrink-0 items-center justify-center rounded-full border text-[13px] font-medium transition-colors duration-150',
                   done && cn('border-transparent text-sandal-50', meta.markerClass),
-                  active && 'border-turmeric-500 bg-turmeric-50 text-turmeric-700',
+                  active && 'border-kumkum-600 bg-kumkum-50 text-kumkum-700',
                   !done && !active && 'border-sandal-300 bg-sandal-50 text-stone-500',
                   clickable && 'cursor-pointer',
                 )}

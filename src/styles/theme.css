@@ -1,68 +1,100 @@
 @import "tailwindcss";
 
 @theme {
-  /* Base surfaces: sandalwood, never pure white */
-  --color-sandal-50:  #FFFBF4;   /* page background */
-  --color-sandal-100: #FBF3E4;   /* cards on page, table headers */
-  --color-sandal-200: #F2E4C9;   /* borders, dividers */
-  --color-sandal-300: #E3CDA4;   /* strong borders, disabled */
+  /* =====================================================================
+     OMG brand system
+     Primary  red  #E22E26      Secondary  navy  #293088
+     The navy ramp is lifted verbatim from the OMG design-system sheet.
+     The red ramp is derived to mirror its lightness steps, because the
+     sheet's red row is mislabelled (it repeats the navy hex values).
+     Neutrals are navy-tinted, so page, border and ink are one system.
+     Never a raw hex in JSX — add a token here instead.
+     ===================================================================== */
 
-  /* Ink: temple-stone brown, used for text */
-  --color-stone-900: #2B1A12;    /* headings, primary text */
-  --color-stone-700: #5A4032;    /* body text */
-  --color-stone-500: #8A7062;    /* muted text, captions */
+  /* Navy — exact design-system ramp, then darker stops for the chrome. */
+  --color-navy-50:  #EBECF9;   /* page canvas */
+  --color-navy-100: #C4C7ED;
+  --color-navy-200: #9DA2E1;
+  --color-navy-300: #767DD6;
+  --color-navy-400: #4F58CA;   /* links, focus ring, chart indigo */
+  --color-navy-500: #353EB0;
+  --color-navy-600: #293088;   /* brand secondary */
+  --color-navy-700: #212870;
+  --color-navy-800: #1A1F58;
+  --color-navy-900: #121640;   /* sidebar, footer, deep chrome */
+  --color-navy-950: #0B0D28;
 
-  /* Kumkum: primary brand, main actions */
-  --color-kumkum-50:  #FCEBEA;
-  --color-kumkum-100: #F7D0CD;
-  --color-kumkum-500: #B3261E;
-  --color-kumkum-600: #9A1F18;   /* primary button */
-  --color-kumkum-700: #7A1712;   /* hover / sidebar */
-  --color-kumkum-900: #4A0E0B;   /* sidebar background */
+  /* Kumkum — the OMG primary red, same lightness steps as the navy ramp. */
+  --color-kumkum-50:  #FDEEED;
+  --color-kumkum-100: #F9D2D0;
+  --color-kumkum-200: #F4AEAB;
+  --color-kumkum-300: #EF8884;
+  --color-kumkum-400: #E95F59;
+  --color-kumkum-500: #E22E26;   /* brand red — primary */
+  --color-kumkum-600: #C0211A;   /* primary button */
+  --color-kumkum-700: #9C1813;   /* hover */
+  --color-kumkum-800: #7A110D;   /* pressed */
+  --color-kumkum-900: #5A0C09;
 
-  /* Turmeric / brass: accent, highlights, gold rules */
-  --color-turmeric-50:  #FFF6DD;
-  --color-turmeric-100: #FDE8A8;
-  --color-turmeric-400: #E9B12E;
-  --color-turmeric-500: #D4971A;   /* accent, active nav indicator */
-  --color-turmeric-700: #9A6A0C;   /* accent text on light */
+  /* Surfaces: white cards on a navy-tinted canvas. */
+  --color-sandal-50:  #FFFFFF;   /* cards, sheets, topbar */
+  --color-sandal-100: #F5F6FC;   /* table headers, row hovers, subtle fills */
+  --color-sandal-200: #E3E5F5;   /* borders, dividers */
+  --color-sandal-300: #C4C7ED;   /* strong borders, disabled (= navy-100) */
 
-  /* Tulsi: success, money received, approved */
-  --color-tulsi-50:  #E9F5EC;
-  --color-tulsi-500: #2E7D4F;
-  --color-tulsi-700: #1F5A38;
+  /* Ink: navy-tinted neutrals. All three pass AA on white and on navy-50. */
+  --color-stone-900: #1B1F4A;    /* headings, primary text */
+  --color-stone-700: #434974;    /* body text */
+  --color-stone-500: #5F6490;    /* muted text, captions */
 
-  /* Peacock: info, links, Tamil Sangam */
-  --color-peacock-50:  #E6F1F5;
-  --color-peacock-500: #1C6E8C;
-  --color-peacock-700: #134E64;
+  /* Turmeric / brass: the site's --accent #FFC107. Collect phase, brass. */
+  --color-turmeric-50:  #FFF8E1;
+  --color-turmeric-100: #FFECB3;
+  --color-turmeric-400: #FFC107;   /* --accent, straight from the site */
+  --color-turmeric-500: #E5A800;   /* Collect phase fills */
+  --color-turmeric-600: #B38600;
+  --color-turmeric-700: #8A6700;   /* accent text on light — AA on white */
+
+  /* Tulsi: success, money received, approved, Spend phase */
+  --color-tulsi-50:  #E6F6EF;
+  --color-tulsi-500: #11865A;
+  --color-tulsi-700: #0C6342;
+
+  /* Peacock: info, Report phase, Tamil Sangam — the navy family */
+  --color-peacock-50:  #EBECF9;
+  --color-peacock-500: #4F58CA;
+  --color-peacock-700: #293088;
 
   /* Semantic: warning and danger */
-  --color-marigold-50:  #FFF1E0;
-  --color-marigold-500: #E07B12;  /* pending, awaiting approval */
-  --color-danger-50:    #FDECEC;
-  --color-danger-600:   #C0352B;  /* rejected, overdue, over budget */
+  --color-marigold-50:  #FFF4E5;
+  --color-marigold-500: #A85A06;  /* pending, awaiting approval */
+  /* Destructive sits a cooler, deeper crimson than the vermillion primary,
+     so a Reject button is never mistaken for the main action. Separation is
+     by hue, not lightness, so it still reads as an alarm. */
+  --color-danger-50:    #FCE9ED;
+  --color-danger-600:   #A3122B;  /* rejected, overdue, over budget */
+  --color-danger-700:   #7F0C20;
 
-  /* Typography */
-  --font-display: "Marcellus", Georgia, serif;
-  /* The editorial serif for the donor home: the hero, the hundi card and the header name. */
-  --font-heritage: "Cormorant Garamond", Georgia, serif;
-  --font-sans: "Hind Madurai", system-ui, sans-serif;   /* supports Tamil + Latin */
+  /* Typography — omgofficial.com ships Montserrat for display and body
+     alike. Hind Madurai follows it so Tamil glyphs still render. */
+  --font-display: "Montserrat", "Hind Madurai", system-ui, sans-serif;
+  --font-heritage: "Montserrat", "Hind Madurai", system-ui, sans-serif;
+  --font-sans: "Montserrat", "Hind Madurai", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --radius-card: 14px;
-  --shadow-card: 0 1px 2px rgb(43 26 18 / 0.06), 0 4px 16px rgb(43 26 18 / 0.05);
+  --radius-card: 12px;   /* --radius */
+  --shadow-card: 0 1px 2px rgb(27 31 74 / 0.06), 0 4px 16px rgb(27 31 74 / 0.07);
 
   /* --- Derived, for depth and motion. The palette above is unchanged. --- */
 
-  /* Deeper sanctum tones, for the sidebar and the donor hero. */
-  --color-sanctum-900: #3A0B08;
-  --color-sanctum-950: #2A0806;
+  /* Deep brand field, for the sidebar and the donor hero. */
+  --color-sanctum-900: #1A1F58;
+  --color-sanctum-950: #0B0D28;
 
   /* One elevation scale, so cards do not all shout at once. */
-  --shadow-flat: 0 1px 1px rgb(43 26 18 / 0.04);
-  --shadow-lift: 0 2px 4px rgb(43 26 18 / 0.06), 0 12px 32px rgb(43 26 18 / 0.08);
-  --shadow-sheet: 0 -2px 8px rgb(43 26 18 / 0.04), 0 24px 56px rgb(43 26 18 / 0.14);
+  --shadow-flat: 0 1px 1px rgb(27 31 74 / 0.05);
+  --shadow-lift: 0 2px 4px rgb(27 31 74 / 0.07), 0 12px 32px rgb(27 31 74 / 0.10);
+  --shadow-sheet: 0 -2px 8px rgb(27 31 74 / 0.05), 0 24px 56px rgb(27 31 74 / 0.18);
 
   --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -75,7 +107,7 @@
 
   body {
     margin: 0;
-    background-color: var(--color-sandal-50);
+    background-color: var(--color-navy-50);
     color: var(--color-stone-700);
     font-family: var(--font-sans);
     font-size: 15px;
@@ -87,23 +119,25 @@
 
   h1, h2, h3, h4 {
     color: var(--color-stone-900);
-    font-weight: 400;
+    font-weight: 600;
+    letter-spacing: -0.015em;
   }
 
-  /* Marcellus sits better with a touch of negative tracking at display sizes. */
+  /* Montserrat needs tighter tracking at display sizes to stay composed. */
   .font-display {
-    letter-spacing: -0.01em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 
   :focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px var(--color-sandal-50), 0 0 0 4px var(--color-turmeric-400);
+    box-shadow: 0 0 0 2px var(--color-sandal-50), 0 0 0 3px var(--color-navy-400);
     border-radius: 4px;
   }
 
   ::selection {
-    background-color: var(--color-turmeric-100);
-    color: var(--color-stone-900);
+    background-color: var(--color-navy-100);
+    color: var(--color-navy-900);
   }
 
   /* Numbers line up in every table without extra classes. */
@@ -152,12 +186,14 @@ svg *:focus-visible,
 @layer utilities {
   /* Thin turmeric gold rule under page titles — the one ornament. */
   .gold-rule {
-    height: 1px;
+    height: 2px;
+    border-radius: 1px;
     background: linear-gradient(
       to right,
-      var(--color-turmeric-400) 0%,
-      var(--color-turmeric-400) 28%,
-      color-mix(in srgb, var(--color-turmeric-400) 30%, transparent) 100%
+      var(--color-kumkum-500) 0%,
+      var(--color-kumkum-500) 18%,
+      var(--color-navy-600) 46%,
+      color-mix(in srgb, var(--color-navy-600) 12%, transparent) 100%
     );
   }
 
@@ -169,16 +205,16 @@ svg *:focus-visible,
   /* Faint sandalwood grain. Keeps large warm fields from reading as flat plastic. */
   .texture-sandal {
     background-image:
-      radial-gradient(circle at 20% 10%, rgb(233 177 46 / 0.07) 0, transparent 45%),
-      radial-gradient(circle at 85% 0%, rgb(154 31 24 / 0.05) 0, transparent 40%);
+      radial-gradient(circle at 20% 10%, rgb(41 48 136 / 0.06) 0, transparent 45%),
+      radial-gradient(circle at 85% 0%, rgb(226 46 38 / 0.04) 0, transparent 40%);
   }
 
   /* The deep sanctum field behind the hero and the sidebar. */
   .surface-sanctum {
-    background-color: var(--color-kumkum-900);
+    background-color: var(--color-navy-900);
     background-image:
-      radial-gradient(ellipse at 15% 0%, rgb(212 151 26 / 0.16) 0, transparent 55%),
-      radial-gradient(ellipse at 100% 100%, rgb(179 38 30 / 0.4) 0, transparent 60%);
+      radial-gradient(ellipse at 15% 0%, rgb(79 88 202 / 0.30) 0, transparent 55%),
+      radial-gradient(ellipse at 100% 100%, rgb(226 46 38 / 0.10) 0, transparent 62%);
   }
 
   /* Each customer picks one of the theme colour families for its console. */
@@ -186,7 +222,7 @@ svg *:focus-visible,
     background-color: var(--color-tulsi-700);
   }
   .surface-sanctum[data-brand='peacock'] {
-    background-color: var(--color-peacock-700);
+    background-color: var(--color-navy-800);
   }
   .surface-sanctum[data-brand='turmeric'] {
     background-color: var(--color-stone-900);
@@ -194,7 +230,7 @@ svg *:focus-visible,
 
   /* A hairline brass edge, used where gold should read as inlay rather than fill. */
   .edge-brass {
-    box-shadow: inset 0 1px 0 rgb(253 232 168 / 0.35);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
   }
 
   /* Scroll-in for the home sections. Quiet: a short rise and fade, once. */
@@ -270,7 +306,7 @@ svg *:focus-visible,
   align-items: center;
   gap: 7px;
   padding: 4px 6px 6px 6px;
-  color: #A8241A;
+  color: var(--color-kumkum-600);
   font-size: 14.5px;
   font-weight: 600;
   text-decoration: none;
@@ -286,24 +322,24 @@ svg *:focus-visible,
   bottom: 0px;
   height: 2px;
   border-radius: 1px;
-  background: linear-gradient(90deg, #D4971A 0%, #B02019 100%);
+  background: linear-gradient(90deg, var(--color-navy-600) 0%, var(--color-kumkum-500) 100%);
   transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 300ms ease;
   transform-origin: left;
 }
 
 .sponsor-link:hover {
-  color: #7A1710;
+  color: var(--color-kumkum-700);
 }
 
 .sponsor-link:hover::after {
   transform: scaleY(1.3);
-  box-shadow: 0 1px 6px rgba(212, 151, 26, 0.4);
+  box-shadow: 0 1px 6px rgb(226 46 38 / 0.35);
 }
 
 .sponsor-arrow {
   display: inline-flex;
   align-items: center;
-  color: #A8241A;
+  color: var(--color-kumkum-600);
   transition: transform 250ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 

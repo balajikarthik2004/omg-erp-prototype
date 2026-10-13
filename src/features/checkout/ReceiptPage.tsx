@@ -45,7 +45,7 @@ export function ReceiptPage() {
         <span className="flex size-14 items-center justify-center rounded-full border border-tulsi-500/25 bg-tulsi-50">
           <CheckCircle2 className="size-7 text-tulsi-700" aria-hidden />
         </span>
-        <h1 className="mt-4 font-display text-[30px] leading-tight text-stone-900 sm:text-[34px]">
+        <h1 className="mt-4 font-display text-[22px] leading-tight text-stone-900 sm:text-[34px]">
           {settled ? 'Your offering is received' : donation.status === 'paid' ? 'Payment confirmed' : 'Waiting for Square'}
         </h1>
         <p className="mt-2 max-w-md text-[15px] text-stone-500">
@@ -58,7 +58,7 @@ export function ReceiptPage() {
       {/* Printable receipt */}
       <article className="overflow-hidden rounded-card border border-sandal-200 bg-sandal-50 shadow-card">
         <header className="relative isolate overflow-hidden surface-sanctum px-6 py-7 text-sandal-50 sm:px-8">
-          <ArchMark className="pointer-events-none absolute -right-4 -bottom-10 text-turmeric-400/20" size={150} />
+          <ArchMark className="pointer-events-none absolute -right-4 -bottom-10 text-navy-300/20" size={150} />
           <div className="relative flex items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2.5">
@@ -67,9 +67,9 @@ export function ReceiptPage() {
               </div>
               <p className="mt-4 font-display text-[24px] leading-tight sm:text-[27px]">
                 {sector.name}
-                <span className="ml-2.5 text-turmeric-400/90">{sector.tamil}</span>
+                <span className="ml-2.5 text-navy-300/90">{sector.tamil}</span>
               </p>
-              <p className="mt-1 text-[11px] tracking-[0.14em] text-turmeric-400/80 uppercase">
+              <p className="mt-1 text-[11px] tracking-[0.14em] text-navy-300/80 uppercase">
                 Official donation receipt
               </p>
             </div>
@@ -130,7 +130,7 @@ export function ReceiptPage() {
               })}
             </tbody>
             <tfoot>
-              <tr className="border-t-2 border-turmeric-400/50">
+              <tr className="border-t-2 border-navy-200/50">
                 <td className="pt-3 text-right text-[14px] font-medium text-stone-900">Total received</td>
                 <td className="pt-3 text-right">
                   <Money value={donation.gross} className="font-display text-[22px]" />
@@ -147,7 +147,7 @@ export function ReceiptPage() {
                   Thank you. May your offering return to you as peace and good health.
                 </p>
               </div>
-              <Kolam className="hidden shrink-0 text-turmeric-500/70 sm:block" size={64} />
+              <Kolam className="hidden shrink-0 text-navy-400/70 sm:block" size={64} />
             </div>
           </div>
 

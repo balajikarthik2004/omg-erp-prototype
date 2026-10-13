@@ -4,7 +4,7 @@ import { LayoutDashboard, LogIn, Menu, ShoppingBag, UserRound, X } from 'lucide-
 
 import { SECTOR_IDS, SECTORS } from '@/config'
 import { cn } from '@/lib/cn'
-import { Divider, Kolam, OmgMark } from '@/components/ui/Ornament'
+import { OmgMark } from '@/components/ui/Ornament'
 import { useDb } from '@/store/db'
 import { useSession } from '@/store/session'
 import { Footer } from './Footer'
@@ -32,13 +32,13 @@ export function DonorLayout() {
   }))
 
   return (
-    <div className="flex min-h-screen flex-col bg-sandal-50">
+    <div className="flex min-h-screen flex-col bg-navy-50">
       <header className="no-print sticky top-0 z-30 border-b border-sandal-200 bg-sandal-50/90 backdrop-blur-md">
         <div className="mx-auto flex h-[78px] max-w-6xl items-center gap-4 px-5 sm:px-8">
           <Link to="/" className="flex items-center gap-3" aria-label="OMG Platform, home">
             <OmgMark size={46} />
             <span className="leading-none">
-              <span className="block max-w-[260px] truncate font-heritage text-[29px] leading-none font-semibold tracking-wide text-stone-900">
+              <span className="block max-w-[150px] truncate font-heritage text-[21px] leading-none font-semibold tracking-wide text-stone-900 sm:max-w-[260px] sm:text-[27px]">
                 {tenant?.name ?? 'OMG'}
               </span>
               <span className="mt-0.5 block text-[11px] tracking-[0.14em] text-stone-500 uppercase">
@@ -49,7 +49,7 @@ export function DonorLayout() {
 
           <span className="mx-1 hidden h-7 w-px bg-sandal-200 md:block" aria-hidden />
 
-          <nav className="hidden items-center gap-0.5 md:flex">
+          <nav className="hidden shrink-0 items-center gap-0.5 md:flex">
             {links.map((link) => (
               <NavLink
                 key={link.to}
@@ -63,11 +63,11 @@ export function DonorLayout() {
               >
                 {({ isActive }) => (
                   <>
-                    <span className="block text-[14px] leading-tight font-medium">{link.label}</span>
-                    <span className="block text-[12px] leading-tight text-stone-500">{link.tamil}</span>
+                    <span className="block text-[14px] leading-tight font-medium whitespace-nowrap">{link.label}</span>
+                    <span className="block text-[12px] leading-tight whitespace-nowrap text-stone-500">{link.tamil}</span>
                     <span
                       className={cn(
-                        'absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-turmeric-500 transition-opacity duration-150',
+                        'absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-kumkum-500 transition-opacity duration-150',
                         isActive ? 'opacity-100' : 'opacity-0',
                       )}
                       aria-hidden
@@ -81,7 +81,7 @@ export function DonorLayout() {
           <div className="ml-auto flex items-center gap-1">
             <Link
               to="/console"
-              className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-[14px] text-stone-700 transition-colors duration-150 hover:bg-sandal-100 lg:flex"
+              className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-[14px] whitespace-nowrap text-stone-700 transition-colors duration-150 hover:bg-sandal-100 lg:flex"
             >
               <LayoutDashboard className="size-4" aria-hidden />
               Console
@@ -91,7 +91,7 @@ export function DonorLayout() {
               className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-[14px] text-stone-700 transition-colors duration-150 hover:bg-sandal-100"
             >
               {signedIn ? <UserRound className="size-4" aria-hidden /> : <LogIn className="size-4" aria-hidden />}
-              <span className="hidden sm:inline">{signedIn ? 'My donations' : 'Sign in'}</span>
+              <span className="hidden whitespace-nowrap sm:inline">{signedIn ? 'My donations' : 'Sign in'}</span>
             </Link>
 
             <Link

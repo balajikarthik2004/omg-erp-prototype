@@ -38,7 +38,7 @@ export function UtilisationBars({
             <div className="mb-1.5 flex items-baseline justify-between gap-3">
               <Link
                 to={`/console/budgets?focus=${head.id}`}
-                className="truncate text-[14px] text-stone-900 hover:text-kumkum-700"
+                className="truncate text-[14px] text-stone-900 hover:text-navy-600"
               >
                 {head.name}
               </Link>

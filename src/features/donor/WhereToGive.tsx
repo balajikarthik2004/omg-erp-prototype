@@ -3,6 +3,7 @@ import { ArrowRight, Clock3, Star } from 'lucide-react'
 
 import { SECTOR_IDS, SECTORS, type SectorId } from '@/config'
 import { cn } from '@/lib/cn'
+import { Etching } from '@/components/ui/Ornament'
 import { Photo } from '@/components/ui/Photo'
 import type { PhotoKey } from '@/lib/photos'
 import { CATALOG } from '@/mock/seed'
@@ -36,9 +37,9 @@ const CARD_CONFIG: Record<
     position: '50% 70%',
     tamil: 'கோவில்',
     blurb: 'Hundi, poojas, festivals and temple projects that preserve our heritage.',
-    tileBg: 'bg-[#FBE0D9]',
-    tileColor: 'text-[#A8241A]',
-    accentBar: 'bg-[#A8241A]',
+    tileBg: 'bg-kumkum-50',
+    tileColor: 'text-kumkum-600',
+    accentBar: 'bg-kumkum-600',
     waysText: '18 ways to give',
     popular: true,
     renderIcon: () => <TempleGopuramIcon size={28} />,
@@ -48,9 +49,9 @@ const CARD_CONFIG: Record<
     position: '50% 55%',
     tamil: 'சேவாலயா',
     blurb: 'Annadhanam, education and welfare programmes for all.',
-    tileBg: 'bg-[#E3F0D8]',
-    tileColor: 'text-[#287A45]',
-    accentBar: 'bg-[#287A45]',
+    tileBg: 'bg-tulsi-50',
+    tileColor: 'text-tulsi-500',
+    accentBar: 'bg-tulsi-500',
     waysText: '9 ways to give',
     renderIcon: () => <AnnadhanamBowlIcon size={28} />,
   },
@@ -59,9 +60,9 @@ const CARD_CONFIG: Record<
     position: '50% 46%',
     tamil: 'தமிழ்ச்சங்கம்',
     blurb: 'Memberships, cultural events, classes and community projects.',
-    tileBg: 'bg-[#F8E6B8]',
-    tileColor: 'text-[#C69216]',
-    accentBar: 'bg-[#C69216]',
+    tileBg: 'bg-navy-50',
+    tileColor: 'text-navy-400',
+    accentBar: 'bg-navy-400',
     waysText: '12 ways to give',
     renderIcon: () => <TraditionalDeepamIcon size={28} />,
   },
@@ -69,10 +70,10 @@ const CARD_CONFIG: Record<
 
 function Eyebrow({ children }: { children: string }) {
   return (
-    <p className="flex items-center justify-center gap-3 text-[12px] font-semibold tracking-[0.24em] text-turmeric-700 uppercase">
-      <span className="h-px w-9 bg-turmeric-400/70" aria-hidden />
+    <p className="flex items-center justify-center gap-3 text-[12px] font-semibold tracking-[0.24em] text-navy-600 uppercase">
+      <span className="h-px w-9 bg-navy-300/70" aria-hidden />
       {children}
-      <span className="h-px w-9 bg-turmeric-400/70" aria-hidden />
+      <span className="h-px w-9 bg-navy-300/70" aria-hidden />
     </p>
   )
 }
@@ -92,10 +93,10 @@ export function WhereToGive() {
         className="pointer-events-none absolute top-8 -left-20 -z-10 hidden h-[680px] w-[360px] opacity-[0.22] lg:block xl:-left-16 xl:h-[720px] xl:w-[400px]"
         aria-hidden
       >
-        <img
+        <Etching
           src="/images/bg-gopuram-etching.png"
-          alt=""
-          className="h-full w-full object-contain object-top-left"
+          className="bg-navy-600"
+          position="top left"
         />
       </div>
 
@@ -103,18 +104,18 @@ export function WhereToGive() {
         className="pointer-events-none absolute top-1/2 -right-6 -z-10 hidden h-[520px] w-[290px] -translate-y-[42%] opacity-[0.22] lg:block xl:w-[330px]"
         aria-hidden
       >
-        <img
+        <Etching
           src="/images/bg-lotus-etching.png"
-          alt=""
-          className="h-full w-full object-contain object-right"
+          className="bg-navy-600"
+          position="right"
         />
       </div>
 
       <div className={cn('mx-auto max-w-6xl px-5 sm:px-8', 'reveal', seen && 'is-visible')}>
         <div className="text-center">
           <Eyebrow>Where to give</Eyebrow>
-          <h2 className="mt-4 font-heritage text-[42px] leading-[1.08] font-normal text-stone-900 sm:text-[52px]">
-            Three houses, <span className="text-[#A8241A]">one ledger</span>
+          <h2 className="mt-4 font-heritage text-[30px] leading-[1.08] font-normal text-stone-900 sm:text-[52px]">
+            Three houses, <span className="text-kumkum-600">one ledger</span>
           </h2>
           <p className="mx-auto mt-3.5 max-w-2xl text-[16px] leading-relaxed text-stone-700 sm:text-[17px]">
             Each offering finds its right place, supporting the temple, its rituals and the community.
@@ -134,9 +135,9 @@ export function WhereToGive() {
                 <Link
                   to={`/donate/${id}`}
                   className={cn(
-                    'group relative flex h-full flex-col overflow-hidden rounded-[16px] border border-sandal-200 bg-[#FFFDF8] shadow-card',
+                    'group relative flex h-full flex-col overflow-hidden rounded-[16px] border border-sandal-200 bg-sandal-50 shadow-card',
                     'transition-all duration-300 hover:-translate-y-1 hover:shadow-lift',
-                    'focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:ring-offset-2 focus-visible:outline-none',
+                    'focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 focus-visible:outline-none',
                   )}
                 >
                   {/* Card Image Header */}
@@ -150,7 +151,7 @@ export function WhereToGive() {
                       imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                     {config.popular ? (
-                      <span className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-md bg-[#C69216] px-2.5 py-1 text-[12px] font-semibold text-white shadow-sm">
+                      <span className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-md bg-navy-400 px-2.5 py-1 text-[12px] font-semibold text-white shadow-sm">
                         <Star className="size-3 fill-white" aria-hidden />
                         Popular
                       </span>
@@ -170,7 +171,7 @@ export function WhereToGive() {
                         {config.renderIcon()}
                       </span>
                       <div className="min-w-0">
-                        <h3 className="font-heritage text-[30px] leading-none font-medium text-stone-900 sm:text-[32px]">
+                        <h3 className="font-heritage text-[22px] leading-none font-medium text-stone-900 sm:text-[32px]">
                           {sector.name}
                         </h3>
                         <p className="mt-1 text-[16px] text-stone-600">{config.tamil}</p>
@@ -181,10 +182,10 @@ export function WhereToGive() {
 
                     <div className="mt-5 flex items-center justify-between border-t border-sandal-200/90 pt-4">
                       <span className="inline-flex items-center gap-2 text-[14px] text-stone-700">
-                        <Clock3 className="size-[17px] text-[#A8241A]" aria-hidden />
+                        <Clock3 className="size-[17px] text-kumkum-600" aria-hidden />
                         {waysDisplay}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-[#A8241A]">
+                      <span className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-kumkum-600">
                         Explore
                         <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
                       </span>

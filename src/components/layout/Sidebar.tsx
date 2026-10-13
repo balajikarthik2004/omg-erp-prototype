@@ -21,12 +21,12 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <div data-brand={tenant?.brand ?? 'kumkum'} className="flex h-full flex-col surface-sanctum text-sandal-100">
       <div className="flex items-center justify-between gap-2 px-5 py-5">
         <NavLink to="/console" className="flex items-center gap-3" onClick={onNavigate}>
-          <OmgMark size={36} />
+          <OmgMark size={36} onDark />
           <span className="leading-none">
             <span className="block max-w-[150px] truncate font-display text-[17px] tracking-wide text-sandal-50">
               {tenant?.name ?? 'OMG'}
             </span>
-            <span className="mt-1 block text-[10px] tracking-[0.18em] text-turmeric-400/75 uppercase">
+            <span className="mt-1 block text-[10px] tracking-[0.18em] text-navy-200/80 uppercase">
               OMG Console
             </span>
           </span>
@@ -74,7 +74,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                         <>
                           <span
                             className={cn(
-                              'absolute top-1/2 -left-3 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-turmeric-500 transition-opacity duration-150',
+                              'absolute top-1/2 -left-3 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-kumkum-500 transition-opacity duration-150',
                               isActive ? 'opacity-100' : 'opacity-0',
                             )}
                             aria-hidden
@@ -82,13 +82,13 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                           <Icon
                             className={cn(
                               'size-[17px] shrink-0 transition-colors duration-150',
-                              isActive ? 'text-turmeric-400' : 'text-sandal-200/55 group-hover:text-sandal-100',
+                              isActive ? 'text-kumkum-500' : 'text-sandal-200/55 group-hover:text-sandal-100',
                             )}
                             aria-hidden
                           />
                           <span className="flex-1 truncate">{item.label}</span>
                           {item.badge === 'approvals' && myTasks > 0 ? (
-                            <span className="rounded-full bg-turmeric-500 px-1.5 py-px font-mono text-[11px] font-semibold text-stone-900 tabular-nums">
+                            <span className="rounded-full bg-kumkum-600 px-1.5 py-px font-mono text-[11px] font-semibold text-white tabular-nums">
                               {myTasks}
                             </span>
                           ) : null}
@@ -107,7 +107,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         <NavLink
           to="/"
           onClick={onNavigate}
-          className="inline-flex items-center gap-1.5 text-[13px] text-sandal-200/70 transition-colors duration-150 hover:text-turmeric-400"
+          className="inline-flex items-center gap-1.5 text-[13px] text-sandal-200/70 transition-colors duration-150 hover:text-kumkum-100"
         >
           <ExternalLink className="size-3.5" aria-hidden />
           Open the donor site
@@ -118,7 +118,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <br />
             Mock data · no live payments
           </p>
-          <Kolam className="-mr-1 -mb-1 text-turmeric-400/30" size={52} />
+          <Kolam className="-mr-1 -mb-1 text-navy-300/25" size={52} />
         </div>
       </div>
     </div>

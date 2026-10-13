@@ -88,7 +88,7 @@ export function ItemDetailPage() {
       <header className="mt-4 mb-6">
         <SectorChip sectorId={sectorId} withTamil />
         <div className="mt-2 flex flex-wrap items-baseline gap-3">
-          <h1 className="font-display text-[30px] leading-tight text-stone-900">{item.name}</h1>
+          <h1 className="font-display text-[22px] sm:text-[30px] leading-tight text-stone-900">{item.name}</h1>
           {item.tamil ? <span className="text-[18px] text-stone-500">{item.tamil}</span> : null}
         </div>
         <p className="mt-1 max-w-2xl text-[15px] leading-relaxed text-stone-700">{item.description}</p>
@@ -107,7 +107,7 @@ export function ItemDetailPage() {
                   aria-label="Fewer tickets"
                   disabled={qty <= 1}
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  className="flex size-11 items-center justify-center rounded-lg border border-sandal-300 text-[20px] text-stone-700 transition-colors duration-150 hover:border-turmeric-400 disabled:opacity-40"
+                  className="flex size-11 items-center justify-center rounded-lg border border-sandal-300 text-[20px] text-stone-700 transition-colors duration-150 hover:border-navy-200 disabled:opacity-40"
                 >
                   −
                 </button>
@@ -119,7 +119,7 @@ export function ItemDetailPage() {
                   aria-label="More tickets"
                   disabled={qty >= 10}
                   onClick={() => setQty((q) => Math.min(10, q + 1))}
-                  className="flex size-11 items-center justify-center rounded-lg border border-sandal-300 text-[20px] text-stone-700 transition-colors duration-150 hover:border-turmeric-400 disabled:opacity-40"
+                  className="flex size-11 items-center justify-center rounded-lg border border-sandal-300 text-[20px] text-stone-700 transition-colors duration-150 hover:border-navy-200 disabled:opacity-40"
                 >
                   +
                 </button>
@@ -168,7 +168,7 @@ export function ItemDetailPage() {
                       'transition-colors duration-150',
                       amount === preset && custom === ''
                         ? 'border-kumkum-600 bg-kumkum-50 font-medium text-kumkum-700'
-                        : 'border-sandal-300 bg-sandal-50 text-stone-700 hover:border-turmeric-400 hover:bg-turmeric-50',
+                        : 'border-sandal-300 bg-sandal-50 text-stone-700 hover:border-navy-200 hover:bg-navy-50',
                     )}
                   >
                     {formatMoney(preset)}
@@ -203,7 +203,7 @@ export function ItemDetailPage() {
           {item.needsDedication ? (
             <section className="rounded-card border border-sandal-200 bg-sandal-50 p-5">
               <h2 className="mb-1 inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">
-                <Deepam className="size-4 text-turmeric-500" />
+                <Deepam className="size-4 text-navy-400" />
                 Dedication
               </h2>
               <p className="mb-4 text-[13px] text-stone-500">
@@ -258,7 +258,7 @@ export function ItemDetailPage() {
         <aside className="md:sticky md:top-20">
           <div className="relative overflow-hidden rounded-card border border-sandal-200 bg-sandal-100 p-5 shadow-card texture-sandal">
             <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">You are giving</p>
-            <p className="mt-2 font-display text-[34px] leading-none text-stone-900">{formatMoney(total)}</p>
+            <p className="mt-2 font-display text-[24px] sm:text-[34px] leading-none text-stone-900">{formatMoney(total)}</p>
             <p className="mt-2 text-[14px] text-stone-700">
               {item.name}
               {item.ticketed ? ` × ${qty} ticket${qty === 1 ? '' : 's'}` : ''}

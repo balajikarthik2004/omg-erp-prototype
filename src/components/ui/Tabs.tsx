@@ -42,7 +42,7 @@ export function Tabs({
               <span
                 className={cn(
                   'ml-2 rounded-full px-1.5 py-px font-mono text-[11px] tabular-nums transition-colors duration-150',
-                  active ? 'bg-turmeric-100 text-turmeric-700' : 'bg-sandal-100 text-stone-500',
+                  active ? 'bg-kumkum-50 text-kumkum-700' : 'bg-sandal-100 text-stone-500',
                 )}
               >
                 {item.count}
@@ -50,7 +50,7 @@ export function Tabs({
             ) : null}
             <span
               className={cn(
-                'absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-turmeric-500 transition-opacity duration-150',
+                'absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-kumkum-600 transition-opacity duration-150',
                 active ? 'opacity-100' : 'opacity-0',
               )}
               aria-hidden

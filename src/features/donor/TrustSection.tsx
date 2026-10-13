@@ -20,7 +20,7 @@ export function TrustSection() {
     <section
       ref={ref}
       id="our-promise"
-      className="relative w-full overflow-hidden bg-[#F8EFD9] py-9 sm:py-10"
+      className="relative w-full overflow-hidden bg-sandal-100 py-9 sm:py-10"
     >
       {/* Left seamless faded devotional lamp visual */}
       <div
@@ -58,13 +58,13 @@ export function TrustSection() {
 
           {/* Column 2: Introduction & Main Message */}
           <div className="flex flex-col justify-start pr-2">
-            <p className="text-[10.5px] font-semibold tracking-[0.22em] text-[#A66A08] uppercase">
+            <p className="text-[10.5px] font-semibold tracking-[0.22em] text-navy-600 uppercase">
               Why a devotee can trust where it goes
             </p>
-            <h2 className="mt-2 font-heritage text-[30px] font-normal leading-[1.08] text-[#342018] sm:text-[34px]">
+            <h2 className="mt-2 font-heritage text-[22px] font-normal leading-[1.08] text-stone-900 sm:text-[34px]">
               Your offering<br />creates real change
             </h2>
-            <p className="mt-3 max-w-[280px] text-[13px] leading-[1.6] text-[#765E50]">
+            <p className="mt-3 max-w-[280px] text-[13px] leading-[1.6] text-stone-700">
               Transparency, accountability and devotion are at the heart of everything we do. Here's how your support makes a difference.
             </p>
           </div>
@@ -76,23 +76,23 @@ export function TrustSection() {
               
               {/* Step 01 */}
               <div className="flex flex-col items-start pr-1">
-                <span className="flex size-[48px] items-center justify-center rounded-full bg-[#FCECE8] text-[#B1241B] shadow-xs">
+                <span className="flex size-[48px] items-center justify-center rounded-full bg-kumkum-50 text-kumkum-600 shadow-xs">
                   <ReceiptTrustIcon size={23} />
                 </span>
-                <span className="mt-2.5 text-[12.5px] font-bold tracking-wider text-[#A66A08]">
+                <span className="mt-2.5 text-[12.5px] font-bold tracking-wider text-navy-600">
                   01
                 </span>
-                <h3 className="mt-0.5 font-heritage text-[17.5px] font-medium leading-snug text-[#342018]">
+                <h3 className="mt-0.5 font-heritage text-[17.5px] font-medium leading-snug text-stone-900">
                   Received at once
                 </h3>
-                <p className="mt-1.5 text-[12.5px] leading-[1.58] text-[#765E50]">
+                <p className="mt-1.5 text-[12.5px] leading-[1.58] text-stone-700">
                   Your receipt number is issued the moment the offering is made, with the fund it belongs to named on it.
                 </p>
               </div>
 
               {/* Arrow 1 */}
               <div
-                className="mt-3.5 hidden select-none px-1 text-[18px] text-[#C48B18] sm:flex sm:self-start"
+                className="mt-3.5 hidden select-none px-1 text-[18px] text-navy-400 sm:flex sm:self-start"
                 aria-hidden
               >
                 →
@@ -100,23 +100,23 @@ export function TrustSection() {
 
               {/* Step 02 */}
               <div className="flex flex-col items-start px-1">
-                <span className="flex size-[48px] items-center justify-center rounded-full bg-[#EAF5E5] text-[#2E7D32] shadow-xs">
+                <span className="flex size-[48px] items-center justify-center rounded-full bg-tulsi-50 text-tulsi-500 shadow-xs">
                   <SignatureTrustIcon size={23} />
                 </span>
-                <span className="mt-2.5 text-[12.5px] font-bold tracking-wider text-[#A66A08]">
+                <span className="mt-2.5 text-[12.5px] font-bold tracking-wider text-navy-600">
                   02
                 </span>
-                <h3 className="mt-0.5 font-heritage text-[17.5px] font-medium leading-snug text-[#342018]">
+                <h3 className="mt-0.5 font-heritage text-[17.5px] font-medium leading-snug text-stone-900">
                   Two signatures to spend
                 </h3>
-                <p className="mt-1.5 text-[12.5px] leading-[1.58] text-[#765E50]">
+                <p className="mt-1.5 text-[12.5px] leading-[1.58] text-stone-700">
                   Whoever prepares a payment can never approve it. Every rupee leaving needs a second pair of eyes.
                 </p>
               </div>
 
               {/* Arrow 2 */}
               <div
-                className="mt-3.5 hidden select-none px-1 text-[18px] text-[#C48B18] sm:flex sm:self-start"
+                className="mt-3.5 hidden select-none px-1 text-[18px] text-navy-400 sm:flex sm:self-start"
                 aria-hidden
               >
                 →
@@ -124,16 +124,16 @@ export function TrustSection() {
 
               {/* Step 03 */}
               <div className="flex flex-col items-start pl-1">
-                <span className="flex size-[48px] items-center justify-center rounded-full bg-[#F0EBFA] text-[#7C3AED] shadow-xs">
+                <span className="flex size-[48px] items-center justify-center rounded-full bg-navy-50 text-navy-600 shadow-xs">
                   <ShieldTrustIcon size={23} />
                 </span>
-                <span className="mt-2.5 text-[12.5px] font-bold tracking-wider text-[#A66A08]">
+                <span className="mt-2.5 text-[12.5px] font-bold tracking-wider text-navy-600">
                   03
                 </span>
-                <h3 className="mt-0.5 font-heritage text-[17.5px] font-medium leading-snug text-[#342018]">
+                <h3 className="mt-0.5 font-heritage text-[17.5px] font-medium leading-snug text-stone-900">
                   Restricted stays restricted
                 </h3>
-                <p className="mt-1.5 text-[12.5px] leading-[1.58] text-[#765E50]">
+                <p className="mt-1.5 text-[12.5px] leading-[1.58] text-stone-700">
                   A gift to the kitchen cannot quietly become a gift to something else. The system refuses it.
                 </p>
               </div>
@@ -143,16 +143,16 @@ export function TrustSection() {
             <div className="flex flex-wrap items-center gap-5 pt-2">
               <Link
                 to="/about#governance"
-                className="inline-flex h-[36px] items-center gap-1.5 rounded-full border border-[#D8A83E] bg-transparent px-4 text-[13px] font-medium text-[#795229] transition-colors hover:bg-[#F3E5C6]"
+                className="inline-flex h-[36px] items-center gap-1.5 rounded-full border border-navy-200 bg-transparent px-4 text-[13px] font-medium text-navy-600 transition-colors hover:bg-navy-50"
               >
                 <span>Learn more about our process</span>
-                <span className="text-[15px] text-[#C48B18]">→</span>
+                <span className="text-[15px] text-navy-400">→</span>
               </Link>
 
-              <div className="hidden items-center gap-2.5 text-[#D8A83E]/70 sm:flex" aria-hidden>
-                <span className="h-px w-14 bg-[#D8A83E]/40" />
-                <HeritageKolamStar size={13} className="text-[#D8A83E]" />
-                <span className="h-px w-14 bg-[#D8A83E]/40" />
+              <div className="hidden items-center gap-2.5 text-navy-200/70 sm:flex" aria-hidden>
+                <span className="h-px w-14 bg-navy-200/40" />
+                <HeritageKolamStar size={13} className="text-navy-200" />
+                <span className="h-px w-14 bg-navy-200/40" />
               </div>
             </div>
           </div>

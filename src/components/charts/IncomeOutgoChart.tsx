@@ -35,7 +35,7 @@ export function IncomeOutgoChart({ data, height = 280 }: { data: MonthPoint[]; h
               tickFormatter={(v: number) => formatMoneyCompact(v)}
             />
             <Tooltip
-              cursor={{ fill: '#FBF3E4' }}
+              cursor={{ fill: '#F4F4F5' }}
               content={({ active, payload, label }) =>
                 active && payload?.length ? (
                   <ChartTooltip
@@ -108,7 +108,7 @@ export function SectorIncomeChart({ data, height = 280 }: { data: MonthPoint[]; 
               tickFormatter={(v: number) => formatMoneyCompact(v)}
             />
             <Tooltip
-              cursor={{ fill: '#FBF3E4' }}
+              cursor={{ fill: '#F4F4F5' }}
               content={({ active, payload, label }) =>
                 active && payload?.length ? (
                   <ChartTooltip

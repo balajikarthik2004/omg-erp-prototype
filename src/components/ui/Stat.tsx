@@ -42,7 +42,7 @@ export function Stat({
         ) : null}
       </div>
 
-      <p className="mt-3 font-display text-[30px] leading-none text-stone-900">{value}</p>
+      <p className="mt-3 font-display text-[22px] sm:text-[30px] leading-none text-stone-900">{value}</p>
 
       {typeof delta === 'number' || sub ? (
         <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1">

@@ -5,7 +5,7 @@ import { cn } from '@/lib/cn'
 /** A bare trend mark. It never carries its own axis or legend — the row names it. */
 export function Sparkline({
   points,
-  color = '#2E7D4F',
+  color = '#11865A',
   width = 96,
   height = 28,
   className,

@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { formatMoney, formatPct } from '@/lib/format'
 import { Money } from '@/components/ui/Money'
+import { Etching } from '@/components/ui/Ornament'
 import { useDb } from '@/store/db'
 import {
   TempleTowerIcon,
@@ -16,8 +17,8 @@ import { useReveal } from './useReveal'
 
 function Eyebrow({ children }: { children: string }) {
   return (
-    <p className="flex items-center gap-3 text-[12px] font-semibold tracking-[0.24em] text-turmeric-700 uppercase">
-      <span className="h-px w-9 bg-turmeric-400/70" aria-hidden />
+    <p className="flex items-center gap-3 text-[12px] font-semibold tracking-[0.24em] text-navy-600 uppercase">
+      <span className="h-px w-9 bg-navy-300/70" aria-hidden />
       {children}
     </p>
   )
@@ -51,10 +52,10 @@ export function FeaturedProjectSection() {
         className="pointer-events-none absolute top-4 -left-20 -z-10 hidden h-[680px] w-[380px] opacity-[0.22] lg:block xl:-left-16"
         aria-hidden
       >
-        <img
+        <Etching
           src="/images/bg-project-gopuram-etching.png"
-          alt=""
-          className="h-full w-full object-contain object-top-left"
+          className="bg-navy-600"
+          position="top left"
         />
       </div>
 
@@ -63,10 +64,10 @@ export function FeaturedProjectSection() {
         className="pointer-events-none absolute top-4 -right-4 -z-10 hidden h-[480px] w-[280px] opacity-[0.22] lg:block xl:w-[320px]"
         aria-hidden
       >
-        <img
+        <Etching
           src="/images/bg-project-foliage-etching.png"
-          alt=""
-          className="h-full w-full object-contain object-top-right"
+          className="bg-navy-600"
+          position="top right"
         />
       </div>
 
@@ -76,9 +77,9 @@ export function FeaturedProjectSection() {
           <div className="relative z-10">
             <Eyebrow>Featured Project</Eyebrow>
 
-            <h2 className="mt-4 font-heritage text-[46px] leading-[1.04] font-normal text-stone-900 sm:text-[56px] lg:text-[62px]">
+            <h2 className="mt-4 font-heritage text-[33px] leading-[1.04] font-normal text-stone-900 sm:text-[56px] lg:text-[62px]">
               <span className="block">Rajagopuram</span>
-              <span className="block text-[#A8241A]">Renovation</span>
+              <span className="block text-kumkum-600">Renovation</span>
             </h2>
 
             <p className="mt-5 max-w-xl text-[16px] leading-[1.7] text-stone-700 sm:text-[17px]">
@@ -90,7 +91,7 @@ export function FeaturedProjectSection() {
             <div className="mt-8 flex flex-wrap items-center gap-6 sm:gap-8">
               {/* Badge 1 */}
               <div className="flex items-center gap-3.5">
-                <span className="flex size-[48px] shrink-0 items-center justify-center rounded-full bg-[#F8E6B8]/90 shadow-xs">
+                <span className="flex size-[48px] shrink-0 items-center justify-center rounded-full bg-navy-50/90 shadow-xs">
                   <TempleTowerIcon size={24} />
                 </span>
                 <div>
@@ -101,7 +102,7 @@ export function FeaturedProjectSection() {
 
               {/* Badge 2 */}
               <div className="flex items-center gap-3.5">
-                <span className="flex size-[48px] shrink-0 items-center justify-center rounded-full bg-[#F8E6B8]/90 shadow-xs">
+                <span className="flex size-[48px] shrink-0 items-center justify-center rounded-full bg-navy-50/90 shadow-xs">
                   <SthapatiChiselsIcon size={22} />
                 </span>
                 <div>
@@ -116,9 +117,9 @@ export function FeaturedProjectSection() {
               <Link to={`/donate/${featured.sectorId}/cat-tmp-raja`} className="inline-block">
                 <button
                   type="button"
-                  className="group flex h-[52px] items-center gap-3 rounded-xl bg-[#8A1710] px-7 text-[16px] font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-px hover:bg-[#72120C] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-turmeric-400"
+                  className="group flex h-[52px] items-center gap-3 rounded-xl bg-kumkum-700 px-7 text-[16px] font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-px hover:bg-kumkum-800 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400"
                 >
-                  <SacredOfferingHandIcon size={20} className="text-turmeric-300" />
+                  <SacredOfferingHandIcon size={20} className="text-navy-200" />
                   <span>Give to this project</span>
                   <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
                 </button>
@@ -132,7 +133,7 @@ export function FeaturedProjectSection() {
             <Finial className="absolute -top-[18px] left-1/2 z-20 -translate-x-1/2" />
 
             {/* Arch Photo Container */}
-            <div className="relative overflow-hidden rounded-t-[200px] rounded-b-[20px] border-2 border-turmeric-500/60 bg-sandal-100 p-2 shadow-sm">
+            <div className="relative overflow-hidden rounded-t-[200px] rounded-b-[20px] border-2 border-navy-300/60 bg-sandal-100 p-2 shadow-sm">
               <div className="aspect-[4/3.8] w-full overflow-hidden rounded-t-[190px] rounded-b-[14px]">
                 <img
                   src="/images/project-rajagopuram.webp"
@@ -148,7 +149,7 @@ export function FeaturedProjectSection() {
 
             {/* Overlapping Raised Stats Card - Shifted Upwards */}
             <div
-              className="relative z-20 -mt-28 sm:-mt-32 mx-3 sm:mx-4 overflow-hidden rounded-[18px] border border-[#E6D5B8] bg-[#FFFDF8] p-6 shadow-card sm:p-7"
+              className="relative z-20 -mt-28 sm:-mt-32 mx-3 sm:mx-4 overflow-hidden rounded-[18px] border border-sandal-200 bg-sandal-50 p-6 shadow-card sm:p-7"
             >
               {/* Corner Filigree Ornaments */}
               <VintageCornerFiligree position="tl" className="top-1 left-1" />
@@ -161,20 +162,20 @@ export function FeaturedProjectSection() {
                 className="pointer-events-none absolute right-0 bottom-5 -z-0 h-[135px] w-[215px] opacity-[0.24] sm:h-[155px] sm:w-[245px]"
                 aria-hidden
               >
-                <img
-                  src="/images/nandi-shrine-etching.png"
-                  alt=""
-                  className="h-full w-full object-contain object-bottom-right"
-                />
+                <Etching
+          src="/images/nandi-shrine-etching.png"
+          className="bg-navy-600"
+          position="bottom right"
+        />
               </div>
 
               <div className="relative z-10">
-                <p className="text-[11px] font-semibold tracking-[0.16em] text-turmeric-700 uppercase">
+                <p className="text-[11px] font-semibold tracking-[0.16em] text-navy-600 uppercase">
                   Raised so far
                 </p>
 
                 <div className="mt-1.5 flex items-baseline gap-2">
-                  <Money value={featured.raised} className="font-heritage text-[36px] sm:text-[40px] leading-none font-normal text-stone-900" />
+                  <Money value={featured.raised} className="font-heritage text-[26px] sm:text-[40px] leading-none font-normal text-stone-900" />
                 </div>
                 <p className="mt-1 text-[13.5px] text-stone-500">
                   of {formatMoney(featured.goal)} needed
@@ -182,18 +183,18 @@ export function FeaturedProjectSection() {
 
                 {/* Progress Bar */}
                 <div
-                  className="mt-5 h-[10px] w-full overflow-hidden rounded-full bg-[#EADCC8]"
+                  className="mt-5 h-[10px] w-full overflow-hidden rounded-full bg-sandal-200"
                   role="img"
                   aria-label={`${formatPct(progress, 0)} of the goal raised`}
                 >
                   <span
-                    className="block h-full rounded-full bg-gradient-to-r from-[#A8241A] to-[#8A1710] shadow-inner transition-all duration-700"
+                    className="block h-full rounded-full bg-gradient-to-r from-kumkum-500 to-kumkum-600 shadow-inner transition-all duration-700"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
 
                 <div className="mt-3 flex items-baseline justify-between text-[13.5px]">
-                  <span className="font-bold text-[#A8241A] tabular-nums">{formatPct(progress, 0)}</span>
+                  <span className="font-bold text-kumkum-600 tabular-nums">{formatPct(progress, 0)}</span>
                   <span className="text-stone-600">
                     {formatMoney(featured.goal - featured.raised)} still to find
                   </span>

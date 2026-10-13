@@ -24,7 +24,7 @@ export function PageHeader({
       <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
         <div className="min-w-0">
           <PhaseChip phase={phase} />
-          <h1 className="mt-2.5 font-display text-[28px] leading-[1.15] text-stone-900 sm:text-[32px]">
+          <h1 className="mt-2.5 font-display text-[23px] leading-[1.15] text-stone-900 sm:text-[32px]">
             {title}
           </h1>
           {description ? (

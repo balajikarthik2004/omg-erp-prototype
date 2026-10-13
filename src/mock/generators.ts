@@ -1162,7 +1162,7 @@ function makeTenants(now: Date): Tenant[] {
   return [
     {
       id: DEMO_TENANT_ID,
-      name: 'Kaveri Heritage',
+      name: 'OMG',
       address: '14 Temple Street, Madurai 625001',
       domain: 'give.kaveritrust.org',
       brand: 'kumkum',

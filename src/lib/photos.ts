@@ -21,12 +21,12 @@ export const PHOTOS = {
 export type PhotoKey = keyof typeof PHOTOS
 
 /**
- * One grade across every photograph, so four separately sourced images read as
- * a single commissioned set rather than four stock pictures. Warm, slightly
- * richer, a touch more contrast — the house look.
+ * One grade across every photograph, so separately sourced images read as a
+ * single commissioned set. Clean and slightly richer — no sepia: that tinted
+ * every picture in the app warm and survived three palette changes.
  */
-export const PHOTO_GRADE = 'saturate(1.08) contrast(1.05) brightness(1.02) sepia(0.06)'
+export const PHOTO_GRADE = 'saturate(1.04) contrast(1.05) brightness(1.02)'
 
-/** A warm wash laid over a photograph to pull it onto the sandalwood palette. */
+/** A cool wash on the OMG navy, so photographs sit on the brand, not beside it. */
 export const PHOTO_WASH =
-  'linear-gradient(180deg, rgb(154 31 24 / 0.1) 0%, rgb(43 26 18 / 0.06) 55%, rgb(74 14 11 / 0.16) 100%)'
+  'linear-gradient(180deg, rgb(41 48 136 / 0.10) 0%, rgb(41 48 136 / 0.05) 55%, rgb(13 20 64 / 0.20) 100%)'

@@ -63,7 +63,7 @@ export function Topbar() {
           ) : null}
         </nav>
 
-        <div className="flex flex-1 items-center justify-end gap-2 sm:flex-none">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:flex-none">
           {tenants.length > 1 ? (
             <label className="flex items-center gap-1.5 rounded-lg border border-sandal-200 bg-sandal-100 py-1 pr-1 pl-2.5 text-[13px] text-stone-700">
               <Building2 className="size-4 text-stone-500" aria-hidden />
@@ -72,7 +72,7 @@ export function Topbar() {
                 aria-label="Customer"
                 value={activeTenantId}
                 onChange={(e) => switchTenant(e.target.value)}
-                className="max-w-[160px] truncate rounded-md bg-transparent py-0.5 pr-1 text-[13px] font-medium text-stone-900 focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:outline-none"
+                className="max-w-[160px] truncate rounded-md bg-transparent py-0.5 pr-1 text-[13px] font-medium text-stone-900 focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:outline-none"
               >
                 {tenants.map((t) => (
                   <option key={t.id} value={t.id}>
@@ -85,7 +85,7 @@ export function Topbar() {
           <div
             role="group"
             aria-label="Filter by sector"
-            className="flex items-center gap-0.5 rounded-lg border border-sandal-200 bg-sandal-100 p-0.5"
+            className="scrollbar-thin flex min-w-0 items-center gap-0.5 overflow-x-auto rounded-lg border border-sandal-200 bg-sandal-100 p-0.5"
           >
             {filters.map((f) => {
               const active = f.value === sectorFilter

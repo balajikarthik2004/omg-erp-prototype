@@ -86,8 +86,8 @@ export function CheckoutPage() {
   return (
     <div className="relative mx-auto max-w-5xl px-4 py-10 sm:px-6">
       <header className="mb-8">
-        <p className="text-[11px] font-semibold tracking-[0.14em] text-turmeric-700 uppercase">Complete your gift</p>
-        <h1 className="mt-2 font-display text-[30px] leading-tight text-stone-900 sm:text-[34px]">
+        <p className="text-[11px] font-semibold tracking-[0.14em] text-navy-600 uppercase">Complete your gift</p>
+        <h1 className="mt-2 font-display text-[22px] leading-tight text-stone-900 sm:text-[34px]">
           Review and pay
         </h1>
         <div className="gold-rule mt-5" />
@@ -205,7 +205,7 @@ export function CheckoutPage() {
                 <span
                   className={cn(
                     'flex size-5 shrink-0 items-center justify-center rounded-full border',
-                    i < stage ? 'border-tulsi-500 bg-tulsi-50' : i === stage ? 'border-turmeric-500' : 'border-sandal-300',
+                    i < stage ? 'border-tulsi-500 bg-tulsi-50' : i === stage ? 'border-navy-300' : 'border-sandal-300',
                   )}
                 >
                   {i < stage ? <Check className="size-3" aria-hidden /> : null}

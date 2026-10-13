@@ -108,7 +108,7 @@ export function DashboardPage() {
                   action={
                     <Link
                       to="/console/budgets"
-                      className="inline-flex items-center gap-1 text-[13px] font-medium text-kumkum-700 hover:underline"
+                      className="inline-flex items-center gap-1 text-[13px] font-medium text-navy-600 hover:underline"
                     >
                       All budgets
                       <ArrowRight className="size-3.5" aria-hidden />
@@ -133,7 +133,7 @@ export function DashboardPage() {
                 action={
                   <Link
                     to="/console/allotments"
-                    className="inline-flex items-center gap-1 text-[13px] font-medium text-kumkum-700 hover:underline"
+                    className="inline-flex items-center gap-1 text-[13px] font-medium text-navy-600 hover:underline"
                   >
                     Allot
                     <ArrowRight className="size-3.5" aria-hidden />
@@ -153,7 +153,7 @@ export function DashboardPage() {
                   action={
                     <Link
                       to="/console/approvals"
-                      className="inline-flex items-center gap-1 text-[13px] font-medium text-kumkum-700 hover:underline"
+                      className="inline-flex items-center gap-1 text-[13px] font-medium text-navy-600 hover:underline"
                     >
                       Open inbox
                       <ArrowRight className="size-3.5" aria-hidden />
@@ -176,7 +176,7 @@ export function DashboardPage() {
                       <li key={`${task.kind}-${task.id}`}>
                         <Link
                           to={task.href}
-                          className="flex items-start justify-between gap-4 px-5 py-3.5 transition-colors duration-150 hover:bg-turmeric-50 sm:px-6"
+                          className="flex items-start justify-between gap-4 px-5 py-3.5 transition-colors duration-150 hover:bg-navy-50 sm:px-6"
                         >
                           <div className="min-w-0">
                             <p className="truncate text-[14px] font-medium text-stone-900">{task.title}</p>
@@ -205,7 +205,7 @@ export function DashboardPage() {
                   action={
                     <Link
                       to="/console/audit"
-                      className="inline-flex items-center gap-1 text-[13px] font-medium text-kumkum-700 hover:underline"
+                      className="inline-flex items-center gap-1 text-[13px] font-medium text-navy-600 hover:underline"
                     >
                       Full audit log
                       <ArrowRight className="size-3.5" aria-hidden />

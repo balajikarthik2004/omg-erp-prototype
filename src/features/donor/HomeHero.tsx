@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, FileText } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
-import { DiyaIcon } from '@/components/ui/Ornament'
+import { DiyaIcon, Etching } from '@/components/ui/Ornament'
 import { PHOTOS } from '@/lib/photos'
 import { Finial } from './HeroArt'
 
@@ -17,30 +17,18 @@ export function HomeHero() {
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(55% 80% at 76% 45%, color-mix(in srgb, var(--color-turmeric-100) 60%, transparent) 0%, transparent 72%), linear-gradient(to bottom, var(--color-sandal-50), var(--color-sandal-100))',
+            'radial-gradient(55% 80% at 76% 45%, color-mix(in srgb, var(--color-navy-100) 55%, transparent) 0%, transparent 72%), linear-gradient(to bottom, var(--color-sandal-50), var(--color-navy-50))',
         }}
         aria-hidden
       />
 
-      {/* Authentic Hanging Brass Deepams Cutout (100% Transparent Background) */}
-      <div
-        className="pointer-events-none absolute top-0 right-2 z-20 hidden h-[320px] w-[170px] lg:block xl:right-10 xl:h-[370px] xl:w-[200px]"
-        aria-hidden
-      >
-        <img
-          src="/images/hero-hanging-deepams.png"
-          alt=""
-          className="h-full w-full object-contain object-top drop-shadow-sm"
-        />
-      </div>
-
       <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 pt-10 sm:px-8 lg:grid-cols-[1.12fr_0.88fr] lg:gap-6 lg:pt-12">
         <div className="animate-rise relative z-10">
-          <p className="text-[12px] font-semibold tracking-[0.22em] text-turmeric-700 uppercase">
+          <p className="text-[12px] font-semibold tracking-[0.22em] text-navy-600 uppercase">
             Temple · Sevalaya · Tamil Sangam
           </p>
 
-          <h1 className="mt-5 font-heritage text-[44px] leading-[1.02] font-medium text-stone-900 sm:text-[60px] lg:text-[70px]">
+          <h1 className="mt-5 font-heritage text-[32px] leading-[1.02] font-medium text-stone-900 sm:text-[60px] lg:text-[70px]">
             <span className="block">Give once.</span>
             <span className="block lg:whitespace-nowrap">
               <span className="text-kumkum-600">Follow it</span> all the way
@@ -57,8 +45,8 @@ export function HomeHero() {
             <a href="#quick-hundi" className="contents">
               <Button
                 size="lg"
-                className="group w-full gap-2.5 rounded-xl bg-kumkum-700 px-7 shadow-md hover:-translate-y-px hover:bg-kumkum-800 sm:w-auto"
-                icon={<DiyaIcon className="size-5 text-turmeric-400" />}
+                className="group w-full gap-2.5 rounded-xl bg-kumkum-600 px-7 shadow-md hover:-translate-y-px hover:bg-kumkum-700 sm:w-auto"
+                icon={<DiyaIcon className="size-5 text-white" />}
                 rightIcon={<ArrowRight className={ARROW} aria-hidden />}
               >
                 Make an offering
@@ -68,8 +56,8 @@ export function HomeHero() {
               <Button
                 size="lg"
                 variant="secondary"
-                className="group w-full gap-2.5 rounded-xl border-sandal-300 bg-sandal-50/80 px-6 hover:-translate-y-px hover:border-turmeric-400 sm:w-auto"
-                icon={<FileText className="size-4 text-turmeric-700" />}
+                className="group w-full gap-2.5 rounded-xl border-sandal-300 bg-sandal-50/80 px-6 hover:-translate-y-px hover:border-navy-400 sm:w-auto"
+                icon={<FileText className="size-4 text-navy-600" />}
                 rightIcon={<ArrowRight className={ARROW} aria-hidden />}
               >
                 See how the money is tracked
@@ -85,11 +73,11 @@ export function HomeHero() {
             className="pointer-events-none absolute -bottom-2 -left-28 -z-0 hidden h-72 w-48 opacity-[0.18] xl:block"
             aria-hidden
           >
-            <img
-              src="/images/bg-gopuram-etching.png"
-              alt=""
-              className="h-full w-full object-contain object-bottom"
-            />
+            <Etching
+          src="/images/bg-gopuram-etching.png"
+          className="bg-navy-600"
+          position="bottom"
+        />
           </div>
 
           {/* Authentic Vintage Mandala Etching shifted slightly down behind arch (Transparent PNG) */}
@@ -97,17 +85,17 @@ export function HomeHero() {
             className="pointer-events-none absolute top-[62%] -right-16 -z-0 hidden h-[380px] w-[380px] -translate-y-[38%] opacity-[0.24] lg:block"
             aria-hidden
           >
-            <img
-              src="/images/hero-mandala-etching.png"
-              alt=""
-              className="h-full w-full object-contain"
-            />
+            <Etching
+          src="/images/hero-mandala-etching.png"
+          className="bg-navy-600"
+          position="center"
+        />
           </div>
 
           {/* Arch Finial Top */}
           <Finial className="absolute -top-[20px] left-1/2 z-20 -translate-x-1/2" />
 
-          <div className="relative border border-turmeric-500/80 bg-sandal-50 p-2 shadow-sm" style={{ borderRadius: ARCH }}>
+          <div className="relative border border-navy-200 bg-sandal-50 p-2 shadow-sm" style={{ borderRadius: ARCH }}>
             <div className="aspect-[9/10] overflow-hidden" style={{ borderRadius: ARCH }}>
               <img
                 src={PHOTOS.temple.src}
@@ -115,7 +103,7 @@ export function HomeHero() {
                 loading="eager"
                 decoding="async"
                 className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.01]"
-                style={{ objectPosition: '50% 72%', filter: 'brightness(1.16) saturate(1.22) sepia(0.12) contrast(1.04)' }}
+                style={{ objectPosition: '50% 72%', filter: 'brightness(1.12) saturate(1.1) contrast(1.04)' }}
               />
             </div>
           </div>

@@ -226,7 +226,7 @@ export function CashCountsPage() {
             </div>
             <div className="rounded-card border border-sandal-200 bg-sandal-100 p-4">
               <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Counted</p>
-              <Money value={focused.amount} className="mt-1 font-display text-[30px] text-stone-900" />
+              <Money value={focused.amount} className="mt-1 font-display text-[22px] sm:text-[30px] text-stone-900" />
             </div>
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-[14px]">
               <div>

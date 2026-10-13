@@ -33,7 +33,7 @@ are. The store resets to seed data on every reload, so reload to start clean.
 
 ### 00 Onboard a customer (Super Admin)
 
-1. Persona **Kavitha Ramesh**. Sidebar: **Platform → Customers**. One customer is live (Kaveri Heritage).
+1. Persona **Kavitha Ramesh**. Sidebar: **Platform → Customers**. One customer is live (OMG).
 2. **Onboard a customer** and walk the seven steps: Customer, Verticals & modules, Catalog & prices, Square, Approvals,
    Users & roles, Go live.
    - Customer: name `Test Trust`, domain `give.testtrust.org`, pick a brand colour.
@@ -49,7 +49,7 @@ are. The store resets to seed data on every reload, so reload to start clean.
    - Pass: open the donor site (`/`). Only Sevalaya is offered, and `/donate/temple` redirects to Sevalaya.
 5. Isolation and thresholds: give $2,000 on `/donate/sevalaya` (General Donation, using "Other amount"). As **Anitha Rajan**, open **Fund
    allotments** and prepare an $800 allotment. It needs **CA Partner**, because this customer's Staff limit is $500. Switch
-   the **Customer** back to Kaveri Heritage: the $2,000 gift is not there, and an $800 allotment needs only CA Staff.
+   the **Customer** back to OMG: the $2,000 gift is not there, and an $800 allotment needs only CA Staff.
 
 ### 01 Collect
 

@@ -80,7 +80,7 @@ export function Table<T>({
                 className={cn(
                   'group bg-sandal-50 transition-colors duration-150',
                   'border-b border-sandal-200 last:border-b-0',
-                  onRowClick && 'cursor-pointer hover:bg-turmeric-50 focus-visible:bg-turmeric-50',
+                  onRowClick && 'cursor-pointer hover:bg-navy-50 focus-visible:bg-navy-50',
                   rowClassName?.(row),
                 )}
               >
@@ -125,7 +125,7 @@ export function Table<T>({
                 }
                 className={cn(
                   'rounded-card border border-sandal-200 bg-sandal-50 p-4 shadow-flat',
-                  onRowClick && 'cursor-pointer active:bg-turmeric-50',
+                  onRowClick && 'cursor-pointer active:bg-navy-50',
                   rowClassName?.(row),
                 )}
               >

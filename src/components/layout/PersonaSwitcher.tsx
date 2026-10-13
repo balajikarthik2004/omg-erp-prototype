@@ -37,7 +37,7 @@ export function PersonaSwitcher() {
         aria-expanded={open}
         aria-haspopup="listbox"
         className={cn(
-          'flex items-center gap-2 rounded-lg border border-sandal-300 bg-sandal-50 py-1.5 pr-2 pl-1.5',
+          'flex shrink-0 items-center gap-2 rounded-lg border border-sandal-300 bg-sandal-50 py-1.5 pr-2 pl-1.5',
           'transition-colors duration-150 hover:bg-sandal-100',
         )}
       >
@@ -57,9 +57,9 @@ export function PersonaSwitcher() {
           className="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-card border border-sandal-200 bg-sandal-50 shadow-lift"
           style={{ animation: 'omg-fade-in 150ms ease-out' }}
         >
-          <div className="flex items-start gap-2 border-b border-sandal-200 bg-turmeric-50 px-3 py-2.5">
-            <FlaskConical className="mt-0.5 size-4 shrink-0 text-turmeric-700" aria-hidden />
-            <p className="text-[12px] leading-snug text-turmeric-700">
+          <div className="flex items-start gap-2 border-b border-sandal-200 bg-marigold-50 px-3 py-2.5">
+            <FlaskConical className="mt-0.5 size-4 shrink-0 text-marigold-500" aria-hidden />
+            <p className="text-[12px] leading-snug text-marigold-500">
               <span className="font-semibold">Demo control.</span> Switching persona changes the menu and which
               approvals you are allowed to sign.
             </p>

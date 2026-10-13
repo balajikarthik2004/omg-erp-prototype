@@ -183,7 +183,7 @@ export function AllotmentsPage() {
 
             <div className="rounded-card border border-sandal-200 bg-sandal-100 p-4">
               <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Amount</p>
-              <Money value={focused.amount} className="mt-1 font-display text-[30px] text-stone-900" />
+              <Money value={focused.amount} className="mt-1 font-display text-[22px] sm:text-[30px] text-stone-900" />
               <p className="mt-1 text-[13px] text-stone-500">Requires {approvalTierLabel(focused.amount)}</p>
             </div>
 

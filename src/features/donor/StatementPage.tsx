@@ -90,7 +90,7 @@ export function StatementPage() {
             <span className="font-display text-[17px] tracking-wide">{tenantName}</span>
           </div>
           <p className="mt-4 font-display text-[26px] leading-tight">Annual giving statement {year}</p>
-          <p className="mt-1 text-[11px] tracking-[0.14em] text-turmeric-400/80 uppercase">For your tax records</p>
+          <p className="mt-1 text-[11px] tracking-[0.14em] text-navy-300/80 uppercase">For your tax records</p>
         </header>
 
         <div className="px-6 py-6 sm:px-8">
@@ -154,7 +154,7 @@ export function StatementPage() {
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr className="border-t-2 border-turmeric-400/50">
+                    <tr className="border-t-2 border-navy-200/50">
                       <td colSpan={4} className="pt-3 text-right font-medium text-stone-900">
                         Total for {year}
                       </td>

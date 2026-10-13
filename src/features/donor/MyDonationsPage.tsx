@@ -55,7 +55,7 @@ export function MyDonationsPage() {
       key: 'receipt',
       header: 'Receipt',
       cell: (d) => (
-        <Link to={`/receipt/${encodeURIComponent(d.id)}`} className="font-mono text-[13px] text-kumkum-700 tabular-nums hover:underline">
+        <Link to={`/receipt/${encodeURIComponent(d.id)}`} className="font-mono text-[13px] text-navy-600 tabular-nums hover:underline">
           {d.receiptNo}
         </Link>
       ),
@@ -79,10 +79,10 @@ export function MyDonationsPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
       <header className="mb-6">
-        <p className="text-[11px] font-semibold tracking-[0.14em] text-turmeric-700 uppercase">Collect</p>
+        <p className="text-[11px] font-semibold tracking-[0.14em] text-navy-600 uppercase">Collect</p>
         <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="font-display text-[30px] leading-tight text-stone-900">My donations</h1>
+            <h1 className="font-display text-[22px] sm:text-[30px] leading-tight text-stone-900">My donations</h1>
             <p className="mt-1 text-[15px] text-stone-500">
               {signedIn ? 'Signed in. ' : ''}Every receipt, with a printable annual statement for your tax records.
             </p>
@@ -104,15 +104,15 @@ export function MyDonationsPage() {
         <div className="mb-6 grid gap-4 sm:grid-cols-3">
           <div className="rounded-card border border-sandal-200 bg-sandal-50 p-4">
             <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Given in total</p>
-            <p className="mt-1.5 font-display text-[30px] leading-none text-stone-900">{formatMoney(yearTotal)}</p>
+            <p className="mt-1.5 font-display text-[22px] sm:text-[30px] leading-none text-stone-900">{formatMoney(yearTotal)}</p>
           </div>
           <div className="rounded-card border border-sandal-200 bg-sandal-50 p-4">
             <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Receipts</p>
-            <p className="mt-1.5 font-display text-[30px] leading-none text-stone-900">{mine.length}</p>
+            <p className="mt-1.5 font-display text-[22px] sm:text-[30px] leading-none text-stone-900">{mine.length}</p>
           </div>
           <div className="rounded-card border border-sandal-200 bg-sandal-50 p-4">
             <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Sectors supported</p>
-            <p className="mt-1.5 font-display text-[30px] leading-none text-stone-900">
+            <p className="mt-1.5 font-display text-[22px] sm:text-[30px] leading-none text-stone-900">
               {new Set(mine.map((d) => d.sectorId)).size}
             </p>
             <p className="mt-1 text-[13px] text-stone-500">

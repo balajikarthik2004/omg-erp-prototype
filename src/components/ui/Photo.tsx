@@ -31,25 +31,25 @@ export function ArchPhoto({
           className="block h-full w-full object-cover"
         />
         <div className="pointer-events-none absolute inset-0" style={{ background: PHOTO_WASH }} aria-hidden />
-        {/* warms the photograph into the page rather than letting it sit cold on paper */}
+        {/* settles the photograph into the page rather than letting it sit on top of it */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              'radial-gradient(120% 80% at 50% 100%, rgb(43 26 18 / 0.34) 0%, rgb(43 26 18 / 0) 55%)',
+              'radial-gradient(120% 80% at 50% 100%, rgb(13 20 64 / 0.34) 0%, rgb(13 20 64 / 0) 55%)',
           }}
           aria-hidden
         />
       </div>
 
-      {/* brass inlay following the arch */}
+      {/* navy inlay following the arch */}
       <div
-        className="pointer-events-none absolute inset-0 border border-turmeric-500/45"
+        className="pointer-events-none absolute inset-0 border border-navy-300/55"
         style={{ borderRadius: '50% 50% 14px 14px / 34% 34% 14px 14px' }}
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-[7px] border border-turmeric-400/25"
+        className="pointer-events-none absolute inset-[7px] border border-navy-200/40"
         style={{ borderRadius: '50% 50% 10px 10px / 34% 34% 10px 10px' }}
         aria-hidden
       />

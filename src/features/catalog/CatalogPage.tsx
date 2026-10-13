@@ -103,17 +103,17 @@ export function CatalogPage() {
 
         <div className="relative mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[13px] text-sandal-200/70">
-            <Link to="/" className="transition-colors duration-150 hover:text-turmeric-400">
+            <Link to="/" className="transition-colors duration-150 hover:text-navy-300">
               Home
             </Link>
             <span aria-hidden>/</span>
             <span className="text-sandal-50">{meta.name}</span>
           </nav>
 
-          <h1 className="mt-5 font-display text-[32px] leading-[1.06] text-sandal-50 sm:text-[44px] lg:text-[52px]">
+          <h1 className="mt-5 font-display text-[23px] leading-[1.06] text-sandal-50 sm:text-[44px] lg:text-[52px]">
             {meta.name}
           </h1>
-          <p className="mt-2 font-display text-[19px] text-turmeric-400 sm:text-[22px]">{meta.tamil}</p>
+          <p className="mt-2 font-display text-[19px] text-navy-300 sm:text-[22px]">{meta.tamil}</p>
           <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-sandal-100/85">{meta.blurb}</p>
         </div>
       </header>
@@ -182,7 +182,7 @@ function OfferingCard({ item, sectorId }: { item: CatalogItem; sectorId: SectorI
       className={cn(
         'group flex h-full flex-col rounded-card border border-sandal-200 bg-sandal-50 p-5',
         'shadow-card transition-all duration-200',
-        'hover:-translate-y-0.5 hover:border-turmeric-400 hover:shadow-lift',
+        'hover:-translate-y-0.5 hover:border-navy-200 hover:shadow-lift',
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -191,7 +191,7 @@ function OfferingCard({ item, sectorId }: { item: CatalogItem; sectorId: SectorI
           {item.tamil ? <p className="mt-0.5 text-[14px] text-stone-500">{item.tamil}</p> : null}
         </div>
         {item.popular ? (
-          <span className="shrink-0 rounded-full border border-turmeric-400/40 bg-turmeric-50 px-2 py-0.5 text-[11px] font-semibold tracking-[0.08em] text-turmeric-700 uppercase">
+          <span className="shrink-0 rounded-full border border-navy-200/40 bg-navy-50 px-2 py-0.5 text-[11px] font-semibold tracking-[0.08em] text-navy-600 uppercase">
             Popular
           </span>
         ) : null}

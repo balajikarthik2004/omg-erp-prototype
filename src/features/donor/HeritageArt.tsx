@@ -358,17 +358,17 @@ export function ShieldTrustIcon({ className, size = 24 }: { className?: string; 
  */
 export function CrownOrnamentDivider({ className }: { className?: string }) {
   return (
-    <div className={cn('flex items-center justify-center gap-2 text-turmeric-600', className)} aria-hidden>
-      <span className="size-1 rounded-full bg-turmeric-500" />
-      <span className="h-px w-8 bg-turmeric-400/70" />
+    <div className={cn('flex items-center justify-center gap-2 text-navy-500', className)} aria-hidden>
+      <span className="size-1 rounded-full bg-navy-400" />
+      <span className="h-px w-8 bg-navy-300/70" />
       <svg width="22" height="14" viewBox="0 0 22 14" fill="currentColor" className="shrink-0">
         <path d="M11 0l3 4.5 4.5-2-1.5 7.5H5L3.5 2.5 8 4.5 11 0Z" />
         <circle cx="3" cy="2" r="1.2" />
         <circle cx="11" cy="0" r="1.2" />
         <circle cx="19" cy="2" r="1.2" />
       </svg>
-      <span className="h-px w-8 bg-turmeric-400/70" />
-      <span className="size-1 rounded-full bg-turmeric-500" />
+      <span className="h-px w-8 bg-navy-300/70" />
+      <span className="size-1 rounded-full bg-navy-400" />
     </div>
   )
 }
@@ -389,7 +389,7 @@ export function HeritageKolamStar({ className, size = 18 }: { className?: string
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
-      className={cn('shrink-0 text-turmeric-600', className)}
+      className={cn('shrink-0 text-navy-500', className)}
     >
       {/* 4 Cardinal Petals */}
       <path d="M12 2C10.4 5.2 10.5 8.6 12 10C13.5 8.6 13.6 5.2 12 2Z" fill="currentColor" fillOpacity="0.15" />
@@ -534,7 +534,7 @@ export function TempleTowerIcon({ className, size = 22 }: { className?: string; 
       viewBox="0 0 24 24"
       fill="currentColor"
       aria-hidden
-      className={cn('shrink-0 text-turmeric-700', className)}
+      className={cn('shrink-0 text-navy-600', className)}
     >
       <path d="M12 1.5l1.5 2h-3l1.5-2Z" />
       <path d="M10 4h4l1 3H9l1-3Z" />
@@ -562,7 +562,7 @@ export function SthapatiChiselsIcon({ className, size = 22 }: { className?: stri
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
-      className={cn('shrink-0 text-turmeric-700', className)}
+      className={cn('shrink-0 text-navy-600', className)}
     >
       {/* Crossed hammer and chisel */}
       <path d="M14.5 4.5l5 5-2 2-5-5 2-2Z" fill="currentColor" fillOpacity="0.2" />
@@ -619,7 +619,7 @@ export function VintageCornerFiligree({ className, position }: { className?: str
       fill="none"
       aria-hidden
       style={{ transform }}
-      className={cn('pointer-events-none absolute text-turmeric-500/70', className)}
+      className={cn('pointer-events-none absolute text-navy-400/70', className)}
     >
       <path d="M2 26V9C2 5.1 5.1 2 9 2h17" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
       <path d="M6 26V12c0-3.3 2.7-6 6-6h14" stroke="currentColor" strokeWidth="0.8" opacity="0.6" />
