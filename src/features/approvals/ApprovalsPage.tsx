@@ -6,8 +6,10 @@ import {
   BookLock,
   Boxes,
   Banknote,
+  CalendarDays,
   ClipboardCheck,
   Coins,
+  ImageIcon,
   Landmark,
   Receipt,
   ShoppingCart,
@@ -38,6 +40,9 @@ const GROUPS: { kind: ApprovalKind; label: string; icon: LucideIcon }[] = [
   { kind: 'payment_release', label: 'Payments to release', icon: Banknote },
   { kind: 'cash_count', label: 'Counter cash counts', icon: Coins },
   { kind: 'period_close', label: 'Period close', icon: BookLock },
+  { kind: 'event_budget', label: 'Event budgets', icon: CalendarDays },
+  { kind: 'event_poster', label: 'Event posters', icon: ImageIcon },
+  { kind: 'event_order', label: 'Event orders', icon: ShoppingCart },
   { kind: 'inventory_request', label: 'Inventory requests', icon: Boxes },
   { kind: 'refund', label: 'Refunds and disputes', icon: Receipt },
 ]
@@ -212,7 +217,7 @@ function TaskRow({
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-2">
-          {task.kind !== 'period_close' ? <Money value={task.amount} className="text-[18px]" /> : null}
+          {task.kind !== 'period_close' && task.kind !== 'event_poster' ? <Money value={task.amount} className="text-[18px]" /> : null}
           {onEscalate ? (
             <Button size="sm" variant="ghost" icon={<ArrowUpCircle className="size-4" aria-hidden />} onClick={onEscalate}>
               Escalate

@@ -22,7 +22,7 @@ export const EMPTY_DRAFT: Draft = {
   domain: '',
   brand: 'kumkum',
   verticals: ['temple'],
-  modules: ['donations', 'reconciliation', 'budgets', 'inventory', 'procurement', 'payments', 'reports'],
+  modules: ['donations', 'reconciliation', 'budgets', 'inventory', 'procurement', 'payments', 'reports', 'events'],
   squareLocationId: '',
   squareVerified: false,
   staffMax: '1000',
@@ -48,6 +48,7 @@ export const MODULE_LABELS: Record<ModuleKey, { label: string; hint: string }> =
   procurement: { label: 'Procurement', hint: 'AI supplier ranking and purchase orders' },
   payments: { label: 'Payments', hint: 'Invoices, 3-way match, release' },
   reports: { label: 'Reports & audit', hint: 'Income vs outgo, audit trail' },
+  events: { label: 'Events', hint: 'Event budgets, posters, tickets and profit and loss' },
 }
 
 export const VERTICAL_TEMPLATES: Record<SectorId, string> = {

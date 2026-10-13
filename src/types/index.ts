@@ -1,6 +1,7 @@
 import type { SectorId } from '@/config'
 
 export type { SectorId }
+export * from './events'
 
 /** Money is always integer cents. Format only at display time. */
 export type Money = number
@@ -127,6 +128,8 @@ export interface Fund {
   name: string
   type: FundType
   projectId?: string
+  /** Set on an event fund. It is spent only through that event's own orders. */
+  eventId?: string
   balance: Money
 }
 
@@ -354,6 +357,9 @@ export type ApprovalKind =
   | 'inventory_request'
   | 'cash_count'
   | 'period_close'
+  | 'event_budget'
+  | 'event_poster'
+  | 'event_order'
 
 export interface ApprovalTask {
   kind: ApprovalKind
@@ -409,6 +415,7 @@ export type ModuleKey =
   | 'procurement'
   | 'payments'
   | 'reports'
+  | 'events'
 
 export interface TenantUser {
   id: string

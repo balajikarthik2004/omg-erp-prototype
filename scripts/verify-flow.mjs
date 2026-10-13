@@ -307,6 +307,240 @@ section('Step 00: onboarding and tenant isolation')
   ok(cfg.requiredApprovals(80_000).join() === 'ca_staff', 'demo thresholds restored ($800 needs CA Staff again)')
 }
 
+
+/* ----------------------------------------------------------------- EVENTS */
+section('Events: seed and the budget formula')
+{
+  const d = db()
+  ok(d.events.length === 11, 'eleven seeded events (got ' + d.events.length + ')')
+  const statuses = new Set(d.events.map((e) => e.status))
+  ok(['draft', 'budget_submitted', 'budget_ca_ok', 'budget_approved', 'confirmed', 'poster_pending', 'published', 'live', 'completed', 'closed', 'cancelled'].every((s) => statuses.has(s)), 'every status is represented')
+  const nav = d.events.find((e) => e.id === 'evt-navaratri-2026')
+  const cats = d.eventBudgetLines.filter((l) => l.eventId === nav.id).map((l) => l.category)
+  const sug = db().suggestBudget(nav.id, cats)
+  ok(sug.reduce((s, x) => s + x.suggested, 0) === 781000, 'Navaratri: last year $7,100.00 suggests $7,810.00')
+  ok(d.eventBudgetLines.filter((l) => l.eventId === nav.id).reduce((s, l) => s + l.approvedAmount, 0) === 768000, 'Navaratri: Trustees approved $7,680.00')
+  const noHistory = db().suggestBudget(nav.id, ['Something never budgeted'])[0]
+  ok(noHistory.suggested === null && /No past events/.test(noHistory.note), 'a category with no history gets no suggestion')
+  const twoYear = db().suggestBudget('evt-isai-evening', ['Hall & venue'])[0]
+  ok(twoYear.suggested === 119000 && Math.abs(twoYear.growth - 8 / 102) < 1e-9, 'two years of history use the real trend (7.8%), rounded to $10')
+  ok(d.funds.some((f) => f.id === 'fund-evt-evt-navaratri-2026' && f.eventId === nav.id), 'a confirmed event has its fund in the ledger')
+}
+
+section('Events: create, budget, two approvals, confirm')
+let evId
+{
+  ok(!db().createEvent({ name: 'X', sectorId: 'temple', eventType: 'general', startAt: '2026-12-01T10:00', endAt: '2026-12-01T12:00', venue: 'Hall', contactName: 'A', contactPhone: '1', isPaid: false }, U['u-cas']).ok, 'only a Sector Admin can create an event')
+  const bad = db().createEvent({ name: 'Bad', sectorId: 'temple', eventType: 'general', startAt: '2026-12-02T10:00', endAt: '2026-12-01T12:00', venue: 'Hall', contactName: 'A', contactPhone: '1', isPaid: false }, U['u-adm'])
+  ok(!bad.ok, 'end before start is refused')
+  ok(!db().createEvent({ name: 'Paid', sectorId: 'temple', eventType: 'general', startAt: '2026-12-01T10:00', endAt: '2026-12-01T12:00', venue: 'Hall', contactName: 'A', contactPhone: '1', isPaid: true }, U['u-adm']).ok, 'a paid event needs a ticket price')
+  const r = db().createEvent({ name: 'Margazhi Music Festival', sectorId: 'temple', eventType: 'FESTIVAL', startAt: '2026-12-20T17:00', endAt: '2026-12-20T21:00', venue: 'Temple Hall', contactName: 'Temple Office', contactPhone: '+1 555 0100', capacity: 3, isPaid: true, ticketPrice: 2000 }, U['u-adm'])
+  ok(r.ok, 'sector admin creates a draft')
+  evId = r.id
+  const ev = () => db().events.find((e) => e.id === evId)
+  ok(ev().status === 'draft', 'status is draft')
+
+  ok(!db().submitBudget(evId, U['u-adm']).ok, 'cannot submit with no budget lines')
+  const sug = db().suggestBudget(evId, ['Prasadam & Annadhanam', 'Decoration & Stage', 'Brand new line'])
+  ok(sug[0].suggested === 216000 && sug[2].suggested === null, 'suggestions: FESTIVAL history applies, a new line has none')
+  const lines = sug.map((s) => ({ category: s.category, requestedAmount: s.suggested ?? 50000, suggestedAmount: s.suggested ?? undefined, suggestionNote: s.note, history: s.history }))
+  ok(db().saveBudgetLines(evId, lines, U['u-adm']).ok, 'budget lines saved')
+  ok(!db().saveBudgetLines(evId, lines, U['u-cas']).ok, 'only a Sector Admin edits the budget')
+  const total = db().eventBudgetLines.filter((l) => l.eventId === evId).reduce((s, l) => s + l.requestedAmount, 0)
+  ok(db().submitBudget(evId, U['u-adm']).ok && ev().status === 'budget_submitted', 'budget submitted to the CA, total ' + total)
+  ok(!db().saveBudgetLines(evId, lines, U['u-adm']).ok, 'budget is frozen once submitted')
+  ok(db().eventApprovals.some((a) => a.entityId === evId && a.step === 1 && !a.decision), 'a CA approval step is open')
+
+  db().decideBudget(evId, 'approved', U['u-adm'])
+  ok(ev().status === 'budget_submitted', 'a Sector Admin cannot give the CA review')
+  db().decideBudget(evId, 'approved', U['u-tru'])
+  ok(ev().status === 'budget_submitted', 'a Trustee cannot give the CA review')
+  db().decideBudget(evId, 'rejected', U['u-cas'])
+  ok(ev().status === 'budget_submitted', 'rejecting needs a comment')
+  db().decideBudget(evId, 'rejected', U['u-cas'], { comment: 'Add a sound line.' })
+  ok(ev().status === 'draft' && db().eventApprovals.some((a) => a.entityId === evId && a.decision === 'rejected' && a.comment === 'Add a sound line.'), 'CA rejects: back to draft, reason on record')
+  db().submitBudget(evId, U['u-adm'])
+  db().decideBudget(evId, 'approved', U['u-cas'], { comment: 'ok' })
+  ok(ev().status === 'budget_ca_ok', 'CA approves, now waiting for a Trustee')
+  ok(db().eventApprovals.some((a) => a.entityId === evId && a.step === 2 && !a.decision), 'a Trustee step is open')
+  db().decideBudget(evId, 'approved', U['u-cap'])
+  ok(ev().status === 'budget_ca_ok', 'the CA cannot also give the Trustee approval')
+  const first = db().eventBudgetLines.find((l) => l.eventId === evId)
+  db().decideBudget(evId, 'approved', U['u-tru'], { approvedLines: { [first.id]: first.requestedAmount - 10000 } })
+  ok(ev().status === 'budget_approved', 'Trustee approves')
+  ok(db().eventBudgetLines.find((l) => l.id === first.id).approvedAmount === first.requestedAmount - 10000, 'the Trustee can approve a different amount per line')
+
+  ok(!db().generatePosters(evId, U['u-adm']).ok, 'no poster before the event is confirmed')
+  const gen0 = db().funds.find((f) => f.id === 'fund-tmp-gen').balance
+  const c1 = db().confirmEvent(evId, U['u-adm'])
+  ok(!c1.ok && /chief guest/.test(c1.error), 'cannot confirm without a chief guest: ' + c1.error)
+  ok(!db().confirmEvent(evId, U['u-cas'], { chiefGuest: 'Dr. Raman' }).ok, 'only a Sector Admin confirms')
+  const c2 = db().confirmEvent(evId, U['u-adm'], { chiefGuest: 'Dr. Raman' })
+  ok(c2.ok && ev().status === 'confirmed', 'confirmed with the guest fixed')
+  const approvedTotal = db().eventBudgetLines.filter((l) => l.eventId === evId).reduce((s, l) => s + l.approvedAmount, 0)
+  const fund = db().funds.find((f) => f.id === ev().fundId)
+  ok(fund && fund.balance === approvedTotal && fund.eventId === evId, 'event fund holds the approved total')
+  ok(db().funds.find((f) => f.id === 'fund-tmp-gen').balance === gen0 - approvedTotal, 'the same amount left the sector general fund')
+  ok(db().journal.some((j) => j.sourceRef === evId && /set aside/.test(j.memo)), 'a journal entry records the set-aside')
+  const alt = db().createAllotment({ fromFundId: fund.id, toBudgetHeadId: 'bh-tmp-maint', amount: 1000, reason: 'trying to spend the event fund', actor: U['u-adm'] })
+  ok(!alt.ok && /event orders/.test(alt.error), 'an event fund cannot be allotted to a budget head')
+}
+
+section('Events: poster, four-eyes, public page')
+{
+  const ev = () => db().events.find((e) => e.id === evId)
+  ok(db().generatePosters(evId, U['u-adm']).ok, 'three designs generated')
+  ok(db().eventPosters.filter((d) => d.eventId === evId).length === 3, 'exactly three designs')
+  const d1 = db().eventPosters.filter((d) => d.eventId === evId)[0]
+  ok(/No text, no letters/.test(d1.prompt) && /no deities/.test(d1.prompt), 'the prompt forbids text, faces and deities')
+  ok(d1.provider === 'template', 'the prototype provider is the offline template one')
+  ok(db().generatePosters(evId, U['u-adm']).ok && db().generatePosters(evId, U['u-adm']).ok, 'a second and third set are allowed')
+  ok(!db().generatePosters(evId, U['u-adm']).ok, 'a fourth set in a day is refused (rate limit)')
+  ok(!db().selectPoster(evId, 'nope', U['u-adm']).ok, 'cannot select a design from another event')
+  ok(db().selectPoster(evId, d1.id, U['u-adm']).ok && ev().status === 'poster_pending', 'design chosen, now waiting for approval')
+  ok(!db().generatePosters(evId, U['u-adm']).ok, 'no new designs while one awaits approval')
+  db().decidePoster(evId, 'approved', U['u-adm'])
+  ok(ev().status === 'poster_pending', 'the admin who chose the poster cannot approve it')
+  db().decidePoster(evId, 'rejected', U['u-adm2'])
+  ok(ev().status === 'poster_pending', 'sending a poster back needs a comment')
+  db().decidePoster(evId, 'rejected', U['u-adm2'], 'Venue text is too small.')
+  ok(ev().status === 'confirmed' && ev().posterStatus === 'none', 'rejected poster returns the event to confirmed')
+  const d2 = db().eventPosters.filter((d) => d.eventId === evId)[1]
+  db().selectPoster(evId, d2.id, U['u-adm'])
+  ok(!db().registerAttendee(evId, { name: 'Early Bird', phone: '1', qty: 1 }, U['u-adm']).ok, 'registration is closed until the poster is approved')
+  db().decidePoster(evId, 'approved', U['u-adm2'], 'Looks right.')
+  ok(ev().status === 'published' && ev().posterStatus === 'published', 'a different admin approves: published')
+
+  const poster = await load('/src/features/events/logic/poster.ts')
+  const svg = await poster.renderPosterSvg({ event: ev(), design: db().eventPosters.find((x) => x.id === d2.id), organisation: 'Kaveri Heritage', registrationUrl: 'http://x/register/' + evId })
+  ok(svg.includes('Margazhi Music Festival') && svg.includes('Dr. Raman') && svg.includes('Temple Hall') && svg.includes('+1 555 0100'), 'poster carries the exact event text')
+  ok(/shape-rendering="crispEdges"/.test(svg), 'poster carries a QR code')
+  ok(svg.includes('$20.00 per person'), 'poster shows the ticket price')
+
+  const edit = db().updateEvent(evId, { venue: 'Temple Main Hall' }, U['u-adm'])
+  ok(edit.ok && ev().status === 'confirmed' && ev().posterStatus === 'stale', 'changing the venue after publishing makes the poster stale and unpublishes it')
+  db().selectPoster(evId, d2.id, U['u-adm'])
+  db().decidePoster(evId, 'approved', U['u-adm2'], 'Re-approved with the new venue.')
+  ok(ev().status === 'published', 'remade and re-approved')
+  ok(db().updateEvent(evId, { capacity: 3 }, U['u-adm']).ok && ev().status === 'published', 'changing capacity does not touch the poster')
+}
+
+section('Events: tickets, sponsors, donations, check-in')
+{
+  const ev = () => db().events.find((e) => e.id === evId)
+  const fundBal = () => db().funds.find((f) => f.id === ev().fundId).balance
+  const f0 = fundBal()
+  ok(!db().registerAttendee(evId, { name: '', phone: '1', qty: 1 }, U['u-adm']).ok, 'a name is required')
+  ok(!db().registerAttendee(evId, { name: 'A', phone: '1', qty: 11 }, U['u-adm']).ok, 'at most ten tickets at once')
+  const a = db().registerAttendee(evId, { name: 'Asha Raman', phone: '+1 555 0111', qty: 2 }, U['u-adm'])
+  ok(a.ok && a.registration.amountPaid === 4000, 'two paid tickets: $40.00')
+  ok(fundBal() === f0 + 4000, 'ticket income went into the event fund')
+  ok(!db().registerAttendee(evId, { name: 'Too Many', phone: '1', qty: 2 }, U['u-adm']).ok, 'capacity (3) is enforced: only 1 seat left')
+  const b = db().registerAttendee(evId, { name: 'Bala', phone: '+1 555 0112', qty: 1 }, U['u-adm'])
+  ok(b.ok, 'the last seat is sold')
+  ok(!db().registerAttendee(evId, { name: 'Late', phone: '1', qty: 1 }, U['u-adm']).ok, 'a full event refuses more')
+
+  ok(!db().checkInTicket(evId, a.registration.ticketToken, U['u-adm']).ok, 'check-in is closed until the event is live')
+  ok(db().startEvent(evId, U['u-adm']).ok && ev().status === 'live', 'event goes live')
+  ok(!db().checkInTicket(evId, a.registration.ticketToken, U['u-cap']).ok, 'a CA cannot run the check-in desk')
+  ok(db().checkInTicket(evId, a.registration.ticketToken, U['u-store']).ok, 'a store volunteer checks in a valid ticket')
+  const again = db().checkInTicket(evId, a.registration.ticketToken, U['u-adm'])
+  ok(!again.ok && /Already scanned/.test(again.error), 'a ticket cannot check in twice')
+  const tampered = a.registration.ticketToken.slice(0, -2) + 'zz'
+  ok(!db().checkInTicket(evId, tampered, U['u-adm']).ok, 'a tampered ticket is refused')
+  ok(!db().checkInTicket(evId, 'tkt-nonsense.abc', U['u-adm']).ok, 'a made-up ticket is refused')
+  const otherEvent = db().eventRegistrations.find((r) => r.eventId === 'evt-isai-evening')
+  ok(!db().checkInTicket(evId, otherEvent.ticketToken, U['u-adm']).ok, "another event's ticket is refused here")
+
+  const f1 = fundBal()
+  ok(db().addSponsor(evId, { sponsorName: 'Raghavan Jewellers', kind: 'cash', amount: 30000 }, U['u-adm']).ok && fundBal() === f1 + 30000, 'a cash sponsor adds to the fund')
+  ok(db().addSponsor(evId, { sponsorName: 'Mill Co', kind: 'in_kind', amount: 50000, description: 'Rice' }, U['u-adm']).ok && fundBal() === f1 + 30000, 'an in-kind sponsor does not add cash')
+  ok(!db().addSponsor(evId, { sponsorName: 'X', kind: 'cash', amount: 1000 }, U['u-cas']).ok, 'only a Sector Admin records sponsors')
+  ok(db().addEventDonation(evId, { donorName: 'Priya', amount: 5000 }, U['u-adm']).ok && fundBal() === f1 + 35000, 'an event donation adds to the fund')
+}
+
+section('Events: orders against budget lines')
+{
+  const ev = () => db().events.find((e) => e.id === evId)
+  const line = db().eventBudgetLines.filter((l) => l.eventId === evId)[0]
+  const limit = line.approvedAmount
+  ok(!db().raiseOrder(evId, { budgetLineId: line.id, vendorName: 'V', itemDescription: 'i', amount: limit + 1 }, U['u-adm']).ok, 'an order above the line limit is blocked')
+  ok(!db().raiseOrder(evId, { budgetLineId: line.id, vendorName: 'V', itemDescription: 'i', amount: 5000 }, U['u-cas']).ok, 'only a Sector Admin raises an order')
+  ok(db().raiseOrder(evId, { budgetLineId: line.id, vendorName: 'Kaveri Foods', itemDescription: 'Ghee', amount: limit - 20000 }, U['u-adm']).ok, 'an order within the line is accepted')
+  const po1 = db().eventOrders.filter((o) => o.eventId === evId)[0]
+  const over = db().raiseOrder(evId, { budgetLineId: line.id, vendorName: 'V', itemDescription: 'more', amount: 30000 }, U['u-adm'])
+  ok(!over.ok && /left on/.test(over.error), 'committed amounts count: a second order that overruns the line is blocked')
+  ok(!db().decideOrder(evId, po1.id, 'approved', U['u-adm']).ok, 'a Sector Admin cannot approve an order')
+  ok(!db().decideOrder(evId, po1.id, 'rejected', U['u-cas']).ok, 'rejecting an order needs a comment')
+  ok(!db().payOrder(evId, po1.id, U['u-cap']).ok, 'an order cannot be paid before it is approved')
+  ok(db().decideOrder(evId, po1.id, 'approved', U['u-cas']).ok, 'CA approves the order')
+  ok(!db().payOrder(evId, po1.id, U['u-cas']).ok, 'the CA who approved cannot also pay it')
+  const fb = db().funds.find((f) => f.id === ev().fundId).balance
+  ok(db().payOrder(evId, po1.id, U['u-cap']).ok, 'a different CA pays it')
+  ok(db().funds.find((f) => f.id === ev().fundId).balance === fb - po1.amount, 'the fund fell by the amount paid')
+  ok(db().journal.some((j) => j.sourceRef === po1.id && /expense paid/.test(j.memo)), 'the payment is in the ledger')
+
+  const taskKinds = new Set(sel.approvalTasks(db(), 'all').map((t) => t.kind))
+  ok(['event_budget', 'event_poster', 'event_order'].every((k) => taskKinds.has(k)), 'the inbox lists event budgets, posters and orders')
+}
+
+section('Events: close, P&L, actuals, cancel')
+{
+  const ev = () => db().events.find((e) => e.id === evId)
+  const open = db().raiseOrder(evId, { budgetLineId: db().eventBudgetLines.filter((l) => l.eventId === evId)[1].id, vendorName: 'V', itemDescription: 'open one', amount: 10000 }, U['u-adm'])
+  ok(open.ok, 'another order is raised')
+  ok(!db().closeEvent(evId, U['u-cap']).ok, 'cannot close an event that is not completed')
+  ok(db().endEvent(evId, U['u-adm']).ok && ev().status === 'completed', 'event completed')
+  const c = db().closeEvent(evId, U['u-cap'])
+  ok(!c.ok && /still open/.test(c.error), 'cannot close while an order is open: ' + c.error)
+  const po2 = db().eventOrders.find((o) => o.eventId === evId && o.status === 'pending_ca')
+  db().decideOrder(evId, po2.id, 'rejected', U['u-cas'], 'Not needed now.')
+  ok(!db().closeEvent(evId, U['u-adm']).ok, 'only the CA closes an event')
+
+  const pnl = (await load('/src/features/events/logic/pnl.ts')).calculatePnl(db(), evId)
+  ok(pnl.ticketIncome === 4000 + 2000 && pnl.sponsorIncome === 30000 && pnl.donationIncome === 5000, 'P&L income: tickets $60, cash sponsors $300, donations $50')
+  ok(pnl.inKindSponsorValue === 50000, 'in-kind sponsorship is shown separately')
+  ok(pnl.net === pnl.ticketIncome + pnl.sponsorIncome + pnl.donationIncome - pnl.expenses, 'net = cash in minus cash out')
+
+  const fundId = ev().fundId
+  const before = db().funds.find((f) => f.id === fundId).balance
+  const gen = db().funds.find((f) => f.id === 'fund-tmp-gen').balance
+  ok(db().closeEvent(evId, U['u-cap']).ok && ev().status === 'closed', 'the CA closes the event')
+  ok(db().funds.find((f) => f.id === fundId).balance === 0 && db().funds.find((f) => f.id === 'fund-tmp-gen').balance === gen + before, 'the unspent balance returned to the sector general fund')
+  ok(ev().closurePnl && ev().closurePnl.net === pnl.net, 'the P&L is locked on the event')
+  ok(db().eventActuals.some((a) => a.eventType === 'FESTIVAL' && a.year === 2026 && a.category === 'Prasadam & Annadhanam'), 'actuals were archived for next year')
+  ok(!db().updateEvent(evId, { venue: 'Elsewhere' }, U['u-adm']).ok, 'a closed event is read-only')
+  const lineId = db().eventBudgetLines.find((l) => l.eventId === evId).id
+  ok(!db().raiseOrder(evId, { budgetLineId: lineId, vendorName: 'V', itemDescription: 'i', amount: 100 }, U['u-adm']).ok, 'no new orders on a closed event')
+  ok(!db().cancelEvent(evId, 'too late', U['u-adm']).ok, 'a closed event cannot be cancelled')
+  const next = db().suggestBudget('evt-karthigai-deepam', ['Prasadam & Annadhanam'])[0]
+  ok(next.history.some((h) => h.year === 2026), "next year's formula sees this year's actual spend")
+
+  const fund0 = db().funds.find((f) => f.id === 'fund-evt-evt-deepavali-2026').balance
+  const g0 = db().funds.find((f) => f.id === 'fund-tmp-gen').balance
+  const diwaliOpen = db().eventOrders.filter((o) => o.eventId === 'evt-deepavali-2026' && o.status === 'pending_ca').length
+  ok(diwaliOpen > 0, 'Deepavali has an open order to cancel')
+  ok(!db().cancelEvent('evt-deepavali-2026', '', U['u-adm']).ok, 'cancelling needs a reason')
+  ok(db().cancelEvent('evt-deepavali-2026', 'Hall unavailable', U['u-adm']).ok, 'Deepavali is cancelled')
+  ok(db().funds.find((f) => f.id === 'fund-evt-evt-deepavali-2026').balance === 0 && db().funds.find((f) => f.id === 'fund-tmp-gen').balance === g0 + fund0, 'its fund went back to the sector')
+  ok(db().eventOrders.filter((o) => o.eventId === 'evt-deepavali-2026').every((o) => o.status !== 'pending_ca' && o.status !== 'approved'), 'its open orders were cancelled')
+  ok(!db().cancelEvent('evt-navaratri-2026', 'no', U['u-adm']).ok, 'a live event cannot be cancelled')
+}
+
+section('Events: a new customer starts with no events')
+{
+  const before = db().events.length
+  const users = [
+    { id: 'a', name: 'A', email: 'a@x', role: 'sector_admin' }, { id: 'b', name: 'B', email: 'b@x', role: 'ca_staff' },
+    { id: 'c', name: 'C', email: 'c@x', role: 'ca_partner' }, { id: 'd', name: 'D', email: 'd@x', role: 'trustee' },
+  ]
+  const res = db().onboardTenant({ name: 'Events Trust', address: '1 Road', domain: 'give.eventstrust.org', brand: 'peacock', logoText: 'ET', verticals: ['sangam'], modules: ['donations', 'events'], squareLocationId: 'LEVENTS123', thresholds: { staffMax: 100000, partnerMax: 1000000 }, users }, U['u-sup'])
+  db().switchTenant(res.tenantId)
+  ok(db().events.length === 0 && db().eventActuals.length === 0 && db().eventRegistrations.length === 0, 'a new customer starts with no events, history or tickets')
+  db().switchTenant('ten-demo')
+  ok(db().events.length === before, "the demo customer's events are intact")
+}
+
 console.log(`\n${pass} passed, ${fail} failed`)
 await server.close()
 process.exit(fail ? 1 : 0)

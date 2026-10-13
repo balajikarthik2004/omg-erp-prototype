@@ -13,6 +13,7 @@ import type {
 } from '@/types'
 import { available, approvalBlock, budgetHealth, type DbState } from './db'
 import { cashConfirmBlock, inventoryApprovalBlock, periodApproveBlock, releaseBlock } from './rules'
+import { gateBlock, orderDecideBlock, orderPayBlock } from '@/features/events/logic/rules'
 import type { SectorFilter } from './session'
 
 export function inSector<T extends { sectorId: SectorId }>(rows: T[], filter: SectorFilter): T[] {
@@ -144,6 +145,9 @@ const DUE_DAYS: Record<ApprovalTask['kind'], number> = {
   inventory_request: 4,
   cash_count: 2,
   period_close: 5,
+  event_budget: 3,
+  event_poster: 3,
+  event_order: 3,
 }
 
 function dueFrom(iso: string, kind: ApprovalTask['kind']): string {
@@ -289,6 +293,61 @@ export function approvalTasks(db: DbState, filter: SectorFilter): ApprovalTask[]
     })
   }
 
+  for (const e of inSector(db.events, filter)) {
+    const lines = db.eventBudgetLines.filter((l) => l.eventId === e.id)
+    if (e.status === 'budget_submitted' || e.status === 'budget_ca_ok') {
+      const step = e.status === 'budget_submitted' ? 1 : 2
+      const open = db.eventApprovals.find((a) => a.entityType === 'event_budget' && a.entityId === e.id && a.step === step && !a.decision)
+      const since = open?.createdAt ?? e.updatedAt
+      tasks.push({
+        kind: 'event_budget',
+        id: e.id,
+        title: `${e.name} · budget`,
+        subtitle: step === 1 ? 'Event budget awaiting CA review' : 'CA has reviewed. Awaiting a Trustee.',
+        sectorId: e.sectorId,
+        amount: lines.reduce((s, l) => s + l.requestedAmount, 0),
+        preparedBy: e.lastPreparerId ?? e.createdBy,
+        preparedAt: since,
+        dueAt: dueFrom(since, 'event_budget'),
+        href: `/console/events/${e.id}?tab=budget`,
+      })
+    }
+    if (e.status === 'poster_pending') {
+      const open = db.eventApprovals.find((a) => a.entityType === 'event_poster' && a.entityId === e.id && !a.decision)
+      const since = open?.createdAt ?? e.updatedAt
+      tasks.push({
+        kind: 'event_poster',
+        id: e.id,
+        title: `${e.name} · poster`,
+        subtitle: 'A poster design was chosen. A different admin must approve it before it goes public.',
+        sectorId: e.sectorId,
+        amount: 0,
+        preparedBy: e.lastPreparerId ?? e.createdBy,
+        preparedAt: since,
+        dueAt: dueFrom(since, 'event_poster'),
+        href: `/console/events/${e.id}?tab=poster`,
+      })
+    }
+  }
+
+  for (const o of db.eventOrders) {
+    if (o.status !== 'pending_ca' && o.status !== 'approved') continue
+    const e = db.events.find((x) => x.id === o.eventId)
+    if (!e || (filter !== 'all' && e.sectorId !== filter)) continue
+    tasks.push({
+      kind: 'event_order',
+      id: o.id,
+      title: `${o.vendorName} · ${e.name}`,
+      subtitle: o.status === 'pending_ca' ? o.itemDescription : `Approved. ${o.itemDescription}. Waiting to be paid.`,
+      sectorId: e.sectorId,
+      amount: o.amount,
+      preparedBy: o.preparedBy,
+      preparedAt: o.createdAt,
+      dueAt: dueFrom(o.createdAt, 'event_order'),
+      href: `/console/events/${e.id}?tab=run`,
+    })
+  }
+
   return tasks.sort((a, b) => a.dueAt.localeCompare(b.dueAt))
 }
 
@@ -310,6 +369,20 @@ export function taskBlock(db: DbState, task: ApprovalTask, user: User): string |
     case 'payment_release': {
       const inv = db.invoices.find((i) => i.id === task.id)
       return inv ? releaseBlock(user, inv) : null
+    }
+    case 'event_budget': {
+      const e = db.events.find((x) => x.id === task.id)
+      if (!e) return null
+      return gateBlock(e, e.status === 'budget_ca_ok' ? { type: 'APPROVE_BUDGET_TRUSTEE' } : { type: 'APPROVE_BUDGET_CA' }, user)
+    }
+    case 'event_poster': {
+      const e = db.events.find((x) => x.id === task.id)
+      return e ? gateBlock(e, { type: 'APPROVE_POSTER' }, user) : null
+    }
+    case 'event_order': {
+      const o = db.eventOrders.find((x) => x.id === task.id)
+      if (!o) return null
+      return o.status === 'pending_ca' ? orderDecideBlock(user, o) : orderPayBlock(user, o)
     }
     case 'refund':
       return user.role === 'ca_partner' || user.role === 'ca_staff' ? null : 'Refunds are decided by the CA team.'

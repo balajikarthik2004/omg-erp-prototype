@@ -8,6 +8,7 @@ import { toast } from '@/lib/toast'
 import { api, loadDatabase, type Database } from '@/mock/api'
 import { DEMO_TENANT_ID } from '@/mock/generators'
 import { BUDGET_SPECS, CATALOG, FUNDS, INVENTORY, PROJECTS, userById, userName } from '@/mock/seed'
+import { createEventActions, type EventActions } from './eventActions'
 import {
   cashConfirmBlock,
   cashCountBlock,
@@ -50,11 +51,13 @@ const EMPTY_DATA = {
   donors: [], donations: [], funds: [], projects: [], journal: [], budgets: [], allotments: [],
   inventory: [], inventoryRequests: [], suppliers: [], purchaseOrders: [], goodsReceipts: [],
   invoices: [], payouts: [], audit: [], cashCounts: [], periodCloses: [],
+  events: [], eventBudgetLines: [], eventApprovals: [], eventPosters: [], eventRegistrations: [],
+  eventSponsors: [], eventDonations: [], eventOrders: [], eventActuals: [],
 } satisfies Omit<Database, 'tenants'>
 
 const EMPTY: Database = { ...EMPTY_DATA, tenants: [] }
 
-export interface DbState extends Database {
+export interface DbState extends Database, EventActions {
   ready: boolean
   loading: boolean
   /** The customer whose books are on screen. */
@@ -139,7 +142,7 @@ export interface DbState extends Database {
 
 let auditSeq = 90_000
 
-function audit(
+export function audit(
   actor: User,
   action: string,
   entity: string,
@@ -163,7 +166,7 @@ function audit(
   }
 }
 
-function journalEntry(
+export function journalEntry(
   id: string,
   date: string,
   sectorId: SectorId,
@@ -188,6 +191,9 @@ function pickTenantData(s: DbState): TenantData {
     budgets: s.budgets, allotments: s.allotments, inventory: s.inventory, inventoryRequests: s.inventoryRequests,
     suppliers: s.suppliers, purchaseOrders: s.purchaseOrders, goodsReceipts: s.goodsReceipts, invoices: s.invoices,
     payouts: s.payouts, audit: s.audit, cashCounts: s.cashCounts, periodCloses: s.periodCloses,
+    events: s.events, eventBudgetLines: s.eventBudgetLines, eventApprovals: s.eventApprovals, eventPosters: s.eventPosters,
+    eventRegistrations: s.eventRegistrations, eventSponsors: s.eventSponsors, eventDonations: s.eventDonations,
+    eventOrders: s.eventOrders, eventActuals: s.eventActuals,
   }
 }
 
@@ -329,6 +335,7 @@ export function roleLabel(role: string): string {
 /** A restricted project fund may only be allotted to its own project head. */
 export function allotmentFundError(fund: Fund | undefined, head: BudgetHead | undefined): string | null {
   if (!fund || !head) return 'Pick a fund and a budget head.'
+  if (fund.eventId) return `${fund.name} is spent only through its own event orders. It cannot be allotted to a budget head.`
   if (fund.sectorId !== head.sectorId) return 'The fund and the budget head belong to different sectors.'
   if (fund.projectId && head.projectId !== fund.projectId) {
     return `${fund.name} is restricted to its own project. It cannot be allotted to ${head.name}.`
@@ -394,6 +401,7 @@ export const useDb = create<DbState>((set, get) => ({
   loading: false,
   activeTenantId: DEMO_TENANT_ID,
   vault: {},
+  ...createEventActions(set, get),
 
   load: async () => {
     if (get().ready || get().loading) return

@@ -30,6 +30,10 @@ import { AuditPage } from '@/features/audit/AuditPage'
 import { CatalogManagerPage } from '@/features/catalog/CatalogManagerPage'
 import { NotFoundPage } from '@/features/donor/NotFoundPage'
 import { StatementPage } from '@/features/donor/StatementPage'
+import { EventsPage } from '@/features/events/EventsPage'
+import { EventDetailPage } from '@/features/events/EventDetailPage'
+import { PublicEventsPage } from '@/features/events/PublicEventsPage'
+import { RegisterPage } from '@/features/events/RegisterPage'
 import { CashCountsPage } from '@/features/cash-counts/CashCountsPage'
 import { PeriodClosePage } from '@/features/period-close/PeriodClosePage'
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
@@ -48,11 +52,15 @@ export function App() {
           <Route path="/receipt/:donationId" element={<ReceiptPage />} />
           <Route path="/my/donations" element={<MyDonationsPage />} />
           <Route path="/my/statement" element={<StatementPage />} />
+          <Route path="/events" element={<PublicEventsPage />} />
+          <Route path="/register/:eventId" element={<RegisterPage />} />
         </Route>
 
         <Route path="/console" element={<ConsoleLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="donations" element={<DonationsPage />} />
+          <Route path="events" element={<EventsPage />} />
+          <Route path="events/:eventId" element={<EventDetailPage />} />
           <Route path="cash-counts" element={<CashCountsPage />} />
           <Route path="period-close" element={<PeriodClosePage />} />
           <Route path="onboarding" element={<OnboardingPage />} />

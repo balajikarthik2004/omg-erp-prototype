@@ -14,6 +14,7 @@ export const USERS: User[] = [
   { id: 'u-sup', name: 'Kavitha Ramesh', role: 'super_admin', email: 'kavitha@omgplatform.io', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-dev', name: 'Lakshmi Narayanan', role: 'devotee', email: 'lakshmi.n@example.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-adm', name: 'Saravanan Pillai', role: 'sector_admin', email: 'saravanan@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
+  { id: 'u-adm2', name: 'Lakshmi Priya', role: 'sector_admin', email: 'lakshmi.priya@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-store', name: 'Vasanthi Murugan', role: 'store_keeper', email: 'vasanthi@omg.org', sectorIds: ['temple', 'sevalaya'] },
   { id: 'u-proc', name: 'Dinesh Kumar', role: 'procurement_officer', email: 'dinesh@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-cas', name: 'Anitha Rajan', role: 'ca_staff', email: 'anitha@caoffice.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
@@ -27,6 +28,15 @@ export const SQUARE_WEBHOOK: User = {
   name: 'Square webhook',
   role: 'devotee',
   email: 'webhooks@squareup.com',
+  sectorIds: ['temple', 'sevalaya', 'sangam'],
+}
+
+/** Who is on the other end of a public registration, in the audit trail. */
+export const PUBLIC_REGISTRATION: User = {
+  id: 'sys-public',
+  name: 'Public registration page',
+  role: 'devotee',
+  email: 'register@omg.org',
   sectorIds: ['temple', 'sevalaya', 'sangam'],
 }
 

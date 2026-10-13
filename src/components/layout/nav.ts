@@ -3,6 +3,7 @@ import {
   Boxes,
   Building2,
   CalendarCheck,
+  CalendarDays,
   ClipboardCheck,
   Coins,
   FileSpreadsheet,
@@ -62,6 +63,11 @@ export const NAV_GROUPS: NavGroup[] = [
       { to: '/console', label: 'Dashboard', icon: Gauge, phase: 'report', roles: WITH_PLATFORM, end: true },
       { to: '/console/approvals', label: 'Approvals', icon: ClipboardCheck, phase: 'control', roles: ALL, badge: 'approvals' },
     ],
+  },
+  {
+    phase: 'collect',
+    label: 'Events',
+    items: [{ to: '/console/events', label: 'Events', icon: CalendarDays, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events' }],
   },
   {
     phase: 'collect',

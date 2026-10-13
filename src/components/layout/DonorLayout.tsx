@@ -25,11 +25,15 @@ export function DonorLayout() {
   }, [pathname])
 
   const tenant = useDb((s) => s.tenants.find((t) => t.id === s.activeTenantId))
-  const links = SECTOR_IDS.filter((id) => !tenant || tenant.verticals.includes(id)).map((id) => ({
+  const sectorLinks = SECTOR_IDS.filter((id) => !tenant || tenant.verticals.includes(id)).map((id) => ({
     to: `/donate/${id}`,
     label: SECTORS[id].name,
     tamil: SECTORS[id].tamil,
   }))
+  const links = [
+    ...sectorLinks,
+    ...(!tenant || tenant.modules.includes('events') ? [{ to: '/events', label: 'Events', tamil: 'நிகழ்வுகள்' }] : []),
+  ]
 
   return (
     <div className="flex min-h-screen flex-col bg-sandal-50">
