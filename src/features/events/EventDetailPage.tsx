@@ -92,7 +92,7 @@ export function EventDetailPage() {
         items={[
           { id: 'overview', label: 'Overview' },
           { id: 'budget', label: 'Budget workspace', count: view.lines.length },
-          { id: 'poster', label: 'AI poster studio' },
+          { id: 'poster', label: 'AI poster studio', count: view.designs.length > 0 ? view.designs.length : undefined },
           { id: 'registrations', label: 'Registrations and QR', count: view.registrations.length },
           { id: 'purchases', label: 'Purchases and sponsors', count: view.orders.length },
           { id: 'pnl', label: 'Event P&L' },

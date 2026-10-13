@@ -350,15 +350,24 @@ export function createEventActions(set: Set, get: Get): EventActions {
       if (!get().eventPosters.some((d) => d.id === designId && d.eventId === eventId)) return fail('That design is not part of this event.')
       const r = run(eventId, { type: 'SELECT_POSTER_DESIGN', designId }, actor)
       if (!r.ok) return r
+      const isConfirmed = r.before.status === 'confirmed' || r.before.status === 'poster_pending'
       set((s) => ({
         ...saveEvent(r.event)(s),
-        eventApprovals: [
-          ...s.eventApprovals.filter((a) => !(a.entityType === 'event_poster' && a.entityId === eventId && !a.decision)),
-          { id: newId('appr'), entityType: 'event_poster' as const, entityId: eventId, step: 1, requiredRole: 'sector_admin' as const, preparedBy: actor.id, createdAt: new Date().toISOString() },
-        ],
-        audit: [stamp(r.event, actor, 'Chose poster design', { before: r.before.status, after: 'poster_pending' }), ...s.audit],
+        ...(isConfirmed
+          ? {
+              eventApprovals: [
+                ...s.eventApprovals.filter((a) => !(a.entityType === 'event_poster' && a.entityId === eventId && !a.decision)),
+                { id: newId('appr'), entityType: 'event_poster' as const, entityId: eventId, step: 1, requiredRole: 'sector_admin' as const, preparedBy: actor.id, createdAt: new Date().toISOString() },
+              ],
+            }
+          : {}),
+        audit: [stamp(r.event, actor, 'Chose poster design', { before: r.before.status, after: r.event.status }), ...s.audit],
       }))
-      toast.success('Poster sent for approval', `A different admin must approve it before ${r.event.name} goes public.`)
+      if (isConfirmed) {
+        toast.success('Poster sent for approval', `A different admin must approve it before ${r.event.name} goes public.`)
+      } else {
+        toast.success('Poster design chosen', `${r.event.name} now has a preferred design. Official approval to publish will be submitted once the event is confirmed.`)
+      }
       return { ok: true }
     },
 

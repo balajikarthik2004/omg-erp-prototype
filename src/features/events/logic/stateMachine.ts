@@ -49,16 +49,10 @@ const ROLE_NAME: Record<string, string> = {
 }
 const roleName = (u: User) => ROLE_NAME[u.role] ?? u.role.replace(/_/g, ' ')
 
-/** Poster generation is allowed only once the budget is approved and the event confirmed. */
+/** Poster generation is separate from the budget workflow and can be done at any stage. */
 export function canGeneratePoster(event: EventRecord): { allowed: boolean; reason?: string } {
   if (event.status === 'closed' || event.status === 'cancelled') {
     return { allowed: false, reason: `Posters cannot be made for an event that is ${event.status}.` }
-  }
-  if (event.status !== 'confirmed' && event.status !== 'poster_pending') {
-    return {
-      allowed: false,
-      reason: 'The poster goes out only after the budget is approved and the event is confirmed.',
-    }
   }
   return { allowed: true }
 }
@@ -161,17 +155,15 @@ export function transition(event: EventRecord, action: EventAction, user: User):
     }
 
     case 'SELECT_POSTER_DESIGN': {
-      if (event.status !== 'confirmed' && event.status !== 'poster_pending') {
-        return fail('Pick a design only after the event is confirmed.')
-      }
       const bad = needRole(isAdmin(user), 'choose a poster design', 'a Sector Admin')
       if (bad) return bad
+      const isConfirmedOrPending = event.status === 'confirmed' || event.status === 'poster_pending'
       return {
         success: true,
         event: {
           ...event,
-          status: 'poster_pending',
-          posterStatus: 'pending',
+          status: isConfirmedOrPending ? 'poster_pending' : event.status,
+          posterStatus: isConfirmedOrPending ? 'pending' : event.posterStatus,
           selectedPosterDesignId: action.designId,
           lastPreparerId: user.id,
           updatedAt: now,

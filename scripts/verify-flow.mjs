@@ -370,7 +370,8 @@ let evId
   ok(ev().status === 'budget_approved', 'Trustee approves')
   ok(db().eventBudgetLines.find((l) => l.id === first.id).approvedAmount === first.requestedAmount - 10000, 'the Trustee can approve a different amount per line')
 
-  ok(!db().generatePosters(evId, U['u-adm']).ok, 'no poster before the event is confirmed')
+  const draftEv = db().events.find((e) => e.status === 'draft')
+  ok(db().generatePosters(draftEv.id, U['u-adm']).ok, 'poster can be generated on draft event without waiting for budget approval')
   const gen0 = db().funds.find((f) => f.id === 'fund-tmp-gen').balance
   const c1 = db().confirmEvent(evId, U['u-adm'])
   ok(!c1.ok && /chief guest/.test(c1.error), 'cannot confirm without a chief guest: ' + c1.error)

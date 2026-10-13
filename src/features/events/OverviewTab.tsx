@@ -52,7 +52,10 @@ export function OverviewTab({ view, goTo }: { view: EventView; goTo: (tab: strin
               Sent back by {userName(lastReject.decidedBy ?? '')}: {lastReject.comment}
             </p>
           ) : null}
-          <Button className="mt-4" icon={<ArrowRight className="size-4" aria-hidden />} onClick={() => goTo('budget')}>Open the budget</Button>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button icon={<ArrowRight className="size-4" aria-hidden />} onClick={() => goTo('budget')}>Open the budget</Button>
+            <Button variant="secondary" onClick={() => goTo('poster')}>Design poster</Button>
+          </div>
         </>
       )
       break
@@ -61,7 +64,10 @@ export function OverviewTab({ view, goTo }: { view: EventView; goTo: (tab: strin
       next = (
         <>
           <p className="text-[14px] text-stone-700">{event.status === 'budget_submitted' ? 'The budget is with the CA for review.' : 'The CA has reviewed it. A Trustee gives the final approval.'}</p>
-          <Button className="mt-4" variant="secondary" onClick={() => goTo('budget')}>View the budget</Button>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={() => goTo('budget')}>View the budget</Button>
+            <Button variant="secondary" onClick={() => goTo('poster')}>Preview poster</Button>
+          </div>
         </>
       )
       break
