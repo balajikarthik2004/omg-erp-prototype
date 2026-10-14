@@ -23,7 +23,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
   return (
     <div className="w-full">
       {label ? (
-        <label htmlFor={fieldId} className="mb-1.5 block text-[13px] font-medium text-stone-700">
+        <label htmlFor={fieldId} className="mb-1.5 block text-[13px] font-bold text-navy-900">
           {label}
         </label>
       ) : null}
@@ -32,10 +32,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           ref={ref}
           id={fieldId}
           className={cn(
-            'w-full appearance-none rounded-lg border border-sandal-300 bg-sandal-50 py-2 pr-9 pl-3',
-            'text-[15px] text-stone-900 transition-colors duration-150',
-            'focus:border-navy-400 focus:ring-2 focus:ring-navy-400 focus:outline-none',
-            'disabled:bg-sandal-100 disabled:text-stone-500',
+            'w-full appearance-none rounded-xl border border-navy-200/90 bg-white py-2.5 pr-9 pl-3.5',
+            'text-[15px] text-navy-950 font-medium transition-all duration-150 shadow-2xs',
+            'focus:border-kumkum-500 focus:ring-3 focus:ring-kumkum-500/15 focus:outline-none',
+            'disabled:bg-navy-50 disabled:border-navy-100 disabled:text-navy-400',
             className,
           )}
           {...rest}
@@ -47,7 +47,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           ))}
         </select>
         <ChevronDown
-          className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-stone-500"
+          className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-navy-500"
           aria-hidden
         />
       </div>

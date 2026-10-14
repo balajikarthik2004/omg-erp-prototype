@@ -24,7 +24,17 @@ export function IncomeOutgoChart({ data, height = 280 }: { data: MonthPoint[]; h
       />
       <div style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -8 }} barGap={2}>
+          <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -8 }} barGap={3}>
+            <defs>
+              <linearGradient id="omgIncomeGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3B46B8" />
+                <stop offset="100%" stopColor="#293088" />
+              </linearGradient>
+              <linearGradient id="omgOutgoGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#FF4B42" />
+                <stop offset="100%" stopColor="#E22E26" />
+              </linearGradient>
+            </defs>
             <CartesianGrid stroke={CHART.grid} vertical={false} />
             <XAxis dataKey="label" tick={AXIS_TICK} axisLine={AXIS_LINE} tickLine={false} />
             <YAxis
@@ -35,7 +45,7 @@ export function IncomeOutgoChart({ data, height = 280 }: { data: MonthPoint[]; h
               tickFormatter={(v: number) => formatMoneyCompact(v)}
             />
             <Tooltip
-              cursor={{ fill: '#F4F4F5' }}
+              cursor={{ fill: 'rgba(41, 48, 136, 0.05)' }}
               content={({ active, payload, label }) =>
                 active && payload?.length ? (
                   <ChartTooltip
@@ -51,7 +61,7 @@ export function IncomeOutgoChart({ data, height = 280 }: { data: MonthPoint[]; h
             />
             <Bar
               dataKey="income"
-              fill={CHART.income}
+              fill="url(#omgIncomeGrad)"
               radius={[4, 4, 0, 0]}
               maxBarSize={18}
               isAnimationActive={true}
@@ -61,7 +71,7 @@ export function IncomeOutgoChart({ data, height = 280 }: { data: MonthPoint[]; h
             />
             <Bar
               dataKey="outgo"
-              fill={CHART.outgo}
+              fill="url(#omgOutgoGrad)"
               radius={[4, 4, 0, 0]}
               maxBarSize={18}
               isAnimationActive={true}

@@ -41,17 +41,17 @@ export function Table<T>({
   return (
     <div className={className}>
       {/* Desktop and tablet: a real table, scrolling inside its own container */}
-      <div className="scrollbar-thin hidden overflow-x-auto rounded-card border border-sandal-200 shadow-flat md:block">
+      <div className="scrollbar-thin hidden overflow-x-auto rounded-2xl border-2 border-navy-100/90 bg-white shadow-card md:block">
         <table className="w-full border-collapse text-[14px]">
           <thead>
-            <tr className="bg-sandal-100">
+            <tr className="bg-navy-50/80">
               {columns.map((col) => (
                 <th
                   key={col.key}
                   scope="col"
                   className={cn(
-                    'border-b border-sandal-200 px-4 py-2.5',
-                    'text-[11px] font-semibold tracking-[0.1em] text-stone-500 uppercase',
+                    'border-b border-navy-100 px-4 py-3',
+                    'text-[11px] font-bold tracking-[0.1em] text-navy-700 uppercase',
                     ALIGN[col.align ?? 'left'],
                     col.className,
                   )}
@@ -78,9 +78,9 @@ export function Table<T>({
                     : undefined
                 }
                 className={cn(
-                  'group bg-sandal-50 transition-colors duration-150',
-                  'border-b border-sandal-200 last:border-b-0',
-                  onRowClick && 'cursor-pointer hover:bg-navy-50 focus-visible:bg-navy-50',
+                  'group bg-white transition-colors duration-150',
+                  'border-b border-navy-100 last:border-b-0',
+                  onRowClick && 'cursor-pointer hover:bg-navy-50/70 focus-visible:bg-navy-50',
                   rowClassName?.(row),
                 )}
               >
@@ -88,7 +88,7 @@ export function Table<T>({
                   <td
                     key={col.key}
                     className={cn(
-                      'px-4 py-3 text-stone-700',
+                      'px-4 py-3 text-navy-800',
                       ALIGN[col.align ?? 'left'],
                       col.className,
                     )}
@@ -124,13 +124,13 @@ export function Table<T>({
                     : undefined
                 }
                 className={cn(
-                  'rounded-card border border-sandal-200 bg-sandal-50 p-4 shadow-flat',
+                  'rounded-2xl border-2 border-navy-100/90 bg-white p-4.5 shadow-card',
                   onRowClick && 'cursor-pointer active:bg-navy-50',
                   rowClassName?.(row),
                 )}
               >
                 {primary.length > 0 ? (
-                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-sandal-200 pb-3">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-navy-100 pb-3">
                     {primary.map((col) => (
                       <div key={col.key}>{col.cell(row)}</div>
                     ))}
@@ -139,8 +139,8 @@ export function Table<T>({
                 <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
                   {rest.map((col) => (
                     <div key={col.key} className="contents">
-                      <dt className="text-[11px] tracking-[0.1em] text-stone-500 uppercase">{col.header}</dt>
-                      <dd className="text-right text-[14px] text-stone-700">{col.cell(row)}</dd>
+                      <dt className="text-[11px] font-bold tracking-[0.1em] text-navy-600 uppercase">{col.header}</dt>
+                      <dd className="text-right text-[14px] text-navy-900 font-medium">{col.cell(row)}</dd>
                     </div>
                   ))}
                 </dl>

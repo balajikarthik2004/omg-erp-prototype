@@ -34,7 +34,7 @@ export const SECTORS: Record<SectorId, SectorMeta> = {
     chipClass: 'bg-kumkum-50 text-kumkum-700 border-kumkum-100',
     dotClass: 'bg-kumkum-600',
     barClass: 'bg-kumkum-600',
-    chartColor: '#CE2219',
+    chartColor: '#E22E26',
   },
   sevalaya: {
     id: 'sevalaya',
@@ -45,7 +45,7 @@ export const SECTORS: Record<SectorId, SectorMeta> = {
     chipClass: 'bg-tulsi-50 text-tulsi-700 border-tulsi-50',
     dotClass: 'bg-tulsi-500',
     barClass: 'bg-tulsi-500',
-    chartColor: '#11865A',
+    chartColor: '#FFC107',
   },
   sangam: {
     id: 'sangam',
@@ -56,7 +56,7 @@ export const SECTORS: Record<SectorId, SectorMeta> = {
     chipClass: 'bg-peacock-50 text-peacock-700 border-peacock-50',
     dotClass: 'bg-peacock-500',
     barClass: 'bg-peacock-500',
-    chartColor: '#4F5BCA',
+    chartColor: '#293088',
   },
 }
 
@@ -169,14 +169,14 @@ export const OVERRIDE_REASON_MIN = 10
  * visible label or a table view beside it.
  */
 export const CHART = {
-  temple: '#CE2219',
-  sevalaya: '#11865A',
-  sangam: '#4F5BCA',
-  income: '#11865A',
-  outgo: '#CE2219',
+  temple: '#E22E26',
+  sevalaya: '#FFC107',
+  sangam: '#293088',
+  income: '#293088',
+  outgo: '#E22E26',
   accent: '#FFC107',
-  grid: '#E4E4E7',
-  axis: '#71717A',
+  grid: '#E3E5F5',
+  axis: '#5F6490',
   surface: '#FFFFFF',
 } as const
 

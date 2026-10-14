@@ -63,7 +63,7 @@ export function DashboardPage() {
               value={<Money value={data.kpi.incomeMtd} />}
               delta={data.kpi.incomeDelta}
               sub="same days last month"
-              accentClass="bg-turmeric-500"
+              accentClass="bg-gradient-to-r from-navy-500 to-navy-700"
               icon={<Banknote className="size-4" aria-hidden />}
             />
             <Stat
@@ -72,21 +72,21 @@ export function DashboardPage() {
               delta={data.kpi.outgoDelta}
               deltaMeaning="neutral"
               sub="supplier payments released"
-              accentClass="bg-tulsi-500"
+              accentClass="bg-gradient-to-r from-kumkum-500 to-kumkum-600"
               icon={<TrendingDown className="size-4" aria-hidden />}
             />
             <Stat
               label="Net this month"
               value={<Money value={data.kpi.net} tone={data.kpi.net >= 0 ? 'in' : 'out'} />}
               sub={`${data.kpi.donationCountMtd} donations received`}
-              accentClass="bg-peacock-500"
+              accentClass="bg-gradient-to-r from-turmeric-500 to-amber-500"
               icon={<PiggyBank className="size-4" aria-hidden />}
             />
             <Stat
               label="Pending approvals"
               value={data.kpi.pendingCount}
               sub={`${formatMoney(data.kpi.pendingValue)} held up`}
-              accentClass="bg-kumkum-600"
+              accentClass="bg-gradient-to-r from-kumkum-600 to-rose-700"
               icon={<ClipboardList className="size-4" aria-hidden />}
             />
           </div>
@@ -108,10 +108,10 @@ export function DashboardPage() {
                   action={
                     <Link
                       to="/console/budgets"
-                      className="inline-flex items-center gap-1 text-[13px] font-medium text-navy-600 hover:underline"
+                      className="inline-flex items-center gap-1 text-[13px] font-bold text-navy-800 hover:text-kumkum-600 transition-colors group"
                     >
                       All budgets
-                      <ArrowRight className="size-3.5" aria-hidden />
+                      <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
                     </Link>
                   }
                 />
@@ -133,10 +133,10 @@ export function DashboardPage() {
                 action={
                   <Link
                     to="/console/allotments"
-                    className="inline-flex items-center gap-1 text-[13px] font-medium text-navy-600 hover:underline"
+                    className="inline-flex items-center gap-1 text-[13px] font-bold text-navy-800 hover:text-kumkum-600 transition-colors group"
                   >
                     Allot
-                    <ArrowRight className="size-3.5" aria-hidden />
+                    <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
                   </Link>
                 }
               />
@@ -153,10 +153,10 @@ export function DashboardPage() {
                   action={
                     <Link
                       to="/console/approvals"
-                      className="inline-flex items-center gap-1 text-[13px] font-medium text-navy-600 hover:underline"
+                      className="inline-flex items-center gap-1 text-[13px] font-bold text-navy-800 hover:text-kumkum-600 transition-colors group"
                     >
                       Open inbox
-                      <ArrowRight className="size-3.5" aria-hidden />
+                      <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
                     </Link>
                   }
                 />
@@ -169,26 +169,26 @@ export function DashboardPage() {
                   />
                 </div>
               ) : (
-                <ul className="flex flex-col divide-y divide-sandal-200 border-t">
+                <ul className="flex flex-col divide-y divide-navy-100 border-t border-navy-100">
                   {data.tasks.slice(0, 6).map((task) => {
                     const due = formatDue(task.dueAt)
                     return (
                       <li key={`${task.kind}-${task.id}`}>
                         <Link
                           to={task.href}
-                          className="flex items-start justify-between gap-4 px-5 py-3.5 transition-colors duration-150 hover:bg-navy-50 sm:px-6"
+                          className="flex items-start justify-between gap-4 px-5 py-3.5 transition-colors duration-150 hover:bg-navy-50/70 sm:px-6"
                         >
                           <div className="min-w-0">
-                            <p className="truncate text-[14px] font-medium text-stone-900">{task.title}</p>
-                            <p className="mt-0.5 truncate text-[13px] text-stone-500">{task.subtitle}</p>
+                            <p className="truncate text-[14px] font-semibold text-navy-950">{task.title}</p>
+                            <p className="mt-0.5 truncate text-[13px] text-navy-600/70">{task.subtitle}</p>
                             <p className="mt-1.5 flex items-center gap-2">
                               <SectorChip sectorId={task.sectorId} />
-                              <span className={due.overdue ? 'text-[12px] font-medium text-danger-600' : 'text-[12px] text-stone-500'}>
+                              <span className={due.overdue ? 'text-[12px] font-bold text-kumkum-600' : 'text-[12px] font-medium text-navy-600/70'}>
                                 {due.label}
                               </span>
                             </p>
                           </div>
-                          <Money value={task.amount} className="shrink-0 text-[15px]" />
+                          <Money value={task.amount} className="shrink-0 text-[15px] font-bold text-navy-950" />
                         </Link>
                       </li>
                     )
@@ -205,26 +205,26 @@ export function DashboardPage() {
                   action={
                     <Link
                       to="/console/audit"
-                      className="inline-flex items-center gap-1 text-[13px] font-medium text-navy-600 hover:underline"
+                      className="inline-flex items-center gap-1 text-[13px] font-bold text-navy-800 hover:text-kumkum-600 transition-colors group"
                     >
                       Full audit log
-                      <ArrowRight className="size-3.5" aria-hidden />
+                      <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
                     </Link>
                   }
                 />
               </div>
-              <ul className="flex flex-col divide-y divide-sandal-200 border-t">
+              <ul className="flex flex-col divide-y divide-navy-100 border-t border-navy-100">
                 {data.activity.map((event) => (
                   <li
                     key={event.id}
                     className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-5 py-2.5 sm:px-6"
                   >
-                    <span className="min-w-0 text-[14px] text-stone-700">
-                      <span className="font-medium text-stone-900">{userName(event.userId)}</span>{' '}
+                    <span className="min-w-0 text-[14px] text-navy-800">
+                      <span className="font-semibold text-navy-950">{userName(event.userId)}</span>{' '}
                       {event.action.toLowerCase()}{' '}
-                      <span className="font-mono text-[13px] text-stone-900 tabular-nums">{event.entityId}</span>
+                      <span className="font-mono text-[13px] text-navy-950 font-bold tabular-nums">{event.entityId}</span>
                     </span>
-                    <span className="shrink-0 text-[13px] text-stone-500">{formatAge(event.at)}</span>
+                    <span className="shrink-0 text-[13px] text-navy-600/70 font-medium">{formatAge(event.at)}</span>
                   </li>
                 ))}
               </ul>

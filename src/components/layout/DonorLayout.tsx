@@ -37,23 +37,35 @@ export function DonorLayout() {
 
   return (
     <div className="flex min-h-screen flex-col bg-navy-50">
-      <header className="no-print sticky top-0 z-30 border-b border-sandal-200 bg-sandal-50/90 backdrop-blur-md">
-        <div className="mx-auto flex h-19.5 max-w-6xl items-center gap-4 px-5 sm:px-8">
-          <Link to="/" className="flex items-center gap-3" aria-label="OMG Platform, home">
-            <OmgMark size={46} />
-            <span className="leading-none">
-              <span className="block max-w-[150px] truncate font-heritage text-[21px] leading-none font-semibold tracking-wide text-stone-900 sm:max-w-[260px] sm:text-[27px]">
+      <header className="no-print sticky top-0 z-30 border-b border-sandal-200 bg-white/95 backdrop-blur-md shadow-xs">
+        <div className="flex h-20 w-full items-center justify-between px-4 sm:px-6 lg:px-8 xl:px-10">
+          <Link to="/" className="flex items-center gap-3.5 group shrink-0" aria-label="OMG Platform, home">
+            <OmgMark size={44} className="transition-transform duration-200 group-hover:scale-105" />
+            <div className="leading-tight">
+              <span className="block font-heritage text-[22px] sm:text-[26px] font-bold tracking-wide text-stone-900">
                 {tenant?.name ?? 'OMG'}
               </span>
-              <span className="mt-0.5 block text-[11px] tracking-[0.14em] text-stone-500 uppercase">
-                Offerings
+              <span className="block text-[10px] font-bold tracking-[0.2em] text-kumkum-500 uppercase">
+                Devotee Portal
               </span>
-            </span>
+            </div>
           </Link>
 
-          <span className="mx-1 hidden h-7 w-px bg-sandal-200 md:block" aria-hidden />
+          <span className="mx-2 hidden h-8 w-px bg-sandal-200 lg:block" aria-hidden />
 
-          <nav className="hidden shrink-0 items-center gap-0.5 md:flex">
+          {/* Nav links styled like omgofficial.com */}
+          <nav className="hidden shrink-0 items-center gap-1 lg:flex">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                cn(
+                  'group relative px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors',
+                  isActive ? 'text-kumkum-500' : 'text-stone-700 hover:text-kumkum-500',
+                )
+              }
+            >
+              Home
+            </NavLink>
             {links.map((link) => (
               <NavLink
                 key={link.to}
@@ -61,17 +73,21 @@ export function DonorLayout() {
                 className={({ isActive }) =>
                   cn(
                     'group relative rounded-lg px-3 py-2 transition-colors duration-150',
-                    isActive ? 'text-stone-900' : 'text-stone-700 hover:bg-sandal-100',
+                    isActive ? 'text-stone-900' : 'text-stone-700 hover:text-kumkum-500',
                   )
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <span className="block text-[14px] leading-tight font-medium whitespace-nowrap">{link.label}</span>
-                    <span className="block text-[12px] leading-tight whitespace-nowrap text-stone-500">{link.tamil}</span>
+                    <span className="block text-xs font-bold uppercase tracking-wider leading-tight whitespace-nowrap">
+                      {link.label}
+                    </span>
+                    <span className="block text-[11px] leading-tight whitespace-nowrap text-stone-500">
+                      {link.tamil}
+                    </span>
                     <span
                       className={cn(
-                        'absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-kumkum-500 transition-opacity duration-150',
+                        'absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-kumkum-500 transition-opacity duration-150',
                         isActive ? 'opacity-100' : 'opacity-0',
                       )}
                       aria-hidden
@@ -82,35 +98,39 @@ export function DonorLayout() {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-1">
+          {/* Right Action Buttons: Red Temple Console & Navy Devotee Sign In */}
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <Link
               to="/console"
-              className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-[14px] whitespace-nowrap text-stone-700 transition-colors duration-150 hover:bg-sandal-100 lg:flex"
+              className="hidden sm:inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-kumkum-500 hover:bg-kumkum-600 text-white font-bold text-xs uppercase tracking-wider rounded-lg shadow-xs transition-all active:scale-95"
             >
-              <LayoutDashboard className="size-4" aria-hidden />
-              Console
+              <LayoutDashboard className="size-3.5" aria-hidden />
+              <span>Temple Console</span>
             </Link>
+
             <Link
               to={signedIn ? '/my/donations' : '/login'}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-[14px] text-stone-700 transition-colors duration-150 hover:bg-sandal-100"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-navy-600 hover:bg-navy-700 text-white font-bold text-xs uppercase tracking-wider rounded-lg shadow-xs transition-all active:scale-95"
             >
-              {signedIn ? <UserRound className="size-4" aria-hidden /> : <LogIn className="size-4" aria-hidden />}
-              <span className="hidden whitespace-nowrap sm:inline">{signedIn ? 'My donations' : 'Sign in'}</span>
+              {signedIn ? <UserRound className="size-3.5" aria-hidden /> : <LogIn className="size-3.5" aria-hidden />}
+              <span className="whitespace-nowrap">{signedIn ? 'My Donations' : 'Devotee Sign In'}</span>
             </Link>
 
             <Link
               to="/checkout"
               aria-label={`Your offering, ${cart.length} item${cart.length === 1 ? '' : 's'}`}
               className={cn(
-                'relative flex items-center gap-2 rounded-lg px-3 py-2 transition-colors duration-150',
+                'relative flex items-center justify-center rounded-lg p-2.5 transition-colors duration-150 border',
                 cart.length > 0
-                  ? 'bg-kumkum-600 text-sandal-50 hover:bg-kumkum-700'
-                  : 'text-stone-700 hover:bg-sandal-100',
+                  ? 'bg-kumkum-50 border-kumkum-300 text-kumkum-600'
+                  : 'border-sandal-200 text-stone-700 hover:bg-sandal-100',
               )}
             >
               <ShoppingBag className="size-4.5" aria-hidden />
               {cart.length > 0 ? (
-                <span className="font-mono text-[13px] tabular-nums">{cart.length}</span>
+                <span className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-kumkum-500 font-mono text-[11px] font-bold text-white shadow-xs">
+                  {cart.length}
+                </span>
               ) : null}
             </Link>
 
@@ -119,7 +139,7 @@ export function DonorLayout() {
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={menuOpen}
-              className="rounded-lg p-2 text-stone-700 transition-colors duration-150 hover:bg-sandal-100 md:hidden"
+              className="rounded-lg p-2 text-stone-700 transition-colors duration-150 hover:bg-sandal-100 lg:hidden"
             >
               {menuOpen ? <X className="size-5" aria-hidden /> : <Menu className="size-5" aria-hidden />}
             </button>

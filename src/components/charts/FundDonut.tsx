@@ -46,48 +46,70 @@ export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; heigh
       >
         <ResponsiveContainer width="100%" height="100%">
           <PieChart onMouseLeave={() => setActiveIndex(null)}>
+            <defs>
+              <linearGradient id="templeDonutGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#FF4B42" />
+                <stop offset="100%" stopColor="#E22E26" />
+              </linearGradient>
+              <linearGradient id="sangamDonutGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#3B46B8" />
+                <stop offset="100%" stopColor="#293088" />
+              </linearGradient>
+              <linearGradient id="sevalayaDonutGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#FFC107" />
+                <stop offset="100%" stopColor="#E5A800" />
+              </linearGradient>
+            </defs>
             <Pie
               data={data}
               dataKey="value"
               nameKey="label"
               innerRadius="64%"
               outerRadius="100%"
-              paddingAngle={2}
+              paddingAngle={2.5}
               stroke="#FFFFFF"
-              strokeWidth={2}
+              strokeWidth={2.5}
               isAnimationActive={true}
               animationDuration={800}
               animationEasing="ease-out"
               onMouseEnter={(_, index) => setActiveIndex(index)}
               onMouseLeave={() => setActiveIndex(null)}
             >
-              {data.map((d, index) => (
-                <Cell
-                  key={d.key}
-                  fill={d.color}
-                  fillOpacity={activeIndex === null || activeIndex === index ? 1 : 0.45}
-                  style={{ transition: 'fill-opacity 200ms ease', cursor: 'pointer', outline: 'none' }}
-                />
-              ))}
+              {data.map((d, index) => {
+                const fillGrad =
+                  d.key === 'temple'
+                    ? 'url(#templeDonutGrad)'
+                    : d.key === 'sangam'
+                      ? 'url(#sangamDonutGrad)'
+                      : 'url(#sevalayaDonutGrad)'
+                return (
+                  <Cell
+                    key={d.key}
+                    fill={fillGrad}
+                    fillOpacity={activeIndex === null || activeIndex === index ? 1 : 0.45}
+                    style={{ transition: 'fill-opacity 200ms ease', cursor: 'pointer', outline: 'none' }}
+                  />
+                )
+              })}
             </Pie>
           </PieChart>
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-3 transition-all duration-150">
-          <span className="truncate max-w-32.5 text-[11px] font-semibold tracking-widest text-stone-500 uppercase">
+          <span className="truncate max-w-32.5 text-[11px] font-bold tracking-widest text-navy-600 uppercase">
             {activeSector ? activeSector.label : 'Held'}
           </span>
-          <span className="font-display text-[20px] text-stone-900 leading-tight">
+          <span className="font-heritage text-[22px] font-bold text-navy-950 leading-tight mt-0.5">
             {formatMoney(activeSector ? activeSector.value : total)}
           </span>
           {percent !== null ? (
-            <span className="font-mono text-[11px] text-stone-500">{percent}% of total</span>
+            <span className="font-mono text-[11px] font-semibold text-navy-600">{percent}% of total</span>
           ) : (
-            <span className="text-[11px] text-stone-400">Total held</span>
+            <span className="text-[11px] font-medium text-navy-400">Total held</span>
           )}
         </div>
       </div>
 
-      <ul className="w-full divide-y divide-sandal-200">
+      <ul className="w-full divide-y divide-navy-100">
         {slices.slice(0, 6).map((slice) => {
           const isSectorActive = activeSector?.key === slice.sectorId
           return (
@@ -104,9 +126,9 @@ export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; heigh
                   style={{ backgroundColor: SECTORS[slice.sectorId].chartColor }}
                   aria-hidden
                 />
-                <span className="truncate text-[14px] text-stone-700">{slice.name}</span>
+                <span className="truncate text-[14px] text-navy-800 font-medium">{slice.name}</span>
               </span>
-              <span className="shrink-0 font-mono text-[14px] text-stone-900 tabular-nums">
+              <span className="shrink-0 font-mono text-[14px] font-bold text-navy-950 tabular-nums">
                 {formatMoney(slice.balance)}
               </span>
             </li>

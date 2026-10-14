@@ -17,8 +17,8 @@ import { useReveal } from './useReveal'
 
 function Eyebrow({ children }: { children: string }) {
   return (
-    <p className="flex items-center gap-3 text-[12px] font-semibold tracking-[0.24em] text-navy-600 uppercase">
-      <span className="h-px w-9 bg-navy-300/70" aria-hidden />
+    <p className="flex items-center gap-3 text-[12px] font-bold tracking-[0.24em] text-kumkum-600 uppercase">
+      <span className="h-px w-9 bg-kumkum-300" aria-hidden />
       {children}
     </p>
   )
@@ -45,7 +45,7 @@ export function FeaturedProjectSection() {
   const { ref, seen } = useReveal<HTMLElement>()
 
   return (
-    <section ref={ref} className="relative isolate overflow-hidden bg-sandal-50 py-20 lg:py-24">
+    <section ref={ref} className="relative isolate overflow-hidden bg-gradient-to-b from-[#F0F2FA] via-white to-[#F2F4FB] py-16 lg:py-24">
       {/* Background Etchings (Distinct & Non-Repetitive, Transparent PNGs) */}
       {/* Left Kanchipuram Gopuram Etching - Positioned Upwards */}
       <div
@@ -71,43 +71,43 @@ export function FeaturedProjectSection() {
         />
       </div>
 
-      <div className={cn('mx-auto max-w-6xl px-5 sm:px-8', 'reveal', seen && 'is-visible')}>
+      <div className={cn('mx-auto max-w-7xl px-4 sm:px-8', 'reveal', seen && 'is-visible')}>
         <div className="grid items-center gap-12 lg:grid-cols-[1fr_520px] lg:gap-14">
           {/* Left Column: Project Copy & Badges */}
           <div className="relative z-10">
             <Eyebrow>Featured Project</Eyebrow>
 
-            <h2 className="mt-4 font-heritage text-[33px] leading-[1.04] font-normal text-stone-900 sm:text-[56px] lg:text-[62px]">
+            <h2 className="mt-4 font-heritage text-[32px] sm:text-[48px] lg:text-[58px] leading-[1.05] font-bold text-stone-900">
               <span className="block">Rajagopuram</span>
-              <span className="block text-kumkum-600">Renovation</span>
+              <span className="block text-kumkum-600 font-extrabold">Renovation</span>
             </h2>
 
-            <p className="mt-5 max-w-xl text-[16px] leading-[1.7] text-stone-700 sm:text-[17px]">
+            <p className="mt-5 max-w-xl text-[15.5px] sm:text-[17px] leading-[1.7] text-stone-700">
               {featured.summary ||
                 'Restoring the main tower: stucco figures, lime plaster, a gold-leaf kalasam and new lighting, under a traditional sthapati.'}
             </p>
 
             {/* Two Feature Badges */}
-            <div className="mt-8 flex flex-wrap items-center gap-6 sm:gap-8">
+            <div className="mt-8 flex flex-wrap items-center gap-4 sm:gap-6">
               {/* Badge 1 */}
-              <div className="flex items-center gap-3.5">
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#F8E6B8]/90 shadow-xs">
-                  <TempleTowerIcon size={24} />
+              <div className="flex items-center gap-3 rounded-xl bg-white/95 p-2.5 sm:p-3 shadow-sm">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-navy-600 to-navy-700 text-white shadow-xs">
+                  <TempleTowerIcon size={22} />
                 </span>
                 <div>
-                  <p className="text-[15px] font-medium text-stone-900">Temple restoration</p>
-                  <p className="text-[13.5px] text-stone-500">Ongoing</p>
+                  <p className="text-sm font-extrabold text-navy-950">Temple Restoration</p>
+                  <p className="text-xs font-semibold text-navy-600">Active project</p>
                 </div>
               </div>
 
               {/* Badge 2 */}
-              <div className="flex items-center gap-3.5">
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#F8E6B8]/90 shadow-xs">
-                  <SthapatiChiselsIcon size={22} />
+              <div className="flex items-center gap-3 rounded-xl bg-white/95 p-2.5 sm:p-3 shadow-sm">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-kumkum-500 to-kumkum-600 text-white shadow-xs">
+                  <SthapatiChiselsIcon size={20} />
                 </span>
                 <div>
-                  <p className="text-[15px] font-medium text-stone-900">Traditional</p>
-                  <p className="text-[13.5px] text-stone-500">sthapati-led work</p>
+                  <p className="text-sm font-extrabold text-stone-900">Traditional Art</p>
+                  <p className="text-xs font-semibold text-kumkum-600">Sthapati-led work</p>
                 </div>
               </div>
             </div>
@@ -117,10 +117,10 @@ export function FeaturedProjectSection() {
               <Link to={`/donate/${featured.sectorId}/cat-tmp-raja`} className="inline-block">
                 <button
                   type="button"
-                  className="group flex h-13 items-center gap-3 rounded-xl bg-[#8A1710] px-7 text-[16px] font-semibold text-white shadow-md transition-all duration-200 hover:-translate-y-px hover:bg-[#72120C] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-turmeric-400"
+                  className="group flex h-13 items-center gap-2.5 rounded-xl bg-gradient-to-r from-kumkum-500 via-kumkum-600 to-kumkum-700 hover:from-kumkum-600 hover:to-kumkum-800 active:scale-95 px-7 text-[15px] sm:text-[16px] font-bold text-white shadow-md shadow-kumkum-500/25 transition-all"
                 >
-                  <SacredOfferingHandIcon size={20} className="text-navy-200" />
-                  <span>Give to this project</span>
+                  <SacredOfferingHandIcon size={20} className="text-white" />
+                  <span>Give to This Project</span>
                   <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
                 </button>
               </Link>
@@ -133,7 +133,7 @@ export function FeaturedProjectSection() {
             <Finial className="absolute -top-4.5 left-1/2 z-20 -translate-x-1/2" />
 
             {/* Arch Photo Container */}
-            <div className="relative overflow-hidden rounded-t-[200px] rounded-b-[20px] border-2 border-turmeric-500/60 bg-sandal-100 p-2 shadow-sm">
+            <div className="relative overflow-hidden rounded-t-[200px] rounded-b-[20px] bg-gradient-to-b from-amber-100/70 via-amber-50 to-navy-50/60 p-2 shadow-2xl">
               <div className="aspect-[4/3.8] w-full overflow-hidden rounded-t-[190px] rounded-b-card">
                 <img
                   src="/images/project-rajagopuram.webp"
@@ -149,7 +149,7 @@ export function FeaturedProjectSection() {
 
             {/* Overlapping Raised Stats Card - Shifted Upwards */}
             <div
-              className="relative z-20 -mt-28 sm:-mt-32 mx-3 sm:mx-4 overflow-hidden rounded-[18px] border border-sandal-200 bg-sandal-50 p-6 shadow-card sm:p-7"
+              className="relative z-20 -mt-28 sm:-mt-32 mx-3 sm:mx-4 overflow-hidden rounded-[18px] bg-gradient-to-br from-white via-amber-50/90 to-amber-100/60 p-6 shadow-2xl shadow-navy-950/20 sm:p-7"
             >
               {/* Corner Filigree Ornaments */}
               <VintageCornerFiligree position="tl" className="top-1 left-1" />
@@ -170,32 +170,34 @@ export function FeaturedProjectSection() {
               </div>
 
               <div className="relative z-10">
-                <p className="text-[11px] font-semibold tracking-[0.16em] text-navy-600 uppercase">
+                <p className="text-[11px] font-bold tracking-[0.16em] text-navy-700 uppercase">
                   Raised so far
                 </p>
 
                 <div className="mt-1.5 flex items-baseline gap-2">
-                  <Money value={featured.raised} className="font-heritage text-[26px] sm:text-[40px] leading-none font-normal text-stone-900" />
+                  <Money value={featured.raised} className="font-heritage text-[28px] sm:text-[42px] leading-none font-bold text-navy-950" />
                 </div>
-                <p className="mt-1 text-[13.5px] text-stone-500">
-                  of {formatMoney(featured.goal)} needed
+                <p className="mt-1 text-[13.5px] font-medium text-stone-600">
+                  of <span className="font-bold text-stone-800">{formatMoney(featured.goal)}</span> needed
                 </p>
 
                 {/* Progress Bar */}
                 <div
-                  className="mt-5 h-2.5 w-full overflow-hidden rounded-full bg-[#EADCC8]"
+                  className="mt-5 h-2.5 w-full overflow-hidden rounded-full bg-navy-200/60"
                   role="img"
                   aria-label={`${formatPct(progress, 0)} of the goal raised`}
                 >
                   <span
-                    className="block h-full rounded-full bg-linear-to-r from-[#A8241A] to-[#8A1710] shadow-inner transition-all duration-700"
+                    className="block h-full rounded-full bg-gradient-to-r from-kumkum-500 via-kumkum-600 to-turmeric-400 shadow-inner transition-all duration-700"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
 
                 <div className="mt-3 flex items-baseline justify-between text-[13.5px]">
-                  <span className="font-bold text-kumkum-600 tabular-nums">{formatPct(progress, 0)}</span>
-                  <span className="text-stone-600">
+                  <span className="inline-flex items-center rounded-md bg-kumkum-600 px-2.5 py-0.5 text-xs font-black text-white shadow-xs tabular-nums">
+                    {formatPct(progress, 0)}
+                  </span>
+                  <span className="text-stone-700 font-semibold">
                     {formatMoney(featured.goal - featured.raised)} still to find
                   </span>
                 </div>

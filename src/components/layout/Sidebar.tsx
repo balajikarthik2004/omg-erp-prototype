@@ -20,16 +20,17 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const myEventTasks = mine.filter((t) => t.kind.startsWith('event_') && t.kind !== 'event_order').length
 
   return (
-    <div data-brand={tenant?.brand ?? 'kumkum'} className="flex h-full flex-col surface-sanctum text-sandal-100">
-      <div className="flex items-center justify-between gap-2 px-5 py-5">
+    <div data-brand={tenant?.brand ?? 'kumkum'} className="flex h-full flex-col bg-gradient-to-b from-[#0F133B] via-[#121640] to-[#1C0F22] text-white border-r border-navy-800/80 shadow-2xl">
+      <div className="flex items-center justify-between gap-2 border-b border-white/10 px-5 py-4.5">
         <NavLink to="/console" className="flex items-center gap-3" onClick={onNavigate}>
           <OmgMark size={36} onDark />
           <span className="leading-none">
-            <span className="block max-w-[150px] truncate font-display text-[17px] tracking-wide text-sandal-50">
+            <span className="block max-w-[150px] truncate font-heritage text-[18px] font-bold tracking-wide text-white">
               {tenant?.name ?? 'OMG'}
             </span>
-            <span className="mt-1 block text-[10px] tracking-[0.18em] text-navy-200/80 uppercase">
-              OMG Console
+            <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-extrabold tracking-[0.18em] text-kumkum-400 uppercase">
+              <span className="size-1.5 rounded-full bg-kumkum-500 animate-pulse" />
+              Console Portal
             </span>
           </span>
         </NavLink>
@@ -38,7 +39,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             type="button"
             onClick={onNavigate}
             aria-label="Close navigation"
-            className="rounded-lg p-1.5 text-sandal-200 transition-colors duration-150 hover:bg-sandal-50/10 lg:hidden"
+            className="rounded-lg p-1.5 text-white/70 transition-colors duration-150 hover:bg-white/10 lg:hidden"
           >
             <X className="size-5" aria-hidden />
           </button>
@@ -49,8 +50,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         {groups.map((group) => (
           <div key={`${group.phase}-${group.label}`} className="mb-6">
             <div className="mb-2 flex items-center gap-2 px-3">
-              <span className={cn('h-2.5 w-0.5 rounded-full', PHASES[group.phase].markerClass)} aria-hidden />
-              <span className="text-[10px] font-semibold tracking-[0.16em] text-sandal-200/50 uppercase">
+              <span className={cn('size-2 rounded-full', PHASES[group.phase].markerClass)} aria-hidden />
+              <span className="text-[10px] font-extrabold tracking-[0.18em] text-white/50 uppercase">
                 {group.label}
               </span>
             </div>
@@ -65,10 +66,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                       onClick={onNavigate}
                       className={({ isActive }) =>
                         cn(
-                          'group relative flex items-center gap-3 rounded-lg px-3 py-2 text-[14px] transition-colors duration-150',
+                          'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] transition-all duration-150',
                           isActive
-                            ? 'bg-sandal-50/12 font-medium text-sandal-50'
-                            : 'text-sandal-100/75 hover:bg-sandal-50/[0.07] hover:text-sandal-50',
+                            ? 'bg-gradient-to-r from-kumkum-500/25 via-kumkum-500/15 to-transparent font-bold text-white shadow-xs ring-1 ring-white/15'
+                            : 'text-white/75 hover:bg-white/10 hover:text-white font-medium',
                         )
                       }
                     >
@@ -76,21 +77,21 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                         <>
                           <span
                             className={cn(
-                              'absolute top-1/2 -left-3 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-kumkum-500 transition-opacity duration-150',
+                              'absolute top-1/2 -left-3 h-5 w-[3.5px] -translate-y-1/2 rounded-r-full bg-kumkum-500 transition-opacity duration-150 shadow-sm shadow-kumkum-500/50',
                               isActive ? 'opacity-100' : 'opacity-0',
                             )}
                             aria-hidden
                           />
                           <Icon
                             className={cn(
-                              'size-[17px] shrink-0 transition-colors duration-150',
-                              isActive ? 'text-kumkum-500' : 'text-sandal-200/55 group-hover:text-sandal-100',
+                              'size-4.5 shrink-0 transition-colors duration-150',
+                              isActive ? 'text-kumkum-400' : 'text-white/60 group-hover:text-white',
                             )}
                             aria-hidden
                           />
                           <span className="flex-1 truncate">{item.label}</span>
                           {(item.badge === 'approvals' ? myTasks : item.badge === 'eventApprovals' ? myEventTasks : 0) > 0 ? (
-                            <span className="rounded-full bg-turmeric-500 px-1.5 py-px font-mono text-[11px] font-semibold text-stone-900 tabular-nums">
+                            <span className="rounded-full bg-gradient-to-r from-kumkum-500 to-kumkum-600 px-2 py-0.5 font-mono text-[11px] font-black text-white shadow-xs tabular-nums">
                               {item.badge === 'approvals' ? myTasks : myEventTasks}
                             </span>
                           ) : null}
@@ -105,22 +106,22 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
-      <div className="border-t border-sandal-50/10 px-5 py-4">
+      <div className="border-t border-white/10 px-5 py-4">
         <NavLink
           to="/"
           onClick={onNavigate}
-          className="inline-flex items-center gap-1.5 text-[13px] text-sandal-200/70 transition-colors duration-150 hover:text-kumkum-100"
+          className="inline-flex items-center gap-1.5 text-[13px] font-bold text-turmeric-300 transition-colors duration-150 hover:text-white"
         >
           <ExternalLink className="size-3.5" aria-hidden />
-          Open the donor site
+          <span>Open Devotee Portal</span>
         </NavLink>
         <div className="mt-3 flex items-end justify-between">
-          <p className="text-[11px] leading-relaxed text-sandal-200/40">
-            Prototype build
+          <p className="text-[11px] leading-relaxed text-white/40 font-medium">
+            OMG Enterprise Platform
             <br />
-            Mock data · no live payments
+            Double-Signed CA Ledger
           </p>
-          <Kolam className="-mr-1 -mb-1 text-navy-300/25" size={52} />
+          <Kolam className="-mr-1 -mb-1 text-white/15" size={50} />
         </div>
       </div>
     </div>

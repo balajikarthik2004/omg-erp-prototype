@@ -24,10 +24,13 @@ const CARD_CONFIG: Record<
     position: string
     tamil: string
     blurb: string
+    cardBg: string
     tileBg: string
     tileColor: string
     accentBar: string
     waysText: string
+    tagColor: string
+    exploreColor: string
     popular?: boolean
     renderIcon: () => React.ReactNode
   }
@@ -37,10 +40,13 @@ const CARD_CONFIG: Record<
     position: '50% 70%',
     tamil: 'கோவில்',
     blurb: 'Hundi, poojas, festivals and temple projects that preserve our heritage.',
-    tileBg: 'bg-kumkum-50',
-    tileColor: 'text-kumkum-600',
-    accentBar: 'bg-kumkum-600',
+    cardBg: 'bg-gradient-to-b from-white via-rose-50/30 to-white',
+    tileBg: 'bg-gradient-to-br from-kumkum-500 to-kumkum-600',
+    tileColor: 'text-white shadow-md shadow-kumkum-500/25',
+    accentBar: 'bg-gradient-to-r from-kumkum-500 to-kumkum-600',
     waysText: '18 ways to give',
+    tagColor: 'text-kumkum-600 font-bold',
+    exploreColor: 'text-kumkum-600 font-bold',
     popular: true,
     renderIcon: () => <TempleGopuramIcon size={28} />,
   },
@@ -49,10 +55,13 @@ const CARD_CONFIG: Record<
     position: '50% 55%',
     tamil: 'சேவாலயா',
     blurb: 'Annadhanam, education and welfare programmes for all.',
-    tileBg: 'bg-tulsi-50',
-    tileColor: 'text-tulsi-500',
-    accentBar: 'bg-tulsi-500',
+    cardBg: 'bg-gradient-to-b from-white via-emerald-50/30 to-white',
+    tileBg: 'bg-gradient-to-br from-tulsi-500 to-tulsi-600',
+    tileColor: 'text-white shadow-md shadow-tulsi-500/25',
+    accentBar: 'bg-gradient-to-r from-tulsi-500 to-tulsi-600',
     waysText: '9 ways to give',
+    tagColor: 'text-tulsi-600 font-bold',
+    exploreColor: 'text-tulsi-600 font-bold',
     renderIcon: () => <AnnadhanamBowlIcon size={28} />,
   },
   sangam: {
@@ -60,20 +69,23 @@ const CARD_CONFIG: Record<
     position: '50% 46%',
     tamil: 'தமிழ்ச்சங்கம்',
     blurb: 'Memberships, cultural events, classes and community projects.',
-    tileBg: 'bg-navy-50',
-    tileColor: 'text-navy-400',
-    accentBar: 'bg-navy-400',
+    cardBg: 'bg-gradient-to-b from-white via-navy-50/35 to-white',
+    tileBg: 'bg-gradient-to-br from-navy-600 to-navy-700',
+    tileColor: 'text-white shadow-md shadow-navy-600/25',
+    accentBar: 'bg-gradient-to-r from-navy-500 to-navy-600',
     waysText: '12 ways to give',
+    tagColor: 'text-navy-600 font-bold',
+    exploreColor: 'text-navy-600 font-bold',
     renderIcon: () => <TraditionalDeepamIcon size={28} />,
   },
 }
 
 function Eyebrow({ children }: { children: string }) {
   return (
-    <p className="flex items-center justify-center gap-3 text-[12px] font-semibold tracking-[0.24em] text-navy-600 uppercase">
-      <span className="h-px w-9 bg-navy-300/70" aria-hidden />
+    <p className="flex items-center justify-center gap-3 text-[12px] font-bold tracking-[0.24em] text-kumkum-600 uppercase">
+      <span className="h-px w-9 bg-kumkum-300" aria-hidden />
       {children}
-      <span className="h-px w-9 bg-navy-300/70" aria-hidden />
+      <span className="h-px w-9 bg-kumkum-300" aria-hidden />
     </p>
   )
 }
@@ -87,7 +99,7 @@ export function WhereToGive() {
   const { ref, seen } = useReveal<HTMLElement>()
 
   return (
-    <section ref={ref} id="sectors" className="relative isolate scroll-mt-20 overflow-hidden bg-sandal-50 py-16 sm:py-20">
+    <section ref={ref} id="sectors" className="relative isolate scroll-mt-20 overflow-hidden bg-gradient-to-b from-[#F2F4FC] via-[#E8ECFA] to-[#F0F2FA] py-16 sm:py-20">
       {/* Authentic Vintage Heritage Background Etchings (Zero background / transparent PNG) */}
       <div
         className="pointer-events-none absolute top-8 -left-20 -z-10 hidden h-170 w-90 opacity-[0.22] lg:block xl:-left-16 xl:h-180 xl:w-100"
@@ -115,8 +127,8 @@ export function WhereToGive() {
       <div className={cn('mx-auto max-w-6xl px-5 sm:px-8', 'reveal', seen && 'is-visible')}>
         <div className="text-center">
           <Eyebrow>Where to give</Eyebrow>
-          <h2 className="mt-4 font-heritage text-[30px] leading-[1.08] font-normal text-stone-900 sm:text-[52px]">
-            Three houses, <span className="text-kumkum-600">one ledger</span>
+          <h2 className="mt-4 font-heritage text-[30px] leading-[1.08] font-bold text-stone-900 sm:text-[52px]">
+            Three houses, <span className="text-kumkum-600 font-extrabold">one ledger</span>
           </h2>
           <p className="mx-auto mt-3.5 max-w-2xl text-[16px] leading-relaxed text-stone-700 sm:text-[17px]">
             Each offering finds its right place, supporting the temple, its rituals and the community.
@@ -136,8 +148,9 @@ export function WhereToGive() {
                 <Link
                   to={`/donate/${id}`}
                   className={cn(
-                    'group relative flex h-full flex-col overflow-hidden rounded-2xl border border-sandal-200 bg-[#FFFDF8] shadow-card',
-                    'transition-all duration-300 hover:-translate-y-1 hover:shadow-lift',
+                    'group relative flex h-full flex-col overflow-hidden rounded-2xl shadow-md hover:shadow-2xl',
+                    config.cardBg,
+                    'transition-all duration-300 hover:-translate-y-1.5',
                     'focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 focus-visible:outline-none',
                   )}
                 >
@@ -152,7 +165,7 @@ export function WhereToGive() {
                       imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                     {config.popular ? (
-                      <span className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-md bg-navy-400 px-2.5 py-1 text-[12px] font-semibold text-white shadow-sm">
+                      <span className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-kumkum-600 px-3 py-1 text-[11px] font-extrabold text-white shadow-sm uppercase tracking-wider">
                         <Star className="size-3 fill-white" aria-hidden />
                         Popular
                       </span>
@@ -172,21 +185,21 @@ export function WhereToGive() {
                         {config.renderIcon()}
                       </span>
                       <div className="min-w-0">
-                        <h3 className="font-heritage text-[22px] leading-none font-medium text-stone-900 sm:text-[32px]">
+                        <h3 className="font-heritage text-[22px] leading-none font-bold text-stone-900 sm:text-[30px]">
                           {sector.name}
                         </h3>
-                        <p className="mt-1 text-[16px] text-stone-600">{config.tamil}</p>
+                        <p className={cn('mt-1 text-[16px]', config.tagColor)}>{config.tamil}</p>
                       </div>
                     </div>
 
                     <p className="mt-4 flex-1 text-[15px] leading-relaxed text-stone-700">{config.blurb}</p>
 
                     <div className="mt-5 flex items-center justify-between border-t border-sandal-200/90 pt-4">
-                      <span className="inline-flex items-center gap-2 text-[14px] text-stone-700">
-                        <Clock3 className="size-4.25 text-[#A8241A]" aria-hidden />
+                      <span className="inline-flex items-center gap-2 text-[14px] font-semibold text-stone-700">
+                        <Clock3 className="size-4.25 text-kumkum-600" aria-hidden />
                         {waysDisplay}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-kumkum-600">
+                      <span className={cn('inline-flex items-center gap-1.5 text-[14px] transition-transform duration-200 group-hover:translate-x-0.5', config.exploreColor)}>
                         Explore
                         <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
                       </span>
@@ -194,7 +207,7 @@ export function WhereToGive() {
                   </div>
 
                   {/* Bottom Color Accent Line */}
-                  <span className={cn('h-[3.5px] w-full', config.accentBar)} aria-hidden />
+                  <span className={cn('h-1.5 w-full', config.accentBar)} aria-hidden />
                 </Link>
               </li>
             )

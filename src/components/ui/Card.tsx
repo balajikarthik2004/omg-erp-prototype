@@ -11,7 +11,7 @@ export function Card({ accentClass, padded = true, className, children, ...rest 
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-card border border-sandal-200 bg-sandal-50 shadow-card',
+        'relative overflow-hidden rounded-2xl border-2 border-navy-100/90 bg-white shadow-card hover:shadow-lift transition-shadow duration-200',
         className,
       )}
       {...rest}
@@ -36,8 +36,8 @@ export function CardHeader({
   return (
     <div className={cn('mb-5 flex items-start justify-between gap-4', className)}>
       <div className="min-w-0">
-        <h3 className="font-display text-[18px] leading-tight text-stone-900">{title}</h3>
-        {description ? <p className="mt-1 text-[13px] leading-relaxed text-stone-500">{description}</p> : null}
+        <h3 className="font-heritage text-[18px] sm:text-[20px] font-bold text-navy-950 tracking-tight leading-tight">{title}</h3>
+        {description ? <p className="mt-1 text-[13px] leading-relaxed text-navy-600/80">{description}</p> : null}
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}
     </div>

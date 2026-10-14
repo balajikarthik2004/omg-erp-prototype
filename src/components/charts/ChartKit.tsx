@@ -12,16 +12,16 @@ export function ChartTooltip({
   rows: { key: string; label: string; value: number; color: string }[]
 }) {
   return (
-    <div className="rounded-lg border border-sandal-200 bg-sandal-50 px-3 py-2 shadow-card">
-      <p className="mb-1.5 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">{label}</p>
+    <div className="rounded-xl border border-navy-200/90 bg-white/95 px-3.5 py-2.5 shadow-xl backdrop-blur-md">
+      <p className="mb-1.5 text-[11px] font-bold tracking-[0.12em] text-navy-600 uppercase">{label}</p>
       <ul className="flex flex-col gap-1">
         {rows.map((row) => (
           <li key={row.key} className="flex items-center justify-between gap-6 text-[13px]">
-            <span className="inline-flex items-center gap-1.5 text-stone-700">
+            <span className="inline-flex items-center gap-1.5 text-navy-800 font-medium">
               <span className="size-2 rounded-full" style={{ backgroundColor: row.color }} aria-hidden />
               {row.label}
             </span>
-            <span className="font-mono text-stone-900 tabular-nums">{formatMoney(row.value)}</span>
+            <span className="font-mono text-navy-950 font-bold tabular-nums">{formatMoney(row.value)}</span>
           </li>
         ))}
       </ul>
@@ -42,9 +42,9 @@ export function ChartLegend({
       {items.map((item) => (
         <li key={item.key} className="inline-flex items-center gap-1.5 text-[13px]">
           <span className="size-2.5 rounded-sm" style={{ backgroundColor: item.color }} aria-hidden />
-          <span className="text-stone-700">{item.label}</span>
+          <span className="text-navy-800 font-medium">{item.label}</span>
           {typeof item.value === 'number' ? (
-            <span className="font-mono text-stone-900 tabular-nums">{formatMoney(item.value)}</span>
+            <span className="font-mono text-navy-950 font-bold tabular-nums">{formatMoney(item.value)}</span>
           ) : null}
         </li>
       ))}
