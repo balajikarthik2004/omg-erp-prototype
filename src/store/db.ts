@@ -13,6 +13,7 @@ import { offeringById } from '@/mock/offerings'
 import { BUDGET_SPECS, CATALOG, FUNDS, GAUSHALA_FUND_IDS, INVENTORY, PROJECTS, userById, userName } from '@/mock/seed'
 import { createEventActions, type EventActions } from './eventActions'
 import { createGaushalaActions, type GaushalaActions } from './gaushalaActions'
+import { createCsrActions, type CsrActions } from './csrActions'
 import {
   cashConfirmBlock,
   cashCountBlock,
@@ -59,11 +60,13 @@ const EMPTY_DATA = {
   eventSponsors: [], eventDonations: [], eventOrders: [], eventActuals: [],
   cows: [], cowHealth: [], sewaOrders: [], rescues: [], gaushalaGallery: [],
   gaushalaEntities: [], receiptTemplates: [], gaushalaExpenses: [],
+  csrEntities: [], csrDocuments: [], csrProjects: [], csrCompanies: [],
+  csrDeals: [], csrUtilisationCertificates: [], csrProgressUpdates: [],
 } satisfies Omit<Database, 'tenants'>
 
 const EMPTY: Database = { ...EMPTY_DATA, tenants: [] }
 
-export interface DbState extends Database, EventActions, GaushalaActions {
+export interface DbState extends Database, EventActions, GaushalaActions, CsrActions {
   ready: boolean
   loading: boolean
   /** The customer whose books are on screen. */
@@ -207,6 +210,9 @@ function pickTenantData(s: DbState): TenantData {
     cows: s.cows, cowHealth: s.cowHealth, sewaOrders: s.sewaOrders, rescues: s.rescues,
     gaushalaGallery: s.gaushalaGallery, gaushalaEntities: s.gaushalaEntities,
     receiptTemplates: s.receiptTemplates, gaushalaExpenses: s.gaushalaExpenses,
+    csrEntities: s.csrEntities, csrDocuments: s.csrDocuments, csrProjects: s.csrProjects,
+    csrCompanies: s.csrCompanies, csrDeals: s.csrDeals, csrUtilisationCertificates: s.csrUtilisationCertificates,
+    csrProgressUpdates: s.csrProgressUpdates,
   }
 }
 
@@ -429,6 +435,7 @@ export const useDb = create<DbState>((set, get) => ({
   vault: {},
   ...createEventActions(set, get),
   ...createGaushalaActions(set, get),
+  ...createCsrActions(set, get),
 
   load: async () => {
     if (get().ready || get().loading) return

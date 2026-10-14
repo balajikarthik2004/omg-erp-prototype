@@ -5,6 +5,7 @@ import type { GaushalaSewaCategory } from './gaushala'
 export type { SectorId }
 export * from './events'
 export * from './gaushala'
+export * from './csr'
 
 /** Money is always integer cents. Format only at display time. */
 export type Money = number
@@ -451,6 +452,7 @@ export type ModuleKey =
   | 'payments'
   | 'reports'
   | 'events'
+  | 'csr'
 
 export interface TenantUser {
   id: string

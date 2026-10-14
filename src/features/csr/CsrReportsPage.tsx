@@ -1,0 +1,551 @@
+import { useState } from 'react'
+import {
+  Award,
+  CheckCircle2,
+  FileCheck2,
+  Image,
+  Plus,
+  ShieldCheck,
+  Users,
+} from 'lucide-react'
+
+import { formatMoney } from '@/lib/format'
+import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
+import { Dialog } from '@/components/ui/Dialog'
+import { Input } from '@/components/ui/Input'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { userById } from '@/mock/seed'
+import { useDb } from '@/store/db'
+import { useSession } from '@/store/session'
+import type { CsrUtilisationCertificate } from '@/types'
+
+export function CsrReportsPage() {
+  const db = useDb()
+  const personaId = useSession((s) => s.personaId)
+  const user = userById(personaId)
+
+  const [activeTab, setActiveTab] = useState<'ucs' | 'progress'>('ucs')
+  const [draftUcModal, setDraftUcModal] = useState(false)
+  const [signUcModal, setSignUcModal] = useState<CsrUtilisationCertificate | null>(null)
+  const [addProgressModal, setAddProgressModal] = useState(false)
+
+  // UC Signing Form
+  const [caUdin, setCaUdin] = useState('26048912AAAAAA9812')
+  const [caMembershipNo, setCaMembershipNo] = useState('048912')
+
+  // Draft UC Form
+  const [selectedDealId, setSelectedDealId] = useState('')
+  const [selectedTrancheId, setSelectedTrancheId] = useState('')
+  const [amountUtilised, setAmountUtilised] = useState(1500000) // ₹15L
+  const [ucNarrative, setUcNarrative] = useState(
+    'Certified that the grant has been strictly utilised for the purposes of Akshaya Annadhanam meals distribution without any religious worship / pooja expenses.',
+  )
+
+  // Progress Update Form
+  const [progressProjectId, setProgressProjectId] = useState('')
+  const [progressStart] = useState('2026-04-01')
+  const [progressEnd] = useState('2026-09-30')
+  const [beneficiaries, setBeneficiaries] = useState(4800)
+  const [progressNarrative, setProgressNarrative] = useState('')
+  const [photoCaption, setPhotoCaption] = useState('Daily annadhanam hot meal service at rural feeding point')
+
+  if (!db.ready) return <Skeleton className="h-96 w-full" />
+
+  const ucs = db.csrUtilisationCertificates
+  const progressUpdates = db.csrProgressUpdates
+  const deals = db.csrDeals
+  const projects = db.csrProjects
+  const companies = db.csrCompanies
+
+  const isCa =
+    user?.role === 'ca_partner' || user?.role === 'ca_staff' || user?.role === 'super_admin'
+
+  const handleDraftUcSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!user) return
+    const deal = deals.find((d) => d.id === selectedDealId) ?? deals[0]
+    const tranche = deal?.tranches.find((t) => t.id === selectedTrancheId) ?? deal?.tranches[0]
+    if (!deal || !tranche) return
+
+    const utilisedPaise = amountUtilised * 100
+    const remainingPaise = Math.max(0, tranche.amount - utilisedPaise)
+
+    db.createCsrUc(
+      {
+        dealId: deal.id,
+        trancheId: tranche.id,
+        trancheSeq: tranche.seqNo,
+        amountReceived: tranche.amount,
+        amountUtilised: utilisedPaise,
+        balanceRemaining: remainingPaise,
+        preparedBy: user.name,
+        narrative: ucNarrative,
+      },
+      user,
+    )
+
+    setDraftUcModal(false)
+  }
+
+  const handleSignUcSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!signUcModal || !caUdin || !user) return
+
+    db.signCsrUc(signUcModal.id, caUdin, caMembershipNo, user)
+    setSignUcModal(null)
+  }
+
+  const handleAddProgressSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!user) return
+    const prj = projects.find((p) => p.id === progressProjectId) ?? projects[0]
+    if (!prj) return
+
+    db.addCsrProgressUpdate(
+      {
+        projectId: prj.id,
+        periodStart: progressStart,
+        periodEnd: progressEnd,
+        beneficiariesReached: beneficiaries,
+        narrative: progressNarrative || 'Milestone achieved with photo documentation and beneficiary records.',
+        photos: [
+          {
+            url: 'https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=800&q=80',
+            caption: photoCaption,
+            consentOk: true,
+            takenAt: new Date().toISOString(),
+          },
+        ],
+        createdBy: user.name,
+      },
+      user,
+    )
+
+    setAddProgressModal(false)
+    setProgressNarrative('')
+  }
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        phase="report"
+        title="Utilisation Certificates & Impact Reports"
+        description="ICAI statutory Utilisation Certificates with 18-digit UDIN, sequential tranche clearance, and geotagged beneficiary evidence."
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              icon={<Plus className="size-4" />}
+              onClick={() => setAddProgressModal(true)}
+            >
+              Log Field Milestone
+            </Button>
+            <Button
+              variant="primary"
+              icon={<FileCheck2 className="size-4" />}
+              onClick={() => setDraftUcModal(true)}
+            >
+              Draft Utilisation Certificate
+            </Button>
+          </div>
+        }
+      />
+
+      {/* Tab Switcher */}
+      <div className="flex items-center gap-3 border-b border-sandalwood-200 pb-3">
+        <button
+          onClick={() => setActiveTab('ucs')}
+          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            activeTab === 'ucs'
+              ? 'bg-turmeric-600 text-white shadow-xs'
+              : 'bg-white text-sandalwood-700 hover:bg-sandalwood-100 border border-sandalwood-200'
+          }`}
+        >
+          <Award className="size-4" />
+          <span>Statutory Utilisation Certificates ({ucs.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('progress')}
+          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            activeTab === 'progress'
+              ? 'bg-turmeric-600 text-white shadow-xs'
+              : 'bg-white text-sandalwood-700 hover:bg-sandalwood-100 border border-sandalwood-200'
+          }`}
+        >
+          <Image className="size-4" />
+          <span>Field Photo Evidence & Milestones ({progressUpdates.length})</span>
+        </button>
+      </div>
+
+      {activeTab === 'ucs' ? (
+        <div className="grid gap-6">
+          {ucs.map((uc) => {
+            const deal = deals.find((d) => d.id === uc.dealId)
+            const company = companies.find((c) => c.id === deal?.companyId)
+            const project = projects.find((p) => p.id === deal?.projectId)
+            const isSigned = uc.status === 'signed'
+
+            return (
+              <Card key={uc.id} className="overflow-hidden border border-sandalwood-300">
+                <div className="p-5">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs font-bold uppercase tracking-wider text-turmeric-800">
+                          {company?.name}
+                        </span>
+                        <span className="text-sandalwood-400">→</span>
+                        <h3 className="font-serif text-base font-bold text-sandalwood-900">
+                          {project?.title} (Tranche #{uc.trancheSeq})
+                        </h3>
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                            isSigned
+                              ? 'bg-tulsi-100 text-tulsi-800 border border-tulsi-200'
+                              : 'bg-marigold-100 text-marigold-800 border border-marigold-200'
+                          }`}
+                        >
+                          {isSigned ? 'CA CERTIFIED & SIGNED' : 'DRAFT AWAITING SIGNATURE'}
+                        </span>
+                      </div>
+
+                      <div className="mt-2 text-xs text-sandalwood-600 space-y-1">
+                        <p>{uc.narrative}</p>
+                        <p className="text-[11px] text-sandalwood-500">
+                          Prepared by: <strong className="text-sandalwood-700">{uc.preparedBy}</strong> on {uc.preparedAt.slice(0, 10)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {!isSigned && isCa && (
+                        <Button
+                          size="sm"
+                          variant="primary"
+                          icon={<ShieldCheck className="size-4" />}
+                          onClick={() => setSignUcModal(uc)}
+                        >
+                          Certify & Sign with UDIN
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Financial Metrics Strip */}
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 rounded-lg bg-sandalwood-50 p-3 text-xs">
+                    <div>
+                      <span className="text-sandalwood-500 block">Tranche Received</span>
+                      <strong className="font-mono text-sm font-bold text-sandalwood-900">
+                        {formatMoney(uc.amountReceived)}
+                      </strong>
+                    </div>
+                    <div>
+                      <span className="text-sandalwood-500 block">Amount Utilised</span>
+                      <strong className="font-mono text-sm font-bold text-tulsi-700">
+                        {formatMoney(uc.amountUtilised)}
+                      </strong>
+                    </div>
+                    <div>
+                      <span className="text-sandalwood-500 block">Balance Remaining</span>
+                      <strong className="font-mono text-sm font-bold text-sandalwood-800">
+                        {formatMoney(uc.balanceRemaining)}
+                      </strong>
+                    </div>
+                  </div>
+
+                  {/* Digital Signature & UDIN Seal Box */}
+                  {isSigned && (
+                    <div className="mt-4 rounded-lg border border-tulsi-300 bg-tulsi-50/60 p-3.5 text-xs text-tulsi-900">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="size-5 text-tulsi-600 shrink-0" />
+                          <div>
+                            <p className="font-serif font-bold text-tulsi-950">
+                              Digitally Verified by Chartered Accountant
+                            </p>
+                            <p className="text-[11px] text-tulsi-800">
+                              ICAI Membership No: <strong className="font-mono">{uc.caMembershipNo}</strong> · Certified on {uc.signedAt?.slice(0, 10)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="rounded bg-white px-3 py-1.5 border border-tulsi-200 text-right">
+                          <span className="block text-[10px] uppercase font-bold text-sandalwood-500">ICAI UDIN</span>
+                          <span className="font-mono text-xs font-bold text-tulsi-900 tracking-wider">
+                            {uc.caUdin}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )
+          })}
+        </div>
+      ) : (
+        /* Field Photo Evidence & Beneficiary Impact */
+        <div className="grid gap-6 md:grid-cols-2">
+          {progressUpdates.map((upd) => {
+            const project = projects.find((p) => p.id === upd.projectId)
+
+            return (
+              <Card key={upd.id} className="overflow-hidden border border-sandalwood-300">
+                <div className="p-5">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="font-serif text-base font-bold text-sandalwood-900">
+                      {project?.title}
+                    </h3>
+                    <span className="inline-flex items-center gap-1 rounded bg-peacock-50 px-2.5 py-0.5 text-xs font-semibold text-peacock-800 border border-peacock-200">
+                      <Users className="size-3.5" />
+                      {upd.beneficiariesReached.toLocaleString()} Beneficiaries
+                    </span>
+                  </div>
+
+                  <p className="mt-2 text-xs text-sandalwood-600 leading-relaxed">
+                    {upd.narrative}
+                  </p>
+
+                  <div className="mt-1 text-[11px] text-sandalwood-500">
+                    Period: {upd.periodStart} to {upd.periodEnd} · Recorded by {upd.createdBy}
+                  </div>
+
+                  {/* Photo Evidence Grid */}
+                  <div className="mt-4 grid grid-cols-1 gap-2">
+                    {upd.photos.map((ph, idx) => (
+                      <div key={idx} className="rounded-lg overflow-hidden border border-sandalwood-200 bg-sandalwood-50">
+                        <img
+                          src={ph.url}
+                          alt={ph.caption}
+                          className="h-48 w-full object-cover"
+                        />
+                        <div className="p-2.5 flex items-center justify-between text-xs">
+                          <span className="font-medium text-sandalwood-800">{ph.caption}</span>
+                          <span className="text-[10px] font-semibold text-tulsi-700 bg-tulsi-50 px-2 py-0.5 rounded">
+                            Consent Verified
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Sign UC Modal with UDIN */}
+      {signUcModal && (
+        <Dialog
+          open={Boolean(signUcModal)}
+          onClose={() => setSignUcModal(null)}
+          title="Sign Statutory Utilisation Certificate (Form GFR-12A)"
+        >
+          <form onSubmit={handleSignUcSubmit} className="space-y-4">
+            <div className="rounded-md border border-turmeric-200 bg-turmeric-50 p-3 text-xs text-turmeric-900">
+              <p className="font-semibold">Chartered Accountant Attestation:</p>
+              <p className="mt-0.5 text-[11px]">
+                Under ICAI Standards, signing this certificate certifies that voucher audit, dedicated bank statement verification, and 5% admin cap compliance were verified.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                ICAI Membership Number
+              </label>
+              <Input
+                placeholder="e.g. 048912"
+                value={caMembershipNo}
+                onChange={(e) => setCaMembershipNo(e.target.value)}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                18-Digit ICAI UDIN (Unique Document Identification Number)
+              </label>
+              <Input
+                placeholder="e.g. 26048912AAAAAA9812"
+                value={caUdin}
+                onChange={(e) => setCaUdin(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="secondary" onClick={() => setSignUcModal(null)}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary">
+                Affix Digital Seal & Certify
+              </Button>
+            </div>
+          </form>
+        </Dialog>
+      )}
+
+      {/* Draft UC Modal */}
+      {draftUcModal && (
+        <Dialog
+          open={draftUcModal}
+          onClose={() => setDraftUcModal(false)}
+          title="Draft Utilisation Certificate"
+        >
+          <form onSubmit={handleDraftUcSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                Select Active Corporate Grant
+              </label>
+              <select
+                className="w-full rounded-lg border border-sandalwood-300 bg-white py-2 px-3 text-xs text-sandalwood-900 focus:outline-hidden"
+                value={selectedDealId}
+                onChange={(e) => {
+                  setSelectedDealId(e.target.value)
+                  const d = deals.find((x) => x.id === e.target.value)
+                  if (d && d.tranches[0]) setSelectedTrancheId(d.tranches[0].id)
+                }}
+              >
+                {deals.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {companies.find((c) => c.id === d.companyId)?.name} — {formatMoney(d.committedAmount)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                Instalment / Tranche
+              </label>
+              <select
+                className="w-full rounded-lg border border-sandalwood-300 bg-white py-2 px-3 text-xs text-sandalwood-900 focus:outline-hidden"
+                value={selectedTrancheId}
+                onChange={(e) => setSelectedTrancheId(e.target.value)}
+              >
+                {(deals.find((d) => d.id === selectedDealId) ?? deals[0])?.tranches.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    Tranche #{t.seqNo} ({formatMoney(t.amount)}) — {t.status}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                Amount Utilised (₹)
+              </label>
+              <Input
+                type="number"
+                value={amountUtilised}
+                onChange={(e) => setAmountUtilised(Number(e.target.value))}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                Utilisation & Audit Narrative
+              </label>
+              <textarea
+                className="w-full rounded-md border border-sandalwood-300 p-2 text-xs focus:border-turmeric-500 focus:outline-hidden"
+                rows={3}
+                value={ucNarrative}
+                onChange={(e) => setUcNarrative(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="secondary" onClick={() => setDraftUcModal(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary">
+                Draft Certificate
+              </Button>
+            </div>
+          </form>
+        </Dialog>
+      )}
+
+      {/* Add Field Progress Milestone Modal */}
+      {addProgressModal && (
+        <Dialog
+          open={addProgressModal}
+          onClose={() => setAddProgressModal(false)}
+          title="Log Field Progress & Evidence Milestone"
+        >
+          <form onSubmit={handleAddProgressSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                CSR Project
+              </label>
+              <select
+                className="w-full rounded-lg border border-sandalwood-300 bg-white py-2 px-3 text-xs text-sandalwood-900 focus:outline-hidden"
+                value={progressProjectId}
+                onChange={(e) => setProgressProjectId(e.target.value)}
+              >
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                  Beneficiaries Directly Reached
+                </label>
+                <Input
+                  type="number"
+                  value={beneficiaries}
+                  onChange={(e) => setBeneficiaries(Number(e.target.value))}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                  Photo Caption
+                </label>
+                <Input
+                  value={photoCaption}
+                  onChange={(e) => setPhotoCaption(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                Progress Narrative Summary
+              </label>
+              <textarea
+                className="w-full rounded-md border border-sandalwood-300 p-2 text-xs focus:border-turmeric-500 focus:outline-hidden"
+                rows={3}
+                placeholder="Details of food distribution, equipment installation, student attendance..."
+                value={progressNarrative}
+                onChange={(e) => setProgressNarrative(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="secondary" onClick={() => setAddProgressModal(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary">
+                Save Milestone
+              </Button>
+            </div>
+          </form>
+        </Dialog>
+      )}
+    </div>
+  )
+}

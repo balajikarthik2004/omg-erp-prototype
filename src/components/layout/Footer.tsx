@@ -71,11 +71,11 @@ export function Footer() {
               blending ancient Vedic wisdom with modern transparent governance.
             </p>
 
-            <div className="pt-1">
+            {/* <div className="pt-1">
               <span className="inline-block rounded-md bg-white/10 px-2.5 py-1 text-[10.5px] font-bold tracking-wider text-turmeric-400 uppercase border border-white/15">
                 PROTOTYPE · MOCK DATA · FOUR-EYES LEDGER
               </span>
-            </div>
+            </div> */}
           </div>
 
           {/* Column 2: Sacred Offerings */}

@@ -49,6 +49,7 @@ export const MODULE_LABELS: Record<ModuleKey, { label: string; hint: string }> =
   payments: { label: 'Payments', hint: 'Invoices, 3-way match, release' },
   reports: { label: 'Reports & audit', hint: 'Income vs outgo, audit trail' },
   events: { label: 'Events', hint: 'Event budgets, posters, tickets and profit and loss' },
+  csr: { label: 'CSR (Corporate Social Responsibility)', hint: 'Schedule VII projects, company pipeline, MoUs & UCs' },
 }
 
 export const VERTICAL_TEMPLATES: Record<SectorId, string> = {

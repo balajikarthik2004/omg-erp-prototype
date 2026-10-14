@@ -30,7 +30,17 @@ import type {
   Tenant,
   EventsData,
   GaushalaData,
+  CsrData,
 } from '@/types'
+import {
+  CSR_ENTITIES,
+  CSR_DOCUMENTS,
+  CSR_PROJECTS,
+  CSR_COMPANIES,
+  CSR_DEALS,
+  CSR_UTILISATION_CERTIFICATES,
+  CSR_PROGRESS_UPDATES,
+} from './csrSeed'
 import {
   BUDGET_SPECS,
   CATALOG,
@@ -45,7 +55,7 @@ import {
   USERS,
 } from './seed'
 
-export interface Database extends EventsData, GaushalaData {
+export interface Database extends EventsData, GaushalaData, CsrData {
   donors: Donor[]
   donations: Donation[]
   funds: Fund[]
@@ -1135,6 +1145,13 @@ export function generateDatabase(now = new Date()): Database {
     eventActuals: eventsSeed.data.eventActuals.map((a) => ({ ...a })),
     ...gaushalaSeed.data,
     sewaOrders: stamp(gaushalaSeed.data.sewaOrders),
+    csrEntities: CSR_ENTITIES.map((e) => ({ ...e, tenantId: DEMO_TENANT_ID })),
+    csrDocuments: CSR_DOCUMENTS.map((d) => ({ ...d })),
+    csrProjects: CSR_PROJECTS.map((p) => ({ ...p, tenantId: DEMO_TENANT_ID })),
+    csrCompanies: CSR_COMPANIES.map((c) => ({ ...c })),
+    csrDeals: CSR_DEALS.map((d) => ({ ...d, tenantId: DEMO_TENANT_ID })),
+    csrUtilisationCertificates: CSR_UTILISATION_CERTIFICATES.map((u) => ({ ...u })),
+    csrProgressUpdates: CSR_PROGRESS_UPDATES.map((p) => ({ ...p })),
   }
 }
 
@@ -1193,7 +1210,7 @@ function makeTenants(now: Date): Tenant[] {
       brand: 'kumkum',
       logoText: 'OMG',
       verticals: ['temple', 'sevalaya', 'sangam'],
-      modules: ['donations', 'reconciliation', 'budgets', 'inventory', 'procurement', 'payments', 'reports', 'events'],
+      modules: ['donations', 'reconciliation', 'budgets', 'inventory', 'procurement', 'payments', 'reports', 'events', 'csr'],
       squareLocationId: 'L8K2M4Q7ZP',
       thresholds: { ...DEFAULT_THRESHOLDS },
       users: USERS.filter((u) => u.role !== 'devotee' && u.role !== 'super_admin').map((u) => ({
