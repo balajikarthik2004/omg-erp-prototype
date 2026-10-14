@@ -12,6 +12,8 @@ npm install
 npm run dev     # http://localhost:5173
 npm run build   # typechecks, then builds
 npm run lint
+npm run verify:flow       # 195 checks on the money rules
+npm run verify:gaushala   # 135 checks on the Gaushala module
 ```
 
 ## The flow
@@ -22,6 +24,44 @@ npm run lint
 | **Control** | kumkum | Reconciliation, ledger, fund allotments, budgets, approvals |
 | **Spend** | tulsi | Inventory, suppliers, procurement wizard, purchase orders, payments |
 | **Report** | peacock | Dashboard, reports, audit log |
+
+## Sevalaya: Seva and Gaushala
+
+Sevalaya in the top nav is a menu with two pages.
+
+| | Route | What it is |
+|---|---|---|
+| 1 | `/sevalaya/seva` | The Sevalaya catalog exactly as it was. `/donate/sevalaya` redirects here. |
+| 2 | `/sevalaya/gaushala` | The cow shelter. |
+
+The Gaushala is its own module inside the Sevalaya sector, with its own
+restricted funds (`fund-gau-*`) so fodder money cannot quietly become shed
+money. Its sewas are ordinary catalog items carrying `gaushala: true`, kept in
+`mock/gaushala.ts` and deliberately **not** in `CATALOG` — that is what keeps
+the Seva page unchanged. Anything resolving a line item after it is in the cart
+uses `mock/offerings.ts`, which is both catalogs together, so checkout, the
+receipt, the donations table and the ledger take a sewa without modification.
+
+Four roles are scoped to it: Gaushala Admin, Accountant, Caretaker and Content
+Editor. All four are in the persona switcher and see only the Gaushala group in
+the console sidebar.
+
+Prices are shown in the viewer's currency and charged in the entity's. The
+figure the donor saw, the rate used and their country are stored on the
+donation; the ledger only ever sees settlement cents. Which receipt wording a
+donor gets is decided by the entity and the donor's country — two entities are
+configured because the legal entity is not settled, and the country-specific
+tax wording is flagged as needing an accountant before a receipt goes out.
+
+The shelter's gifts are not a separate money system. They are generated into
+the same `donations` array as every other gift, before payouts, fund balances
+and the ledger are computed, so Square payment ids, webhook timestamps, the
+processing fee, payouts, reconciliation and the journal all apply to them with
+no special handling. The one thing that is its own is the receipt book: a gift
+to the Gaushala is numbered `RCP-GAU`, not `RCP-SEV`. Every sewa order is
+backed by the donation that paid for it, and a refunded gift cancels its sewa.
+
+Run `npm run verify:gaushala` for the headless checks on all of the above.
 
 ## Two surfaces
 
@@ -124,12 +164,13 @@ the outer hairline rect needs an explicit `fill="none"` or it paints over the ma
 
 ## Photography
 
-Four images live in `public/images`, referenced through `src/lib/photos.ts`:
+Five images live in `public/images`, referenced through `src/lib/photos.ts`:
 
 | File | Used on |
 |---|---|
 | `temple-gopuram.webp` | donor hero, Temple card and banner |
 | `sevalaya-annadhanam.webp` | Sevalaya card and banner |
+| `sevalaya-gaushala.webp` | Gaushala banner (compressed from `sevalaya-gaushala.png`) |
 | `sangam-hall.webp` | Tamil Sangam card and banner |
 | `project-rajagopuram.webp` | the featured project card |
 

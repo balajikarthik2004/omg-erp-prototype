@@ -2,6 +2,7 @@ import { addDays, differenceInDays, endOfMonth, format, startOfMonth, subDays, s
 
 import { APP, DEFAULT_THRESHOLDS } from '@/config'
 import { makeEventsSeed } from './events'
+import { makeGaushalaSeed } from './gaushala'
 import { createRng, SEED } from '@/lib/rng'
 import type {
   Allotment,
@@ -28,6 +29,7 @@ import type {
   SupplierInvoice,
   Tenant,
   EventsData,
+  GaushalaData,
 } from '@/types'
 import {
   BUDGET_SPECS,
@@ -43,7 +45,7 @@ import {
   USERS,
 } from './seed'
 
-export interface Database extends EventsData {
+export interface Database extends EventsData, GaushalaData {
   donors: Donor[]
   donations: Donation[]
   funds: Fund[]
@@ -1000,6 +1002,14 @@ export function generateDatabase(now = new Date()): Database {
 
   const donors = makeDonors(rng, now)
   const donations = makeDonations(rng, donors, now)
+
+  // The Gaushala's gifts join the same array before anything downstream runs,
+  // so payouts, fund balances, the ledger and reconciliation treat them as
+  // ordinary donations rather than as a module with its own money.
+  const gaushalaSeed = makeGaushalaSeed(now, donors, donations.length + 1)
+  donations.push(...gaushalaSeed.donations)
+  donations.sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+
   const suppliers = makeSuppliers(rng, now)
 
   const period = `FY ${now.getFullYear()}`
@@ -1123,6 +1133,8 @@ export function generateDatabase(now = new Date()): Database {
     ...eventsSeed.data,
     events: eventsSeed.data.events.map((e) => ({ ...e, tenantId: DEMO_TENANT_ID })),
     eventActuals: eventsSeed.data.eventActuals.map((a) => ({ ...a })),
+    ...gaushalaSeed.data,
+    sewaOrders: stamp(gaushalaSeed.data.sewaOrders),
   }
 }
 

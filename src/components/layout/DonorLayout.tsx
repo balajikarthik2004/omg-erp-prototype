@@ -8,6 +8,8 @@ import { OmgMark } from '@/components/ui/Ornament'
 import { useDb } from '@/store/db'
 import { useSession } from '@/store/session'
 import { Footer } from './Footer'
+import { SevalayaMenu } from './SevalayaMenu'
+import { SEVALAYA_ITEMS } from './sevalayaNav'
 
 export function DonorLayout() {
   const load = useDb((s) => s.load)
@@ -29,10 +31,14 @@ export function DonorLayout() {
     to: `/donate/${id}`,
     label: SECTORS[id].name,
     tamil: SECTORS[id].tamil,
+    // Sevalaya is a menu: Seva (what it always was) and Gaushala.
+    menu: id === 'sevalaya',
   }))
   const links = [
     ...sectorLinks,
-    ...(!tenant || tenant.modules.includes('events') ? [{ to: '/events', label: 'Events', tamil: 'நிகழ்வுகள்' }] : []),
+    ...(!tenant || tenant.modules.includes('events')
+      ? [{ to: '/events', label: 'Events', tamil: 'நிகழ்வுகள்', menu: false }]
+      : []),
   ]
 
   return (
@@ -66,7 +72,10 @@ export function DonorLayout() {
             >
               Home
             </NavLink>
-            {links.map((link) => (
+            {links.map((link) =>
+              link.menu ? (
+                <SevalayaMenu key={link.to} tamil={link.tamil} />
+              ) : (
               <NavLink
                 key={link.to}
                 to={link.to}
@@ -95,7 +104,8 @@ export function DonorLayout() {
                   </>
                 )}
               </NavLink>
-            ))}
+              ),
+            )}
           </nav>
 
           {/* Right Action Buttons: Red Temple Console & Navy Devotee Sign In */}
@@ -146,19 +156,50 @@ export function DonorLayout() {
           </div>
         </div>
 
+        {/* The toggle is lg:hidden, so this panel is too — it used to be
+            md:hidden, which left the button opening nothing between 768px
+            and 1024px. */}
         {menuOpen ? (
-          <nav className="border-t border-sandal-200 bg-sandal-50 px-4 py-2 md:hidden">
-            {links.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                onClick={() => setMenuOpen(false)}
-                className="flex items-baseline justify-between rounded-lg px-3 py-2.5 text-[15px] text-stone-700 hover:bg-sandal-100"
-              >
-                {link.label}
-                <span className="text-[13px] text-stone-500">{link.tamil}</span>
-              </NavLink>
-            ))}
+          <nav className="border-t border-sandal-200 bg-sandal-50 px-4 py-2 lg:hidden">
+            {links.map((link) =>
+              link.menu ? (
+                <div key={link.to} className="py-1">
+                  <p className="flex items-baseline justify-between px-3 py-1.5 text-[11px] font-extrabold tracking-[0.14em] text-stone-500 uppercase">
+                    {link.label}
+                    <span className="text-[12px] font-medium tracking-normal normal-case">{link.tamil}</span>
+                  </p>
+                  {SEVALAYA_ITEMS.map((sub, i) => (
+                    <NavLink
+                      key={sub.to}
+                      to={sub.to}
+                      onClick={() => setMenuOpen(false)}
+                      className={({ isActive }) =>
+                        cn(
+                          'flex items-baseline justify-between rounded-lg py-2.5 pr-3 pl-6 text-[15px] hover:bg-sandal-100',
+                          isActive ? 'font-bold text-stone-900' : 'text-stone-700',
+                        )
+                      }
+                    >
+                      <span>
+                        <span className="font-mono text-[12px] font-bold text-kumkum-600">{i + 1}. </span>
+                        {sub.label}
+                      </span>
+                      <span className="text-[13px] text-stone-500">{sub.tamil}</span>
+                    </NavLink>
+                  ))}
+                </div>
+              ) : (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-baseline justify-between rounded-lg px-3 py-2.5 text-[15px] text-stone-700 hover:bg-sandal-100"
+                >
+                  {link.label}
+                  <span className="text-[13px] text-stone-500">{link.tamil}</span>
+                </NavLink>
+              ),
+            )}
             <NavLink
               to="/console"
               onClick={() => setMenuOpen(false)}

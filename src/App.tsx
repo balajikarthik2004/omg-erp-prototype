@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { ConsoleLayout } from '@/components/layout/ConsoleLayout'
 import { DonorLayout } from '@/components/layout/DonorLayout'
@@ -29,6 +29,12 @@ import { ReportsPage } from '@/features/reports/ReportsPage'
 import { AuditPage } from '@/features/audit/AuditPage'
 import { CatalogManagerPage } from '@/features/catalog/CatalogManagerPage'
 import { NotFoundPage } from '@/features/donor/NotFoundPage'
+import { GaushalaPage } from '@/features/gaushala/GaushalaPage'
+import { GaushalaDashboardPage } from '@/features/gaushala/console/GaushalaDashboardPage'
+import { CowManagementPage } from '@/features/gaushala/console/CowManagementPage'
+import { SewaCataloguePage } from '@/features/gaushala/console/SewaCataloguePage'
+import { GaushalaDonationsPage } from '@/features/gaushala/console/GaushalaDonationsPage'
+import { SevaPage } from '@/features/gaushala/SevaPage'
 import { StatementPage } from '@/features/donor/StatementPage'
 import { EventsPage } from '@/features/events/EventsPage'
 import { EventsOverviewPage } from '@/features/events/EventsOverviewPage'
@@ -55,6 +61,14 @@ export function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/donate/:sector" element={<CatalogPage />} />
           <Route path="/donate/:sector/:itemId" element={<ItemDetailPage />} />
+
+          {/* Sevalaya is two pages now. The old URL keeps working: a static
+              segment outranks /donate/:sector, so this wins for Sevalaya. */}
+          <Route path="/donate/sevalaya" element={<Navigate to="/sevalaya/seva" replace />} />
+          <Route path="/sevalaya" element={<Navigate to="/sevalaya/seva" replace />} />
+          <Route path="/sevalaya/seva" element={<SevaPage />} />
+          <Route path="/sevalaya/gaushala" element={<GaushalaPage />} />
+          <Route path="/sevalaya/gaushala/:itemId" element={<ItemDetailPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/receipt/:donationId" element={<ReceiptPage />} />
           <Route path="/my/donations" element={<MyDonationsPage />} />
@@ -75,6 +89,10 @@ export function App() {
           <Route path="events/purchases" element={<PurchasesPage />} />
           <Route path="events/reports" element={<EventReportsPage />} />
           <Route path="events/:eventId" element={<EventDetailPage />} />
+          <Route path="gaushala" element={<GaushalaDashboardPage />} />
+          <Route path="gaushala/cows" element={<CowManagementPage />} />
+          <Route path="gaushala/sewas" element={<SewaCataloguePage />} />
+          <Route path="gaushala/donations" element={<GaushalaDonationsPage />} />
           <Route path="cash-counts" element={<CashCountsPage />} />
           <Route path="period-close" element={<PeriodClosePage />} />
           <Route path="onboarding" element={<OnboardingPage />} />

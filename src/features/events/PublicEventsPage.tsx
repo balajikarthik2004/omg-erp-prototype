@@ -3,9 +3,7 @@ import { ArrowRight, CalendarDays, MapPin, Ticket } from 'lucide-react'
 
 import { SECTORS } from '@/config'
 import { formatDateTime, formatMoney } from '@/lib/format'
-import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { Divider } from '@/components/ui/Ornament'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { SectorChip } from '@/components/layout/PhaseChip'
 import { useDb } from '@/store/db'
@@ -17,13 +15,72 @@ export function PublicEventsPage() {
   const open = db.events.filter((e) => REGISTRATION_STATES.includes(e.status)).sort((a, b) => a.startAt.localeCompare(b.startAt))
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8">
-      <header className="text-center">
-        <p className="text-[12px] font-semibold tracking-[0.22em] text-turmeric-700 uppercase">Events</p>
-        <h1 className="mt-3 font-heritage text-[40px] leading-tight font-medium text-stone-900 sm:text-[52px]">What is happening</h1>
-        <p className="mx-auto mt-3 max-w-xl text-[16px] text-stone-700">Festivals, programmes and community days. Register, and your ticket has a QR code for the door.</p>
-        <Divider className="mx-auto mt-6 max-w-[240px]" />
-      </header>
+    <>
+      <div className="mx-auto max-w-8xl px-5 pt-4 sm:px-8 sm:pt-6">
+        <header className="relative isolate overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl bg-gradient-to-br from-[#2E1805] via-[#482409] to-[#1C0D02] border border-amber-700/40 p-5 sm:p-6 lg:px-8 lg:py-6">
+          {/* Subtle background glow */}
+          <div
+            className="pointer-events-none absolute -right-10 -bottom-10 h-64 w-64 opacity-[0.08]"
+            style={{
+              backgroundImage: 'radial-gradient(circle, #FFC107 15%, transparent 70%)',
+            }}
+            aria-hidden
+          />
+
+          <div className="grid gap-6 lg:grid-cols-12 lg:items-center">
+            {/* Left Info Column */}
+            <div className="lg:col-span-7">
+              <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-[12.5px] text-sandal-200/70">
+                <Link to="/" className="transition-colors duration-150 hover:text-navy-300">
+                  Home
+                </Link>
+                <span aria-hidden>/</span>
+                <span className="text-sandal-50">Events</span>
+              </nav>
+
+              <h1 className="mt-2.5 font-display text-[24px] leading-[1.08] text-sandal-50 sm:text-[32px] lg:text-[36px]">
+                Events & Festivals
+              </h1>
+              <p className="mt-0.5 font-display text-[16px] text-amber-300 sm:text-[18px]">நிகழ்வுகள்</p>
+              <p className="mt-2.5 max-w-xl text-[14px] sm:text-[15px] leading-relaxed text-sandal-100/90">
+                Festivals, sacred celebrations, music concerts and community gatherings. Register online for instant QR-coded entry passes.
+              </p>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2.5 text-xs text-sandal-200/80">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 font-semibold backdrop-blur-xs">
+                  <span className="size-2 rounded-full bg-amber-400" />
+                  Festivals & Programmes
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 font-semibold backdrop-blur-xs">
+                  <span className="size-2 rounded-full bg-emerald-400" />
+                  Instant QR Ticketing
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 font-semibold backdrop-blur-xs">
+                  <span className="size-2 rounded-full bg-navy-300" />
+                  All 3 Sectors Welcome
+                </span>
+              </div>
+            </div>
+
+            {/* Right Contained Image */}
+            <div className="lg:col-span-5">
+              <div className="group relative overflow-hidden rounded-2xl shadow-xl border-2 border-sandal-200/20 bg-navy-950">
+                <div className="aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
+                  <img
+                    src="/images/events-diya.webp"
+                    alt="A glowing brass deepam with fresh jasmine flower garlands lit for temple and community festival events"
+                    className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
+                    loading="eager"
+                  />
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/20" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+
+      <div className="mx-auto max-w-8xl px-5 py-6 sm:py-8 sm:px-8">
 
       {!db.ready ? (
         <div className="mt-10 grid gap-6 md:grid-cols-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-56 w-full" />)}</div>
@@ -52,7 +109,7 @@ export function PublicEventsPage() {
         </ul>
       )}
       <p className="mt-10 text-center text-[13px] text-stone-500">{SECTORS.temple.name}, {SECTORS.sevalaya.name} and {SECTORS.sangam.name} events all use the same page.</p>
-      <div className="mt-6 text-center"><Link to="/"><Button variant="ghost">Back to the donor home</Button></Link></div>
-    </div>
+      </div>
+    </>
   )
 }

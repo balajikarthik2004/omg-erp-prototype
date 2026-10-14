@@ -1,0 +1,218 @@
+import { useMemo, useState } from 'react'
+import { Link, Navigate } from 'react-router-dom'
+import { Search } from 'lucide-react'
+
+import { Input } from '@/components/ui/Input'
+import { Tabs } from '@/components/ui/Tabs'
+import { CURRENCIES, type Currency } from '@/lib/currency'
+import { GAUSHALA_SEWAS } from '@/mock/gaushala'
+import { useDb } from '@/store/db'
+import { useSession } from '@/store/session'
+
+import { SewasTab } from './SewasTab'
+import { OurCowsTab } from './OurCowsTab'
+import { AboutTab } from './AboutTab'
+import { ComingSoonTab } from './ComingSoonTab'
+
+export type GaushalaTabId =
+  | 'sewas'
+  | 'adopt'
+  | 'visit'
+  | 'events'
+  | 'cows'
+  | 'volunteer'
+  | 'transparency'
+  | 'about'
+
+interface TabDef {
+  id: GaushalaTabId
+  label: string
+  /** Phase 2 tabs are listed from the start so the shape of the page is honest. */
+  phase2?: boolean
+}
+
+const TABS: TabDef[] = [
+  { id: 'sewas', label: 'Sewas' },
+  { id: 'adopt', label: 'Adopt a Cow', phase2: true },
+  { id: 'visit', label: 'Visit & Book', phase2: true },
+  { id: 'events', label: 'Events', phase2: true },
+  { id: 'cows', label: 'Our Cows' },
+  { id: 'volunteer', label: 'Volunteer', phase2: true },
+  { id: 'transparency', label: 'Transparency', phase2: true },
+  { id: 'about', label: 'About & Contact' },
+]
+
+export function GaushalaPage() {
+  const [tab, setTab] = useState<GaushalaTabId>('sewas')
+  const [query, setQuery] = useState('')
+
+  // The viewer's own money. Guessed from the browser on first load, kept in
+  // the session so checkout and the receipt can record what they were shown.
+  const currency = useSession((s) => s.displayCurrency)
+  const setCurrency = useSession((s) => s.setDisplayCurrency)
+
+  const db = useDb()
+  const tenant = db.tenants.find((t) => t.id === db.activeTenantId)
+
+  const cows = db.cows
+
+  const counts = useMemo<Partial<Record<GaushalaTabId, number>>>(
+    () => ({
+      sewas: GAUSHALA_SEWAS.filter((s) => s.active).length,
+      cows: cows.filter((c) => c.status !== 'deceased').length,
+    }),
+    [cows],
+  )
+
+  // The Gaushala lives inside Sevalaya, so a customer without that vertical
+  // does not have it either.
+  if (tenant && !tenant.verticals.includes('sevalaya')) {
+    return <Navigate to={`/donate/${tenant.verticals[0] ?? 'temple'}`} replace />
+  }
+
+  const active = TABS.find((t) => t.id === tab) ?? TABS[0]!
+  const searchable = tab === 'sewas' || tab === 'cows'
+
+  return (
+    <>
+      <div className="mx-auto max-w-8xl px-5 pt-4 sm:px-8 sm:pt-6">
+        <header className="relative isolate overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl bg-gradient-to-br from-[#0B0D28] via-[#121642] to-[#181335] border border-navy-800/50 p-5 sm:p-6 lg:px-8 lg:py-6">
+          {/* Subtle background mandala / etching watermark */}
+          <div
+            className="pointer-events-none absolute -right-10 -bottom-10 h-64 w-64 opacity-[0.07]"
+            style={{
+              backgroundImage: 'radial-gradient(circle, #fff 10%, transparent 70%)',
+            }}
+            aria-hidden
+          />
+
+          <div className="grid gap-6 lg:grid-cols-12 lg:items-center">
+            {/* Left Info Column */}
+            <div className="lg:col-span-7">
+              <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-[12.5px] text-sandal-200/70">
+                <Link to="/" className="transition-colors duration-150 hover:text-navy-300">
+                  Home
+                </Link>
+                <span aria-hidden>/</span>
+                <Link to="/sevalaya/seva" className="transition-colors duration-150 hover:text-navy-300">
+                  Sevalaya
+                </Link>
+                <span aria-hidden>/</span>
+                <span className="text-sandal-50">Gaushala</span>
+              </nav>
+
+              <h1 className="mt-2.5 font-display text-[24px] leading-[1.08] text-sandal-50 sm:text-[32px] lg:text-[36px]">
+                Gaushala
+              </h1>
+              <p className="mt-0.5 font-display text-[16px] text-navy-300 sm:text-[18px]">கோசாலை</p>
+              <p className="mt-2.5 max-w-xl text-[14px] sm:text-[15px] leading-relaxed text-sandal-100/90">
+                Sixteen indigenous cows, calves and bulls, fed twice a day and cared for with lifelong devotion. Most of the
+                people who keep them fed have never stood in this yard.
+              </p>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2.5 text-xs text-sandal-200/80">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 font-semibold backdrop-blur-xs">
+                  <span className="size-2 rounded-full bg-emerald-400" />
+                  16 Indigenous Cattle
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 font-semibold backdrop-blur-xs">
+                  <span className="size-2 rounded-full bg-amber-400" />
+                  Daily Fresh Fodder
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 font-semibold backdrop-blur-xs">
+                  <span className="size-2 rounded-full bg-navy-300" />
+                  Double-signed CA Ledger
+                </span>
+              </div>
+            </div>
+
+            {/* Right Contained Image */}
+            <div className="lg:col-span-5">
+              <div className="group relative overflow-hidden rounded-2xl shadow-xl border-2 border-sandal-200/20 bg-navy-950">
+                <div className="aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
+                  <img
+                    src="/images/sevalaya-gaushala.webp"
+                    alt="Devotees serving fresh green fodder to cows at Sevalaya Gaushala"
+                    className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
+                    loading="eager"
+                  />
+                  {/* Subtle inner shadow / border */}
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/20" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+
+      <div className="mx-auto max-w-8xl px-5 py-6 sm:py-8 sm:px-8">
+        <Tabs
+          value={tab}
+          onChange={(id) => {
+            setTab(id as GaushalaTabId)
+            setQuery('')
+          }}
+          items={TABS.map((t) => ({
+            id: t.id,
+            label: t.label,
+            count: counts[t.id],
+          }))}
+        />
+
+        {searchable ? (
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="sm:w-80">
+              <Input
+                aria-label={`Search ${active.label.toLowerCase()}`}
+                placeholder={tab === 'sewas' ? 'Search sewas' : 'Search the herd'}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                leading={<Search className="size-4" aria-hidden />}
+              />
+            </div>
+
+            {tab === 'sewas' ? (
+              <CurrencySwitcher value={currency} onChange={setCurrency} />
+            ) : null}
+          </div>
+        ) : null}
+
+        <div className="mt-7 min-h-80">
+          {tab === 'sewas' ? (
+            <SewasTab query={query} currency={currency} onClearQuery={() => setQuery('')} />
+          ) : tab === 'cows' ? (
+            <OurCowsTab query={query} onClearQuery={() => setQuery('')} />
+          ) : tab === 'about' ? (
+            <AboutTab />
+          ) : (
+            <ComingSoonTab tab={active} onBrowseSewas={() => setTab('sewas')} />
+          )}
+        </div>
+      </div>
+    </>
+  )
+}
+
+/**
+ * Prices are presented in the viewer's own money. The books still settle in
+ * the entity's currency — this changes what is shown, never what is charged,
+ * and the page says so rather than leaving it to be discovered at checkout.
+ */
+function CurrencySwitcher({ value, onChange }: { value: Currency; onChange: (c: Currency) => void }) {
+  return (
+    <label className="flex items-center gap-2 text-[13px] text-stone-500">
+      <span>Show prices in</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value as Currency)}
+        className="rounded-lg border border-sandal-200 bg-white px-2.5 py-1.5 text-[13px] font-semibold text-stone-900 shadow-2xs focus:border-kumkum-500 focus:ring-3 focus:ring-kumkum-500/15 focus:outline-none"
+      >
+        {Object.values(CURRENCIES).map((c) => (
+          <option key={c.code} value={c.code}>
+            {c.code} — {c.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  )
+}

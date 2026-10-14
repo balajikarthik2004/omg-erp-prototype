@@ -1,0 +1,117 @@
+import { useEffect, useId, useRef, useState } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
+import { ChevronDown } from 'lucide-react'
+
+import { cn } from '@/lib/cn'
+import { SEVALAYA_ITEMS } from './sevalayaNav'
+
+/**
+ * Sevalaya in the top nav, as a two-item menu.
+ *
+ * It opens on hover for a mouse and on click or Enter for everything else,
+ * because hover alone is not reachable from a keyboard and is a trap on a
+ * touch screen. Closing is handled on pointer-out, Escape and outside click.
+ */
+export function SevalayaMenu({ tamil }: { tamil: string }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const closeTimer = useRef<number | undefined>(undefined)
+  const menuId = useId()
+  const { pathname } = useLocation()
+
+  const active = pathname.startsWith('/sevalaya') || pathname.startsWith('/donate/sevalaya')
+
+  useEffect(() => {
+    if (!open) return
+    const onClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', onClick)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onClick)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  useEffect(() => () => window.clearTimeout(closeTimer.current), [])
+
+  // A short grace period, so crossing the gap to the panel does not close it.
+  const openNow = () => {
+    window.clearTimeout(closeTimer.current)
+    setOpen(true)
+  }
+  const closeSoon = () => {
+    window.clearTimeout(closeTimer.current)
+    closeTimer.current = window.setTimeout(() => setOpen(false), 140)
+  }
+
+  return (
+    <div className="relative" ref={ref} onPointerEnter={openNow} onPointerLeave={closeSoon}>
+      <button
+        type="button"
+        aria-haspopup="true"
+        aria-expanded={open}
+        aria-controls={menuId}
+        onClick={() => setOpen((v) => !v)}
+        className={cn(
+          'group relative flex items-center gap-1.5 rounded-lg px-3 py-2 transition-colors duration-150',
+          active ? 'text-stone-900' : 'text-stone-700 hover:text-kumkum-500',
+        )}
+      >
+        <span className="text-left">
+          <span className="block text-xs font-bold uppercase tracking-wider leading-tight whitespace-nowrap">
+            Sevalaya
+          </span>
+          <span className="block text-[11px] leading-tight whitespace-nowrap text-stone-500">{tamil}</span>
+        </span>
+        <ChevronDown
+          className={cn('size-3.5 shrink-0 transition-transform duration-150', open && 'rotate-180')}
+          aria-hidden
+        />
+        <span
+          className={cn(
+            'absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-kumkum-500 transition-opacity duration-150',
+            active ? 'opacity-100' : 'opacity-0',
+          )}
+          aria-hidden
+        />
+      </button>
+
+      {open ? (
+        <div
+          id={menuId}
+          className="absolute left-0 top-full z-50 w-72 pt-2"
+          style={{ animation: 'omg-fade-in 150ms ease-out' }}
+        >
+          <ul className="overflow-hidden rounded-2xl border-2 border-navy-200 bg-white p-1.5 shadow-xl">
+            {SEVALAYA_ITEMS.map((item, i) => (
+              <li key={item.to}>
+                <NavLink
+                  to={item.to}
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      'block rounded-xl px-3.5 py-3 transition-colors duration-150',
+                      isActive ? 'bg-navy-50' : 'hover:bg-navy-50/70',
+                    )
+                  }
+                >
+                  <span className="flex items-baseline gap-2">
+                    <span className="font-mono text-[12px] font-bold text-kumkum-600 tabular-nums">{i + 1}.</span>
+                    <span className="text-[15px] font-bold text-stone-900">{item.label}</span>
+                    <span className="text-[13px] text-stone-500">{item.tamil}</span>
+                  </span>
+                  <span className="mt-0.5 block pl-6 text-[13px] leading-relaxed text-stone-500">{item.blurb}</span>
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  )
+}

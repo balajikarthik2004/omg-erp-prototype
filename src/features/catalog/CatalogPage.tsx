@@ -9,37 +9,65 @@ import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Input } from '@/components/ui/Input'
 import { Tabs } from '@/components/ui/Tabs'
-import { Photo } from '@/components/ui/Photo'
-import type { PhotoKey } from '@/lib/photos'
+import { PHOTOS, type PhotoKey } from '@/lib/photos'
 import { CATALOG } from '@/mock/seed'
 import { useDb } from '@/store/db'
 import type { CatalogItem, DonationCategory } from '@/types'
 
 /**
- * Each banner is treated for its own photograph. The temple shot is a tall dusk
- * frame, so a wide crop has to be aimed at the lamp-lit steps and lifted, or it
- * reads as a near-black slab of stone.
+ * Visual design configuration for each house's contained hero card.
+ * Color palettes are extracted directly from the photograph tones.
  */
-const SECTOR_BANNER: Record<
+const SECTOR_HERO: Record<
   SectorId,
-  { photo: PhotoKey; position: string; filter?: string; overlay: string }
+  {
+    photo: PhotoKey
+    cardBg: string
+    borderColor: string
+    glowColor: string
+    tamilColor: string
+    photoPosition: string
+    badges: { label: string; dotColor: string }[]
+  }
 > = {
   temple: {
     photo: 'temple',
-    position: '50% 88%',
-    filter: 'brightness(1.22) saturate(1.12)',
-    overlay: 'linear-gradient(100deg, rgb(74 14 11 / 0.92) 0%, rgb(74 14 11 / 0.6) 46%, rgb(74 14 11 / 0.1) 100%)',
+    cardBg: 'bg-gradient-to-br from-[#2D0907] via-[#48110D] to-[#1F0605]',
+    borderColor: 'border-kumkum-700/50',
+    glowColor: '#E22E26',
+    tamilColor: 'text-kumkum-300',
+    photoPosition: 'object-center sm:object-[50%_72%]',
+    badges: [
+      { label: 'Sacred Kovil Rituals', dotColor: 'bg-kumkum-400' },
+      { label: 'Daily Deepams & Archanai', dotColor: 'bg-amber-400' },
+      { label: 'Double-signed CA Ledger', dotColor: 'bg-navy-300' },
+    ],
   },
   sevalaya: {
     photo: 'sevalaya',
-    position: '50% 55%',
-    overlay: 'linear-gradient(100deg, rgb(28 10 6 / 0.88) 0%, rgb(28 10 6 / 0.62) 48%, rgb(28 10 6 / 0.18) 100%)',
+    cardBg: 'bg-gradient-to-br from-[#082216] via-[#0E3624] to-[#06180F]',
+    borderColor: 'border-tulsi-600/50',
+    glowColor: '#11865A',
+    tamilColor: 'text-emerald-300',
+    photoPosition: 'object-center sm:object-[50%_55%]',
+    badges: [
+      { label: 'Daily Annadhanam', dotColor: 'bg-emerald-400' },
+      { label: 'Community Welfare', dotColor: 'bg-amber-400' },
+      { label: 'Double-signed CA Ledger', dotColor: 'bg-navy-300' },
+    ],
   },
   sangam: {
     photo: 'sangam',
-    position: '50% 46%',
-    filter: 'brightness(1.08)',
-    overlay: 'linear-gradient(100deg, rgb(19 30 40 / 0.9) 0%, rgb(19 30 40 / 0.62) 48%, rgb(19 30 40 / 0.16) 100%)',
+    cardBg: 'bg-gradient-to-br from-[#0A1A36] via-[#102B56] to-[#071326]',
+    borderColor: 'border-peacock-500/50',
+    glowColor: '#4F58CA',
+    tamilColor: 'text-navy-300',
+    photoPosition: 'object-center sm:object-[50%_48%]',
+    badges: [
+      { label: 'Tamil Heritage & Arts', dotColor: 'bg-peacock-400' },
+      { label: 'Music & Cultural Programs', dotColor: 'bg-amber-400' },
+      { label: 'Double-signed CA Ledger', dotColor: 'bg-navy-300' },
+    ],
   },
 }
 
@@ -52,8 +80,14 @@ const TABS: { id: DonationCategory; label: string; blurb: string }[] = [
   { id: 'project', label: 'Projects', blurb: 'Larger works that take months, and every gift towards them.' },
 ]
 
-export function CatalogPage() {
-  const { sector } = useParams<{ sector: string }>()
+/**
+ * The sector catalog. `sectorId` pins it to one sector for a route that does
+ * not carry the sector in its path, which is how /sevalaya/seva renders the
+ * Sevalaya catalog unchanged.
+ */
+export function CatalogPage({ sectorId: pinned }: { sectorId?: SectorId } = {}) {
+  const { sector: routeSector } = useParams<{ sector: string }>()
+  const sector = pinned ?? routeSector
   const [chosenTab, setTab] = useState<DonationCategory>('hundi')
   const [query, setQuery] = useState('')
   const tenant = useDb((s) => s.tenants.find((t) => t.id === s.activeTenantId))
@@ -84,41 +118,92 @@ export function CatalogPage() {
   const meta = SECTORS[sectorId]
   const activeTab = TABS.find((t) => t.id === tab) ?? TABS[0]!
 
+  const hero = SECTOR_HERO[sectorId]
+
   return (
-    <div>
-      {/* Sector header */}
-      <header className="relative isolate overflow-hidden">
-        <Photo
-          photo={SECTOR_BANNER[sectorId].photo}
-          position={SECTOR_BANNER[sectorId].position}
-          filter={SECTOR_BANNER[sectorId].filter}
-          priority
-          className="absolute inset-0 h-full w-full"
-        />
-        <div
-          className="absolute inset-0"
-          style={{ background: SECTOR_BANNER[sectorId].overlay }}
-          aria-hidden
-        />
+    <>
+      <div className="mx-auto max-w-8xl px-5 pt-4 sm:px-8 sm:pt-6">
+        <header
+          className={cn(
+            'relative isolate overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl border p-5 sm:p-6 lg:px-8 lg:py-6',
+            hero.cardBg,
+            hero.borderColor,
+          )}
+        >
+          {/* Subtle background glow */}
+          <div
+            className="pointer-events-none absolute -right-10 -bottom-10 h-64 w-64 opacity-[0.08]"
+            style={{
+              backgroundImage: `radial-gradient(circle, ${hero.glowColor} 15%, transparent 70%)`,
+            }}
+            aria-hidden
+          />
 
-        <div className="relative mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[13px] text-sandal-200/70">
-            <Link to="/" className="transition-colors duration-150 hover:text-navy-300">
-              Home
-            </Link>
-            <span aria-hidden>/</span>
-            <span className="text-sandal-50">{meta.name}</span>
-          </nav>
+          <div className="grid gap-6 lg:grid-cols-12 lg:items-center">
+            {/* Left Info Column */}
+            <div className="lg:col-span-7">
+              <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-[12.5px] text-sandal-200/70">
+                <Link to="/" className="transition-colors duration-150 hover:text-navy-300">
+                  Home
+                </Link>
+                <span aria-hidden>/</span>
+                {sectorId === 'sevalaya' ? (
+                  <>
+                    <span className="text-sandal-200/70">Sevalaya</span>
+                    <span aria-hidden>/</span>
+                    <span className="text-sandal-50">Seva</span>
+                  </>
+                ) : (
+                  <span className="text-sandal-50">{meta.name}</span>
+                )}
+              </nav>
 
-          <h1 className="mt-5 font-display text-[23px] leading-[1.06] text-sandal-50 sm:text-[44px] lg:text-[52px]">
-            {meta.name}
-          </h1>
-          <p className="mt-2 font-display text-[19px] text-navy-300 sm:text-[22px]">{meta.tamil}</p>
-          <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-sandal-100/85">{meta.blurb}</p>
-        </div>
-      </header>
+              <h1 className="mt-2.5 font-display text-[24px] leading-[1.08] text-sandal-50 sm:text-[32px] lg:text-[36px]">
+                {sectorId === 'sevalaya' ? 'Seva' : meta.name}
+              </h1>
+              <p className={cn('mt-0.5 font-display text-[16px] sm:text-[18px]', hero.tamilColor)}>
+                {sectorId === 'sevalaya' ? 'சேவை' : meta.tamil}
+              </p>
+              <p className="mt-2.5 max-w-xl text-[14px] sm:text-[15px] leading-relaxed text-sandal-100/90">
+                {meta.blurb}
+              </p>
 
-      <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
+              <div className="mt-4 flex flex-wrap items-center gap-2.5 text-xs text-sandal-200/80">
+                {hero.badges.map((b) => (
+                  <span
+                    key={b.label}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 font-semibold backdrop-blur-xs"
+                  >
+                    <span className={cn('size-2 rounded-full', b.dotColor)} />
+                    {b.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Contained Image */}
+            <div className="lg:col-span-5">
+              <div className="group relative overflow-hidden rounded-2xl shadow-xl border-2 border-sandal-200/20 bg-navy-950">
+                <div className="aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
+                  <img
+                    src={PHOTOS[hero.photo].src}
+                    alt={PHOTOS[hero.photo].alt}
+                    className={cn(
+                      'h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]',
+                      hero.photoPosition,
+                    )}
+                    loading="eager"
+                  />
+                  {/* Subtle inner shadow / border */}
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/20" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+
+      <div className="mx-auto max-w-8xl px-5 py-6 sm:py-8 sm:px-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <Tabs
             className="flex-1"
@@ -171,7 +256,7 @@ export function CatalogPage() {
           )}
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

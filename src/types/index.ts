@@ -1,7 +1,10 @@
 import type { SectorId } from '@/config'
+import type { Currency } from '@/lib/currency'
+import type { GaushalaSewaCategory } from './gaushala'
 
 export type { SectorId }
 export * from './events'
+export * from './gaushala'
 
 /** Money is always integer cents. Format only at display time. */
 export type Money = number
@@ -15,6 +18,12 @@ export type Role =
   | 'ca_staff'
   | 'ca_partner'
   | 'trustee'
+  /* Gaushala. Scoped to the cow shelter only: these four never see the
+     ledger, procurement or another sector's books. */
+  | 'gaushala_admin'
+  | 'gaushala_accountant'
+  | 'gaushala_caretaker'
+  | 'gaushala_content_editor'
 
 export interface User {
   id: string
@@ -85,6 +94,22 @@ export interface Donation {
   webhookAt?: string
   /** Set for counter cash that passed the 2-person count. */
   cashCountId?: string
+
+  /* --- international. Absent on a donation taken in the home currency. --- */
+  /** What the donor was shown. The amounts above are always settlement cents. */
+  donorCurrency?: Currency
+  /** Units of donorCurrency per settlement unit, as at the moment of payment. */
+  fxRate?: number
+  /** The figure the donor saw, in donorCurrency cents. */
+  displayGross?: Money
+  /** ISO country the donor gave at checkout. Picks the receipt template. */
+  donorCountry?: string
+  /** The legal entity that received this gift. */
+  entityId?: string
+  /** Which receipt wording was issued. */
+  receiptTemplateId?: string
+  gateway?: string
+  gatewayPaymentId?: string
 }
 
 export interface CatalogItem {
@@ -107,6 +132,16 @@ export interface CatalogItem {
   recurring?: 'monthly' | 'annual'
   /** Event with tickets (quantity picker). */
   ticketed?: boolean
+  /** Set on a Gaushala sewa. Keeps it out of the Seva catalog entirely. */
+  gaushala?: boolean
+  /** Which Gaushala sub-tab this sewa belongs to. */
+  gaushalaCategory?: GaushalaSewaCategory
+  /** "per kg", "a day", "a month" — printed next to the price. */
+  unit?: string
+  /** Explicit prices a donor sees, instead of a converted settlement price. */
+  prices?: Partial<Record<Currency, Money>>
+  /** The cow this sewa is for, on a sponsor-this-cow card. */
+  cowId?: string
 }
 
 export interface Project {

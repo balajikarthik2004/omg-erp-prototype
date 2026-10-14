@@ -20,6 +20,12 @@ export const USERS: User[] = [
   { id: 'u-cas', name: 'Anitha Rajan', role: 'ca_staff', email: 'anitha@caoffice.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-cap', name: 'R. Balasubramanian', role: 'ca_partner', email: 'bala@caoffice.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-tru', name: 'Meenakshi Sundaram', role: 'trustee', email: 'meenakshi@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
+  // Gaushala. Scoped to Sevalaya, and only ever to the cow shelter inside it.
+  { id: 'u-gau-adm', name: 'Thirumalai Raghavan', role: 'gaushala_admin', email: 'thirumalai@omg.org', sectorIds: ['sevalaya'] },
+  { id: 'u-gau-acc', name: 'Revathi Krishnan', role: 'gaushala_accountant', email: 'revathi@caoffice.com', sectorIds: ['sevalaya'] },
+  { id: 'u-gau-care', name: 'Murugesan Pandi', role: 'gaushala_caretaker', email: 'murugesan@omg.org', sectorIds: ['sevalaya'] },
+  { id: 'u-gau-care2', name: 'Esakki Muthu', role: 'gaushala_caretaker', email: 'esakki@omg.org', sectorIds: ['sevalaya'] },
+  { id: 'u-gau-edt', name: 'Nithya Sundar', role: 'gaushala_content_editor', email: 'nithya@omg.org', sectorIds: ['sevalaya'] },
 ]
 
 /** The system actor behind webhook-driven changes in the audit trail. */
@@ -49,6 +55,10 @@ export const ROLE_LABEL: Record<User['role'], string> = {
   ca_staff: 'CA Staff',
   ca_partner: 'CA Partner',
   trustee: 'Trustee',
+  gaushala_admin: 'Gaushala Admin',
+  gaushala_accountant: 'Gaushala Accountant',
+  gaushala_caretaker: 'Gaushala Caretaker',
+  gaushala_content_editor: 'Gaushala Content Editor',
 }
 
 export function userById(id: string): User | undefined {
@@ -76,6 +86,23 @@ export const FUNDS: Fund[] = [
   { id: 'fund-sgm-gen', sectorId: 'sangam', name: 'Sangam General Fund', type: 'unrestricted', balance: 0 },
   { id: 'fund-sgm-events', sectorId: 'sangam', name: 'Cultural Events Fund', type: 'restricted', balance: 0 },
   { id: 'fund-sgm-lib', sectorId: 'sangam', name: 'Tamil School Library Fund', type: 'restricted', projectId: 'prj-library', balance: 0 },
+
+  // Gaushala. Its own restricted funds inside Sevalaya, so fodder money can
+  // never quietly become shed money.
+  { id: 'fund-gau-gen', sectorId: 'sevalaya', name: 'Gaushala General Fund', type: 'unrestricted', balance: 0 },
+  { id: 'fund-gau-fodder', sectorId: 'sevalaya', name: 'Gaushala Fodder Fund', type: 'restricted', balance: 0 },
+  { id: 'fund-gau-care', sectorId: 'sevalaya', name: 'Cow Care & Adoption Fund', type: 'restricted', balance: 0 },
+  { id: 'fund-gau-med', sectorId: 'sevalaya', name: 'Veterinary & Rescue Fund', type: 'restricted', balance: 0 },
+  { id: 'fund-gau-infra', sectorId: 'sevalaya', name: 'Gaushala Infrastructure Fund', type: 'restricted', balance: 0 },
+]
+
+/** The fund ids the Gaushala spends out of. Used by its console pages. */
+export const GAUSHALA_FUND_IDS = [
+  'fund-gau-gen',
+  'fund-gau-fodder',
+  'fund-gau-care',
+  'fund-gau-med',
+  'fund-gau-infra',
 ]
 
 /* --------------------------------------------------------------- projects */

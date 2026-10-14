@@ -11,7 +11,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Table, type Column } from '@/components/ui/Table'
 import { TableSkeleton } from '@/components/ui/Skeleton'
 import { SectorChip } from '@/components/layout/PhaseChip'
-import { CATALOG } from '@/mock/seed'
+import { offeringName } from '@/mock/offerings'
 import { useDb } from '@/store/db'
 import { useSession } from '@/store/session'
 import { myDonorIds } from '@/store/selectors'
@@ -43,7 +43,7 @@ export function MyDonationsPage() {
       header: 'Offering',
       cell: (d) => (
         <div>
-          <p className="text-stone-900">{CATALOG.find((c) => c.id === d.lines[0]?.itemId)?.name ?? '—'}</p>
+          <p className="text-stone-900">{offeringName(d.lines[0]?.itemId)}</p>
           {d.lines[0]?.dedication ? (
             <p className="text-[13px] text-stone-500">For {d.lines[0].dedication.name}</p>
           ) : null}

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
+import { currencyForCountry, detectCountry, type Currency } from '@/lib/currency'
 import type { Dedication, Role, SectorId } from '@/types'
 import { USERS } from '@/mock/seed'
 
@@ -27,12 +28,21 @@ interface SessionState {
   signedIn: boolean
   cart: CartLine[]
   sidebarOpen: boolean
+  /**
+   * Where the donor says they are, and the money they are shown. Guessed once
+   * from the browser and overridable on the Gaushala page. It decides the
+   * prices on screen and the receipt wording, never what the ledger settles.
+   */
+  donorCountry: string
+  displayCurrency: Currency
 
   setPersona: (id: string) => void
   setSectorFilter: (value: SectorFilter) => void
   signIn: () => void
   signOut: () => void
   setSidebarOpen: (open: boolean) => void
+  setDisplayCurrency: (currency: Currency) => void
+  setDonorCountry: (country: string) => void
 
   addToCart: (line: Omit<CartLine, 'key'>) => void
   removeFromCart: (key: string) => void
@@ -48,12 +58,16 @@ export const useSession = create<SessionState>()(
       signedIn: false,
       cart: [],
       sidebarOpen: false,
+      donorCountry: detectCountry(),
+      displayCurrency: currencyForCountry(detectCountry()),
 
       setPersona: (id) => set({ personaId: id }),
       setSectorFilter: (value) => set({ sectorFilter: value }),
       signIn: () => set({ signedIn: true }),
       signOut: () => set({ signedIn: false, cart: [] }),
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
+      setDisplayCurrency: (currency) => set({ displayCurrency: currency }),
+      setDonorCountry: (country) => set({ donorCountry: country, displayCurrency: currencyForCountry(country) }),
 
       addToCart: (line) =>
         set((s) => ({
@@ -71,7 +85,12 @@ export const useSession = create<SessionState>()(
       name: 'omg-session',
       storage: createJSONStorage(() => localStorage),
       // Only the demo controls persist. Business data never does.
-      partialize: (s) => ({ personaId: s.personaId, sectorFilter: s.sectorFilter }),
+      partialize: (s) => ({
+        personaId: s.personaId,
+        sectorFilter: s.sectorFilter,
+        donorCountry: s.donorCountry,
+        displayCurrency: s.displayCurrency,
+      }),
     },
   ),
 )
@@ -96,6 +115,10 @@ export const CONSOLE_ROLES: Role[] = [
   'ca_staff',
   'ca_partner',
   'trustee',
+  'gaushala_admin',
+  'gaushala_accountant',
+  'gaushala_caretaker',
+  'gaushala_content_editor',
 ]
 
 export function cartTotal(cart: CartLine[]): number {

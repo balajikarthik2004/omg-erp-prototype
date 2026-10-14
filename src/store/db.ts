@@ -7,8 +7,12 @@ import { formatMoney } from '@/lib/format'
 import { toast } from '@/lib/toast'
 import { api, loadDatabase, type Database } from '@/mock/api'
 import { DEMO_TENANT_ID } from '@/mock/generators'
-import { BUDGET_SPECS, CATALOG, FUNDS, INVENTORY, PROJECTS, userById, userName } from '@/mock/seed'
+import { convert, currencyForCountry, fxRate, type Currency } from '@/lib/currency'
+import { defaultEntity, receiptTemplateFor } from '@/mock/gaushala'
+import { offeringById } from '@/mock/offerings'
+import { BUDGET_SPECS, CATALOG, FUNDS, GAUSHALA_FUND_IDS, INVENTORY, PROJECTS, userById, userName } from '@/mock/seed'
 import { createEventActions, type EventActions } from './eventActions'
+import { createGaushalaActions, type GaushalaActions } from './gaushalaActions'
 import {
   cashConfirmBlock,
   cashCountBlock,
@@ -53,11 +57,13 @@ const EMPTY_DATA = {
   invoices: [], payouts: [], audit: [], cashCounts: [], periodCloses: [],
   events: [], eventBudgetLines: [], eventApprovals: [], eventPosters: [], eventRegistrations: [],
   eventSponsors: [], eventDonations: [], eventOrders: [], eventActuals: [],
+  cows: [], cowHealth: [], sewaOrders: [], rescues: [], gaushalaGallery: [],
+  gaushalaEntities: [], receiptTemplates: [], gaushalaExpenses: [],
 } satisfies Omit<Database, 'tenants'>
 
 const EMPTY: Database = { ...EMPTY_DATA, tenants: [] }
 
-export interface DbState extends Database, EventActions {
+export interface DbState extends Database, EventActions, GaushalaActions {
   ready: boolean
   loading: boolean
   /** The customer whose books are on screen. */
@@ -73,6 +79,10 @@ export interface DbState extends Database, EventActions {
     method: PaymentMethod
     donorName: string
     actor: User
+    /** Where the donor says they are. Picks the receipt wording. */
+    donorCountry?: string
+    /** The money they were shown the prices in. */
+    displayCurrency?: Currency
   }) => Donation
   confirmDonationPayment: (id: string, actor: User) => void
   issueReceipt: (id: string, actor: User) => void
@@ -194,6 +204,9 @@ function pickTenantData(s: DbState): TenantData {
     events: s.events, eventBudgetLines: s.eventBudgetLines, eventApprovals: s.eventApprovals, eventPosters: s.eventPosters,
     eventRegistrations: s.eventRegistrations, eventSponsors: s.eventSponsors, eventDonations: s.eventDonations,
     eventOrders: s.eventOrders, eventActuals: s.eventActuals,
+    cows: s.cows, cowHealth: s.cowHealth, sewaOrders: s.sewaOrders, rescues: s.rescues,
+    gaushalaGallery: s.gaushalaGallery, gaushalaEntities: s.gaushalaEntities,
+    receiptTemplates: s.receiptTemplates, gaushalaExpenses: s.gaushalaExpenses,
   }
 }
 
@@ -222,10 +235,23 @@ function ensureDonor(donors: Donor[], id: string, name: string, anonymous: boole
   return [...donors, { id, name, email: '', phone: '', city: '', anonymous, since: new Date().toISOString() }]
 }
 
-function nextReceiptNo(donations: Donation[], sectorId: SectorId): string {
+/**
+ * The next receipt number.
+ *
+ * The Gaushala keeps its own book — a gift to the cow shelter is receipted
+ * RCP-GAU, not RCP-SEV, even though it is booked to the Sevalaya sector. The
+ * series is picked from the fund the money credited, so a live receipt and a
+ * seeded one are numbered the same way.
+ */
+function nextReceiptNo(donations: Donation[], sectorId: SectorId, fundId?: string): string {
   const year = new Date().getFullYear()
-  const seq = donations.filter((d) => d.sectorId === sectorId && d.receiptNo !== PENDING_RECEIPT).length + 2000
-  return `RCP-${SECTOR_CODE[sectorId]}-${String(year).slice(2)}-${String(seq).padStart(5, '0')}`
+  const gaushala = fundId !== undefined && GAUSHALA_FUND_IDS.includes(fundId)
+  const book = gaushala ? 'GAU' : SECTOR_CODE[sectorId]
+  const issued = donations.filter((d) => {
+    if (d.receiptNo === PENDING_RECEIPT) return false
+    return gaushala ? GAUSHALA_FUND_IDS.includes(d.fundId) : d.sectorId === sectorId && !GAUSHALA_FUND_IDS.includes(d.fundId)
+  }).length
+  return `RCP-${book}-${String(year).slice(2)}-${String(issued + 2000).padStart(5, '0')}`
 }
 
 /** A receipt number is only issued once the payment is Paid. Until then the donation carries this placeholder. */
@@ -402,6 +428,7 @@ export const useDb = create<DbState>((set, get) => ({
   activeTenantId: DEMO_TENANT_ID,
   vault: {},
   ...createEventActions(set, get),
+  ...createGaushalaActions(set, get),
 
   load: async () => {
     if (get().ready || get().loading) return
@@ -414,10 +441,10 @@ export const useDb = create<DbState>((set, get) => ({
 
   /* ------------------------------------------------------------ collect */
 
-  recordDonation: ({ lines, method, donorName, actor }) => {
+  recordDonation: ({ lines, method, donorName, actor, donorCountry, displayCurrency }) => {
     const state = get()
     const sectorId = lines[0]?.sectorId ?? 'temple'
-    const first = CATALOG.find((c) => c.id === lines[0]?.itemId)
+    const first = offeringById(lines[0]?.itemId)
     const donation = buildDonation(state.donations, {
       sectorId,
       fundId: first?.fundId ?? 'fund-tmp-gen',
@@ -426,13 +453,33 @@ export const useDb = create<DbState>((set, get) => ({
       status: 'pending',
       lines: lines.map((l) => ({
         itemId: l.itemId,
-        category: CATALOG.find((c) => c.id === l.itemId)?.category ?? 'hundi',
+        category: offeringById(l.itemId)?.category ?? 'hundi',
         amount: l.amount,
         dedication: l.dedication,
         quantity: l.quantity,
         recurring: l.recurring,
       })),
     })
+
+    /**
+     * A Gaushala sewa was priced in the donor's own money, so what they saw,
+     * the rate and their country travel with the gift. The amounts above stay
+     * settlement cents — the ledger never learns about exchange rates. Nothing
+     * is stamped on a Seva or Temple gift, where no currency was ever chosen.
+     */
+    if (first?.gaushala) {
+      const country = (donorCountry ?? 'US').toUpperCase()
+      const shown = displayCurrency ?? currencyForCountry(country)
+      const entity = defaultEntity()
+      donation.donorCurrency = shown
+      donation.fxRate = fxRate(shown)
+      donation.displayGross = first.prices?.[shown] ?? convert(donation.gross, shown)
+      donation.donorCountry = country
+      donation.entityId = entity.id
+      donation.receiptTemplateId = receiptTemplateFor(country, entity.id).id
+      donation.gateway = donation.squarePaymentId ? 'square' : method
+      donation.gatewayPaymentId = donation.squarePaymentId
+    }
 
     set((s) => ({
       donors: ensureDonor(s.donors, 'dnr-live', donorName || 'You', false),
@@ -469,7 +516,7 @@ export const useDb = create<DbState>((set, get) => ({
   issueReceipt: (id, actor) => {
     const donation = get().donations.find((d) => d.id === id)
     if (!donation || donation.status !== 'paid' || donation.receiptNo !== PENDING_RECEIPT) return
-    const receiptNo = nextReceiptNo(get().donations, donation.sectorId)
+    const receiptNo = nextReceiptNo(get().donations, donation.sectorId, donation.fundId)
     const receipted: Donation = { ...donation, receiptNo, status: 'receipted' }
     set((s) => ({
       donations: s.donations.map((d) => (d.id === id ? receipted : d)),

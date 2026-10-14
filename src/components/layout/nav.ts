@@ -10,6 +10,7 @@ import {
   FileSpreadsheet,
   Gauge,
   HandCoins,
+  HeartPulse,
   History,
   Landmark,
   LayoutDashboard,
@@ -18,6 +19,7 @@ import {
   Receipt,
   ScrollText,
   Settings2,
+  Sprout,
   ShoppingCart,
   Palette,
   FilePlus,
@@ -43,6 +45,19 @@ export interface NavItem {
 }
 
 const ALL: Role[] = ['sector_admin', 'store_keeper', 'procurement_officer', 'ca_staff', 'ca_partner', 'trustee']
+/** The four Gaushala roles, plus the people who oversee them. */
+const GAU_ALL: Role[] = [
+  'gaushala_admin',
+  'gaushala_accountant',
+  'gaushala_caretaker',
+  'gaushala_content_editor',
+  'sector_admin',
+  'ca_partner',
+  'trustee',
+]
+const GAU_MANAGE: Role[] = ['gaushala_admin', 'sector_admin', 'ca_partner', 'trustee']
+const GAU_MONEY: Role[] = ['gaushala_admin', 'gaushala_accountant', 'ca_partner', 'trustee']
+const GAU_HERD: Role[] = ['gaushala_admin', 'gaushala_caretaker', 'sector_admin', 'ca_partner', 'trustee']
 const WITH_PLATFORM: Role[] = ['super_admin', ...ALL]
 const CA: Role[] = ['ca_staff', 'ca_partner', 'trustee']
 const ADMIN_CA: Role[] = ['sector_admin', 'ca_staff', 'ca_partner', 'trustee']
@@ -80,6 +95,16 @@ export const NAV_GROUPS: NavGroup[] = [
       { to: '/console/events/registrations', label: 'Registrations & QR', icon: QrCode, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events' },
       { to: '/console/events/purchases', label: 'Purchases & orders', icon: ShoppingCart, phase: 'spend', roles: ADMIN_CA, module: 'events' },
       { to: '/console/events/reports', label: 'Financial reports', icon: BarChart3, phase: 'report', roles: ADMIN_CA, module: 'events' },
+    ],
+  },
+  {
+    phase: 'collect',
+    label: 'Gaushala',
+    items: [
+      { to: '/console/gaushala', label: 'Dashboard', icon: Gauge, phase: 'report', roles: GAU_ALL, end: true },
+      { to: '/console/gaushala/cows', label: 'Cow management', icon: HeartPulse, phase: 'collect', roles: GAU_HERD },
+      { to: '/console/gaushala/sewas', label: 'Sewa catalogue', icon: Sprout, phase: 'collect', roles: GAU_MANAGE },
+      { to: '/console/gaushala/donations', label: 'Donations', icon: HandCoins, phase: 'collect', roles: GAU_MONEY },
     ],
   },
   {

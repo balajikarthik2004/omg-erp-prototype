@@ -15,7 +15,8 @@ import { TableSkeleton } from '@/components/ui/Skeleton'
 import { toast } from '@/lib/toast'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { SectorChip } from '@/components/layout/PhaseChip'
-import { CATALOG, FUNDS } from '@/mock/seed'
+import { offeringName } from '@/mock/offerings'
+import { FUNDS } from '@/mock/seed'
 import { useDb } from '@/store/db'
 import { currentUser, useSession } from '@/store/session'
 import { donorName, inSector } from '@/store/selectors'
@@ -83,7 +84,7 @@ export function DonationsPage() {
       key: 'item',
       header: 'Offering',
       hideOnMobile: true,
-      cell: (d) => CATALOG.find((c) => c.id === d.lines[0]?.itemId)?.name ?? '—',
+      cell: (d) => offeringName(d.lines[0]?.itemId),
     },
     { key: 'sector', header: 'Sector', cell: (d) => <SectorChip sectorId={d.sectorId} /> },
     { key: 'method', header: 'Method', cell: (d) => <span className="text-[14px]">{titleCase(d.method)}</span> },
@@ -293,7 +294,7 @@ export function DonationsPage() {
                   <li key={i} className="rounded-lg border border-sandal-200 p-3">
                     <div className="flex items-center justify-between gap-3">
                       <span className="text-[14px] text-stone-900">
-                        {CATALOG.find((c) => c.id === line.itemId)?.name ?? line.itemId}
+                        {offeringName(line.itemId)}
                         {line.quantity && line.quantity > 1 ? ` × ${line.quantity} tickets` : ''}
                       </span>
                       <Money value={line.amount} />

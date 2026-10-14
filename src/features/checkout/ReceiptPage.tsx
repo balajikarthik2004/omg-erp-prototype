@@ -8,8 +8,12 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Money } from '@/components/ui/Money'
 import { toast } from '@/lib/toast'
 import { ArchMark, Divider, Kolam, OmgMark } from '@/components/ui/Ornament'
-import { CATALOG, FUNDS } from '@/mock/seed'
+import { offeringById } from '@/mock/offerings'
+import { GAUSHALA_ENTITIES, RECEIPT_TEMPLATES } from '@/mock/gaushala'
+import { SETTLEMENT_CURRENCY, formatIn } from '@/lib/currency'
+import { FUNDS } from '@/mock/seed'
 import { useDb } from '@/store/db'
+import type { Donation } from '@/types'
 
 export function ReceiptPage() {
   const { donationId } = useParams<{ donationId: string }>()
@@ -100,7 +104,7 @@ export function ReceiptPage() {
             </thead>
             <tbody>
               {donation.lines.map((line, i) => {
-                const item = CATALOG.find((c) => c.id === line.itemId)
+                const item = offeringById(line.itemId)
                 return (
                   <tr key={`${line.itemId}-${i}`} className="border-t border-sandal-200">
                     <td className="py-3 pr-4">
@@ -139,6 +143,8 @@ export function ReceiptPage() {
             </tfoot>
           </table>
 
+          <ExchangeNote donation={donation} />
+
           <div className="mt-7 rounded-card bg-sandal-100 px-5 py-5 texture-sandal">
             <div className="flex items-end justify-between gap-4">
               <div>
@@ -151,12 +157,7 @@ export function ReceiptPage() {
             </div>
           </div>
 
-          <p className="mt-5 text-[12px] leading-relaxed text-stone-500">
-            This organisation is recognised as a tax-exempt charity. No goods or services were provided in exchange
-            for this contribution beyond intangible religious benefits. Retain this receipt for your tax records.{' '}
-            {formatMoney(donation.net)} reaches the fund after a {formatMoney(donation.fee)} processing fee, which
-            the organisation absorbs.
-          </p>
+          <Declaration donation={donation} />
         </div>
       </article>
 
@@ -175,6 +176,96 @@ export function ReceiptPage() {
           <Button variant="ghost" rightIcon={<ArrowRight className="size-4" aria-hidden />}>View all my donations</Button>
         </Link>
       </div>
+    </div>
+  )
+}
+
+/**
+ * What the donor was shown, and the rate it was settled at.
+ *
+ * The Gaushala page tells people their card is charged in the home currency
+ * and that the rate is printed on the receipt. This is where that promise is
+ * kept, so it is rendered from the rate stored on the donation rather than
+ * recomputed — the rate on the day of payment is the one that applies.
+ */
+function ExchangeNote({ donation }: { donation: Donation }) {
+  if (!donation.donorCurrency || donation.donorCurrency === SETTLEMENT_CURRENCY) return null
+  if (!donation.displayGross || !donation.fxRate) return null
+
+  return (
+    <dl className="mt-5 rounded-card border border-sandal-200 bg-white px-5 py-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <dt className="text-[11px] tracking-[0.12em] text-stone-500 uppercase">Shown to you as</dt>
+        <dd className="font-mono text-[15px] text-stone-900 tabular-nums">
+          {formatIn(donation.displayGross, donation.donorCurrency)}
+        </dd>
+      </div>
+      <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <dt className="text-[11px] tracking-[0.12em] text-stone-500 uppercase">Charged and settled as</dt>
+        <dd className="font-mono text-[15px] text-stone-900 tabular-nums">{formatMoney(donation.gross)}</dd>
+      </div>
+      <p className="mt-2.5 text-[12px] leading-relaxed text-stone-500">
+        Rate applied on the day of payment: 1 {SETTLEMENT_CURRENCY} = {donation.fxRate} {donation.donorCurrency}. Your
+        bank may apply its own charge on top of this.
+      </p>
+    </dl>
+  )
+}
+
+/**
+ * The deductibility wording.
+ *
+ * A donation that carries a receipt template is printed under that template,
+ * chosen by the receiving entity and the country the donor gave. Everything
+ * else keeps the wording this receipt has always carried.
+ */
+function Declaration({ donation }: { donation: Donation }) {
+  const template = donation.receiptTemplateId
+    ? RECEIPT_TEMPLATES.find((t) => t.id === donation.receiptTemplateId)
+    : undefined
+  const entity = template ? GAUSHALA_ENTITIES.find((e) => e.id === template.entityId) : undefined
+
+  const feeLine = `${formatMoney(donation.net)} reaches the fund after a ${formatMoney(donation.fee)} processing fee, which the organisation absorbs.`
+
+  if (!template) {
+    return (
+      <p className="mt-5 text-[12px] leading-relaxed text-stone-500">
+        This organisation is recognised as a tax-exempt charity. No goods or services were provided in exchange for
+        this contribution beyond intangible religious benefits. Retain this receipt for your tax records. {feeLine}
+      </p>
+    )
+  }
+
+  return (
+    <div className="mt-5">
+      {entity ? (
+        <p className="text-[12px] leading-relaxed text-stone-700">
+          <span className="font-semibold">{entity.name}</span>
+          <span className="text-stone-500"> · {entity.address}</span>
+        </p>
+      ) : null}
+
+      {template.fields.length > 0 ? (
+        <dl className="mt-1.5 flex flex-wrap gap-x-5 gap-y-1">
+          {template.fields.map((field) => (
+            <div key={field.label} className="text-[12px]">
+              <dt className="inline tracking-wide text-stone-500 uppercase">{field.label}: </dt>
+              <dd className="inline font-mono text-stone-900">{field.value}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : null}
+
+      <p className="mt-2 text-[12px] leading-relaxed text-stone-500">
+        {template.declaration} {feeLine}
+      </p>
+
+      {!template.reviewed ? (
+        <p className="no-print mt-2 text-[12px] leading-relaxed text-marigold-500">
+          Prototype: this tax wording has not yet been reviewed by an accountant qualified in{' '}
+          {template.donorCountries.includes('*') ? 'the donor country' : template.donorCountries.join(', ')}.
+        </p>
+      ) : null}
     </div>
   )
 }

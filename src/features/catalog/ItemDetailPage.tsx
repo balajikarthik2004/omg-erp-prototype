@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, CalendarDays, Info } from 'lucide-react'
 
 import { SECTORS, type SectorId } from '@/config'
@@ -11,7 +11,8 @@ import { Select } from '@/components/ui/Select'
 import { toast } from '@/lib/toast'
 import { SectorChip } from '@/components/layout/PhaseChip'
 import { Deepam } from '@/components/ui/Ornament'
-import { CATALOG, FUNDS } from '@/mock/seed'
+import { offeringById } from '@/mock/offerings'
+import { FUNDS } from '@/mock/seed'
 import { useSession } from '@/store/session'
 
 /** Computed once, so a re-render never shifts the earliest selectable date. */
@@ -24,12 +25,13 @@ const NAKSHATRAS = [
 ]
 
 export function ItemDetailPage() {
-  const { sector, itemId } = useParams<{ sector: string; itemId: string }>()
+  const { itemId } = useParams<{ sector: string; itemId: string }>()
+  const { pathname } = useLocation()
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const addToCart = useSession((s) => s.addToCart)
 
-  const item = CATALOG.find((c) => c.id === itemId)
+  const item = offeringById(itemId)
   const presetFromUrl = Number(params.get('amount'))
 
   const [amount, setAmount] = useState<number>(
@@ -44,9 +46,19 @@ export function ItemDetailPage() {
   const [qty, setQty] = useState(1)
   const [renew, setRenew] = useState(true)
 
-  if (!item || !sector) return <Navigate to="/donate/temple" replace />
+  // An unknown id goes back to whichever catalog it was linked from.
+  if (!item) {
+    return <Navigate to={pathname.startsWith('/sevalaya/gaushala') ? '/sevalaya/gaushala' : '/donate/temple'} replace />
+  }
 
   const sectorId = item.sectorId as SectorId
+  // A Gaushala sewa belongs to its own page, not to the Sevalaya catalog.
+  const backTo = item.gaushala
+    ? '/sevalaya/gaushala'
+    : sectorId === 'sevalaya'
+      ? '/sevalaya/seva'
+      : `/donate/${sectorId}`
+  const backLabel = item.gaushala ? 'Gaushala' : SECTORS[sectorId].name
   const fund = FUNDS.find((f) => f.id === item.fundId)
   const presets = item.presets ?? (item.price ? [item.price] : [])
   const anyAmount = item.price === null
@@ -78,11 +90,11 @@ export function ItemDetailPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
       <Link
-        to={`/donate/${sectorId}`}
+        to={backTo}
         className="inline-flex items-center gap-1.5 text-[14px] text-stone-500 hover:text-stone-900"
       >
         <ArrowLeft className="size-4" aria-hidden />
-        Back to {SECTORS[sectorId].name}
+        Back to {backLabel}
       </Link>
 
       <header className="mt-4 mb-6">

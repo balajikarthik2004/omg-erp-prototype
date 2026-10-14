@@ -12,11 +12,69 @@ export const PHOTOS = {
     src: '/images/sangam-hall.webp',
     alt: 'A Tamil sangam hall set for a music evening, with garlands, a tanpura and a mridangam.',
   },
+  gaushala: {
+    src: '/images/sevalaya-gaushala.webp',
+    alt: 'Volunteers laying green fodder on banana leaves along a long trough while a row of cows feeds from it.',
+  },
+  events: {
+    src: '/images/events-diya.webp',
+    alt: 'A glowing brass deepam with fresh jasmine flower garlands, lit for temple and community festival events.',
+  },
+  sewaFodder: {
+    src: '/images/sewa-fodder.webp',
+    alt: 'Fresh green napier grass bundles and golden straw for feeding gaushala cattle.',
+  },
+  sewaMedical: {
+    src: '/images/sewa-medical.webp',
+    alt: 'Veterinarian treating cows and providing medicine in gaushala.',
+  },
+  sewaInfrastructure: {
+    src: '/images/sewa-infrastructure.webp',
+    alt: 'Spacious shelter shed with feeding troughs and water tank in gaushala.',
+  },
+  sewaCowCare: {
+    src: '/images/sewa-cow-care.webp',
+    alt: 'Caretaker grooming and caring for sacred cow in gaushala.',
+  },
   project: {
     src: '/images/project-rajagopuram.webp',
     alt: 'A temple gopuram under restoration, wrapped in bamboo scaffolding.',
   },
+
+  /**
+   * The herd, cut from the shelter photograph so each animal on the Our Cows
+   * page has a face. They are real cows at a real gaushala standing in for the
+   * demo's named animals, so the alt text describes the animal rather than
+   * claiming it is any particular one.
+   */
+  cow1: {
+    src: '/images/cow-01.webp',
+    alt: 'A tan cow in a rope halter, head down over fresh green fodder.',
+  },
+  cow2: {
+    src: '/images/cow-02.webp',
+    alt: 'A white cow with short grey horns and a pink inner ear, facing the camera.',
+  },
+  cow3: {
+    src: '/images/cow-03.webp',
+    alt: 'A tan cow with a white blaze on her forehead and one curved horn.',
+  },
+  cow4: {
+    src: '/images/cow-04.webp',
+    alt: 'A white cow in profile, feeding along the trough.',
+  },
+  cow5: {
+    src: '/images/cow-05.webp',
+    alt: 'Dark-faced cows in a row at the feeding trough.',
+  },
+  cow6: {
+    src: '/images/cow-06.webp',
+    alt: 'A white cow at the rail with a brown cow standing behind her.',
+  },
 } as const
+
+/** The six herd portraits, in the order the `portrait` index selects them. */
+export const COW_PHOTOS = ['cow1', 'cow2', 'cow3', 'cow4', 'cow5', 'cow6'] as const
 
 export type PhotoKey = keyof typeof PHOTOS
 

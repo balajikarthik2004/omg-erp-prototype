@@ -10,7 +10,8 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Input } from '@/components/ui/Input'
 import { Money } from '@/components/ui/Money'
 import { api } from '@/mock/api'
-import { CATALOG, SQUARE_WEBHOOK } from '@/mock/seed'
+import { offeringById } from '@/mock/offerings'
+import { SQUARE_WEBHOOK } from '@/mock/seed'
 import { useDb } from '@/store/db'
 import { cartTotal, currentUser, useSession } from '@/store/session'
 import type { PaymentMethod } from '@/types'
@@ -30,6 +31,8 @@ export function CheckoutPage() {
   const removeFromCart = useSession((s) => s.removeFromCart)
   const clearCart = useSession((s) => s.clearCart)
   const personaId = useSession((s) => s.personaId)
+  const donorCountry = useSession((s) => s.donorCountry)
+  const displayCurrency = useSession((s) => s.displayCurrency)
   const recordDonation = useDb((s) => s.recordDonation)
   const confirmDonationPayment = useDb((s) => s.confirmDonationPayment)
   const issueReceipt = useDb((s) => s.issueReceipt)
@@ -48,6 +51,8 @@ export function CheckoutPage() {
       method,
       donorName: donorName.trim() || 'Devotee',
       actor: currentUser(personaId),
+      donorCountry,
+      displayCurrency,
     })
     await api.process(900)
     setStage(1)
@@ -101,7 +106,7 @@ export function CheckoutPage() {
           </h2>
           <ul className="flex flex-col gap-3">
             {cart.map((line) => {
-              const item = CATALOG.find((c) => c.id === line.itemId)
+              const item = offeringById(line.itemId)
               return (
                 <li
                   key={line.key}
