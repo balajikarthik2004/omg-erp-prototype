@@ -62,9 +62,11 @@ export function App() {
   return (
     <>
       <Routes>
+        {/* Sign-in stands alone: no donor navbar or footer on this surface. */}
+        <Route path="/login" element={<LoginPage />} />
+
         <Route element={<DonorLayout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
           <Route path="/donate/:sector" element={<CatalogPage />} />
           <Route path="/donate/:sector/:itemId" element={<ItemDetailPage />} />
 

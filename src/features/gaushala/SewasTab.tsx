@@ -10,6 +10,7 @@ import { GAUSHALA_SEWAS, SEWA_CATEGORIES } from '@/mock/gaushala'
 import type { CatalogItem, GaushalaSewaCategory } from '@/types'
 import { NoMatches } from './NoMatches'
 import { DonationWall } from './DonationWall'
+import { getSewaImage } from './sewaImages'
 
 export function SewasTab({
   query,
@@ -89,66 +90,10 @@ export function SewasTab({
   )
 }
 
-const SEWA_CATEGORY_IMAGES: Record<
-  GaushalaSewaCategory,
-  { src: string; alt: string; badge: string; badgeColor: string }
-> = {
-  fodder: {
-    src: '/images/sewa-fodder.webp',
-    alt: 'Fresh green grass bundles and dry fodder feed for gaushala cattle',
-    badge: 'Fodder',
-    badgeColor: 'bg-emerald-600/90 text-white',
-  },
-  medical: {
-    src: '/images/sewa-medical.webp',
-    alt: 'Veterinarian treating cows and providing medicine in gaushala',
-    badge: 'Medical',
-    badgeColor: 'bg-rose-700/90 text-white',
-  },
-  infrastructure: {
-    src: '/images/sewa-infrastructure.webp',
-    alt: 'Spacious shelter shed with feeding troughs and water tank',
-    badge: 'Infrastructure',
-    badgeColor: 'bg-amber-600/90 text-white',
-  },
-  cow_care: {
-    src: '/images/sewa-cow-care.webp',
-    alt: 'Caretaker grooming and caring for sacred cow in gaushala',
-    badge: 'Cow Care',
-    badgeColor: 'bg-navy-700/90 text-white',
-  },
-  general: {
-    src: '/images/sevalaya-gaushala.webp',
-    alt: 'Devotees feeding fresh green fodder to cattle at gaushala',
-    badge: 'General',
-    badgeColor: 'bg-navy-800/90 text-white',
-  },
-  occasion: {
-    src: '/images/sewa-cow-care.webp',
-    alt: 'Special occasion pooja and green fodder feeding for cows',
-    badge: 'Occasion',
-    badgeColor: 'bg-kumkum-700/90 text-white',
-  },
-}
-
-const SEWA_ITEM_OVERRIDES: Record<string, { src: string; alt: string }> = {
-  'gau-care-calf': {
-    src: '/images/cow-02.webp',
-    alt: 'Young calf receiving special feed and care in gaushala',
-  },
-  'gau-care-bull': {
-    src: '/images/cow-06.webp',
-    alt: 'Cared-for bull in the gaushala shelter',
-  },
-}
-
 function SewaCard({ sewa, currency }: { sewa: CatalogItem; currency: Currency }) {
   const anyAmount = sewa.price === null
   const shown = anyAmount ? null : displayPrice(sewa.price!, currency, sewa.prices)
-
-  const catMeta = sewa.gaushalaCategory ? SEWA_CATEGORY_IMAGES[sewa.gaushalaCategory] : SEWA_CATEGORY_IMAGES.fodder
-  const imgOverride = SEWA_ITEM_OVERRIDES[sewa.id]
-  const image = imgOverride ?? catMeta
+  const image = getSewaImage(sewa)
 
   return (
     <Link
@@ -169,14 +114,14 @@ function SewaCard({ sewa, currency }: { sewa: CatalogItem; currency: Currency })
         {/* Subtle gradient shadow for badge readability */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/25" />
 
-        {/* Category Pill Tag on top-left */}
+        {/* Category / Item Pill Tag on top-left */}
         <span
           className={cn(
             'absolute top-3 left-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold backdrop-blur-xs shadow-xs',
-            catMeta.badgeColor,
+            image.badgeColor,
           )}
         >
-          {catMeta.badge}
+          {image.badge}
         </span>
 
         {/* Popular Pill Tag on top-right */}

@@ -260,6 +260,35 @@ svg *:focus-visible,
   .animate-rise {
     animation: omg-rise 280ms var(--ease-out-soft) both;
   }
+
+  /* --- Login surface ------------------------------------------------- */
+
+  /* The card settles in rather than popping. */
+  .animate-settle {
+    animation: omg-settle 420ms var(--ease-out-soft) both;
+  }
+
+  /* Soft out-of-focus brand fields behind the login card. Desktop only —
+     on mobile the temple photograph does this job instead. */
+  .login-orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(90px);
+    opacity: 0.22;
+    animation: omg-drift 14s var(--ease-out-soft) infinite;
+  }
+
+  /* One wash over the temple photograph, so the gopuram reads as brand
+     chrome and white type stays AA against it. */
+  .login-photo-wash {
+    background:
+      linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--color-navy-900) 82%, transparent) 0%,
+        color-mix(in srgb, var(--color-navy-800) 62%, transparent) 46%,
+        color-mix(in srgb, var(--color-kumkum-800) 58%, transparent) 100%
+      );
+  }
 }
 
 @media print {
@@ -361,4 +390,14 @@ svg *:focus-visible,
   100% {
     transform: scaleX(0);
   }
+}
+
+@keyframes omg-settle {
+  from { opacity: 0; transform: translateY(12px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes omg-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -22px, 0); }
 }
