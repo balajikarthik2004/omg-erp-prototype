@@ -21,7 +21,7 @@ export function Footer() {
 
   return (
     <footer
-      className="no-print relative isolate w-full overflow-hidden text-white pt-16 pb-10"
+      className="no-print relative isolate w-full overflow-hidden text-white pt-10 sm:pt-12 pb-7 sm:pb-8"
       style={{
         background: 'linear-gradient(180deg, #4A0E0B 0%, #171C54 45%, #0F133B 100%)',
       }}
@@ -48,9 +48,9 @@ export function Footer() {
       </div>
 
       {/* Main Centered Content Container */}
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-8">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Main Grid: 4 Columns like omgofficial.com */}
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4 items-start pb-12 border-b border-white/15">
+        <div className="grid gap-8 sm:gap-10 md:grid-cols-2 lg:grid-cols-4 items-start pb-8 sm:pb-10 border-b border-white/15">
           
           {/* Column 1: Brand & Mission */}
           <div className="space-y-4">
@@ -140,11 +140,11 @@ export function Footer() {
               <p className="font-semibold text-white">team@omgofficial.com</p>
               <p className="text-white/80">+91 8667283590</p>
             </div>
-            <div className="pt-2">
+            {/* <div className="pt-2">
               <span className="font-heritage text-lg italic text-turmeric-400 font-medium">
                 Om Namah Shivaya
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
 

@@ -40,10 +40,10 @@ const CARD_CONFIG: Record<
     position: '50% 70%',
     tamil: 'கோவில்',
     blurb: 'Hundi, poojas, festivals and temple projects that preserve our heritage.',
-    cardBg: 'bg-gradient-to-b from-white via-rose-50/30 to-white',
-    tileBg: 'bg-gradient-to-br from-kumkum-500 to-kumkum-600',
+    cardBg: 'bg-linear-to-b from-white via-rose-50/30 to-white',
+    tileBg: 'bg-linear-to-br from-kumkum-500 to-kumkum-600',
     tileColor: 'text-white shadow-md shadow-kumkum-500/25',
-    accentBar: 'bg-gradient-to-r from-kumkum-500 to-kumkum-600',
+    accentBar: 'bg-linear-to-r from-kumkum-500 to-kumkum-600',
     waysText: '18 ways to give',
     tagColor: 'text-kumkum-600 font-bold',
     exploreColor: 'text-kumkum-600 font-bold',
@@ -55,10 +55,10 @@ const CARD_CONFIG: Record<
     position: '50% 55%',
     tamil: 'சேவாலயா',
     blurb: 'Annadhanam, education and welfare programmes for all.',
-    cardBg: 'bg-gradient-to-b from-white via-emerald-50/30 to-white',
-    tileBg: 'bg-gradient-to-br from-tulsi-500 to-tulsi-600',
+    cardBg: 'bg-linear-to-b from-white via-emerald-50/30 to-white',
+    tileBg: 'bg-linear-to-br from-tulsi-500 to-tulsi-600',
     tileColor: 'text-white shadow-md shadow-tulsi-500/25',
-    accentBar: 'bg-gradient-to-r from-tulsi-500 to-tulsi-600',
+    accentBar: 'bg-linear-to-r from-tulsi-500 to-tulsi-600',
     waysText: '9 ways to give',
     tagColor: 'text-tulsi-600 font-bold',
     exploreColor: 'text-tulsi-600 font-bold',
@@ -69,10 +69,10 @@ const CARD_CONFIG: Record<
     position: '50% 46%',
     tamil: 'தமிழ்ச்சங்கம்',
     blurb: 'Memberships, cultural events, classes and community projects.',
-    cardBg: 'bg-gradient-to-b from-white via-navy-50/35 to-white',
-    tileBg: 'bg-gradient-to-br from-navy-600 to-navy-700',
+    cardBg: 'bg-linear-to-b from-white via-navy-50/35 to-white',
+    tileBg: 'bg-linear-to-br from-navy-600 to-navy-700',
     tileColor: 'text-white shadow-md shadow-navy-600/25',
-    accentBar: 'bg-gradient-to-r from-navy-500 to-navy-600',
+    accentBar: 'bg-linear-to-r from-navy-500 to-navy-600',
     waysText: '12 ways to give',
     tagColor: 'text-navy-600 font-bold',
     exploreColor: 'text-navy-600 font-bold',
@@ -99,7 +99,7 @@ export function WhereToGive() {
   const { ref, seen } = useReveal<HTMLElement>()
 
   return (
-    <section ref={ref} id="sectors" className="relative isolate scroll-mt-20 overflow-hidden bg-gradient-to-b from-[#F2F4FC] via-[#E8ECFA] to-[#F0F2FA] py-16 sm:py-20">
+    <section ref={ref} id="sectors" className="relative isolate scroll-mt-20 overflow-hidden bg-linear-to-b from-[#F2F4FC] via-[#E8ECFA] to-[#F0F2FA] py-8 sm:py-10 lg:py-12">
       {/* Authentic Vintage Heritage Background Etchings (Zero background / transparent PNG) */}
       <div
         className="pointer-events-none absolute top-8 -left-20 -z-10 hidden h-170 w-90 opacity-[0.22] lg:block xl:-left-16 xl:h-180 xl:w-100"
@@ -124,19 +124,19 @@ export function WhereToGive() {
         />
       </div>
 
-      <div className={cn('mx-auto max-w-6xl px-5 sm:px-8', 'reveal', seen && 'is-visible')}>
+      <div className={cn('mx-auto max-w-6xl px-4 sm:px-6 lg:px-8', 'reveal', seen && 'is-visible')}>
         <div className="text-center">
           <Eyebrow>Where to give</Eyebrow>
-          <h2 className="mt-4 font-heritage text-[30px] leading-[1.08] font-bold text-stone-900 sm:text-[52px]">
+          <h2 className="mt-2.5 sm:mt-3 font-heritage text-[26px] sm:text-[34px] md:text-[40px] lg:text-[44px] leading-[1.1] font-bold text-stone-900">
             Three houses, <span className="text-kumkum-600 font-extrabold">one ledger</span>
           </h2>
-          <p className="mx-auto mt-3.5 max-w-2xl text-[16px] leading-relaxed text-stone-700 sm:text-[17px]">
+          <p className="mx-auto mt-2 sm:mt-2.5 max-w-2xl text-[14.5px] sm:text-[15.5px] lg:text-[16px] leading-relaxed text-stone-700">
             Each offering finds its right place, supporting the temple, its rituals and the community.
           </p>
-          <CrownOrnamentDivider className="mx-auto mt-4" />
+          <CrownOrnamentDivider className="mx-auto mt-3" />
         </div>
 
-        <ul className="mt-12 grid gap-7 md:grid-cols-3">
+        <ul className="mt-6 sm:mt-8 grid gap-5 sm:gap-6 md:grid-cols-3">
           {ids.map((id, i) => {
             const sector = SECTORS[id]
             const config = CARD_CONFIG[id]

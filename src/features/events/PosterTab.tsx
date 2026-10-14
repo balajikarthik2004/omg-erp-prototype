@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, Download, ExternalLink, ImageIcon, Sparkles } from 'lucide-react'
+import { Check, Download, ExternalLink, ImageIcon, Palette } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
@@ -145,7 +145,7 @@ export function PosterTab({ view }: { view: EventView }) {
               Posters can be generated anytime, without waiting for budget approval. Three background designs are rendered with the exact event typography, logo and registration QR code. You can download or print any design immediately.
             </p>
           </div>
-          <Button icon={<Sparkles className="size-4" aria-hidden />} disabled={!isAdmin(user) || !guard.allowed} title={isAdmin(user) ? guard.reason : 'Only a Sector Admin makes a poster.'} onClick={() => run(generatePosters(event.id, user))}>
+          <Button icon={<Palette className="size-4" aria-hidden />} disabled={!isAdmin(user) || !guard.allowed} title={isAdmin(user) ? guard.reason : 'Only a Sector Admin makes a poster.'} onClick={() => run(generatePosters(event.id, user))}>
             {designs.length === 0 ? 'Make three designs' : 'Make three more'}
           </Button>
         </div>

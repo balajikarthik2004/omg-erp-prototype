@@ -12,7 +12,6 @@ import {
   Phone,
   RotateCcw,
   ShieldCheck,
-  Sparkles,
 } from 'lucide-react'
 
 import { DiyaIcon, Etching, OmgMark } from '@/components/ui/Ornament'
@@ -108,7 +107,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-80px)] overflow-hidden bg-gradient-to-b from-[#F2F4FC] via-[#E8ECFA] to-[#F1F3FB] py-8 sm:py-12 lg:py-16">
+    <div className="relative min-h-[calc(100vh-80px)] overflow-hidden bg-linear-to-b from-[#F2F4FC] via-[#E8ECFA] to-[#F1F3FB] py-8 sm:py-12 lg:py-16">
       {/* Background Watermark Etching */}
       <div
         className="pointer-events-none absolute -left-16 top-10 -z-10 hidden h-160 w-90 opacity-[0.14] lg:block"
@@ -136,7 +135,7 @@ export function LoginPage() {
         {/* Grand 2-Column Split Card */}
         <div className="overflow-hidden rounded-3xl border-2 border-navy-200/80 bg-white shadow-2xl lg:grid lg:grid-cols-[1.1fr_1fr]">
           {/* LEFT COLUMN: Sacred Devotee Experience Showcase */}
-          <div className="relative isolate flex flex-col justify-between overflow-hidden bg-gradient-to-br from-navy-950 via-navy-900 to-[#2A0E0B] p-8 text-white sm:p-10 lg:p-12">
+          <div className="relative isolate flex flex-col justify-between overflow-hidden bg-linear-to-br from-navy-950 via-navy-900 to-[#2A0E0B] p-8 text-white sm:p-10 lg:p-12">
             {/* Ambient Radial Spiritual Glow */}
             <div
               className="pointer-events-none absolute inset-0 -z-10"
@@ -200,9 +199,9 @@ export function LoginPage() {
 
             {/* Bottom Sacred Blessing Quote */}
             <div className="mt-10 border-t border-white/15 pt-5 flex items-center justify-between text-xs text-white/75">
-              <span className="font-heritage tracking-wider text-turmeric-300 font-semibold italic text-sm">
+              {/* <span className="font-heritage tracking-wider text-turmeric-300 font-semibold italic text-sm">
                 Om Namah Shivaya
-              </span>
+              </span> */}
               <span className="inline-flex items-center gap-1.5 font-bold uppercase tracking-wider text-emerald-300">
                 <CheckCircle2 className="size-3.5" />
                 100% CA Certified
@@ -249,7 +248,7 @@ export function LoginPage() {
               {/* Prototype Helper Banner */}
               <div className="mt-4 flex items-center justify-between rounded-xl bg-amber-50 border border-amber-200/80 px-3.5 py-2.5 text-xs text-amber-900">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="size-4 text-amber-600 shrink-0" />
+                  <ShieldCheck className="size-4 text-amber-600 shrink-0" />
                   <span className="font-semibold">
                     Prototype Mode: Use code <strong className="font-mono font-bold text-amber-950">108108</strong> to enter.
                   </span>
@@ -329,7 +328,7 @@ export function LoginPage() {
                     <button
                       type="submit"
                       disabled={busy}
-                      className="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-kumkum-500 via-kumkum-600 to-kumkum-700 hover:from-kumkum-600 hover:to-kumkum-800 text-white font-bold text-sm uppercase tracking-wider py-3.5 shadow-md shadow-kumkum-500/25 transition-all active:scale-95 disabled:opacity-50"
+                      className="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-linear-to-r from-kumkum-500 via-kumkum-600 to-kumkum-700 hover:from-kumkum-600 hover:to-kumkum-800 text-white font-bold text-sm uppercase tracking-wider py-3.5 shadow-md shadow-kumkum-500/25 transition-all active:scale-95 disabled:opacity-50"
                     >
                       <span>{busy ? 'Sending OTP Code...' : 'Send OTP Verification Code'}</span>
                       <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
@@ -374,7 +373,7 @@ export function LoginPage() {
                   <button
                     type="submit"
                     disabled={busy}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-kumkum-500 via-kumkum-600 to-kumkum-700 hover:from-kumkum-600 hover:to-kumkum-800 text-white font-bold text-sm uppercase tracking-wider py-3.5 shadow-md shadow-kumkum-500/25 transition-all active:scale-95 disabled:opacity-50"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-kumkum-500 via-kumkum-600 to-kumkum-700 hover:from-kumkum-600 hover:to-kumkum-800 text-white font-bold text-sm uppercase tracking-wider py-3.5 shadow-md shadow-kumkum-500/25 transition-all active:scale-95 disabled:opacity-50"
                   >
                     <span>{busy ? 'Verifying...' : 'Verify and Enter Portal'}</span>
                     <ArrowRight className="size-4" />

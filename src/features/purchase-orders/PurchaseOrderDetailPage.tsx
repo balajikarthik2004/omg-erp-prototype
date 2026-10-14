@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, PackageCheck, Send, Sparkles, TriangleAlert, XCircle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Award, PackageCheck, Send, TriangleAlert, XCircle } from 'lucide-react'
 
 import { approvalTierLabel } from '@/config'
 import { formatDate, formatDateTime, formatMoney } from '@/lib/format'
@@ -157,7 +157,7 @@ export function PurchaseOrderDetailPage() {
           {po.aiRank ? (
             <Card accentClass={po.aiRank === 1 ? 'bg-tulsi-500' : 'bg-marigold-500'}>
               <div className="flex items-start gap-3">
-                <Sparkles className="mt-0.5 size-4 shrink-0 text-turmeric-700" aria-hidden />
+                <Award className="mt-0.5 size-4 shrink-0 text-turmeric-700" aria-hidden />
                 <div>
                   <p className="text-[14px] font-medium text-stone-900">
                     {po.aiRank === 1

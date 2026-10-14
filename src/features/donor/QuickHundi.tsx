@@ -20,7 +20,7 @@ const whole = new Intl.NumberFormat(APP.locale, { style: 'currency', currency: A
 const TILE =
   'relative flex min-h-[82px] flex-col items-center justify-center rounded-xl px-3 py-2.5 text-center transition-all duration-200 cursor-pointer'
 const SELECTED =
-  'bg-gradient-to-br from-kumkum-500 via-kumkum-600 to-kumkum-700 text-white shadow-lg shadow-kumkum-500/30 scale-[1.02]'
+  'bg-linear-to-br from-kumkum-500 via-kumkum-600 to-kumkum-700 text-white shadow-lg shadow-kumkum-500/30 scale-[1.02]'
 
 /** The one-tap gift. Straight to the Temple General Fund, no details needed. */
 export function QuickHundi() {
@@ -32,8 +32,8 @@ export function QuickHundi() {
   const amount = custom && typedCents > 0 ? typedCents : selected
 
   return (
-    <section id="quick-hundi" className="relative -mt-3 scroll-mt-24 pb-8 sm:pb-12">
-      <div className="mx-auto max-w-7xl px-4 sm:px-8">
+    <section id="quick-hundi" className="relative -mt-2 scroll-mt-24 pb-5 sm:pb-7">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-2xl bg-white shadow-xl shadow-navy-950/10">
           {/* Faint watermark */}
           <div
@@ -58,7 +58,7 @@ export function QuickHundi() {
 
           <div className="relative grid lg:grid-cols-[40fr_60fr]">
             {/* The lit diya lamp and what the gift is */}
-            <div className="flex flex-col sm:flex-row items-center sm:items-center gap-5 p-6 lg:p-7 bg-gradient-to-br from-amber-100/50 via-orange-50/20 to-white">
+            <div className="flex flex-col sm:flex-row items-center sm:items-center gap-5 p-6 lg:p-7 bg-linear-to-br from-amber-100/50 via-orange-50/20 to-white">
               {/* Authentic lit brass diya image */}
               <div className="relative h-28 w-34 sm:h-32 sm:w-40 shrink-0 overflow-hidden rounded-xl bg-amber-50 shadow-md">
                 <img
@@ -90,7 +90,7 @@ export function QuickHundi() {
             </div>
 
             {/* The Amount Selector */}
-            <div className="flex flex-col justify-center bg-gradient-to-br from-[#F0F3FC] via-[#E6EAF9] to-[#F2F4FB] p-5 sm:p-6 lg:p-7">
+            <div className="flex flex-col justify-center bg-linear-to-br from-[#F0F3FC] via-[#E6EAF9] to-[#F2F4FB] p-5 sm:p-6 lg:p-7">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-extrabold uppercase tracking-wider text-navy-950">Choose an Amount</p>
                 <span className="text-[11px] font-bold text-navy-600">Zero processing fee</span>
@@ -166,7 +166,7 @@ export function QuickHundi() {
 
               <Link
                 to={`/donate/temple/cat-tmp-hundi?amount=${amount}`}
-                className="mt-4 flex h-12 w-full items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-kumkum-500 via-kumkum-600 to-kumkum-700 hover:from-kumkum-600 hover:to-kumkum-800 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md shadow-kumkum-500/25 transition-all"
+                className="mt-4 flex h-12 w-full items-center justify-center gap-2.5 rounded-xl bg-linear-to-r from-kumkum-500 via-kumkum-600 to-kumkum-700 hover:from-kumkum-600 hover:to-kumkum-800 active:scale-95 text-white font-bold text-sm sm:text-base shadow-md shadow-kumkum-500/25 transition-all"
               >
                 <DiyaIcon className="size-5 text-white" />
                 <span>Continue with {formatMoney(amount).replace(/\.00$/, '')}</span>

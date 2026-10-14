@@ -38,23 +38,23 @@ export function DonorLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-navy-50">
       <header className="no-print sticky top-0 z-30 border-b border-sandal-200 bg-white/95 backdrop-blur-md shadow-xs">
-        <div className="flex h-20 w-full items-center justify-between px-4 sm:px-6 lg:px-8 xl:px-10">
-          <Link to="/" className="flex items-center gap-3.5 group shrink-0" aria-label="OMG Platform, home">
-            <OmgMark size={44} className="transition-transform duration-200 group-hover:scale-105" />
+        <div className="flex h-16 sm:h-17.5 w-full items-center justify-between px-4 sm:px-6 lg:px-8 xl:px-10">
+          <Link to="/" className="flex items-center gap-3 group shrink-0" aria-label="OMG Platform, home">
+            <OmgMark size={38} className="transition-transform duration-200 group-hover:scale-105" />
             <div className="leading-tight">
-              <span className="block font-heritage text-[22px] sm:text-[26px] font-bold tracking-wide text-stone-900">
+              <span className="block font-heritage text-[20px] sm:text-[23px] font-bold tracking-wide text-stone-900">
                 {tenant?.name ?? 'OMG'}
               </span>
-              <span className="block text-[10px] font-bold tracking-[0.2em] text-kumkum-500 uppercase">
+              <span className="block text-[9.5px] sm:text-[10px] font-extrabold tracking-[0.2em] text-kumkum-500 uppercase">
                 Devotee Portal
               </span>
             </div>
           </Link>
 
-          <span className="mx-2 hidden h-8 w-px bg-sandal-200 lg:block" aria-hidden />
+          <span className="mx-2 hidden h-7 w-px bg-sandal-200 lg:block" aria-hidden />
 
           {/* Nav links styled like omgofficial.com */}
-          <nav className="hidden shrink-0 items-center gap-1 lg:flex">
+          <nav className="hidden shrink-0 items-center gap-0.5 xl:gap-1.5 lg:flex">
             <NavLink
               to="/"
               className={({ isActive }) =>

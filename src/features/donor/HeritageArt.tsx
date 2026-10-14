@@ -389,7 +389,7 @@ export function HeritageKolamStar({ className, size = 18 }: { className?: string
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
-      className={cn('shrink-0 text-navy-500', className)}
+      className={cn('shrink-0 text-turmeric-400', className)}
     >
       {/* 4 Cardinal Petals */}
       <path d="M12 2C10.4 5.2 10.5 8.6 12 10C13.5 8.6 13.6 5.2 12 2Z" fill="currentColor" fillOpacity="0.15" />

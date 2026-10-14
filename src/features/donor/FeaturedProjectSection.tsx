@@ -45,7 +45,7 @@ export function FeaturedProjectSection() {
   const { ref, seen } = useReveal<HTMLElement>()
 
   return (
-    <section ref={ref} className="relative isolate overflow-hidden bg-gradient-to-b from-[#F0F2FA] via-white to-[#F2F4FB] py-16 lg:py-24">
+    <section ref={ref} className="relative isolate overflow-hidden bg-linear-to-b from-[#F0F2FA] via-white to-[#F2F4FB] py-8 sm:py-10 lg:py-12">
       {/* Background Etchings (Distinct & Non-Repetitive, Transparent PNGs) */}
       {/* Left Kanchipuram Gopuram Etching - Positioned Upwards */}
       <div
@@ -71,55 +71,55 @@ export function FeaturedProjectSection() {
         />
       </div>
 
-      <div className={cn('mx-auto max-w-7xl px-4 sm:px-8', 'reveal', seen && 'is-visible')}>
-        <div className="grid items-center gap-12 lg:grid-cols-[1fr_520px] lg:gap-14">
+      <div className={cn('mx-auto max-w-7xl px-4 sm:px-6 lg:px-8', 'reveal', seen && 'is-visible')}>
+        <div className="grid items-center gap-8 sm:gap-10 lg:grid-cols-[1.1fr_0.9fr] xl:grid-cols-[1fr_500px] lg:gap-10 xl:gap-12">
           {/* Left Column: Project Copy & Badges */}
           <div className="relative z-10">
             <Eyebrow>Featured Project</Eyebrow>
 
-            <h2 className="mt-4 font-heritage text-[32px] sm:text-[48px] lg:text-[58px] leading-[1.05] font-bold text-stone-900">
+            <h2 className="mt-2.5 sm:mt-3 font-heritage text-[28px] sm:text-[38px] md:text-[44px] lg:text-[46px] xl:text-[52px] leading-[1.08] font-bold text-stone-900">
               <span className="block">Rajagopuram</span>
               <span className="block text-kumkum-600 font-extrabold">Renovation</span>
             </h2>
 
-            <p className="mt-5 max-w-xl text-[15.5px] sm:text-[17px] leading-[1.7] text-stone-700">
+            <p className="mt-3 sm:mt-3.5 max-w-xl text-[14.5px] sm:text-[15.5px] lg:text-[16px] leading-[1.65] text-stone-700">
               {featured.summary ||
                 'Restoring the main tower: stucco figures, lime plaster, a gold-leaf kalasam and new lighting, under a traditional sthapati.'}
             </p>
 
             {/* Two Feature Badges */}
-            <div className="mt-8 flex flex-wrap items-center gap-4 sm:gap-6">
+            <div className="mt-5 sm:mt-6 flex flex-wrap items-center gap-3 sm:gap-4">
               {/* Badge 1 */}
-              <div className="flex items-center gap-3 rounded-xl bg-white/95 p-2.5 sm:p-3 shadow-sm">
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-navy-600 to-navy-700 text-white shadow-xs">
-                  <TempleTowerIcon size={22} />
+              <div className="flex items-center gap-3 rounded-xl bg-white/95 p-2 sm:p-2.5 shadow-sm border border-stone-200/50">
+                <span className="flex size-10 sm:size-11 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-amber-400 via-amber-500 to-turmeric-500 text-navy-950 font-bold shadow-sm shadow-amber-400/25">
+                  <TempleTowerIcon size={20} />
                 </span>
                 <div>
-                  <p className="text-sm font-extrabold text-navy-950">Temple Restoration</p>
-                  <p className="text-xs font-semibold text-navy-600">Active project</p>
+                  <p className="text-xs sm:text-sm font-extrabold text-stone-900">Temple Restoration</p>
+                  <p className="text-[11px] sm:text-xs font-semibold text-amber-800">Active project</p>
                 </div>
               </div>
 
               {/* Badge 2 */}
-              <div className="flex items-center gap-3 rounded-xl bg-white/95 p-2.5 sm:p-3 shadow-sm">
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-kumkum-500 to-kumkum-600 text-white shadow-xs">
-                  <SthapatiChiselsIcon size={20} />
+              <div className="flex items-center gap-3 rounded-xl bg-white/95 p-2 sm:p-2.5 shadow-sm border border-stone-200/50">
+                <span className="flex size-10 sm:size-11 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-turmeric-300 via-turmeric-400 to-amber-500 text-navy-950 font-bold shadow-sm shadow-amber-400/25">
+                  <SthapatiChiselsIcon size={18} />
                 </span>
                 <div>
-                  <p className="text-sm font-extrabold text-stone-900">Traditional Art</p>
-                  <p className="text-xs font-semibold text-kumkum-600">Sthapati-led work</p>
+                  <p className="text-xs sm:text-sm font-extrabold text-stone-900">Traditional Art</p>
+                  <p className="text-[11px] sm:text-xs font-semibold text-amber-800">Sthapati-led work</p>
                 </div>
               </div>
             </div>
 
             {/* Primary Action Button */}
-            <div className="mt-9">
+            <div className="mt-5 sm:mt-6">
               <Link to={`/donate/${featured.sectorId}/cat-tmp-raja`} className="inline-block">
                 <button
                   type="button"
-                  className="group flex h-13 items-center gap-2.5 rounded-xl bg-gradient-to-r from-kumkum-500 via-kumkum-600 to-kumkum-700 hover:from-kumkum-600 hover:to-kumkum-800 active:scale-95 px-7 text-[15px] sm:text-[16px] font-bold text-white shadow-md shadow-kumkum-500/25 transition-all"
+                  className="group flex h-12 sm:h-12.5 items-center gap-2.5 rounded-xl bg-linear-to-r from-kumkum-500 via-kumkum-600 to-kumkum-700 hover:from-kumkum-600 hover:to-kumkum-800 active:scale-95 px-6 sm:px-7 text-[14px] sm:text-[15px] font-bold text-white shadow-md shadow-kumkum-500/25 transition-all cursor-pointer"
                 >
-                  <SacredOfferingHandIcon size={20} className="text-white" />
+                  <SacredOfferingHandIcon size={18} className="text-white" />
                   <span>Give to This Project</span>
                   <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
                 </button>
@@ -130,10 +130,10 @@ export function FeaturedProjectSection() {
           {/* Right Column: Arched Photo Showcase & Overlapping Stats Card */}
           <div className="relative mx-auto w-full max-w-120 lg:max-w-none">
             {/* Top Finial */}
-            <Finial className="absolute -top-4.5 left-1/2 z-20 -translate-x-1/2" />
+            <Finial className="absolute -top-4.5 left-1/2 z-20 -translate-x-1/2 text-turmeric-400 drop-shadow-[0_2px_8px_rgba(255,193,7,0.5)]" />
 
             {/* Arch Photo Container */}
-            <div className="relative overflow-hidden rounded-t-[200px] rounded-b-[20px] bg-gradient-to-b from-amber-100/70 via-amber-50 to-navy-50/60 p-2 shadow-2xl">
+            <div className="relative overflow-hidden rounded-t-[200px] rounded-b-[20px] bg-linear-to-b from-amber-100/70 via-amber-50 to-amber-100/40 p-2 shadow-2xl">
               <div className="aspect-[4/3.8] w-full overflow-hidden rounded-t-[190px] rounded-b-card">
                 <img
                   src="/images/project-rajagopuram.webp"
@@ -145,11 +145,11 @@ export function FeaturedProjectSection() {
             </div>
 
             {/* Bottom Finial */}
-            <Finial className="absolute bottom-0.5 left-1/2 z-0 -translate-x-1/2 rotate-180" />
+            <Finial className="absolute bottom-0.5 left-1/2 z-0 -translate-x-1/2 rotate-180 text-turmeric-400 drop-shadow-[0_2px_8px_rgba(255,193,7,0.3)]" />
 
             {/* Overlapping Raised Stats Card - Shifted Upwards */}
             <div
-              className="relative z-20 -mt-28 sm:-mt-32 mx-3 sm:mx-4 overflow-hidden rounded-[18px] bg-gradient-to-br from-white via-amber-50/90 to-amber-100/60 p-6 shadow-2xl shadow-navy-950/20 sm:p-7"
+              className="relative z-20 -mt-28 sm:-mt-32 mx-3 sm:mx-4 overflow-hidden rounded-[18px] bg-linear-to-br from-white via-amber-50/90 to-amber-100/60 p-6 shadow-2xl shadow-stone-950/15 sm:p-7 border border-amber-200/40"
             >
               {/* Corner Filigree Ornaments */}
               <VintageCornerFiligree position="tl" className="top-1 left-1" />
@@ -170,31 +170,31 @@ export function FeaturedProjectSection() {
               </div>
 
               <div className="relative z-10">
-                <p className="text-[11px] font-bold tracking-[0.16em] text-navy-700 uppercase">
+                <p className="text-[11px] font-bold tracking-[0.16em] text-amber-900/80 uppercase">
                   Raised so far
                 </p>
 
                 <div className="mt-1.5 flex items-baseline gap-2">
-                  <Money value={featured.raised} className="font-heritage text-[28px] sm:text-[42px] leading-none font-bold text-navy-950" />
+                  <Money value={featured.raised} className="font-heritage text-[28px] sm:text-[42px] leading-none font-bold text-stone-900" />
                 </div>
                 <p className="mt-1 text-[13.5px] font-medium text-stone-600">
                   of <span className="font-bold text-stone-800">{formatMoney(featured.goal)}</span> needed
                 </p>
 
-                {/* Progress Bar */}
+                {/* Progress Bar - Pure golden warm devotional track with zero blue */}
                 <div
-                  className="mt-5 h-2.5 w-full overflow-hidden rounded-full bg-navy-200/60"
+                  className="mt-5 h-2.5 w-full overflow-hidden rounded-full bg-amber-200/60 ring-1 ring-amber-300/40"
                   role="img"
                   aria-label={`${formatPct(progress, 0)} of the goal raised`}
                 >
                   <span
-                    className="block h-full rounded-full bg-gradient-to-r from-kumkum-500 via-kumkum-600 to-turmeric-400 shadow-inner transition-all duration-700"
+                    className="block h-full rounded-full bg-linear-to-r from-amber-600 via-turmeric-400 to-amber-300 shadow-inner transition-all duration-700"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
 
                 <div className="mt-3 flex items-baseline justify-between text-[13.5px]">
-                  <span className="inline-flex items-center rounded-md bg-kumkum-600 px-2.5 py-0.5 text-xs font-black text-white shadow-xs tabular-nums">
+                  <span className="inline-flex items-center rounded-md bg-linear-to-r from-amber-600 to-amber-700 px-2.5 py-0.5 text-xs font-black text-white shadow-xs tabular-nums">
                     {formatPct(progress, 0)}
                   </span>
                   <span className="text-stone-700 font-semibold">

@@ -48,7 +48,7 @@ export function MandalaLineArt({ className }: { className?: string }) {
 /** A small lotus, set where the arch frame meets the page. */
 export function Finial({ className }: { className?: string }) {
   return (
-    <svg width="38" height="26" viewBox="0 0 38 26" aria-hidden className={cn('text-navy-400', className)}>
+    <svg width="38" height="26" viewBox="0 0 38 26" aria-hidden className={cn('text-amber-500', className)}>
       <path d="M19 1c4 6 4 11 0 17c-4-6-4-11 0-17Z" fill="currentColor" />
       <path d="M8 6c6 1 10 6 11 12C13 18 9 14 8 6Z" fill="currentColor" opacity="0.85" />
       <path d="M30 6c-6 1-10 6-11 12 6 0 10-4 11-12Z" fill="currentColor" opacity="0.85" />

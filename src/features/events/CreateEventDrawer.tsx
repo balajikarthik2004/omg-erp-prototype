@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Sparkles, Trash2 } from 'lucide-react'
+import { Plus, SlidersHorizontal, Trash2 } from 'lucide-react'
 
 import { SECTORS, SECTOR_IDS, type SectorId } from '@/config'
 import { formatMoney, formatPct } from '@/lib/format'
@@ -141,9 +141,26 @@ export function CreateEventDrawer({ open, onClose }: { open: boolean; onClose: (
         <div className="border-b border-sandal-200 bg-sandal-100 px-5 py-4">
           <h3 className="font-display text-[18px] text-stone-900">Itemised service budget</h3>
           <p className="mt-1 text-[13px] text-stone-500">Every cost line is the source of truth. The total is the sum of the lines. Amounts are pre-filled from past events of this kind.</p>
-          <div className="mt-3 flex flex-wrap items-end gap-2">
-            <div className="w-44"><Input aria-label="Target total" inputMode="decimal" leading={<span>Target $</span>} placeholder="2500" value={f.target} onChange={(e) => set({ target: e.target.value })} className="font-mono tabular-nums" /></div>
-            <Button size="sm" icon={<Sparkles className="size-4" aria-hidden />} disabled={!(toCents(f.target || '0') > 0)} onClick={autoDistribute}>Auto-distribute</Button>
+          <div className="mt-4 flex flex-wrap items-end gap-3">
+            <div className="w-48">
+              <Input
+                label="Target budget"
+                inputMode="decimal"
+                leading={<span>$</span>}
+                placeholder="2500"
+                value={f.target}
+                onChange={(e) => set({ target: e.target.value })}
+                className="font-mono tabular-nums"
+              />
+            </div>
+            <Button
+              size="sm"
+              icon={<SlidersHorizontal className="size-4" aria-hidden />}
+              disabled={!(toCents(f.target || '0') > 0)}
+              onClick={autoDistribute}
+            >
+              Auto-distribute
+            </Button>
           </div>
         </div>
 

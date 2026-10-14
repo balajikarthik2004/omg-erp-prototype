@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ImageIcon, Sparkles, Wand2 } from 'lucide-react'
+import { ImageIcon, Layers, Palette } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -14,7 +14,7 @@ import { QuickPosterGenerator } from './QuickPosterGenerator'
 import { useEventPicker } from './useEventPicker'
 
 /**
- * The AI Poster Studio.
+ * The Poster Studio.
  * Decoupled from the budget approval workflow: generate, preview and download posters
  * at any time for any active event (draft, review, or confirmed), or generate on-the-fly posters.
  */
@@ -31,8 +31,8 @@ export function PosterStudioPage() {
         phase="collect"
         title={
           <span className="flex items-center gap-3">
-            AI Poster Studio
-            <Sparkles className="size-6 text-turmeric-500" aria-hidden />
+            Poster Studio
+            <Palette className="size-6 text-turmeric-500" aria-hidden />
           </span>
         }
         description="Independent poster generation. Render background artwork, typography and QR codes on demand at any stage, without waiting for budget approval."
@@ -46,7 +46,7 @@ export function PosterStudioPage() {
         onChange={(v) => setMode(v as 'event' | 'quick')}
         items={[
           { id: 'event', label: 'Event Posters', count: view?.designs.length },
-          { id: 'quick', label: <span className="flex items-center gap-1.5"><Wand2 className="size-3.5" aria-hidden /> Quick Standalone Poster</span> },
+          { id: 'quick', label: <span className="flex items-center gap-1.5"><Layers className="size-3.5" aria-hidden /> Quick Standalone Poster</span> },
         ]}
       />
 

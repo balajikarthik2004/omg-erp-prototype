@@ -1,4 +1,4 @@
-import { Check, Sparkles, Star, TrendingDown, TrendingUp, TriangleAlert } from 'lucide-react'
+import { Award, Check, Star, TrendingDown, TrendingUp, TriangleAlert } from 'lucide-react'
 
 import { CHART, PRICE_ALERT_THRESHOLD } from '@/config'
 import { cn } from '@/lib/cn'
@@ -33,7 +33,7 @@ export function SupplierSuggestions({
   return (
     <div>
       <div className="mb-3 flex items-center gap-2">
-        <Sparkles className="size-4 text-turmeric-700" aria-hidden />
+        <Award className="size-4 text-turmeric-700" aria-hidden />
         <h3 className="text-[12px] font-medium tracking-[0.06em] text-stone-900 uppercase">AI suggestion</h3>
         <span className="text-[13px] text-stone-500">— you choose; the ranking is only advice.</span>
       </div>
@@ -140,7 +140,7 @@ export function SupplierSuggestions({
           <summary className="cursor-pointer text-[13px] text-stone-500 hover:text-stone-900">
             {rest.length} other supplier{rest.length === 1 ? '' : 's'} carry this item
           </summary>
-          <ul className="mt-2 flex flex-col divide-y divide-sandal-200 rounded-card border border-sandal-200">
+          <ul className="mt-2 flex flex-col divide-y rounded-card border border-sandal-200">
             {rest.map((score) => (
               <li key={score.supplier.id}>
                 <button

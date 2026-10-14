@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Download, ExternalLink, Sparkles } from 'lucide-react'
+import { Download, ExternalLink, Palette } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
@@ -204,7 +204,7 @@ export function QuickPosterGenerator() {
 
         <div className="mt-5 flex justify-end">
           <Button
-            icon={<Sparkles className="size-4" aria-hidden />}
+            icon={<Palette className="size-4" aria-hidden />}
             disabled={!eventName.trim() || !venue.trim()}
             onClick={handleGenerate}
           >

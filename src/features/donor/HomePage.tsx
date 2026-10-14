@@ -12,7 +12,7 @@ export function HomePage() {
   return (
     <div>
       {/* Festival strip */}
-      <div className="border-b border-kumkum-700/30 bg-gradient-to-r from-kumkum-700 via-kumkum-600 to-navy-900 text-white shadow-sm">
+      <div className="border-b border-kumkum-700/30 bg-linear-to-r from-kumkum-700 via-kumkum-600 to-navy-900 text-white shadow-sm">
         <div className="flex w-full flex-wrap items-center gap-x-3.5 gap-y-2 px-4 sm:px-6 lg:px-8 xl:px-10 py-2.5">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-turmeric-400 px-3 py-1 text-[11px] font-extrabold tracking-[0.16em] text-navy-950 uppercase shadow-xs">
             <FestivalDiyaLogo size={16} aria-hidden />
@@ -25,7 +25,7 @@ export function HomePage() {
             to="/donate/temple"
             className="ml-auto inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-turmeric-300 hover:text-white hover:bg-white/25 transition-all shadow-xs"
           >
-            <HeritageKolamStar size={16} aria-hidden />
+            <HeritageKolamStar size={16} className="text-turmeric-400 drop-shadow-[0_0_8px_rgba(255,193,7,0.6)]" aria-hidden />
             <span>Sponsor an Evening</span>
             <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
           </Link>

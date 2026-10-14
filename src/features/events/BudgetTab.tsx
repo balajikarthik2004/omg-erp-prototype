@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, RefreshCw, Send, Sparkles, Trash2 } from 'lucide-react'
+import { History, Plus, RefreshCw, Send, Trash2 } from 'lucide-react'
 
 import { formatMoney } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
@@ -105,9 +105,9 @@ export function BudgetTab({ view }: { view: EventView }) {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[760px] border-collapse text-[14px]">
+          <table className="w-full min-w-190 border-collapse text-[14px]">
             <thead>
-              <tr className="bg-sandal-100 text-left text-[11px] font-semibold tracking-[0.1em] text-stone-500 uppercase">
+              <tr className="bg-sandal-100 text-left text-[11px] font-semibold tracking-widest text-stone-500 uppercase">
                 <th className="px-4 py-3">Cost line</th>
                 <th className="px-3 py-3">Past years</th>
                 <th className="px-3 py-3 text-right">Suggested</th>
@@ -121,12 +121,12 @@ export function BudgetTab({ view }: { view: EventView }) {
                 <tr key={r.key} className="border-t border-sandal-200 align-top">
                   <td className="px-4 py-3">
                     {editable ? (
-                      <input aria-label="Cost line" value={r.category} onChange={(e) => patch(r.key, { category: e.target.value })} className="w-full max-w-[240px] rounded-md border border-sandal-300 bg-sandal-50 px-2 py-1.5 text-[14px] text-stone-900 focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:outline-none" />
+                      <input aria-label="Cost line" value={r.category} onChange={(e) => patch(r.key, { category: e.target.value })} className="w-full max-w-60 rounded-md border border-sandal-300 bg-sandal-50 px-2 py-1.5 text-[14px] text-stone-900 focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:outline-none" />
                     ) : (
                       <span className="text-stone-900">{r.category}</span>
                     )}
-                    <p className="mt-1 flex max-w-[300px] items-start gap-1 text-[12px] leading-snug text-stone-500">
-                      <Sparkles className="mt-0.5 size-3 shrink-0 text-turmeric-700" aria-hidden />
+                    <p className="mt-1 flex max-w-75 items-start gap-1 text-[12px] leading-snug text-stone-500">
+                      <History className="mt-0.5 size-3 shrink-0 text-turmeric-700" aria-hidden />
                       {r.note ?? 'Added by hand.'}
                     </p>
                   </td>

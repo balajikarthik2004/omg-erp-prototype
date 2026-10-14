@@ -50,6 +50,8 @@
   /* Turmeric / brass: the site's --accent #FFC107. Collect phase, brass. */
   --color-turmeric-50:  #FFF8E1;
   --color-turmeric-100: #FFECB3;
+  --color-turmeric-200: #FFE082;
+  --color-turmeric-300: #FFD54F;
   --color-turmeric-400: #FFC107;   /* --accent, straight from the site */
   --color-turmeric-500: #E5A800;   /* Collect phase fills */
   --color-turmeric-600: #B38600;
@@ -75,11 +77,12 @@
   --color-danger-600:   #A3122B;  /* rejected, overdue, over budget */
   --color-danger-700:   #7F0C20;
 
-  /* Typography — omgofficial.com ships Montserrat for display and body
-     alike. Hind Madurai follows it so Tamil glyphs still render. */
-  --font-display: "Montserrat", "Hind Madurai", system-ui, sans-serif;
-  --font-heritage: "Montserrat", "Hind Madurai", system-ui, sans-serif;
-  --font-sans: "Montserrat", "Hind Madurai", system-ui, sans-serif;
+  /* Typography — OMG DESIGN SYSTEM: Montserrat & Roboto */
+  --font-display: "Montserrat", "Roboto", "Hind Madurai", system-ui, sans-serif;
+  --font-heritage: "Montserrat", "Roboto", "Hind Madurai", system-ui, sans-serif;
+  --font-heading: "Montserrat", "Roboto", system-ui, sans-serif;
+  --font-roboto: "Roboto", system-ui, sans-serif;
+  --font-sans: "Montserrat", "Roboto", "Hind Madurai", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --radius-card: 12px;   /* --radius */
