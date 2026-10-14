@@ -14,6 +14,7 @@ import { Deepam } from '@/components/ui/Ornament'
 import { offeringById } from '@/mock/offerings'
 import { FUNDS } from '@/mock/seed'
 import { useSession } from '@/store/session'
+import { getSewaImage } from '@/features/gaushala/sewaImages'
 
 /** Computed once, so a re-render never shifts the earliest selectable date. */
 const TODAY = new Date().toISOString().slice(0, 10)
@@ -109,6 +110,24 @@ export function ItemDetailPage() {
 
       <div className="grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-start">
         <div className="flex flex-col gap-6">
+          {item.gaushala ? (
+            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-sandal-200 bg-navy-950 shadow-md">
+              <img
+                src={getSewaImage(item).src}
+                alt={getSewaImage(item).alt}
+                className="h-full w-full object-cover"
+              />
+              <span
+                className={cn(
+                  'absolute top-3 left-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold shadow-xs',
+                  getSewaImage(item).badgeColor,
+                )}
+              >
+                {getSewaImage(item).badge}
+              </span>
+            </div>
+          ) : null}
+
           {/* Tickets */}
           {item.ticketed ? (
             <section className="rounded-card border border-sandal-200 bg-sandal-50 p-5">
