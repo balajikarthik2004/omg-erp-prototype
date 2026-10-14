@@ -136,7 +136,7 @@ export function ComplianceVaultPage() {
       />
 
       {/* Entity Selector Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-sandalwood-200 pb-3">
+      <div className="flex flex-wrap items-center gap-2 pb-1">
         {entities.map((ent) => {
           const isSelected = ent.id === activeEntity.id
           const isReady = ent.readinessStatus === 'CSR_READY'

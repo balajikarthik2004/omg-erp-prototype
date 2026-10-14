@@ -154,7 +154,7 @@ export function CsrReportsPage() {
       />
 
       {/* Tab Switcher */}
-      <div className="flex items-center gap-3 border-b border-sandalwood-200 pb-3">
+      <div className="flex items-center gap-3 pb-1">
         <button
           onClick={() => setActiveTab('ucs')}
           className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${

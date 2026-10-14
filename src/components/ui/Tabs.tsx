@@ -21,7 +21,7 @@ export function Tabs({
   return (
     <div
       role="tablist"
-      className={cn('scrollbar-thin flex gap-1 overflow-x-auto overflow-y-hidden border-b border-navy-200', className)}
+      className={cn('scrollbar-thin flex gap-1 overflow-x-auto overflow-y-hidden', className)}
     >
       {items.map((item) => {
         const active = item.id === value
@@ -50,7 +50,7 @@ export function Tabs({
             ) : null}
             <span
               className={cn(
-                'absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-kumkum-600 transition-opacity duration-150',
+                'absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-kumkum-600 transition-opacity duration-150',
                 active ? 'opacity-100' : 'opacity-0',
               )}
               aria-hidden

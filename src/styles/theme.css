@@ -188,17 +188,9 @@ svg *:focus-visible,
 }
 
 @layer utilities {
-  /* Thin turmeric gold rule under page titles — the one ornament. */
+  /* Thin turmeric gold rule under page titles — removed per design request */
   .gold-rule {
-    height: 2px;
-    border-radius: 1px;
-    background: linear-gradient(
-      to right,
-      var(--color-kumkum-500) 0%,
-      var(--color-kumkum-500) 18%,
-      var(--color-navy-600) 46%,
-      color-mix(in srgb, var(--color-navy-600) 12%, transparent) 100%
-    );
+    display: none;
   }
 
   .scrollbar-thin {

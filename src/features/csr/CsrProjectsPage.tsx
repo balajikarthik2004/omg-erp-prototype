@@ -173,7 +173,7 @@ export function CsrProjectsPage() {
       />
 
       {/* Schedule VII Category Filters */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-sandalwood-200 pb-3">
+      <div className="flex flex-wrap items-center gap-2 pb-1">
         <button
           onClick={() => setSelectedFilter('ALL')}
           className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
