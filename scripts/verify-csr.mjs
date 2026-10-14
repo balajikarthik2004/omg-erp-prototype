@@ -11,7 +11,8 @@ globalThis.localStorage = { getItem: (k) => mem.get(k) ?? null, setItem: (k, v) 
 const server = await createServer({ root, logLevel: 'error', server: { middlewareMode: true }, appType: 'custom' })
 const load = (p) => server.ssrLoadModule(p)
 
-const { useDb } = await load('/src/store/db.ts')
+const { useDb, allotmentFundError } = await load('/src/store/db.ts')
+const { approvalTasks } = await load('/src/store/selectors.ts')
 const seed = await load('/src/mock/seed.ts')
 const csrSeed = await load('/src/mock/csrSeed.ts')
 
@@ -143,7 +144,6 @@ const goodDeal = db().createCsrDeal({
   committedAmount: 200000000,
   adminCapPct: 4.8,
   needsImpactAssessment: false,
-  fundId: 'fund-csr-tvs-anna',
   ownerId: 'u-adm',
   tranches: [
     {
@@ -179,12 +179,18 @@ ok(db().csrDeals.find((d) => d.id === goodDeal.id)?.status === 'ACTIVE', 'Dual a
 /* ------------------------------------------------------------- 5. Sequential UC Gate & Fund Credit */
 section('5. Sequential Tranche Clearance & Utilisation Certificate')
 
+// Signing created the deal's own restricted fund and project budget
+const liveDeal = db().csrDeals.find((d) => d.id === goodDeal.id)
+const dealFund = db().funds.find((f) => f.id === liveDeal.fundId)
+ok(dealFund?.csrProjectId === goodPrjRes.id, 'Signed MoU created a restricted CSR fund tied to its project')
+ok(db().budgets.some((b) => b.fundId === dealFund?.id && b.csrProjectId === goodPrjRes.id), 'Signed MoU created the project CSR budget head')
+
 // Tranche 1 received
-const balBefore = db().funds.find((f) => f.id === 'fund-csr-tvs-anna')?.balance ?? 0
 const r1 = db().receiveCsrTranche(goodDeal.id, 'trn-test-1', 'CMS/TVS/TEST1/UTR', U['u-adm'])
 ok(r1.ok, 'Tranche #1 received and credited')
-const balAfter = db().funds.find((f) => f.id === 'fund-csr-tvs-anna')?.balance ?? 0
-ok(balAfter === balBefore + 100000000, 'Dedicated restricted CSR fund balance increased by ₹10,00,000')
+ok(db().funds.find((f) => f.id === dealFund.id)?.balance === 100000000, 'Dedicated restricted CSR fund balance increased by ₹10,00,000')
+const je = db().journal.find((j) => j.id === 'je-csr-trn-test-1')
+ok(je && je.lines.some((l) => l.account === 'Bank' && l.debit === 100000000) && je.lines.some((l) => l.account === 'CSR grant income' && l.credit === 100000000), 'Tranche receipt posted to the ledger (Bank / CSR grant income)')
 
 // Attempt receiving Tranche 2 BEFORE Tranche 1 UC is signed: MUST FAIL
 const r2Fail = db().receiveCsrTranche(goodDeal.id, 'trn-test-2', 'CMS/TVS/TEST2/UTR', U['u-adm'])
@@ -236,6 +242,64 @@ const progRes = db().addCsrProgressUpdate({
 }, U['u-adm'])
 ok(progRes.ok, 'Photo progress update with beneficiary count logged')
 ok(db().csrProgressUpdates.some((p) => p.id === progRes.id), 'Progress update exists in database')
+
+/* ------------------------------------------------------------- 7. Seeded books */
+section('7. Seeded CSR books tie to the ledger')
+
+ok(!db().journal.some((j) => j.sourceRef === 'OPENING/fund-csr-tvs-anna'), 'CSR funds have no invented opening balance')
+ok(db().journal.some((j) => j.id === 'je-csr-trn-1') && db().journal.some((j) => j.id === 'je-csr-trn-2'), 'Both TVS tranches are in the ledger')
+const tvsFund = db().funds.find((f) => f.id === 'fund-csr-tvs-anna')
+const tvsHead = db().budgets.find((b) => b.fundId === 'fund-csr-tvs-anna')
+ok(tvsHead?.allocated === 150000000 && tvsHead?.spent === 150000000, 'Tranche 1 was allotted to the project budget and spent, as its UC certifies')
+ok(tvsFund?.balance === 150000000, 'Tranche 2 waits unallotted in the TVS CSR fund')
+ok(db().csrDeals.find((d) => d.id === 'csr-deal-murugappa-art')?.fundId === 'fund-csr-heritage', 'Murugappa deal is linked to its heritage CSR fund')
+
+/* ------------------------------------------------------------- 8. CSR money only for its project */
+section('8. CSR money is spent only on its own project')
+
+const sevGen = db().funds.find((f) => f.id === 'fund-sev-gen')
+const kitchen = db().budgets.find((b) => b.id === 'bh-sev-kitchen')
+ok(Boolean(allotmentFundError(tvsFund, kitchen)), 'CSR fund cannot be allotted to an ordinary budget head')
+ok(allotmentFundError(tvsFund, tvsHead) === null, 'CSR fund can be allotted to its own project budget')
+ok(Boolean(allotmentFundError(sevGen, tvsHead)), 'General money cannot be mixed into a CSR project budget')
+
+/* ------------------------------------------------------------- 9. Four-eyes at every gate */
+section('9. One person prepares, a different person approves')
+
+const ownDoc = db().uploadCsrDocument({ entityId: 'csr-ent-sangam', docType: 'ITR', label: 'ITR FY 2025-26', filePath: '/vault/itr.pdf', uploadedBy: 'u-cas' }, U['u-cas'])
+ok(!db().verifyCsrDocument(ownDoc.id, 'verified', 'ok', U['u-cas']).ok, 'CA cannot verify a document they uploaded')
+ok(!db().verifyCsrDocument(ownDoc.id, 'verified', 'ok', U['u-tru']).ok, 'Only the CA team verifies papers (Trustee refused)')
+ok(db().verifyCsrDocument(ownDoc.id, 'verified', 'ok', U['u-cap']).ok, 'A different CA verifies it')
+
+const lines = (cat, amt) => [{ id: 'b1', category: cat, description: 'Line', amount: amt }]
+const trusteePrj = db().createCsrProject({ entityId: 'csr-ent-sevalaya', title: 'Village Library', scheduleViiCode: 'ii', description: 'Books', state: 'Tamil Nadu', district: 'Madurai', beneficiaryType: 'Children', beneficiaryTarget: 300, startDate: '2026-11-01', endDate: '2027-10-31', totalBudget: 5000000, budgetLines: lines('MATERIALS', 5000000), createdBy: 'u-tru' }, U['u-tru'])
+ok(!db().decideCsrProject(trusteePrj.id, 'approved', U['u-tru']).ok, 'Trustee cannot approve a project they prepared')
+ok(!db().decideCsrProject(trusteePrj.id, 'approved', U['u-cap']).ok, 'Only a Trustee approves a project (CA Partner refused)')
+
+const deal = (projectId, ownerId, tranches = []) => ({ projectId, companyId: 'csr-cmp-lt', status: 'MOU_DRAFT', committedAmount: 20000000, adminCapPct: 3, needsImpactAssessment: false, ownerId, tranches })
+ok(!db().createCsrDeal(deal(trusteePrj.id, 'u-adm'), U['u-adm']).ok, 'An unapproved project cannot be pitched')
+
+const sgmPrj = db().createCsrProject({ entityId: 'csr-ent-sangam', title: 'Tamil Heritage Classes', scheduleViiCode: 'v', description: 'Classes', state: 'Tamil Nadu', district: 'Chennai', beneficiaryType: 'Students', beneficiaryTarget: 200, startDate: '2026-11-01', endDate: '2027-10-31', totalBudget: 4000000, budgetLines: lines('SALARIES', 4000000), createdBy: 'u-adm' }, U['u-adm'])
+db().decideCsrProject(sgmPrj.id, 'approved', U['u-tru'])
+ok(!db().createCsrDeal(deal(sgmPrj.id, 'u-adm'), U['u-adm']).ok, 'Tamil Sangam cannot be pitched until it is CSR_READY')
+
+const draftDeal = db().createCsrDeal(deal(goodPrjRes.id, 'u-cap', [{ id: 'trn-d1', dealId: '', seqNo: 1, amount: 20000000, dueDate: '2027-01-01', conditionText: 'MoU', status: 'SCHEDULED' }]), U['u-cap'])
+ok(draftDeal.ok, 'A second MoU is drafted by the CA Partner')
+ok(!db().decideCsrMoU(draftDeal.id, 'approved', U['u-cap']).ok, 'The deal owner cannot sign their own MoU')
+ok(!db().receiveCsrTranche(draftDeal.id, 'trn-d1', 'UTR/X', U['u-adm']).ok, 'No money can be received before the MoU is signed')
+
+const ucDraft = db().createCsrUc({ dealId: goodDeal.id, trancheId: 'trn-test-2', trancheSeq: 2, amountReceived: 100000000, amountUtilised: 60000000, balanceRemaining: 40000000, preparedBy: 'u-cas' }, U['u-cas'])
+ok(ucDraft.ok, 'CA Staff drafts the Tranche #2 certificate')
+ok(!db().signCsrUc(ucDraft.id, '26048912AAAAAA9813', '048912', U['u-cas']).ok, 'CA Staff cannot sign a certificate they drafted')
+ok(db().signCsrUc(ucDraft.id, '26048912AAAAAA9813', '048912', U['u-cap']).ok, 'A different CA signs it')
+
+/* ------------------------------------------------------------- 10. Approvals inbox */
+section('10. CSR gates appear in the approvals inbox')
+
+const kinds = new Set(approvalTasks(db(), 'all').map((t) => t.kind))
+ok(kinds.has('csr_document'), 'Pending compliance papers are in the inbox')
+ok(kinds.has('csr_project'), 'Projects waiting for a Trustee are in the inbox')
+ok(kinds.has('csr_mou'), 'MoUs waiting for signatures are in the inbox')
 
 console.log(`\nCSR Verification complete: ${pass} passed, ${fail} failed.\n`)
 process.exit(fail === 0 ? 0 : 1)

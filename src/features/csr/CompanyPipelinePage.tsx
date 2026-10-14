@@ -18,6 +18,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { userById } from '@/mock/seed'
 import { useDb } from '@/store/db'
+import { csrPitchBlock } from '@/store/csrRules'
 import { useSession } from '@/store/session'
 import type { CsrCompany, CsrDealStatus, CsrProject } from '@/types'
 
@@ -59,7 +60,10 @@ export function CompanyPipelinePage() {
   if (!db.ready) return <Skeleton className="h-96 w-full" />
 
   const companies = db.csrCompanies
-  const projects = db.csrProjects
+  // Step 3 gate: only Trustee-approved projects of a CSR-ready entity can be pitched.
+  const projects = db.csrProjects.filter(
+    (p) => !csrPitchBlock(p, db.csrEntities.find((e) => e.id === p.entityId)),
+  )
   const deals = db.csrDeals
 
   const handleAddCompany = (e: React.FormEvent) => {
@@ -275,6 +279,8 @@ Submitted with board resolution authorization.`
                   size="sm"
                   variant="secondary"
                   icon={<Bot className="size-3.5 text-turmeric-700" />}
+                  disabled={projects.length === 0}
+                  title={projects.length === 0 ? 'No project is ready to pitch. A Trustee must approve one for a CSR-ready entity.' : 'Draft a proposal for this company'}
                   onClick={() => handleOpenAiGenerator(comp)}
                 >
                   AI Proposal
@@ -313,6 +319,9 @@ Submitted with board resolution authorization.`
                     </option>
                   ))}
                 </select>
+                <p className="mt-1 text-[12px] text-stone-500">
+                  Only Trustee-approved projects of a CSR-ready entity are listed.
+                </p>
               </div>
             </div>
 

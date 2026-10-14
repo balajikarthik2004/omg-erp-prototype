@@ -14,6 +14,7 @@ import { BUDGET_SPECS, CATALOG, FUNDS, GAUSHALA_FUND_IDS, INVENTORY, PROJECTS, u
 import { createEventActions, type EventActions } from './eventActions'
 import { createGaushalaActions, type GaushalaActions } from './gaushalaActions'
 import { createCsrActions, type CsrActions } from './csrActions'
+import { csrAllotmentBlock } from './csrRules'
 import {
   cashConfirmBlock,
   cashCountBlock,
@@ -369,6 +370,8 @@ export function allotmentFundError(fund: Fund | undefined, head: BudgetHead | un
   if (!fund || !head) return 'Pick a fund and a budget head.'
   if (fund.eventId) return `${fund.name} is spent only through its own event orders. It cannot be allotted to a budget head.`
   if (fund.sectorId !== head.sectorId) return 'The fund and the budget head belong to different sectors.'
+  const csr = csrAllotmentBlock(fund, head)
+  if (csr) return csr
   if (fund.projectId && head.projectId !== fund.projectId) {
     return `${fund.name} is restricted to its own project. It cannot be allotted to ${head.name}.`
   }

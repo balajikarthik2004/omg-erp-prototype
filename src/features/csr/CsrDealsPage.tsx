@@ -16,7 +16,8 @@ import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { userById } from '@/mock/seed'
-import { useDb } from '@/store/db'
+import { available, useDb } from '@/store/db'
+import { csrMouDecideBlock, csrTrancheReceiveBlock } from '@/store/csrRules'
 import { useSession } from '@/store/session'
 import type { CsrDeal, CsrTranche } from '@/types'
 
@@ -41,8 +42,7 @@ export function CsrDealsPage() {
   const projects = db.csrProjects
   const funds = db.funds
 
-  const isCaOrTrustee =
-    user?.role === 'ca_partner' || user?.role === 'trustee' || user?.role === 'super_admin'
+  const mouBlock = (deal: CsrDeal) => (user ? csrMouDecideBlock(user, deal) : 'Pick a persona first.')
 
   const handleReceiveTranche = (e: React.FormEvent) => {
     e.preventDefault()
@@ -76,6 +76,8 @@ export function CsrDealsPage() {
           const comp = companies.find((c) => c.id === deal.companyId)
           const proj = projects.find((p) => p.id === deal.projectId)
           const dedicatedFund = funds.find((f) => f.id === deal.fundId)
+          const csrHead = db.budgets.find((b) => b.fundId === deal.fundId && b.csrProjectId === deal.projectId)
+          const entity = db.csrEntities.find((e) => e.id === proj?.entityId)
 
           const caApproval = deal.approvals.find((a) => a.role === 'ca_partner')
           const trusteeApproval = deal.approvals.find((a) => a.role === 'trustee')
@@ -109,14 +111,24 @@ export function CsrDealsPage() {
                       <span>Admin Overhead: <strong className="font-mono text-tulsi-700">{deal.adminCapPct}%</strong> (Max 5.0% cap)</span>
                       <span>Dedicated Restricted Fund: <strong className="font-mono text-sandalwood-800">{dedicatedFund?.name ?? deal.fundId ?? 'Pending creation'}</strong></span>
                       {deal.mouSignedOn && <span>Executed On: <strong>{deal.mouSignedOn}</strong></span>}
+                      {dedicatedFund && <span>Unallotted in fund: <strong className="font-mono text-stone-900">{formatMoney(dedicatedFund.balance)}</strong></span>}
+                      {csrHead && (
+                        <span>
+                          Project budget: <strong className="font-mono text-stone-900">{formatMoney(csrHead.allocated)}</strong> allotted ·{' '}
+                          <strong className="font-mono text-stone-900">{formatMoney(csrHead.spent)}</strong> spent ·{' '}
+                          <strong className="font-mono text-tulsi-700">{formatMoney(available(csrHead))}</strong> available
+                        </span>
+                      )}
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {isCaOrTrustee && !isFullySanctioned && (
+                    {deal.status === 'MOU_DRAFT' && !isFullySanctioned && (
                       <Button
                         size="sm"
                         variant="primary"
+                        disabled={Boolean(mouBlock(deal))}
+                        title={mouBlock(deal) ?? 'Sign or send back this MoU'}
                         icon={<ShieldCheck className="size-4" />}
                         onClick={() => setMouDecisionModal(deal)}
                       >
@@ -185,12 +197,8 @@ export function CsrDealsPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-sandalwood-200 text-xs">
-                      {deal.tranches.map((t, index) => {
-                        const prevTranche = index > 0 ? deal.tranches[index - 1] : null
-                        const isPrevUcSigned =
-                          !prevTranche ||
-                          prevTranche.status === 'UTILISED' ||
-                          prevTranche.status === 'UC_SIGNED'
+                      {deal.tranches.map((t) => {
+                        const receiveBlock = csrTrancheReceiveBlock(deal, t, entity)
                         const isReceived =
                           t.status === 'RECEIVED' || t.status === 'UTILISED' || t.status === 'UC_SIGNED'
                         const isUcSigned = t.status === 'UC_SIGNED'
@@ -232,7 +240,7 @@ export function CsrDealsPage() {
                             </td>
                             <td className="px-3 py-3 text-right">
                               {!isReceived ? (
-                                isPrevUcSigned ? (
+                                !receiveBlock ? (
                                   <Button
                                     size="sm"
                                     variant="primary"
@@ -244,7 +252,7 @@ export function CsrDealsPage() {
                                 ) : (
                                   <span className="inline-flex items-center gap-1 text-[11px] font-medium text-kumkum-700 bg-kumkum-50 px-2 py-1 rounded border border-kumkum-200">
                                     <Lock className="size-3" />
-                                    Awaiting Tranche #{prevTranche?.seqNo} UC
+                                    {receiveBlock}
                                   </span>
                                 )
                               ) : (

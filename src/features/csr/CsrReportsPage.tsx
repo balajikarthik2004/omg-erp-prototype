@@ -16,10 +16,12 @@ import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
-import { userById } from '@/mock/seed'
+import { userById, userName } from '@/mock/seed'
 import { useDb } from '@/store/db'
+import { csrUcSignBlock } from '@/store/csrRules'
 import { useSession } from '@/store/session'
-import type { CsrUtilisationCertificate } from '@/types'
+import type { CsrDeal, CsrUtilisationCertificate } from '@/types'
+import { CsrFundStatement } from './CsrFundStatement'
 
 export function CsrReportsPage() {
   const db = useDb()
@@ -59,14 +61,17 @@ export function CsrReportsPage() {
   const projects = db.csrProjects
   const companies = db.csrCompanies
 
-  const isCa =
-    user?.role === 'ca_partner' || user?.role === 'ca_staff' || user?.role === 'super_admin'
+  const signBlock = (uc: CsrUtilisationCertificate) => (user ? csrUcSignBlock(user, uc) : 'Pick a persona first.')
+  // A UC is drafted for a tranche that has arrived and has no certificate yet.
+  const ucReady = (d: CsrDeal) => d.tranches.filter((t) => t.status === 'RECEIVED')
+  const ucDeals = deals.filter((d) => ucReady(d).length > 0)
+  const activeDeals = deals.filter((d) => d.status === 'ACTIVE' || d.status === 'COMPLETED')
 
   const handleDraftUcSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
-    const deal = deals.find((d) => d.id === selectedDealId) ?? deals[0]
-    const tranche = deal?.tranches.find((t) => t.id === selectedTrancheId) ?? deal?.tranches[0]
+    const deal = ucDeals.find((d) => d.id === selectedDealId) ?? ucDeals[0]
+    const tranche = deal && (ucReady(deal).find((t) => t.id === selectedTrancheId) ?? ucReady(deal)[0])
     if (!deal || !tranche) return
 
     const utilisedPaise = amountUtilised * 100
@@ -80,7 +85,7 @@ export function CsrReportsPage() {
         amountReceived: tranche.amount,
         amountUtilised: utilisedPaise,
         balanceRemaining: remainingPaise,
-        preparedBy: user.name,
+        preparedBy: user.id,
         narrative: ucNarrative,
       },
       user,
@@ -118,7 +123,7 @@ export function CsrReportsPage() {
             takenAt: new Date().toISOString(),
           },
         ],
-        createdBy: user.name,
+        createdBy: user.id,
       },
       user,
     )
@@ -145,6 +150,8 @@ export function CsrReportsPage() {
             <Button
               variant="primary"
               icon={<FileCheck2 className="size-4" />}
+              disabled={ucDeals.length === 0}
+              title={ucDeals.length === 0 ? 'Every received tranche already has a certificate.' : 'Draft a certificate for a received tranche'}
               onClick={() => setDraftUcModal(true)}
             >
               Draft Utilisation Certificate
@@ -182,6 +189,7 @@ export function CsrReportsPage() {
 
       {activeTab === 'ucs' ? (
         <div className="grid gap-6">
+          <CsrFundStatement deals={activeDeals} />
           {ucs.map((uc) => {
             const deal = deals.find((d) => d.id === uc.dealId)
             const company = companies.find((c) => c.id === deal?.companyId)
@@ -215,16 +223,18 @@ export function CsrReportsPage() {
                       <div className="mt-2 text-xs text-sandalwood-600 space-y-1">
                         <p>{uc.narrative}</p>
                         <p className="text-[11px] text-sandalwood-500">
-                          Prepared by: <strong className="text-sandalwood-700">{uc.preparedBy}</strong> on {uc.preparedAt.slice(0, 10)}
+                          Prepared by: <strong className="text-sandalwood-700">{userName(uc.preparedBy)}</strong> on {uc.preparedAt.slice(0, 10)}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      {!isSigned && isCa && (
+                      {!isSigned && (
                         <Button
                           size="sm"
                           variant="primary"
+                          disabled={Boolean(signBlock(uc))}
+                          title={signBlock(uc) ?? 'Certify this tranche with your UDIN'}
                           icon={<ShieldCheck className="size-4" />}
                           onClick={() => setSignUcModal(uc)}
                         >
@@ -310,7 +320,7 @@ export function CsrReportsPage() {
                   </p>
 
                   <div className="mt-1 text-[11px] text-sandalwood-500">
-                    Period: {upd.periodStart} to {upd.periodEnd} · Recorded by {upd.createdBy}
+                    Period: {upd.periodStart} to {upd.periodEnd} · Recorded by {userName(upd.createdBy)}
                   </div>
 
                   {/* Photo Evidence Grid */}
@@ -406,11 +416,11 @@ export function CsrReportsPage() {
                 value={selectedDealId}
                 onChange={(e) => {
                   setSelectedDealId(e.target.value)
-                  const d = deals.find((x) => x.id === e.target.value)
-                  if (d && d.tranches[0]) setSelectedTrancheId(d.tranches[0].id)
+                  const d = ucDeals.find((x) => x.id === e.target.value)
+                  if (d && ucReady(d)[0]) setSelectedTrancheId(ucReady(d)[0]!.id)
                 }}
               >
-                {deals.map((d) => (
+                {ucDeals.map((d) => (
                   <option key={d.id} value={d.id}>
                     {companies.find((c) => c.id === d.companyId)?.name} — {formatMoney(d.committedAmount)}
                   </option>
@@ -427,7 +437,7 @@ export function CsrReportsPage() {
                 value={selectedTrancheId}
                 onChange={(e) => setSelectedTrancheId(e.target.value)}
               >
-                {(deals.find((d) => d.id === selectedDealId) ?? deals[0])?.tranches.map((t) => (
+                {ucReady(ucDeals.find((d) => d.id === selectedDealId) ?? ucDeals[0]!).map((t) => (
                   <option key={t.id} value={t.id}>
                     Tranche #{t.seqNo} ({formatMoney(t.amount)}) — {t.status}
                   </option>

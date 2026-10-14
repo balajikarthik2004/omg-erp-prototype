@@ -97,8 +97,8 @@ export const FUNDS: Fund[] = [
 
   // CSR Dedicated Funds. Mandatory dedicated bank account & restricted fund
   // per MCA Schedule VII guidelines.
-  { id: 'fund-csr-tvs-anna', sectorId: 'sevalaya', name: 'TVS CSR Annadhanam Dedicated Fund', type: 'restricted', balance: 0 },
-  { id: 'fund-csr-heritage', sectorId: 'temple', name: 'Murugappa Heritage Restoration Fund', type: 'restricted', balance: 0 },
+  { id: 'fund-csr-tvs-anna', sectorId: 'sevalaya', name: 'TVS CSR Annadhanam Dedicated Fund', type: 'restricted', csrProjectId: 'csr-prj-anna', balance: 0 },
+  { id: 'fund-csr-heritage', sectorId: 'temple', name: 'Murugappa Heritage Restoration Fund', type: 'restricted', csrProjectId: 'csr-prj-heritage', balance: 0 },
 ]
 
 /** The fund ids the Gaushala spends out of. Used by its console pages. */

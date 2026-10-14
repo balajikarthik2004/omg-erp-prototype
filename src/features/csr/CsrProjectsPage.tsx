@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { userById } from '@/mock/seed'
 import { useDb } from '@/store/db'
+import { csrProjectDecideBlock } from '@/store/csrRules'
 import { useSession } from '@/store/session'
 import type { CsrBudgetCategory, CsrProject, CsrProjectBudgetLine } from '@/types'
 import { CSR_SCHEDULE_VII_ITEMS } from '@/mock/csrSeed'
@@ -71,8 +72,7 @@ export function CsrProjectsPage() {
   const entities = db.csrEntities
   const deals = db.csrDeals
 
-  const isTrusteeOrCa =
-    user?.role === 'trustee' || user?.role === 'ca_partner' || user?.role === 'super_admin'
+  const decideBlock = (project: CsrProject) => (user ? csrProjectDecideBlock(user, project) : 'Pick a persona first.')
 
   const totalBudget = budgetLines.reduce((sum, line) => sum + line.amount, 0)
   const adminLine = budgetLines.find((l) => l.category === 'ADMIN_OVERHEAD')
@@ -130,7 +130,7 @@ export function CsrProjectsPage() {
         endDate,
         totalBudget,
         budgetLines,
-        createdBy: user.name,
+        createdBy: user.id,
       },
       user,
     )
@@ -290,11 +290,13 @@ export function CsrProjectsPage() {
                   View Budget Lines ({prj.budgetLines.length}) →
                 </button>
 
-                {isSubmitted && isTrusteeOrCa && (
+                {isSubmitted && (
                   <div className="flex items-center gap-2">
                     <Button
                       size="sm"
                       variant="secondary"
+                      disabled={Boolean(decideBlock(prj))}
+                      title={decideBlock(prj) ?? 'Send this project back for revision'}
                       onClick={() => handleDecide(prj.id, 'rejected')}
                     >
                       Reject
@@ -302,6 +304,8 @@ export function CsrProjectsPage() {
                     <Button
                       size="sm"
                       variant="primary"
+                      disabled={Boolean(decideBlock(prj))}
+                      title={decideBlock(prj) ?? 'Approve this project for CSR funding'}
                       onClick={() => handleDecide(prj.id, 'approved')}
                     >
                       Sanction

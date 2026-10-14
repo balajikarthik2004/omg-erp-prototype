@@ -19,6 +19,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { userById } from '@/mock/seed'
 import { useDb } from '@/store/db'
+import { csrDocVerifyBlock } from '@/store/csrRules'
 import { useSession } from '@/store/session'
 import type { CsrDocType, CsrDocument } from '@/types'
 
@@ -46,11 +47,7 @@ export function ComplianceVaultPage() {
   const activeEntity = entities.find((e) => e.id === selectedEntityId) ?? entities[0]
   const entityDocs = db.csrDocuments.filter((d) => d.entityId === activeEntity.id)
 
-  const isCaOrTrustee =
-    user?.role === 'ca_partner' ||
-    user?.role === 'ca_staff' ||
-    user?.role === 'trustee' ||
-    user?.role === 'super_admin'
+  const reviewBlock = (doc: CsrDocument) => (user ? csrDocVerifyBlock(user, doc) : 'Pick a persona first.')
 
   // Statutory check list items
   const checkItems = [
@@ -340,10 +337,12 @@ export function ComplianceVaultPage() {
                     </td>
                     <td className="px-4 py-3.5 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {isCaOrTrustee && (
+                        {doc.status === 'pending' && (
                           <Button
                             size="sm"
                             variant="secondary"
+                            disabled={Boolean(reviewBlock(doc))}
+                            title={reviewBlock(doc) ?? 'Verify or reject this document'}
                             onClick={() => {
                               setVerifyDocModal(doc)
                               setVerifyStatus('verified')

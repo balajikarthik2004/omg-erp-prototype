@@ -166,6 +166,8 @@ export interface Fund {
   projectId?: string
   /** Set on an event fund. It is spent only through that event's own orders. */
   eventId?: string
+  /** Set on a CSR fund. It may be allotted only to that CSR project's budget head. */
+  csrProjectId?: string
   balance: Money
 }
 
@@ -197,6 +199,8 @@ export interface BudgetHead {
   committed: Money
   spent: Money
   projectId?: string
+  /** Set on a CSR project budget. It takes money only from that project's CSR fund. */
+  csrProjectId?: string
 }
 
 export type ApprovalStatus = 'draft' | 'pending' | 'approved' | 'rejected' | 'escalated'
@@ -396,6 +400,10 @@ export type ApprovalKind =
   | 'event_budget'
   | 'event_poster'
   | 'event_order'
+  | 'csr_document'
+  | 'csr_project'
+  | 'csr_mou'
+  | 'csr_uc'
 
 export interface ApprovalTask {
   kind: ApprovalKind

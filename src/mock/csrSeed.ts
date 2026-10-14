@@ -102,9 +102,9 @@ export const CSR_DOCUMENTS: CsrDocument[] = [
     issuedOn: '2018-04-12',
     validUntil: null,
     filePath: '/vault/sevalaya-trust-deed.pdf',
-    uploadedBy: 'Saravanan Pillai',
+    uploadedBy: 'u-adm',
     uploadedAt: '2026-01-10T10:00:00Z',
-    verifiedBy: 'Anitha Rajan',
+    verifiedBy: 'u-cas',
     verifiedAt: '2026-01-12T14:30:00Z',
     status: 'verified',
     comment: 'Original registered deed verified with Sub-Registrar seal.',
@@ -119,9 +119,9 @@ export const CSR_DOCUMENTS: CsrDocument[] = [
     issuedOn: '2026-04-01',
     validUntil: '2031-03-31',
     filePath: '/vault/sevalaya-sec332.pdf',
-    uploadedBy: 'Saravanan Pillai',
+    uploadedBy: 'u-adm',
     uploadedAt: '2026-04-05T09:00:00Z',
-    verifiedBy: 'R. Balasubramanian',
+    verifiedBy: 'u-cap',
     verifiedAt: '2026-04-06T11:20:00Z',
     status: 'verified',
     comment: 'Valid 5-year order under Income-tax Act 2025.',
@@ -136,9 +136,9 @@ export const CSR_DOCUMENTS: CsrDocument[] = [
     issuedOn: '2026-04-01',
     validUntil: '2031-03-31',
     filePath: '/vault/sevalaya-sec354.pdf',
-    uploadedBy: 'Saravanan Pillai',
+    uploadedBy: 'u-adm',
     uploadedAt: '2026-04-05T09:15:00Z',
-    verifiedBy: 'R. Balasubramanian',
+    verifiedBy: 'u-cap',
     verifiedAt: '2026-04-06T11:25:00Z',
     status: 'verified',
     comment: 'Donor tax deduction certificate on record.',
@@ -152,9 +152,9 @@ export const CSR_DOCUMENTS: CsrDocument[] = [
     issuedOn: '2021-06-18',
     validUntil: null,
     filePath: '/vault/sevalaya-csr1-mca.pdf',
-    uploadedBy: 'Saravanan Pillai',
+    uploadedBy: 'u-adm',
     uploadedAt: '2026-01-10T10:15:00Z',
-    verifiedBy: 'Anitha Rajan',
+    verifiedBy: 'u-cas',
     verifiedAt: '2026-01-12T14:40:00Z',
     status: 'verified',
     comment: 'Active on MCA portal with Practicing CA digital signature.',
@@ -168,9 +168,9 @@ export const CSR_DOCUMENTS: CsrDocument[] = [
     issuedOn: '2026-08-25',
     validUntil: null,
     filePath: '/vault/sevalaya-3yr-audited-pack.pdf',
-    uploadedBy: 'Saravanan Pillai',
+    uploadedBy: 'u-adm',
     uploadedAt: '2026-09-01T11:00:00Z',
-    verifiedBy: 'Anitha Rajan',
+    verifiedBy: 'u-cas',
     verifiedAt: '2026-09-02T16:00:00Z',
     status: 'verified',
     comment: 'Clean audit reports without qualifications.',
@@ -184,13 +184,39 @@ export const CSR_DOCUMENTS: CsrDocument[] = [
     issuedOn: '2019-11-04',
     validUntil: null,
     filePath: '/vault/sevalaya-darpan.pdf',
-    uploadedBy: 'Saravanan Pillai',
+    uploadedBy: 'u-adm',
     uploadedAt: '2026-01-10T10:30:00Z',
-    verifiedBy: 'Anitha Rajan',
+    verifiedBy: 'u-cas',
     verifiedAt: '2026-01-12T14:45:00Z',
     status: 'verified',
   },
+  ...heritageDocs(),
+  {
+    id: 'csr-doc-sgm-reg',
+    entityId: 'csr-ent-sangam',
+    docType: 'REG_CERT',
+    label: 'Society Registration Certificate',
+    docNumber: 'SRG-CHN-118/2024',
+    issuedOn: '2024-06-20',
+    validUntil: null,
+    filePath: '/vault/sangam-society-reg.pdf',
+    uploadedBy: 'u-adm',
+    uploadedAt: '2026-10-08T10:00:00Z',
+    status: 'pending',
+  },
 ]
+
+/** The heritage trust's five verified papers, so its CSR_READY status has evidence behind it. */
+function heritageDocs(): CsrDocument[] {
+  const base = { entityId: 'csr-ent-heritage', uploadedBy: 'u-adm', verifiedBy: 'u-cap', status: 'verified' as const }
+  return [
+    { ...base, id: 'csr-doc-her-reg', docType: 'REG_CERT', label: 'Heritage Trust Deed & Registration', docNumber: 'BK-IV-077/2020', issuedOn: '2020-01-15', validUntil: null, filePath: '/vault/heritage-deed.pdf', uploadedAt: '2026-02-02T10:00:00Z', verifiedAt: '2026-02-04T12:00:00Z' },
+    { ...base, id: 'csr-doc-her-332', docType: 'RNPO_332', legacyRef: '12AB', label: 'Section 332 RNPO Order (Old 12AB)', docNumber: 'ITBA/EXM/RNPO/2026/0211', issuedOn: '2026-04-01', validUntil: '2031-03-31', filePath: '/vault/heritage-sec332.pdf', uploadedAt: '2026-04-08T10:00:00Z', verifiedAt: '2026-04-09T12:00:00Z' },
+    { ...base, id: 'csr-doc-her-354', docType: 'APPROVAL_354', legacyRef: '80G', label: 'Section 354 Approval (Old 80G)', docNumber: 'ITBA/EXM/80G/2026/9120', issuedOn: '2026-04-01', validUntil: '2031-03-31', filePath: '/vault/heritage-sec354.pdf', uploadedAt: '2026-04-08T10:10:00Z', verifiedAt: '2026-04-09T12:10:00Z' },
+    { ...base, id: 'csr-doc-her-csr1', docType: 'CSR1', label: 'MCA Form CSR-1 Registration Letter', docNumber: 'CSR00041289', issuedOn: '2023-02-10', validUntil: null, filePath: '/vault/heritage-csr1.pdf', uploadedAt: '2026-02-02T10:20:00Z', verifiedAt: '2026-02-04T12:20:00Z' },
+    { ...base, id: 'csr-doc-her-audit', docType: 'AUDITED_ACCOUNTS', financialYear: '2023-2026', label: 'Audited Accounts (Last 3 Years)', issuedOn: '2026-08-20', validUntil: null, filePath: '/vault/heritage-audited.pdf', uploadedAt: '2026-08-28T10:00:00Z', verifiedAt: '2026-08-30T12:00:00Z' },
+  ]
+}
 
 /* ------------------------------------------------------------------ 3. Projects */
 
@@ -210,9 +236,9 @@ export const CSR_PROJECTS: CsrProject[] = [
     endDate: '2027-03-31',
     totalBudget: 450000000, // ₹45,00,000
     status: 'IN_PROGRESS',
-    createdBy: 'Saravanan Pillai',
+    createdBy: 'u-adm',
     createdAt: '2026-02-15T09:00:00Z',
-    approvedBy: 'Meenakshi Sundaram',
+    approvedBy: 'u-tru',
     approvedAt: '2026-02-20T14:00:00Z',
     budgetLines: [
       {
@@ -256,10 +282,10 @@ export const CSR_PROJECTS: CsrProject[] = [
     startDate: '2026-07-01',
     endDate: '2027-06-30',
     totalBudget: 600000000, // ₹60,00,000
-    status: 'OPEN_FOR_FUNDING',
-    createdBy: 'Saravanan Pillai',
+    status: 'FUNDED',
+    createdBy: 'u-adm',
     createdAt: '2026-05-10T11:00:00Z',
-    approvedBy: 'Meenakshi Sundaram',
+    approvedBy: 'u-tru',
     approvedAt: '2026-05-15T16:30:00Z',
     budgetLines: [
       {
@@ -304,9 +330,9 @@ export const CSR_PROJECTS: CsrProject[] = [
     endDate: '2027-03-31',
     totalBudget: 250000000, // ₹25,00,000
     status: 'TRUSTEE_APPROVED',
-    createdBy: 'Saravanan Pillai',
+    createdBy: 'u-adm',
     createdAt: '2026-08-01T10:00:00Z',
-    approvedBy: 'Meenakshi Sundaram',
+    approvedBy: 'u-tru',
     approvedAt: '2026-08-10T12:00:00Z',
     budgetLines: [
       {
@@ -423,7 +449,7 @@ export const CSR_DEALS: CsrDeal[] = [
         amount: 150000000, // ₹15,00,000
         dueDate: '2026-04-20',
         conditionText: 'Initial setup grant upon signed MoU and dedicated CSR bank account confirmation',
-        status: 'UTILISED',
+        status: 'UC_SIGNED',
         receivedOn: '2026-04-25',
         bankRef: 'CMS/TVS/9482103859/NEFT',
         ucId: 'uc-tvs-trn1',
@@ -445,10 +471,12 @@ export const CSR_DEALS: CsrDeal[] = [
     id: 'csr-deal-murugappa-art',
     projectId: 'csr-prj-heritage',
     companyId: 'csr-cmp-murugappa',
-    status: 'MOU_APPROVED',
+    status: 'ACTIVE',
     committedAmount: 250000000, // ₹25,00,000
     adminCapPct: 5.0,
     needsImpactAssessment: false,
+    fundId: 'fund-csr-heritage',
+    mouSignedOn: '2026-10-01',
     ownerId: 'u-adm',
     proposalText:
       'Conservation of Thousand-Pillar Mandapam stone sculptures by master Sthapatis, supported under Murugappa Heritage Foundation.',
@@ -504,9 +532,9 @@ export const CSR_UTILISATION_CERTIFICATES: CsrUtilisationCertificate[] = [
     amountReceived: 150000000,
     amountUtilised: 150000000,
     balanceRemaining: 0,
-    preparedBy: 'Anitha Rajan',
+    preparedBy: 'u-cas',
     preparedAt: '2026-09-05T11:00:00Z',
-    caSignedBy: 'R. Balasubramanian',
+    caSignedBy: 'u-cap',
     caMembershipNo: '048291',
     caUdin: '26048291AAAAAA1081',
     signedAt: '2026-09-10T15:30:00Z',
@@ -535,7 +563,7 @@ export const CSR_PROGRESS_UPDATES: CsrProgressUpdate[] = [
         takenAt: '2026-07-15',
       },
     ],
-    createdBy: 'Saravanan Pillai',
+    createdBy: 'u-adm',
     createdAt: '2026-09-02T10:00:00Z',
   },
 ]

@@ -183,6 +183,7 @@ export interface CsrDeal {
   proposalText?: string
   approvals: ApprovalStep[]
   tranches: CsrTranche[]
+  createdAt?: string
   lostReason?: string
 }
 
