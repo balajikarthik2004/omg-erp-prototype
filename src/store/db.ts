@@ -13,6 +13,7 @@ import { offeringById } from '@/mock/offerings'
 import { BUDGET_SPECS, CATALOG, FUNDS, GAUSHALA_FUND_IDS, INVENTORY, PROJECTS, userById, userName } from '@/mock/seed'
 import { createEventActions, type EventActions } from './eventActions'
 import { createGaushalaActions, type GaushalaActions } from './gaushalaActions'
+import { createProgramActions, type GaushalaProgramActions } from './gaushalaProgramActions'
 import {
   cashConfirmBlock,
   cashCountBlock,
@@ -59,11 +60,13 @@ const EMPTY_DATA = {
   eventSponsors: [], eventDonations: [], eventOrders: [], eventActuals: [],
   cows: [], cowHealth: [], sewaOrders: [], rescues: [], gaushalaGallery: [],
   gaushalaEntities: [], receiptTemplates: [], gaushalaExpenses: [],
+  adoptions: [], visitServices: [], slots: [], bookings: [], gaushalaEvents: [],
+  eventRsvps: [], volunteers: [], volunteerShifts: [], transparencyDocs: [],
 } satisfies Omit<Database, 'tenants'>
 
 const EMPTY: Database = { ...EMPTY_DATA, tenants: [] }
 
-export interface DbState extends Database, EventActions, GaushalaActions {
+export interface DbState extends Database, EventActions, GaushalaActions, GaushalaProgramActions {
   ready: boolean
   loading: boolean
   /** The customer whose books are on screen. */
@@ -207,6 +210,10 @@ function pickTenantData(s: DbState): TenantData {
     cows: s.cows, cowHealth: s.cowHealth, sewaOrders: s.sewaOrders, rescues: s.rescues,
     gaushalaGallery: s.gaushalaGallery, gaushalaEntities: s.gaushalaEntities,
     receiptTemplates: s.receiptTemplates, gaushalaExpenses: s.gaushalaExpenses,
+    adoptions: s.adoptions, visitServices: s.visitServices, slots: s.slots,
+    bookings: s.bookings, gaushalaEvents: s.gaushalaEvents, eventRsvps: s.eventRsvps,
+    volunteers: s.volunteers, volunteerShifts: s.volunteerShifts,
+    transparencyDocs: s.transparencyDocs,
   }
 }
 
@@ -429,6 +436,7 @@ export const useDb = create<DbState>((set, get) => ({
   vault: {},
   ...createEventActions(set, get),
   ...createGaushalaActions(set, get),
+  ...createProgramActions(set, get),
 
   load: async () => {
     if (get().ready || get().loading) return

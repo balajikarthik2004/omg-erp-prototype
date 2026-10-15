@@ -3,6 +3,7 @@ import { addDays, subDays, subMonths } from 'date-fns'
 import { APP } from '@/config'
 import { convert, currencyForCountry, fxRate } from '@/lib/currency'
 import { createRng, SEED } from '@/lib/rng'
+import { makeProgramsSeed } from './gaushalaPrograms'
 import type {
   CatalogItem,
   Cow,
@@ -980,6 +981,8 @@ export function makeGaushalaSeed(now: Date, donors: Donor[], startSequence: numb
       gaushalaEntities: GAUSHALA_ENTITIES.map((e) => ({ ...e })),
       receiptTemplates: RECEIPT_TEMPLATES.map((t) => ({ ...t })),
       gaushalaExpenses,
+      // Adoption, visits, festivals, volunteering and the transparency shelf.
+      ...makeProgramsSeed(now, cows, donors),
     },
     donations,
   }

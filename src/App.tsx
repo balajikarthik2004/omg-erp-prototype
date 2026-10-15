@@ -34,6 +34,11 @@ import { GaushalaDashboardPage } from '@/features/gaushala/console/GaushalaDashb
 import { CowManagementPage } from '@/features/gaushala/console/CowManagementPage'
 import { SewaCataloguePage } from '@/features/gaushala/console/SewaCataloguePage'
 import { GaushalaDonationsPage } from '@/features/gaushala/console/GaushalaDonationsPage'
+import { AdoptionsPage } from '@/features/gaushala/console/AdoptionsPage'
+import { BookingsPage } from '@/features/gaushala/console/BookingsPage'
+import { GaushalaEventsConsolePage } from '@/features/gaushala/console/GaushalaEventsConsolePage'
+import { VolunteersPage } from '@/features/gaushala/console/VolunteersPage'
+import { TransparencyConsolePage } from '@/features/gaushala/console/TransparencyConsolePage'
 import { SevaPage } from '@/features/gaushala/SevaPage'
 import { StatementPage } from '@/features/donor/StatementPage'
 import { EventsPage } from '@/features/events/EventsPage'
@@ -95,6 +100,11 @@ export function App() {
           <Route path="gaushala/cows" element={<CowManagementPage />} />
           <Route path="gaushala/sewas" element={<SewaCataloguePage />} />
           <Route path="gaushala/donations" element={<GaushalaDonationsPage />} />
+          <Route path="gaushala/adoptions" element={<AdoptionsPage />} />
+          <Route path="gaushala/bookings" element={<BookingsPage />} />
+          <Route path="gaushala/events" element={<GaushalaEventsConsolePage />} />
+          <Route path="gaushala/volunteers" element={<VolunteersPage />} />
+          <Route path="gaushala/transparency" element={<TransparencyConsolePage />} />
           <Route path="cash-counts" element={<CashCountsPage />} />
           <Route path="period-close" element={<PeriodClosePage />} />
           <Route path="onboarding" element={<OnboardingPage />} />

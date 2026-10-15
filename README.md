@@ -13,7 +13,7 @@ npm run dev     # http://localhost:5173
 npm run build   # typechecks, then builds
 npm run lint
 npm run verify:flow       # 195 checks on the money rules
-npm run verify:gaushala   # 135 checks on the Gaushala module
+npm run verify:gaushala   # 224 checks on the Gaushala module
 ```
 
 ## The flow
@@ -60,6 +60,21 @@ processing fee, payouts, reconciliation and the journal all apply to them with
 no special handling. The one thing that is its own is the receipt book: a gift
 to the Gaushala is numbered `RCP-GAU`, not `RCP-SEV`. Every sewa order is
 backed by the donation that paid for it, and a refunded gift cancels its sewa.
+
+### The five programmes
+
+| Tab | Public | Console |
+|---|---|---|
+| Adopt a Cow | tiers priced from each cow's own monthly care, certificate, adopter shelf | adoptions, renewals, lapses, send an adopter update |
+| Visit & Book | eight services, slot picker, capacity, closed days, waiver, QR | bookings, slot calendar and closures, QR check-in |
+| Events | festival calendar in the viewer's time zone, RSVP, live stream, past galleries | festival CRUD and registrations |
+| Volunteer | application with interests, availability, group requests | applications, shifts, hours, certificates |
+| Transparency | expense bars, cow census, reports, registrations, daily routine | the same figures, with where each one comes from |
+
+Gaushala festivals are deliberately **not** `EventRecord`s. They are a calendar
+entry with an RSVP and no budget, poster or approval gate; anything needing
+money voted for it is still raised in the Events module. Festival times are
+stored UTC and displayed in the viewer's own zone (`lib/zone.ts`).
 
 Run `npm run verify:gaushala` for the headless checks on all of the above.
 

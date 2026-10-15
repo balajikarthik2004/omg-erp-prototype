@@ -12,7 +12,14 @@ import { useSession } from '@/store/session'
 import { SewasTab } from './SewasTab'
 import { OurCowsTab } from './OurCowsTab'
 import { AboutTab } from './AboutTab'
-import { ComingSoonTab } from './ComingSoonTab'
+import { AdoptTab } from './AdoptTab'
+import { VisitBookTab } from './VisitBookTab'
+import { GaushalaEventsTab } from './GaushalaEventsTab'
+import { VolunteerTab } from './VolunteerTab'
+import { TransparencyTab } from './TransparencyTab'
+
+/** Fixed at load, like the mock database itself. Keeps counts stable. */
+const LOADED_AT = Date.now()
 
 export type GaushalaTabId =
   | 'sewas'
@@ -27,18 +34,16 @@ export type GaushalaTabId =
 interface TabDef {
   id: GaushalaTabId
   label: string
-  /** Phase 2 tabs are listed from the start so the shape of the page is honest. */
-  phase2?: boolean
 }
 
 const TABS: TabDef[] = [
   { id: 'sewas', label: 'Sewas' },
-  { id: 'adopt', label: 'Adopt a Cow', phase2: true },
-  { id: 'visit', label: 'Visit & Book', phase2: true },
-  { id: 'events', label: 'Events', phase2: true },
+  { id: 'adopt', label: 'Adopt a Cow' },
+  { id: 'visit', label: 'Visit & Book' },
+  { id: 'events', label: 'Events' },
   { id: 'cows', label: 'Our Cows' },
-  { id: 'volunteer', label: 'Volunteer', phase2: true },
-  { id: 'transparency', label: 'Transparency', phase2: true },
+  { id: 'volunteer', label: 'Volunteer' },
+  { id: 'transparency', label: 'Transparency' },
   { id: 'about', label: 'About & Contact' },
 ]
 
@@ -55,14 +60,26 @@ export function GaushalaPage() {
   const tenant = db.tenants.find((t) => t.id === db.activeTenantId)
 
   const cows = db.cows
+  const adoptions = db.adoptions
+  const visitServices = db.visitServices
+  const gaushalaEvents = db.gaushalaEvents
 
-  const counts = useMemo<Partial<Record<GaushalaTabId, number>>>(
-    () => ({
+  const counts = useMemo<Partial<Record<GaushalaTabId, number>>>(() => {
+    const now = LOADED_AT
+    const living = cows.filter((c) => c.status !== 'deceased')
+    return {
       sewas: GAUSHALA_SEWAS.filter((s) => s.active).length,
-      cows: cows.filter((c) => c.status !== 'deceased').length,
-    }),
-    [cows],
-  )
+      // How many cows still have a share open, which is what the tab offers.
+      adopt: living.filter(
+        (c) => adoptions.filter((a) => a.cowId === c.id && a.status === 'active').length < 4,
+      ).length,
+      visit: visitServices.filter((s) => s.active).length,
+      events: gaushalaEvents.filter(
+        (e) => new Date(e.startAt).getTime() >= now && e.status !== 'cancelled',
+      ).length,
+      cows: living.length,
+    }
+  }, [cows, adoptions, visitServices, gaushalaEvents])
 
   // The Gaushala lives inside Sevalaya, so a customer without that vertical
   // does not have it either.
@@ -72,6 +89,8 @@ export function GaushalaPage() {
 
   const active = TABS.find((t) => t.id === tab) ?? TABS[0]!
   const searchable = tab === 'sewas' || tab === 'cows'
+  // Anything with a price on it gets the currency switcher.
+  const priced = tab === 'sewas' || tab === 'adopt' || tab === 'visit' || tab === 'events'
 
   return (
     <>
@@ -159,33 +178,43 @@ export function GaushalaPage() {
           }))}
         />
 
-        {searchable ? (
+        {searchable || priced ? (
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="sm:w-80">
-              <Input
-                aria-label={`Search ${active.label.toLowerCase()}`}
-                placeholder={tab === 'sewas' ? 'Search sewas' : 'Search the herd'}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                leading={<Search className="size-4" aria-hidden />}
-              />
-            </div>
+            {searchable ? (
+              <div className="sm:w-80">
+                <Input
+                  aria-label={`Search ${active.label.toLowerCase()}`}
+                  placeholder={tab === 'sewas' ? 'Search sewas' : 'Search the herd'}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  leading={<Search className="size-4" aria-hidden />}
+                />
+              </div>
+            ) : (
+              <span />
+            )}
 
-            {tab === 'sewas' ? (
-              <CurrencySwitcher value={currency} onChange={setCurrency} />
-            ) : null}
+            {priced ? <CurrencySwitcher value={currency} onChange={setCurrency} /> : null}
           </div>
         ) : null}
 
         <div className="mt-7 min-h-80">
           {tab === 'sewas' ? (
             <SewasTab query={query} currency={currency} onClearQuery={() => setQuery('')} />
+          ) : tab === 'adopt' ? (
+            <AdoptTab currency={currency} />
+          ) : tab === 'visit' ? (
+            <VisitBookTab currency={currency} />
+          ) : tab === 'events' ? (
+            <GaushalaEventsTab currency={currency} />
           ) : tab === 'cows' ? (
             <OurCowsTab query={query} onClearQuery={() => setQuery('')} />
-          ) : tab === 'about' ? (
-            <AboutTab />
+          ) : tab === 'volunteer' ? (
+            <VolunteerTab />
+          ) : tab === 'transparency' ? (
+            <TransparencyTab />
           ) : (
-            <ComingSoonTab tab={active} onBrowseSewas={() => setTab('sewas')} />
+            <AboutTab />
           )}
         </div>
       </div>

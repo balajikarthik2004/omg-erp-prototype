@@ -184,22 +184,237 @@ export interface ReceiptTemplate {
   reviewed: boolean
 }
 
-/* ------------------------------------------- declared now, built in Phase 2 */
+/* ---------------------------------------------------------- adopt a cow */
 
 export type AdoptionTier = 'full_monthly' | 'full_yearly' | 'shared_monthly' | 'shared_yearly'
+
+export interface AdoptionTierMeta {
+  id: AdoptionTier
+  label: string
+  blurb: string
+  /** Share of the cow's monthly care this tier covers. */
+  share: number
+  interval: 'monthly' | 'yearly'
+}
+
+/** A photo or health note sent to an adopter. */
+export interface AdopterUpdate {
+  id: string
+  at: string
+  kind: 'photo' | 'health' | 'note'
+  title: string
+  body: string
+  art: number
+}
 
 export interface Adoption {
   id: string
   cowId: string
-  adopterId: string
   adopterName: string
+  adopterEmail: string
   tier: AdoptionTier
+  /** Settlement cents charged each interval. */
   amount: Money
   currency: Currency
   startedAt: string
   renewsAt: string
   status: 'active' | 'lapsed' | 'cancelled'
   certificateNo: string
+  /** The donation that paid for the current period. */
+  donationId?: string
+  updates: AdopterUpdate[]
+  tenantId?: string
+}
+
+/* ------------------------------------------------------------ visit & book */
+
+export type VisitCategory = 'feeding' | 'pooja' | 'darshan' | 'tour' | 'stay' | 'group'
+
+export interface VisitService {
+  id: string
+  name: string
+  tamil?: string
+  category: VisitCategory
+  blurb: string
+  /** How long a booked slot runs. */
+  durationMins: number
+  /** Settlement cents, per person. Zero means a free darshan. */
+  pricePerPerson: Money
+  minPeople: number
+  maxPeople: number
+  /** A school or corporate visit is confirmed by hand, not automatically. */
+  needsApproval: boolean
+  active: boolean
+}
+
+export interface Slot {
+  id: string
+  serviceId: string
+  /** yyyy-MM-dd in the shelter's own local time. */
+  date: string
+  startTime: string
+  endTime: string
+  capacity: number
+  booked: number
+  /** A closed day: Tuesdays, and whatever the shelter blacks out by hand. */
+  blackout?: boolean
+  blackoutReason?: string
+}
+
+export type BookingStatus = 'pending' | 'confirmed' | 'checked_in' | 'cancelled' | 'no_show'
+
+export interface Booking {
+  id: string
+  slotId: string
+  serviceId: string
+  name: string
+  email: string
+  phone: string
+  people: number
+  amount: Money
+  currency: Currency
+  status: BookingStatus
+  /** Signed, so a screenshot of someone else's code does not get you in. */
+  qrToken: string
+  /** The waiver has to be accepted before the visit, and we record when. */
+  consentAcceptedAt?: string
+  bookedAt: string
+  checkedInAt?: string
+  note?: string
+  donationId?: string
+  tenantId?: string
+}
+
+/* ----------------------------------------------------------------- events */
+
+export type GaushalaEventStatus = 'draft' | 'published' | 'live' | 'completed' | 'cancelled'
+
+/**
+ * A festival on the Gaushala calendar.
+ *
+ * Deliberately lighter than the ERP `EventRecord`: this is a date, a ritual
+ * list and an RSVP, with no budget, poster or approval gates behind it. A
+ * festival that needs money voted for it is raised in the Events module
+ * instead, and the console says so.
+ */
+export interface GaushalaEvent {
+  id: string
+  name: string
+  tamil?: string
+  /** Stored UTC. Always displayed in the viewer's own zone. */
+  startAt: string
+  endAt: string
+  venue: string
+  summary: string
+  rituals: string[]
+  status: GaushalaEventStatus
+  isPaid: boolean
+  /** Settlement cents per head, when it is a paid registration. */
+  ticketPrice?: Money
+  capacity?: number
+  registered: number
+  livestreamUrl?: string
+  /** Pictures from the last time it was held. */
+  galleryArt: number[]
+  tenantId?: string
+}
+
+export interface GaushalaEventRsvp {
+  id: string
+  eventId: string
+  name: string
+  email: string
+  people: number
+  amount: Money
+  currency: Currency
+  status: 'going' | 'cancelled' | 'attended'
+  qrToken: string
+  rsvpAt: string
+  donationId?: string
+}
+
+/* -------------------------------------------------------------- volunteer */
+
+export type VolunteerInterest =
+  | 'cow_care'
+  | 'cleaning'
+  | 'fundraising'
+  | 'social_media'
+  | 'vet_help'
+  | 'translation'
+  | 'design'
+
+export interface Volunteer {
+  id: string
+  name: string
+  email: string
+  phone: string
+  city: string
+  skills: string
+  availability: string
+  interests: VolunteerInterest[]
+  /** A company or a college sending a group, rather than one person. */
+  isGroup: boolean
+  groupSize?: number
+  organisation?: string
+  appliedAt: string
+  status: 'pending' | 'approved' | 'rejected'
+  reviewedBy?: string
+  reviewNote?: string
+  /** Hours logged across approved shifts. Derived, but stored for the list. */
+  hours: number
+  certificateIssuedAt?: string
+}
+
+export interface VolunteerShift {
+  id: string
+  volunteerId: string
+  date: string
+  area: VolunteerInterest
+  hours: number
+  note?: string
+  loggedBy: string
+}
+
+/* ----------------------------------------------------------- transparency */
+
+export type TransparencyDocKind = 'annual_report' | 'audited_accounts' | 'registration' | 'policy'
+
+export interface TransparencyDoc {
+  id: string
+  title: string
+  kind: TransparencyDocKind
+  /** FY 2025-26, or a calendar year. */
+  period: string
+  publishedAt: string
+  sizeKb: number
+  /** Set once the auditor has signed it off. */
+  audited: boolean
+}
+
+export interface GaushalaExpense {
+  id: string
+  /** yyyy-MM */
+  month: string
+  category: string
+  amount: Money
+  note?: string
+}
+
+/* ------------------------------------------------------- still to be built */
+
+export interface GauDaanRequest {
+  id: string
+  donorName: string
+  phone: string
+  email: string
+  cowCount: number
+  cowDetails: string
+  place: string
+  requestedAt: string
+  status: 'pending' | 'verified' | 'approved' | 'rejected'
+  reviewedBy?: string
+  reviewNote?: string
 }
 
 export interface GaushalaSubscription {
@@ -216,70 +431,6 @@ export interface GaushalaSubscription {
   status: 'active' | 'past_due' | 'cancelled'
 }
 
-export interface GauDaanRequest {
-  id: string
-  donorName: string
-  phone: string
-  email: string
-  cowCount: number
-  cowDetails: string
-  place: string
-  requestedAt: string
-  status: 'pending' | 'verified' | 'approved' | 'rejected'
-  reviewedBy?: string
-  reviewNote?: string
-}
-
-export interface Slot {
-  id: string
-  serviceId: string
-  date: string
-  startTime: string
-  endTime: string
-  capacity: number
-  booked: number
-  blackout?: boolean
-}
-
-export interface Booking {
-  id: string
-  slotId: string
-  serviceId: string
-  name: string
-  email: string
-  phone: string
-  people: number
-  amount: Money
-  currency: Currency
-  status: 'pending' | 'confirmed' | 'checked_in' | 'cancelled'
-  qrToken: string
-  consentAcceptedAt?: string
-  bookedAt: string
-}
-
-export interface Volunteer {
-  id: string
-  name: string
-  email: string
-  phone: string
-  skills: string[]
-  availability: string
-  interests: string[]
-  isGroup: boolean
-  appliedAt: string
-  status: 'pending' | 'approved' | 'rejected'
-  hours: number
-}
-
-export interface GaushalaExpense {
-  id: string
-  /** yyyy-MM */
-  month: string
-  category: string
-  amount: Money
-  note?: string
-}
-
 /* ------------------------------------------------------- the data bundle */
 
 export interface GaushalaData {
@@ -291,4 +442,15 @@ export interface GaushalaData {
   gaushalaEntities: GaushalaEntity[]
   receiptTemplates: ReceiptTemplate[]
   gaushalaExpenses: GaushalaExpense[]
+
+  /* the five programmes */
+  adoptions: Adoption[]
+  visitServices: VisitService[]
+  slots: Slot[]
+  bookings: Booking[]
+  gaushalaEvents: GaushalaEvent[]
+  eventRsvps: GaushalaEventRsvp[]
+  volunteers: Volunteer[]
+  volunteerShifts: VolunteerShift[]
+  transparencyDocs: TransparencyDoc[]
 }

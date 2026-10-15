@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { CalendarCheck, HandCoins, HeartPulse, PackageCheck, Repeat } from 'lucide-react'
+import { CalendarCheck, CalendarDays, HandCoins, HandHeart, HeartPulse, PackageCheck, Repeat } from 'lucide-react'
 
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Card, CardHeader } from '@/components/ui/Card'
@@ -9,6 +9,8 @@ import { Money } from '@/components/ui/Money'
 import { Stat } from '@/components/ui/Stat'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { formatAge, formatMoney, formatNumber } from '@/lib/format'
+import { relativeToNow } from '@/lib/zone'
+import { cn } from '@/lib/cn'
 import { gaushalaSewaById } from '@/mock/gaushala'
 import { GAUSHALA_FUND_IDS, userName } from '@/mock/seed'
 import { useDb } from '@/store/db'
@@ -60,7 +62,31 @@ export function GaushalaDashboardPage() {
       (h) => h.nextDueAt && new Date(h.nextDueAt).getTime() - now < 30 * DAY && new Date(h.nextDueAt).getTime() > now,
     )
 
+    // The five programmes, at a glance.
+    const today0 = new Date(START_OF_TODAY).toISOString().slice(0, 10)
+    const activeAdoptions = db.adoptions.filter((a) => a.status === 'active')
+    const renewalsDue = activeAdoptions.filter(
+      (a) => new Date(a.renewsAt).getTime() - now < 30 * DAY,
+    )
+    const lapsedAdoptions = db.adoptions.filter((a) => a.status === 'lapsed')
+    const todaysBookings = db.bookings.filter((b) => {
+      const slot = db.slots.find((sl) => sl.id === b.slotId)
+      return slot?.date === today0 && b.status !== 'cancelled'
+    })
+    const pendingBookings = db.bookings.filter((b) => b.status === 'pending')
+    const nextFestival = db.gaushalaEvents
+      .filter((e) => new Date(e.startAt).getTime() >= now && e.status !== 'cancelled')
+      .sort((a, b) => a.startAt.localeCompare(b.startAt))[0]
+    const pendingVolunteers = db.volunteers.filter((v) => v.status === 'pending')
+
     return {
+      activeAdoptions,
+      renewalsDue,
+      lapsedAdoptions,
+      todaysBookings,
+      pendingBookings,
+      nextFestival,
+      pendingVolunteers,
       today: sum(today),
       todayCount: today.length,
       month: sum(month),
@@ -72,7 +98,17 @@ export function GaushalaDashboardPage() {
       recurring: recurring.length,
       vaccinationsDue,
     }
-  }, [db.donations, db.sewaOrders, db.cows, db.cowHealth])
+  }, [
+    db.donations,
+    db.sewaOrders,
+    db.cows,
+    db.cowHealth,
+    db.adoptions,
+    db.bookings,
+    db.slots,
+    db.gaushalaEvents,
+    db.volunteers,
+  ])
 
   if (!db.ready) {
     return (
@@ -125,6 +161,60 @@ export function GaushalaDashboardPage() {
           icon={<PackageCheck className="size-4" aria-hidden />}
         />
       </div>
+
+      <section className="mt-6">
+        <h2 className="mb-3 font-heritage text-[18px] font-bold text-navy-950">The programmes</h2>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <ProgramTile
+            to="/console/gaushala/adoptions"
+            icon={<HeartPulse className="size-4" aria-hidden />}
+            label="Adoptions"
+            value={formatNumber(stats.activeAdoptions.length)}
+            sub={
+              stats.lapsedAdoptions.length > 0
+                ? `${stats.lapsedAdoptions.length} lapsed, ${stats.renewalsDue.length} renewing soon`
+                : `${stats.renewalsDue.length} renewing within 30 days`
+            }
+            warn={stats.lapsedAdoptions.length > 0}
+          />
+          <ProgramTile
+            to="/console/gaushala/bookings"
+            icon={<CalendarCheck className="size-4" aria-hidden />}
+            label="Visits today"
+            value={formatNumber(stats.todaysBookings.reduce((t, b) => t + b.people, 0))}
+            sub={
+              stats.pendingBookings.length > 0
+                ? `${stats.pendingBookings.length} group request${stats.pendingBookings.length === 1 ? '' : 's'} to approve`
+                : `${stats.todaysBookings.length} bookings`
+            }
+            warn={stats.pendingBookings.length > 0}
+          />
+          <ProgramTile
+            to="/console/gaushala/events"
+            icon={<CalendarDays className="size-4" aria-hidden />}
+            label="Next festival"
+            value={stats.nextFestival ? stats.nextFestival.name : '—'}
+            sub={
+              stats.nextFestival
+                ? `${relativeToNow(stats.nextFestival.startAt)} · ${stats.nextFestival.registered} registered`
+                : 'nothing on the calendar'
+            }
+            small
+          />
+          <ProgramTile
+            to="/console/gaushala/volunteers"
+            icon={<HandHeart className="size-4" aria-hidden />}
+            label="Volunteers"
+            value={formatNumber(stats.pendingVolunteers.length)}
+            sub={
+              stats.pendingVolunteers.length > 0
+                ? 'applications waiting to hear back'
+                : 'nothing waiting on a reply'
+            }
+            warn={stats.pendingVolunteers.length > 0}
+          />
+        </div>
+      </section>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         {/* the fulfilment queue, which is the one thing that needs doing today */}
@@ -229,5 +319,60 @@ export function GaushalaDashboardPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+/**
+ * One programme, with the number that decides whether anyone has to act on it
+ * today. Every tile is a link, because the only useful next step is the page
+ * behind it.
+ */
+function ProgramTile({
+  to,
+  icon,
+  label,
+  value,
+  sub,
+  warn,
+  small,
+}: {
+  to: string
+  icon: React.ReactNode
+  label: string
+  value: string
+  sub: string
+  warn?: boolean
+  small?: boolean
+}) {
+  return (
+    <Link
+      to={to}
+      className={cn(
+        'group block rounded-2xl border-2 bg-white p-5 shadow-card transition-all duration-200',
+        'hover:-translate-y-0.5 hover:shadow-lift',
+        warn ? 'border-marigold-50' : 'border-navy-100/90',
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">{label}</p>
+        <span
+          className={cn(
+            'flex size-8 items-center justify-center rounded-xl border shadow-2xs',
+            warn ? 'border-marigold-50 bg-marigold-50 text-marigold-500' : 'border-navy-100 bg-navy-50 text-navy-600',
+          )}
+        >
+          {icon}
+        </span>
+      </div>
+      <p
+        className={cn(
+          'mt-3 font-heritage font-bold text-navy-950 leading-tight',
+          small ? 'text-[18px]' : 'text-[30px] leading-none',
+        )}
+      >
+        {value}
+      </p>
+      <p className="mt-2 text-[12.5px] leading-relaxed text-navy-600">{sub}</p>
+    </Link>
   )
 }

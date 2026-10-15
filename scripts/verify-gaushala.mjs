@@ -17,6 +17,7 @@ const gau = await load('/src/mock/gaushala.ts')
 const offerings = await load('/src/mock/offerings.ts')
 const currency = await load('/src/lib/currency.ts')
 const cfg = await load('/src/config.ts')
+const prog = await load('/src/mock/gaushalaPrograms.ts')
 
 const U = Object.fromEntries(seed.USERS.map((u) => [u.id, u]))
 let pass = 0
@@ -418,6 +419,270 @@ ok(sevaGift.fundId === 'fund-sev-anna', 'it still credits the Annadhanam fund')
 ok(sevaGift.donorCurrency === undefined, 'no currency is stamped on it')
 ok(sevaGift.receiptTemplateId === undefined, 'and no Gaushala receipt template')
 ok(sevaGift.fee === Math.round(1100 * cfg.APP.fee.percent) + cfg.APP.fee.fixedCents, 'the fee is unchanged')
+
+/* --------------------------------------------------------- adopt a cow */
+section('Adopt a cow')
+
+ok(db().adoptions.length > 0, `${db().adoptions.length} sponsorships seeded`)
+ok(
+  db().adoptions.every((a) => db().cows.some((c) => c.id === a.cowId)),
+  'every sponsorship is for a cow on the register',
+)
+ok(
+  db().adoptions.every((a) => a.certificateNo.startsWith('GAU-ADP-')),
+  'every one has a certificate number',
+)
+ok(db().adoptions.some((a) => a.status === 'lapsed'), 'one has lapsed, so the renewals screen has work')
+ok(
+  db().adoptions.filter((a) => a.status === 'active').every((a) => a.updates.length > 0),
+  'every active adopter has had at least one update sent',
+)
+
+// The price comes off the cow's own monthly care figure.
+const sampleCow = db().cows.find((c) => c.status === 'adoptable')
+ok(prog.adoptionPrice(sampleCow, 'full_monthly') === sampleCow.monthlyCare, 'a full monthly tier is her whole keep')
+ok(prog.adoptionPrice(sampleCow, 'shared_monthly') === Math.round(sampleCow.monthlyCare * 0.25), 'a shared tier is a quarter')
+ok(prog.adoptionPrice(sampleCow, 'full_yearly') === sampleCow.monthlyCare * 11, 'a yearly tier is eleven months, not twelve')
+
+const freeCow = db().cows.find(
+  (c) => c.status === 'adoptable' && db().adoptions.filter((a) => a.cowId === c.id && a.status === 'active').length === 0,
+)
+ok(!db().adoptCow(freeCow.id, 'full_monthly', { name: 'X', email: 'a@b.com' }, U['u-dev']).ok, 'a one-letter name is refused')
+ok(!db().adoptCow(freeCow.id, 'full_monthly', { name: 'Test Adopter', email: 'nope' }, U['u-dev']).ok, 'a bad email is refused')
+
+const adopted = db().adoptCow(freeCow.id, 'full_monthly', { name: 'Test Adopter', email: 'test@example.com' }, U['u-dev'])
+ok(adopted.ok, 'a cow can be adopted')
+ok(db().cows.find((c) => c.id === freeCow.id).status === 'adopted', 'she is marked adopted on the register')
+ok(
+  !db().adoptCow(freeCow.id, 'full_monthly', { name: 'Someone Else', email: 'two@example.com' }, U['u-dev']).ok,
+  'a fully sponsored cow cannot be adopted twice',
+)
+
+const beforeRenew = db().adoptions.find((a) => a.id === adopted.adoption.id).renewsAt
+ok(db().renewAdoption(adopted.adoption.id, U['u-gau-adm']).ok, 'it can be renewed')
+ok(
+  new Date(db().adoptions.find((a) => a.id === adopted.adoption.id).renewsAt) > new Date(beforeRenew),
+  'the renewal date moved forward',
+)
+ok(!db().postAdopterUpdate(adopted.adoption.id, { kind: 'photo', title: 'x', body: 'y', art: 0 }, U['u-gau-adm']).ok, 'an empty update is refused')
+ok(
+  db().postAdopterUpdate(adopted.adoption.id, { kind: 'photo', title: 'At the feed', body: 'She was first to the trough again today.', art: 0 }, U['u-gau-adm']).ok,
+  'a real update is sent',
+)
+ok(db().cancelAdoption(adopted.adoption.id, U['u-gau-adm']).ok, 'it can be cancelled')
+ok(db().cows.find((c) => c.id === freeCow.id).status === 'adoptable', 'she goes back on the public list')
+
+/* ------------------------------------------------------- visit & book */
+section('Visit & book')
+
+ok(db().visitServices.length >= 6, `${db().visitServices.length} visit services`)
+ok(db().visitServices.some((v) => v.pricePerPerson === 0), 'darshan is free')
+ok(db().visitServices.some((v) => v.needsApproval), 'group visits are confirmed by hand')
+ok(db().slots.length > 100, `${db().slots.length} slots over the next three weeks`)
+ok(
+  db().slots.every((sl) => db().visitServices.some((v) => v.id === sl.serviceId)),
+  'every slot belongs to a service that exists',
+)
+ok(db().slots.some((sl) => sl.blackout), 'closed days are in the calendar')
+ok(
+  db().slots.filter((sl) => sl.blackout).every((sl) => sl.blackoutReason),
+  'every closure says why',
+)
+ok(
+  db().slots.every((sl) => sl.booked <= sl.capacity),
+  'no slot is booked past its capacity',
+)
+ok(
+  db().bookings.every((b) => db().slots.some((sl) => sl.id === b.slotId)),
+  'every booking points at a slot that exists',
+)
+
+const openSlot = db().slots.find((sl) => !sl.blackout && sl.capacity - sl.booked >= 2)
+const openService = prog.visitServiceById(openSlot.serviceId)
+ok(
+  !db().createBooking({ slotId: openSlot.id, name: 'Test Visitor', email: 'v@example.com', phone: '1', people: openService.minPeople, consent: false }, U['u-dev']).ok,
+  'a booking without the safety waiver is refused',
+)
+ok(
+  !db().createBooking({ slotId: openSlot.id, name: 'Test Visitor', email: 'bad', phone: '1', people: openService.minPeople, consent: true }, U['u-dev']).ok,
+  'a bad email is refused',
+)
+ok(
+  !db().createBooking({ slotId: openSlot.id, name: 'Test Visitor', email: 'v@example.com', phone: '1', people: openService.maxPeople + 1, consent: true }, U['u-dev']).ok,
+  'more people than the service takes is refused',
+)
+
+const bookedBefore = db().slots.find((sl) => sl.id === openSlot.id).booked
+const made = db().createBooking(
+  { slotId: openSlot.id, name: 'Test Visitor', email: 'v@example.com', phone: '1', people: openService.minPeople, consent: true },
+  U['u-dev'],
+)
+ok(made.ok, 'a valid booking goes through')
+ok(
+  db().slots.find((sl) => sl.id === openSlot.id).booked === bookedBefore + openService.minPeople,
+  'the places came off the slot',
+)
+ok(Boolean(made.booking.consentAcceptedAt), 'the waiver acceptance is timestamped')
+
+const closedSlot = db().slots.find((sl) => sl.blackout)
+ok(
+  !db().createBooking({ slotId: closedSlot.id, name: 'Test', email: 'v@example.com', phone: '1', people: 1, consent: true }, U['u-dev']).ok,
+  'a closed day cannot be booked',
+)
+
+if (made.booking.status === 'confirmed') {
+  ok(!db().checkInBooking('nonsense', U['u-gau-care']).ok, 'an unknown gate code is refused')
+  ok(db().checkInBooking(made.booking.qrToken, U['u-gau-care']).ok, 'a valid gate code checks the visitor in')
+  ok(!db().checkInBooking(made.booking.qrToken, U['u-gau-care']).ok, 'the same code cannot be used twice')
+} else {
+  ok(
+    !db().checkInBooking(made.booking.qrToken, U['u-gau-care']).ok,
+    'an unapproved group visit cannot be checked in',
+  )
+}
+
+const busySlot = db().slots.find((sl) => !sl.blackout && sl.booked > 0)
+ok(
+  !db().setSlotBlackout(busySlot.id, true, 'Closing it', U['u-gau-adm']).ok,
+  'a slot with bookings on it cannot be closed',
+)
+const emptySlot = db().slots.find((sl) => !sl.blackout && sl.booked === 0)
+ok(db().setSlotBlackout(emptySlot.id, true, 'Shed repair', U['u-gau-adm']).ok, 'an empty slot can be closed')
+ok(db().slots.find((sl) => sl.id === emptySlot.id).blackoutReason === 'Shed repair', 'the reason is recorded')
+
+/* ------------------------------------------------------------ events */
+section('Festivals')
+
+ok(db().gaushalaEvents.length >= 5, `${db().gaushalaEvents.length} festivals on the calendar`)
+ok(
+  db().gaushalaEvents.some((e) => new Date(e.startAt) > new Date()) &&
+    db().gaushalaEvents.some((e) => new Date(e.startAt) < new Date()),
+  'the calendar straddles today, so both tabs have content',
+)
+ok(
+  db().gaushalaEvents.every((e) => new Date(e.endAt) > new Date(e.startAt)),
+  'every festival ends after it starts',
+)
+ok(
+  db().gaushalaEvents.every((e) => e.startAt.endsWith('Z')),
+  'times are stored UTC, to be shown in the viewer zone',
+)
+ok(db().gaushalaEvents.some((e) => e.livestreamUrl), 'some carry a live stream link')
+ok(db().gaushalaEvents.some((e) => e.isPaid), 'some are paid registrations')
+ok(
+  db().gaushalaEvents.filter((e) => e.isPaid).every((e) => e.ticketPrice > 0),
+  'a paid festival always has a price',
+)
+ok(
+  db().eventRsvps.every((r) => db().gaushalaEvents.some((e) => e.id === r.eventId)),
+  'every registration points at a festival that exists',
+)
+ok(
+  db().gaushalaEvents.filter((e) => e.status === 'completed').every((e) => e.galleryArt.length > 0),
+  'a past festival has pictures from it',
+)
+
+const upcomingEvent = db().gaushalaEvents.find((e) => new Date(e.startAt) > new Date() && e.status === 'published')
+ok(!db().rsvpGaushalaEvent({ eventId: upcomingEvent.id, name: 'X', email: 'a@b.com', people: 1 }, U['u-dev']).ok, 'a one-letter name is refused')
+ok(!db().rsvpGaushalaEvent({ eventId: upcomingEvent.id, name: 'Test Guest', email: 'nope', people: 1 }, U['u-dev']).ok, 'a bad email is refused')
+
+const regBefore = db().gaushalaEvents.find((e) => e.id === upcomingEvent.id).registered
+const rsvp = db().rsvpGaushalaEvent({ eventId: upcomingEvent.id, name: 'Test Guest', email: 'g@example.com', people: 2 }, U['u-dev'])
+ok(rsvp.ok, 'a registration goes through')
+ok(db().gaushalaEvents.find((e) => e.id === upcomingEvent.id).registered === regBefore + 2, 'the headcount went up by two')
+ok(db().cancelRsvp(rsvp.rsvp.id, U['u-gau-adm']).ok, 'it can be cancelled')
+ok(db().gaushalaEvents.find((e) => e.id === upcomingEvent.id).registered === regBefore, 'the places went back')
+
+const pastEvent = db().gaushalaEvents.find((e) => e.status === 'completed')
+ok(
+  !db().rsvpGaushalaEvent({ eventId: pastEvent.id, name: 'Test Guest', email: 'g@example.com', people: 1 }, U['u-dev']).ok,
+  'a festival already held cannot be registered for',
+)
+
+ok(!db().saveGaushalaEvent({ name: 'Too short' }, U['u-gau-adm']).ok, 'a festival with no dates is refused')
+const badOrder = db().saveGaushalaEvent(
+  { name: 'Backwards Festival', startAt: '2027-01-02T06:00:00Z', endAt: '2027-01-01T06:00:00Z' },
+  U['u-gau-adm'],
+)
+ok(!badOrder.ok, 'a festival that ends before it starts is refused')
+const madeEvent = db().saveGaushalaEvent(
+  { name: 'Test Festival', startAt: '2027-03-01T01:00:00Z', endAt: '2027-03-01T05:00:00Z', summary: 'A test.', status: 'published' },
+  U['u-gau-adm'],
+)
+ok(madeEvent.ok, 'a valid festival is added')
+ok(db().gaushalaEvents.some((e) => e.id === madeEvent.event.id), 'it is on the calendar')
+
+/* --------------------------------------------------------- volunteer */
+section('Volunteers')
+
+ok(db().volunteers.length >= 10, `${db().volunteers.length} applications seeded`)
+ok(db().volunteers.some((v) => v.status === 'pending'), 'some are waiting to be reviewed')
+ok(db().volunteers.some((v) => v.isGroup), 'some are groups or companies')
+ok(
+  db().volunteers.filter((v) => v.isGroup).every((v) => v.groupSize > 1),
+  'a group always says how many are coming',
+)
+ok(
+  db().volunteerShifts.every((sh) => db().volunteers.some((v) => v.id === sh.volunteerId)),
+  'every shift belongs to a volunteer who exists',
+)
+ok(
+  db().volunteers.filter((v) => v.status === 'approved').every((v) => {
+    const logged = db().volunteerShifts.filter((sh) => sh.volunteerId === v.id).reduce((t, sh) => t + sh.hours, 0)
+    return v.hours === logged
+  }),
+  'the hours on a volunteer match the shifts logged for them',
+)
+
+ok(!db().applyVolunteer({ name: 'X', email: 'a@b.com', phone: '', city: '', skills: '', availability: 'Weekends', interests: ['cow_care'], isGroup: false }, U['u-dev']).ok, 'a one-letter name is refused')
+ok(!db().applyVolunteer({ name: 'Test Helper', email: 'a@b.com', phone: '', city: '', skills: '', availability: 'Weekends', interests: [], isGroup: false }, U['u-dev']).ok, 'an application with no chosen area is refused')
+
+const applied = db().applyVolunteer(
+  { name: 'Test Helper', email: 'h@example.com', phone: '123', city: 'Madurai', skills: 'Lifting', availability: 'Saturday mornings', interests: ['cleaning'], isGroup: false },
+  U['u-dev'],
+)
+ok(applied.ok, 'a valid application goes through')
+ok(applied.volunteer.status === 'pending', 'it starts pending')
+ok(
+  !db().logVolunteerShift({ volunteerId: applied.volunteer.id, date: '2026-10-01', area: 'cleaning', hours: 4 }, U['u-gau-care']).ok,
+  'a volunteer who is not approved cannot be put on a shift',
+)
+ok(!db().decideVolunteer(applied.volunteer.id, 'rejected', U['u-gau-adm'], '').ok, 'declining without a reason is refused')
+ok(db().decideVolunteer(applied.volunteer.id, 'approved', U['u-gau-adm']).ok, 'they can be approved')
+ok(
+  !db().issueVolunteerCertificate(applied.volunteer.id, U['u-gau-adm']).ok,
+  'a certificate is refused before the hours are done',
+)
+ok(!db().logVolunteerShift({ volunteerId: applied.volunteer.id, date: '2026-10-01', area: 'cleaning', hours: 20 }, U['u-gau-care']).ok, 'a 20-hour shift is refused')
+for (let i = 0; i < 5; i++) {
+  db().logVolunteerShift({ volunteerId: applied.volunteer.id, date: '2026-10-0' + (i + 1), area: 'cleaning', hours: 5 }, U['u-gau-care'])
+}
+ok(db().volunteers.find((v) => v.id === applied.volunteer.id).hours === 25, '25 hours logged across five shifts')
+ok(db().issueVolunteerCertificate(applied.volunteer.id, U['u-gau-adm']).ok, 'the certificate is issued once the hours are there')
+
+/* ------------------------------------------------------ transparency */
+section('Transparency')
+
+ok(db().transparencyDocs.length >= 6, `${db().transparencyDocs.length} documents on the shelf`)
+ok(db().transparencyDocs.some((d) => d.kind === 'annual_report'), 'annual reports are published')
+ok(db().transparencyDocs.some((d) => d.kind === 'audited_accounts'), 'audited accounts are published')
+ok(db().transparencyDocs.some((d) => d.kind === 'registration'), 'the registration certificates are there')
+ok(db().transparencyDocs.some((d) => !d.audited), 'the current year is still with the auditor, and says so')
+ok(db().gaushalaExpenses.length === 72, '12 months of expenses across 6 categories')
+ok(
+  new Set(db().gaushalaExpenses.map((e) => e.category)).size === 6,
+  'six expense categories, which is what the bars show',
+)
+ok(
+  db().gaushalaExpenses.every((e) => e.amount > 0),
+  'no expense row is zero or negative',
+)
+const fodderShare =
+  db().gaushalaExpenses.filter((e) => e.category === 'Fodder & feed').reduce((t, e) => t + e.amount, 0) /
+  db().gaushalaExpenses.reduce((t, e) => t + e.amount, 0)
+ok(fodderShare > 0.4, 'fodder is the largest line, as the page claims')
+ok(prog.DAILY_ROUTINE.length >= 8, 'the daily routine is published')
+ok(prog.FEED_SCHEDULE.length >= 5, 'the feed schedule is published')
 
 console.log(`\n${pass} passed, ${fail} failed`)
 await server.close()
