@@ -33,6 +33,8 @@ export interface Cow {
   caretakerId: string
   /** Which drawn portrait this cow wears, so each one looks like itself. */
   portrait: number
+  /** Photograph path in public/images/cows/ (e.g. /images/cows/Arasi.png). */
+  image?: string
   /** Litres a day. Only meaningful for a milking cow. */
   milkYield?: number
   healthNote?: string

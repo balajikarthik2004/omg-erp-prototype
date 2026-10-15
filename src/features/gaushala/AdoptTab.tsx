@@ -96,7 +96,7 @@ function CowSponsorCard({
     >
       <div className="flex items-start gap-4">
         <span className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-sandal-200 bg-white">
-          <CowPortrait portrait={cow.portrait} size={76} />
+          <CowPortrait cow={cow} size={76} />
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2">
@@ -185,7 +185,7 @@ function AdoptDrawer({ cow, currency, onClose }: { cow: Cow | null; currency: Cu
       <div className="space-y-5 px-6 py-5">
         <div className="flex items-center gap-4">
           <span className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-navy-100 bg-navy-50">
-            <CowPortrait portrait={cow.portrait} size={92} />
+            <CowPortrait cow={cow} size={92} />
           </span>
           <p className="text-[13.5px] leading-relaxed text-navy-700">{cow.story}</p>
         </div>
@@ -308,7 +308,7 @@ function AdopterArea() {
             <li key={adoption.id} className="rounded-xl border border-sandal-200 bg-sandal-50 p-4">
               <div className="flex items-center gap-3">
                 <span className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-sandal-200 bg-white">
-                  <CowPortrait portrait={cow.portrait} size={54} />
+                  <CowPortrait cow={cow} size={54} />
                 </span>
                 <div className="min-w-0">
                   <p className="font-display text-[17px] text-stone-900">{cow.name}</p>

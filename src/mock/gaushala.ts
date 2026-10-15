@@ -314,6 +314,7 @@ interface CowSpec {
   rescuedMonthsAgo: number
   milkYield?: number
   healthNote?: string
+  image?: string
 }
 
 const CARETAKERS = ['u-gau-care', 'u-gau-care2', 'u-store']
@@ -429,6 +430,7 @@ export function makeGaushalaSeed(now: Date, donors: Donor[], startSequence: numb
     rescuedAt: iso(subMonths(now, spec.rescuedMonthsAgo)),
     caretakerId: CARETAKERS[i % CARETAKERS.length]!,
     portrait: i % 6,
+    image: spec.image ?? `/images/cows/${spec.name}.png`,
     milkYield: spec.milkYield,
     healthNote: spec.healthNote,
     monthlyCare: MONTHLY_CARE[spec.kind],

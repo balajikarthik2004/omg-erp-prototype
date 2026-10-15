@@ -86,6 +86,7 @@ export function createGaushalaActions(set: Set, get: Get): GaushalaActions {
         rescuedAt: new Date(input.rescuedAt).toISOString(),
         caretakerId: input.caretakerId,
         portrait: seq % 6,
+        image: `/images/cows/${input.name.trim()}.png`,
         monthlyCare: input.monthlyCare,
         milkYield: input.milkYield,
         healthNote: input.healthNote?.trim() || undefined,

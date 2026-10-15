@@ -54,7 +54,7 @@ export function CowManagementPage() {
       cell: (cow) => (
         <div className="flex items-center gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-navy-100 bg-navy-50">
-            <CowPortrait portrait={cow.portrait} size={38} />
+            <CowPortrait cow={cow} size={38} />
           </span>
           <div className="min-w-0">
             <p className="truncate text-navy-950 font-semibold">{cow.name}</p>
@@ -208,7 +208,7 @@ function CowDrawer({ cow, onClose }: { cow: Cow | null; onClose: () => void }) {
       <div className="space-y-5 px-6 py-5">
         <div className="flex items-center gap-4">
           <span className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-navy-100 bg-navy-50">
-            <CowPortrait portrait={cow.portrait} size={92} />
+            <CowPortrait cow={cow} size={92} />
           </span>
           <p className="text-[13.5px] leading-relaxed text-navy-700">{cow.story}</p>
         </div>

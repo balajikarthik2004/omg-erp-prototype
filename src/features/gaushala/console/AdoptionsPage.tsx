@@ -67,7 +67,7 @@ export function AdoptionsPage() {
         return (
           <div className="flex items-center gap-3">
             <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-navy-100 bg-navy-50">
-              {cow ? <CowPortrait portrait={cow.portrait} size={38} /> : null}
+              {cow ? <CowPortrait cow={cow} size={38} /> : null}
             </span>
             <div className="min-w-0">
               <p className="truncate font-semibold text-navy-950">{cow?.name ?? a.cowId}</p>
@@ -243,7 +243,7 @@ function AdoptionDrawer({ adoption, onClose }: { adoption: Adoption | null; onCl
       <div className="space-y-5 px-6 py-5">
         <div className="flex items-center gap-4">
           <span className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-navy-100 bg-navy-50">
-            {cow ? <CowPortrait portrait={cow.portrait} size={76} /> : null}
+            {cow ? <CowPortrait cow={cow} size={76} /> : null}
           </span>
           <dl className="grid flex-1 grid-cols-2 gap-x-4 gap-y-2 text-[13.5px]">
             <Field label="Tier" value={ADOPTION_TIER_LABEL[adoption.tier]} />

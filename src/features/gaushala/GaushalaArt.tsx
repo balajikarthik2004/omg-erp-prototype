@@ -17,15 +17,27 @@ import { COW_PHOTOS, PHOTOS, PHOTO_GRADE } from '@/lib/photos'
  */
 export function CowPortrait({
   portrait,
+  image,
+  name,
+  cow,
   className,
   size = 120,
 }: {
-  portrait: number
+  portrait?: number
+  image?: string
+  name?: string
+  cow?: { portrait: number; image?: string; name: string }
   className?: string
   size?: number
 }) {
-  const key = COW_PHOTOS[((portrait % COW_PHOTOS.length) + COW_PHOTOS.length) % COW_PHOTOS.length]!
-  const { src, alt } = PHOTOS[key]
+  const p = cow?.portrait ?? portrait ?? 0
+  const key = COW_PHOTOS[((p % COW_PHOTOS.length) + COW_PHOTOS.length) % COW_PHOTOS.length]!
+  const fallback = PHOTOS[key]
+
+  const cowName = cow?.name ?? name
+  const src = cow?.image ?? image ?? (cowName ? `/images/cows/${cowName}.png` : undefined) ?? fallback.src
+  const alt = cowName ? `${cowName} the cow` : fallback.alt
+
   return (
     <img
       src={src}
@@ -37,6 +49,11 @@ export function CowPortrait({
       style={{ width: size, height: size, filter: PHOTO_GRADE }}
       className={cn('block shrink-0 object-cover', className)}
       draggable={false}
+      onError={(e) => {
+        if (e.currentTarget.src !== fallback.src) {
+          e.currentTarget.src = fallback.src
+        }
+      }}
     />
   )
 }
