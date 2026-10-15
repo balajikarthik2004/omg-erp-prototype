@@ -97,9 +97,7 @@ export function CatalogManagerPage() {
   return (
     <div>
       <PageHeader
-        phase="collect"
         title="Catalog manager"
-        description="What devotees can give to, what it costs, and which fund each gift lands in."
         actions={
           <Button icon={<Plus className="size-4" aria-hidden />} onClick={toast.soon}>
             New item

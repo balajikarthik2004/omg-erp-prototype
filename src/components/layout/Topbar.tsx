@@ -5,7 +5,8 @@ import { Building2, ChevronRight, Menu } from 'lucide-react'
 import { SECTOR_IDS, SECTORS } from '@/config'
 import { cn } from '@/lib/cn'
 import { useDb } from '@/store/db'
-import { useSession, type SectorFilter } from '@/store/session'
+import { greetingName } from '@/lib/format'
+import { useCurrentUser, useSession, type SectorFilter } from '@/store/session'
 import { locate } from './nav'
 import { PersonaSwitcher } from './PersonaSwitcher'
 
@@ -17,6 +18,14 @@ const FILTERS: { value: SectorFilter; label: string; short: string }[] = [
     short: id === 'sangam' ? 'Heritage' : SECTORS[id].name,
   })),
 ]
+
+/** Morning, afternoon or evening, by the viewer's own clock. */
+function greeting() {
+  const h = new Date().getHours()
+  if (h < 12) return 'Good morning'
+  if (h < 17) return 'Good afternoon'
+  return 'Good evening'
+}
 
 export function Topbar() {
   const setSidebarOpen = useSession((s) => s.setSidebarOpen)
@@ -34,6 +43,7 @@ export function Topbar() {
     if (sectorFilter !== 'all' && tenant && !tenant.verticals.includes(sectorFilter)) setSectorFilter('all')
   }, [sectorFilter, tenant, setSectorFilter])
 
+  const user = useCurrentUser()
   const here = locate(pathname)
 
   return (
@@ -52,9 +62,9 @@ export function Topbar() {
         <nav aria-label="Breadcrumb" className="hidden min-w-0 flex-1 items-center gap-1.5 sm:flex">
           <Link
             to="/console"
-            className="shrink-0 text-[12px] font-bold uppercase tracking-[0.06em] text-stone-500 transition-colors duration-150 hover:text-kumkum-600"
+            className="shrink-0 truncate text-[14px] font-semibold text-stone-900 transition-colors duration-150 hover:text-kumkum-600"
           >
-            Console
+            {greeting()}, {greetingName(user.name)}
           </Link>
           {here && here.item.to !== '/console' ? (
             <>
@@ -63,7 +73,7 @@ export function Topbar() {
                 {here.group.label}
               </span>
               <ChevronRight className="size-3.5 shrink-0 text-sandal-300" aria-hidden />
-              <span className="truncate text-[14px] font-semibold text-stone-900">{here.item.label}</span>
+              <span className="truncate text-[14px] text-stone-700">{here.item.label}</span>
             </>
           ) : null}
         </nav>
@@ -121,6 +131,7 @@ export function Topbar() {
           <PersonaSwitcher />
         </div>
       </div>
+
     </header>
   )
 }

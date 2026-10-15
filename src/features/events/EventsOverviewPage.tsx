@@ -47,7 +47,7 @@ export function EventsOverviewPage() {
 
   return (
     <div>
-      <PageHeader phase="collect" title="Events overview" description="Manage your events, budgets, posters, tickets and approvals in one place." actions={<Link to="/console/events"><Button variant="secondary" rightIcon={<ArrowRight className="size-4" aria-hidden />}>All events</Button></Link>} />
+      <PageHeader title="Events overview" actions={<Link to="/console/events"><Button variant="secondary" rightIcon={<ArrowRight className="size-4" aria-hidden />}>All events</Button></Link>} />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Total events" value={data.all.length} sub={`${data.upcoming} upcoming · ${data.live} live · ${data.completed} completed`} accentClass="bg-turmeric-500" icon={<CalendarDays className="size-4" aria-hidden />} />

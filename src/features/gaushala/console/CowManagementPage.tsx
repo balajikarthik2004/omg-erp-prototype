@@ -101,8 +101,6 @@ export function CowManagementPage() {
     <div>
       <PageHeader
         title="Cow management"
-        description="The register of every animal in the shelter, its health record and who looks after it."
-        phase="collect"
         actions={
           <Button icon={<Plus className="size-4" aria-hidden />} onClick={() => setCreating(true)}>
             Add a cow

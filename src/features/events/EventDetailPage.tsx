@@ -59,8 +59,8 @@ export function EventDetailPage() {
   return (
     <div>
       <PageHeader
-        phase="collect"
         title={event.name}
+        showTitle
         description={`${formatDateTime(event.startAt)} · ${event.venue}`}
         actions={
           <div className="flex flex-wrap items-center gap-2">
@@ -81,7 +81,7 @@ export function EventDetailPage() {
         {event.status === 'cancelled' ? (
           <p className="text-[14px] text-danger-600">Cancelled: {event.cancelReason}</p>
         ) : (
-          <FlowStepper steps={EVENT_STEPS.map((s) => ({ id: s.id, label: s.label, hint: s.gate ? `${s.who} · ${s.gate}` : s.who }))} current={stepIndex(event.status)} phase="collect" />
+          <FlowStepper steps={EVENT_STEPS.map((s) => ({ id: s.id, label: s.label, hint: s.gate ? `${s.who} · ${s.gate}` : s.who }))} current={stepIndex(event.status)} />
         )}
       </div>
 

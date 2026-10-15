@@ -57,9 +57,7 @@ export function CsrOverviewPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        phase="collect"
         title="Corporate Social Responsibility (CSR)"
-        description="MCA Section 135 compliance, Schedule VII project builder, 5% admin cap enforcement, and CA-signed Utilisation Certificates with UDIN."
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Link to="/console/csr/compliance">

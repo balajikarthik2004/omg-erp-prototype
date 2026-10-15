@@ -67,9 +67,7 @@ export function ReconciliationPage() {
   return (
     <div>
       <PageHeader
-        phase="control"
         title="Reconciliation"
-        description="Each day's Square payout is set against the bank credit and the ledger. Anything that does not tie out stays here until someone explains it."
       >
         <Tabs
           value={tab}

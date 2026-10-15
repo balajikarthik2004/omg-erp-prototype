@@ -136,8 +136,8 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { to: '/console/inventory', label: 'Inventory', icon: Boxes, phase: 'spend', roles: SPEND, module: 'inventory' },
       { to: '/console/suppliers', label: 'Suppliers', icon: Truck, phase: 'spend', roles: SPEND, module: 'inventory' },
-      { to: '/console/purchase-orders', label: 'Purchase orders', icon: ShoppingCart, phase: 'spend', roles: SPEND.concat('trustee'), module: 'procurement' },
       { to: '/console/procurement', label: 'New purchase order', icon: FilePlus, phase: 'spend', roles: ['procurement_officer', 'sector_admin', 'ca_partner'], module: 'procurement' },
+      { to: '/console/purchase-orders', label: 'Purchase orders', icon: ShoppingCart, phase: 'spend', roles: SPEND.concat('trustee'), module: 'procurement' },
       { to: '/console/payments', label: 'Payments', icon: PackageSearch, phase: 'spend', roles: CA.concat('procurement_officer'), module: 'payments' },
     ],
   },

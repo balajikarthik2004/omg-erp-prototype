@@ -38,9 +38,7 @@ export function LedgerPage() {
   return (
     <div>
       <PageHeader
-        phase="control"
         title="Ledger"
-        description="Every entry, in the order it happened. Entries are never edited or deleted — a mistake is corrected with a reversal."
         actions={
           <span className="inline-flex items-center gap-1.5 rounded-full border border-sandal-200 bg-sandal-100 px-3 py-1 text-[12px] text-stone-700">
             <Lock className="size-3.5" aria-hidden />
@@ -151,10 +149,10 @@ export function LedgerPage() {
                               {FUNDS.find((f) => f.id === line.fundId)?.name ?? line.fundId}
                             </td>
                             <td className="px-4 py-2 text-right">
-                              {line.debit > 0 ? <Money value={line.debit} /> : <span className="text-stone-500">—</span>}
+                              {line.debit > 0 ? <Money exact value={line.debit} /> : <span className="text-stone-500">—</span>}
                             </td>
                             <td className="px-4 py-2 text-right">
-                              {line.credit > 0 ? <Money value={line.credit} /> : <span className="text-stone-500">—</span>}
+                              {line.credit > 0 ? <Money exact value={line.credit} /> : <span className="text-stone-500">—</span>}
                             </td>
                           </tr>
                         ))}
@@ -163,10 +161,10 @@ export function LedgerPage() {
                             {balanced ? 'Balanced' : 'Out of balance — needs review'}
                           </td>
                           <td className="px-4 py-2 text-right">
-                            <Money value={debit} className="font-medium" />
+                            <Money exact value={debit} className="font-medium" />
                           </td>
                           <td className="px-4 py-2 text-right">
-                            <Money value={credit} className="font-medium" />
+                            <Money exact value={credit} className="font-medium" />
                           </td>
                         </tr>
                       </tbody>
