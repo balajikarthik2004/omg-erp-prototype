@@ -30,7 +30,17 @@ import type {
   Tenant,
   EventsData,
   GaushalaData,
+  CsrData,
 } from '@/types'
+import {
+  CSR_ENTITIES,
+  CSR_DOCUMENTS,
+  CSR_PROJECTS,
+  CSR_COMPANIES,
+  CSR_DEALS,
+  CSR_UTILISATION_CERTIFICATES,
+  CSR_PROGRESS_UPDATES,
+} from './csrSeed'
 import {
   BUDGET_SPECS,
   CATALOG,
@@ -45,7 +55,7 @@ import {
   USERS,
 } from './seed'
 
-export interface Database extends EventsData, GaushalaData {
+export interface Database extends EventsData, GaushalaData, CsrData {
   donors: Donor[]
   donations: Donation[]
   funds: Fund[]
@@ -897,7 +907,7 @@ function makeAudit(
   const events: AuditEvent[] = []
   const actors = [
     { id: 'u-cas', name: 'Anitha Rajan', role: 'ca_staff' as const },
-    { id: 'u-cap', name: 'R. Balasubramanian', role: 'ca_partner' as const },
+    { id: 'u-cap', name: 'R. Perumal', role: 'ca_partner' as const },
     { id: 'u-proc', name: 'Dinesh Kumar', role: 'procurement_officer' as const },
     { id: 'u-store', name: 'Vasanthi Murugan', role: 'store_keeper' as const },
     { id: 'u-adm', name: 'Saravanan Pillai', role: 'sector_admin' as const },
@@ -1101,6 +1111,7 @@ export function generateDatabase(now = new Date()): Database {
   }
   funds.push(...eventsSeed.funds)
   journal.push(...eventsSeed.journal)
+  seedCsrBooks(funds, budgets, allotments, journal, period)
   journal.sort((a, b) => b.date.localeCompare(a.date))
   const periodCloses = makePeriodCloses(now)
   const tenants = makeTenants(now)
@@ -1135,7 +1146,112 @@ export function generateDatabase(now = new Date()): Database {
     eventActuals: eventsSeed.data.eventActuals.map((a) => ({ ...a })),
     ...gaushalaSeed.data,
     sewaOrders: stamp(gaushalaSeed.data.sewaOrders),
+    csrEntities: CSR_ENTITIES.map((e) => ({ ...e, tenantId: DEMO_TENANT_ID })),
+    csrDocuments: CSR_DOCUMENTS.map((d) => ({ ...d })),
+    csrProjects: CSR_PROJECTS.map((p) => ({ ...p, tenantId: DEMO_TENANT_ID })),
+    csrCompanies: CSR_COMPANIES.map((c) => ({ ...c })),
+    csrDeals: CSR_DEALS.map((d) => ({ ...d, tenantId: DEMO_TENANT_ID })),
+    csrUtilisationCertificates: CSR_UTILISATION_CERTIFICATES.map((u) => ({ ...u })),
+    csrProgressUpdates: CSR_PROGRESS_UPDATES.map((p) => ({ ...p })),
   }
+}
+
+/* ------------------------------------------------------------ CSR books */
+
+/**
+ * CSR money is only what companies have actually sent: no opening reserve.
+ * Every received tranche is a journal entry. Tranche 1 of the TVS grant was
+ * allotted to its own project budget and spent, as its signed UC certifies.
+ * Runs after the RNG-driven seed, so the rest of the data is unchanged.
+ */
+function seedCsrBooks(funds: Fund[], budgets: BudgetHead[], allotments: Allotment[], journal: JournalEntry[], period: string) {
+  const csrFunds = funds.filter((f) => f.csrProjectId)
+  for (const fund of csrFunds) {
+    fund.balance = 0
+    const opening = journal.findIndex((j) => j.sourceRef === `OPENING/${fund.id}`)
+    if (opening >= 0) journal.splice(opening, 1)
+  }
+
+  for (const deal of CSR_DEALS) {
+    const fund = csrFunds.find((f) => f.id === deal.fundId)
+    if (!fund) continue
+    budgets.push({
+      id: `bh-csr-${deal.id}`,
+      sectorId: fund.sectorId,
+      name: `CSR · ${CSR_PROJECTS.find((p) => p.id === deal.projectId)?.title ?? 'Project'}`,
+      period,
+      fundId: fund.id,
+      allocated: 0,
+      committed: 0,
+      spent: 0,
+      csrProjectId: deal.projectId,
+    })
+    for (const t of deal.tranches) {
+      if (!t.receivedOn) continue
+      fund.balance += t.amount
+      journal.push({
+        id: `je-csr-${t.id}`,
+        date: `${t.receivedOn}T10:00:00.000Z`,
+        sectorId: fund.sectorId,
+        memo: `CSR grant received — Tranche #${t.seqNo} (${t.bankRef ?? 'bank transfer'})`,
+        lines: [
+          { account: 'Bank', fundId: fund.id, debit: t.amount, credit: 0 },
+          { account: 'CSR grant income', fundId: fund.id, debit: 0, credit: t.amount },
+        ],
+        sourceRef: t.id,
+      })
+    }
+  }
+
+  // TVS tranche 1: allotted to the project budget by the CA team, then spent on approved orders.
+  const head = budgets.find((b) => b.id === 'bh-csr-csr-deal-tvs-anna')
+  const fund = csrFunds.find((f) => f.id === 'fund-csr-tvs-anna')
+  const uc = CSR_UTILISATION_CERTIFICATES.find((u) => u.trancheId === 'trn-1')
+  if (!head || !fund || !uc) return
+  const amount = uc.amountUtilised
+  allotments.push({
+    id: 'alt-csr-anna-1',
+    sectorId: fund.sectorId,
+    fromFundId: fund.id,
+    toBudgetHeadId: head.id,
+    amount,
+    reason: 'TVS CSR Tranche 1 to Annadhanam project budget',
+    preparedBy: 'u-cas',
+    preparedAt: '2026-04-26T10:00:00.000Z',
+    status: 'approved',
+    approvals: [
+      { role: 'ca_partner', userId: 'u-cap', decision: 'approved', at: '2026-04-27T11:00:00.000Z' },
+      { role: 'trustee', userId: 'u-tru', decision: 'approved', at: '2026-04-28T11:00:00.000Z' },
+    ],
+    tenantId: DEMO_TENANT_ID,
+  })
+  fund.balance -= amount
+  head.allocated = amount
+  head.spent = amount
+  journal.push(
+    {
+      id: 'je-alt-csr-anna-1',
+      date: '2026-04-28T11:00:00.000Z',
+      sectorId: fund.sectorId,
+      memo: 'Fund allotment — TVS CSR Tranche 1 to Annadhanam project budget',
+      lines: [
+        { account: 'Fund allotted', fundId: fund.id, debit: amount, credit: 0 },
+        { account: 'Budget allocation', fundId: fund.id, debit: 0, credit: amount },
+      ],
+      sourceRef: 'alt-csr-anna-1',
+    },
+    {
+      id: 'je-csr-spend-trn-1',
+      date: '2026-08-31T17:00:00.000Z',
+      sectorId: fund.sectorId,
+      memo: 'CSR spend — grain, kitchen equipment and monitoring (Tranche 1, certified in UC)',
+      lines: [
+        { account: 'Programme expenditure', fundId: fund.id, debit: amount, credit: 0 },
+        { account: 'Bank', fundId: fund.id, debit: 0, credit: amount },
+      ],
+      sourceRef: uc.id,
+    },
+  )
 }
 
 /* ------------------------------------------------ flow-alignment seed data */
@@ -1193,7 +1309,7 @@ function makeTenants(now: Date): Tenant[] {
       brand: 'kumkum',
       logoText: 'OMG',
       verticals: ['temple', 'sevalaya', 'sangam'],
-      modules: ['donations', 'reconciliation', 'budgets', 'inventory', 'procurement', 'payments', 'reports', 'events'],
+      modules: ['donations', 'reconciliation', 'budgets', 'inventory', 'procurement', 'payments', 'reports', 'events', 'csr'],
       squareLocationId: 'L8K2M4Q7ZP',
       thresholds: { ...DEFAULT_THRESHOLDS },
       users: USERS.filter((u) => u.role !== 'devotee' && u.role !== 'super_admin').map((u) => ({

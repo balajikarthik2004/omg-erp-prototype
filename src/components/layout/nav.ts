@@ -29,6 +29,9 @@ import {
   FilePlus,
   Truck,
   Wallet,
+  FileCheck2,
+  Handshake,
+  ShieldCheck,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -114,6 +117,18 @@ export const NAV_GROUPS: NavGroup[] = [
       { to: '/console/gaushala/events', label: 'Festivals', icon: CalendarHeart, phase: 'collect', roles: GAU_MANAGE },
       { to: '/console/gaushala/volunteers', label: 'Volunteers', icon: HandHeart, phase: 'collect', roles: GAU_MANAGE },
       { to: '/console/gaushala/transparency', label: 'Transparency', icon: ShieldCheck, phase: 'report', roles: GAU_ALL },
+    ],
+  },
+  {
+    phase: 'collect',
+    label: 'CSR',
+    items: [
+      { to: '/console/csr', label: 'CSR Overview', icon: LayoutDashboard, phase: 'collect', roles: ADMIN_CA, module: 'csr', end: true },
+      { to: '/console/csr/compliance', label: 'Compliance Vault', icon: ShieldCheck, phase: 'control', roles: ADMIN_CA, module: 'csr' },
+      { to: '/console/csr/projects', label: 'CSR Projects', icon: ScrollText, phase: 'control', roles: ADMIN_CA, module: 'csr' },
+      { to: '/console/csr/pipeline', label: 'Corporate Pipeline', icon: Building2, phase: 'collect', roles: ADMIN_CA, module: 'csr' },
+      { to: '/console/csr/deals', label: 'MoUs & Tranches', icon: Handshake, phase: 'control', roles: ADMIN_CA, module: 'csr' },
+      { to: '/console/csr/reports', label: 'UCs & Reports', icon: FileCheck2, phase: 'report', roles: ADMIN_CA, module: 'csr' },
     ],
   },
   {

@@ -9,9 +9,13 @@ import {
   CalendarDays,
   ClipboardCheck,
   Coins,
+  FileCheck2,
+  Handshake,
   ImageIcon,
   Landmark,
   Receipt,
+  ScrollText,
+  ShieldCheck,
   ShoppingCart,
   type LucideIcon,
 } from 'lucide-react'
@@ -43,6 +47,10 @@ const GROUPS: { kind: ApprovalKind; label: string; icon: LucideIcon }[] = [
   { kind: 'event_budget', label: 'Event budgets', icon: CalendarDays },
   { kind: 'event_poster', label: 'Event posters', icon: ImageIcon },
   { kind: 'event_order', label: 'Event orders', icon: ShoppingCart },
+  { kind: 'csr_document', label: 'CSR compliance papers', icon: ShieldCheck },
+  { kind: 'csr_project', label: 'CSR projects', icon: ScrollText },
+  { kind: 'csr_mou', label: 'CSR MoUs', icon: Handshake },
+  { kind: 'csr_uc', label: 'CSR utilisation certificates', icon: FileCheck2 },
   { kind: 'inventory_request', label: 'Inventory requests', icon: Boxes },
   { kind: 'refund', label: 'Refunds and disputes', icon: Receipt },
 ]
@@ -217,7 +225,7 @@ function TaskRow({
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-2">
-          {task.kind !== 'period_close' && task.kind !== 'event_poster' ? <Money value={task.amount} className="text-[18px]" /> : null}
+          {task.kind !== 'period_close' && task.kind !== 'event_poster' && task.kind !== 'csr_document' ? <Money value={task.amount} className="text-[18px]" /> : null}
           {onEscalate ? (
             <Button size="sm" variant="ghost" icon={<ArrowUpCircle className="size-4" aria-hidden />} onClick={onEscalate}>
               Escalate

@@ -13,6 +13,8 @@ import { offeringById } from '@/mock/offerings'
 import { BUDGET_SPECS, CATALOG, FUNDS, GAUSHALA_FUND_IDS, INVENTORY, PROJECTS, userById, userName } from '@/mock/seed'
 import { createEventActions, type EventActions } from './eventActions'
 import { createGaushalaActions, type GaushalaActions } from './gaushalaActions'
+import { createCsrActions, type CsrActions } from './csrActions'
+import { csrAllotmentBlock } from './csrRules'
 import { createProgramActions, type GaushalaProgramActions } from './gaushalaProgramActions'
 import {
   cashConfirmBlock,
@@ -60,13 +62,15 @@ const EMPTY_DATA = {
   eventSponsors: [], eventDonations: [], eventOrders: [], eventActuals: [],
   cows: [], cowHealth: [], sewaOrders: [], rescues: [], gaushalaGallery: [],
   gaushalaEntities: [], receiptTemplates: [], gaushalaExpenses: [],
+  csrEntities: [], csrDocuments: [], csrProjects: [], csrCompanies: [],
+  csrDeals: [], csrUtilisationCertificates: [], csrProgressUpdates: [],
   adoptions: [], visitServices: [], slots: [], bookings: [], gaushalaEvents: [],
   eventRsvps: [], volunteers: [], volunteerShifts: [], transparencyDocs: [],
 } satisfies Omit<Database, 'tenants'>
 
 const EMPTY: Database = { ...EMPTY_DATA, tenants: [] }
 
-export interface DbState extends Database, EventActions, GaushalaActions, GaushalaProgramActions {
+export interface DbState extends Database, EventActions, GaushalaActions, CsrActions, GaushalaProgramActions {
   ready: boolean
   loading: boolean
   /** The customer whose books are on screen. */
@@ -210,6 +214,9 @@ function pickTenantData(s: DbState): TenantData {
     cows: s.cows, cowHealth: s.cowHealth, sewaOrders: s.sewaOrders, rescues: s.rescues,
     gaushalaGallery: s.gaushalaGallery, gaushalaEntities: s.gaushalaEntities,
     receiptTemplates: s.receiptTemplates, gaushalaExpenses: s.gaushalaExpenses,
+    csrEntities: s.csrEntities, csrDocuments: s.csrDocuments, csrProjects: s.csrProjects,
+    csrCompanies: s.csrCompanies, csrDeals: s.csrDeals, csrUtilisationCertificates: s.csrUtilisationCertificates,
+    csrProgressUpdates: s.csrProgressUpdates,
     adoptions: s.adoptions, visitServices: s.visitServices, slots: s.slots,
     bookings: s.bookings, gaushalaEvents: s.gaushalaEvents, eventRsvps: s.eventRsvps,
     volunteers: s.volunteers, volunteerShifts: s.volunteerShifts,
@@ -370,6 +377,8 @@ export function allotmentFundError(fund: Fund | undefined, head: BudgetHead | un
   if (!fund || !head) return 'Pick a fund and a budget head.'
   if (fund.eventId) return `${fund.name} is spent only through its own event orders. It cannot be allotted to a budget head.`
   if (fund.sectorId !== head.sectorId) return 'The fund and the budget head belong to different sectors.'
+  const csr = csrAllotmentBlock(fund, head)
+  if (csr) return csr
   if (fund.projectId && head.projectId !== fund.projectId) {
     return `${fund.name} is restricted to its own project. It cannot be allotted to ${head.name}.`
   }
@@ -436,6 +445,7 @@ export const useDb = create<DbState>((set, get) => ({
   vault: {},
   ...createEventActions(set, get),
   ...createGaushalaActions(set, get),
+  ...createCsrActions(set, get),
   ...createProgramActions(set, get),
 
   load: async () => {

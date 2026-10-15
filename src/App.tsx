@@ -56,6 +56,12 @@ import { CashCountsPage } from '@/features/cash-counts/CashCountsPage'
 import { PeriodClosePage } from '@/features/period-close/PeriodClosePage'
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { OnboardingWizardPage } from '@/features/onboarding/OnboardingWizardPage'
+import { CsrOverviewPage } from '@/features/csr/CsrOverviewPage'
+import { ComplianceVaultPage } from '@/features/csr/ComplianceVaultPage'
+import { CsrProjectsPage } from '@/features/csr/CsrProjectsPage'
+import { CompanyPipelinePage } from '@/features/csr/CompanyPipelinePage'
+import { CsrDealsPage } from '@/features/csr/CsrDealsPage'
+import { CsrReportsPage } from '@/features/csr/CsrReportsPage'
 
 export function App() {
   return (
@@ -100,6 +106,13 @@ export function App() {
           <Route path="gaushala/cows" element={<CowManagementPage />} />
           <Route path="gaushala/sewas" element={<SewaCataloguePage />} />
           <Route path="gaushala/donations" element={<GaushalaDonationsPage />} />
+          {/* CSR */}
+          <Route path="csr" element={<CsrOverviewPage />} />
+          <Route path="csr/compliance" element={<ComplianceVaultPage />} />
+          <Route path="csr/projects" element={<CsrProjectsPage />} />
+          <Route path="csr/pipeline" element={<CompanyPipelinePage />} />
+          <Route path="csr/deals" element={<CsrDealsPage />} />
+          <Route path="csr/reports" element={<CsrReportsPage />} />
           <Route path="gaushala/adoptions" element={<AdoptionsPage />} />
           <Route path="gaushala/bookings" element={<BookingsPage />} />
           <Route path="gaushala/events" element={<GaushalaEventsConsolePage />} />

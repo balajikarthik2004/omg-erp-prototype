@@ -95,7 +95,6 @@ export function CheckoutPage() {
         <h1 className="mt-2 font-display text-[22px] leading-tight text-stone-900 sm:text-[34px]">
           Review and pay
         </h1>
-        <div className="gold-rule mt-5" />
       </header>
 
       <div className="grid gap-6 md:grid-cols-[1fr_380px] md:items-start">

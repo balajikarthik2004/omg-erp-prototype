@@ -97,7 +97,6 @@ export function MyDonationsPage() {
             </Button>
           </Link>
         </div>
-        <div className="gold-rule mt-4" />
       </header>
 
       {mine.length > 0 ? (

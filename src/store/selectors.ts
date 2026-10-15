@@ -14,6 +14,7 @@ import type {
 import { available, approvalBlock, budgetHealth, type DbState } from './db'
 import { cashConfirmBlock, inventoryApprovalBlock, periodApproveBlock, releaseBlock } from './rules'
 import { gateBlock, orderDecideBlock, orderPayBlock } from '@/features/events/logic/rules'
+import { csrDocVerifyBlock, csrMouDecideBlock, csrProjectDecideBlock, csrUcSignBlock } from './csrRules'
 import type { SectorFilter } from './session'
 
 export function inSector<T extends { sectorId: SectorId }>(rows: T[], filter: SectorFilter): T[] {
@@ -148,6 +149,10 @@ const DUE_DAYS: Record<ApprovalTask['kind'], number> = {
   event_budget: 3,
   event_poster: 3,
   event_order: 3,
+  csr_document: 5,
+  csr_project: 7,
+  csr_mou: 7,
+  csr_uc: 5,
 }
 
 function dueFrom(iso: string, kind: ApprovalTask['kind']): string {
@@ -348,7 +353,95 @@ export function approvalTasks(db: DbState, filter: SectorFilter): ApprovalTask[]
     })
   }
 
+  tasks.push(...csrTasks(db, filter))
+
   return tasks.sort((a, b) => a.dueAt.localeCompare(b.dueAt))
+}
+
+/** CSR gates waiting on someone: papers for the CA, projects for a Trustee, MoU signatures, UCs to sign. */
+function csrTasks(db: DbState, filter: SectorFilter): ApprovalTask[] {
+  const tasks: ApprovalTask[] = []
+  const sectorOfEntity = (entityId: string) => db.csrEntities.find((e) => e.id === entityId)?.sector
+  const sectorOfProject = (projectId: string) => {
+    const p = db.csrProjects.find((x) => x.id === projectId)
+    return p ? sectorOfEntity(p.entityId) : undefined
+  }
+  const keep = (sectorId: SectorId | undefined): sectorId is SectorId =>
+    Boolean(sectorId) && (filter === 'all' || sectorId === filter)
+
+  for (const d of db.csrDocuments) {
+    const sectorId = sectorOfEntity(d.entityId)
+    if (d.status !== 'pending' || !keep(sectorId)) continue
+    tasks.push({
+      kind: 'csr_document',
+      id: d.id,
+      title: d.label,
+      subtitle: `${db.csrEntities.find((e) => e.id === d.entityId)?.legalName ?? 'Entity'} · CA to verify`,
+      sectorId,
+      amount: 0,
+      preparedBy: d.uploadedBy,
+      preparedAt: d.uploadedAt,
+      dueAt: dueFrom(d.uploadedAt, 'csr_document'),
+      href: '/console/csr/compliance',
+    })
+  }
+
+  for (const p of db.csrProjects) {
+    const sectorId = sectorOfEntity(p.entityId)
+    if (p.status !== 'SUBMITTED' || !keep(sectorId)) continue
+    tasks.push({
+      kind: 'csr_project',
+      id: p.id,
+      title: p.title,
+      subtitle: `Schedule VII (${p.scheduleViiCode}) · Trustee to approve`,
+      sectorId,
+      amount: p.totalBudget,
+      preparedBy: p.createdBy,
+      preparedAt: p.createdAt,
+      dueAt: dueFrom(p.createdAt, 'csr_project'),
+      href: '/console/csr/projects',
+    })
+  }
+
+  for (const d of db.csrDeals) {
+    const sectorId = sectorOfProject(d.projectId)
+    if (d.status !== 'MOU_DRAFT' || !keep(sectorId)) continue
+    const since = d.createdAt ?? new Date().toISOString()
+    const signed = d.approvals.filter((a) => a.decision === 'approved').map((a) => a.role)
+    const waiting = ['ca_partner', 'trustee'].filter((r) => !signed.includes(r))
+    tasks.push({
+      kind: 'csr_mou',
+      id: d.id,
+      title: `${db.csrCompanies.find((c) => c.id === d.companyId)?.name ?? 'Company'} MoU`,
+      subtitle: `Waiting for ${waiting.map((r) => (r === 'trustee' ? 'a Trustee' : 'the CA Partner')).join(' and ')}`,
+      sectorId,
+      amount: d.committedAmount,
+      preparedBy: d.ownerId,
+      preparedAt: since,
+      dueAt: dueFrom(since, 'csr_mou'),
+      href: '/console/csr/deals',
+    })
+  }
+
+  for (const uc of db.csrUtilisationCertificates) {
+    const deal = db.csrDeals.find((d) => d.id === uc.dealId)
+    const sectorId = deal ? sectorOfProject(deal.projectId) : undefined
+    if (uc.status !== 'draft' || !keep(sectorId)) continue
+    tasks.push({
+      kind: 'csr_uc',
+      id: uc.id,
+      title: `Utilisation Certificate · Tranche #${uc.trancheSeq}`,
+      subtitle: 'CA to sign with UDIN before the next tranche',
+      sectorId,
+      amount: uc.amountUtilised,
+      preparedBy: uc.preparedBy,
+      preparedAt: uc.preparedAt,
+      dueAt: dueFrom(uc.preparedAt, 'csr_uc'),
+      href: '/console/csr/reports',
+    })
+  }
+
+  return tasks
 }
 
 /** Why this person cannot act on a task, or null when they can. */
@@ -383,6 +476,22 @@ export function taskBlock(db: DbState, task: ApprovalTask, user: User): string |
       const o = db.eventOrders.find((x) => x.id === task.id)
       if (!o) return null
       return o.status === 'pending_ca' ? orderDecideBlock(user, o) : orderPayBlock(user, o)
+    }
+    case 'csr_document': {
+      const doc = db.csrDocuments.find((d) => d.id === task.id)
+      return doc ? csrDocVerifyBlock(user, doc) : null
+    }
+    case 'csr_project': {
+      const p = db.csrProjects.find((x) => x.id === task.id)
+      return p ? csrProjectDecideBlock(user, p) : null
+    }
+    case 'csr_mou': {
+      const d = db.csrDeals.find((x) => x.id === task.id)
+      return d ? csrMouDecideBlock(user, d) : null
+    }
+    case 'csr_uc': {
+      const uc = db.csrUtilisationCertificates.find((x) => x.id === task.id)
+      return uc ? csrUcSignBlock(user, uc) : null
     }
     case 'refund':
       return user.role === 'ca_partner' || user.role === 'ca_staff' ? null : 'Refunds are decided by the CA team.'
