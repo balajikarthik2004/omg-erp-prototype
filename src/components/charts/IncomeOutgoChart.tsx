@@ -1,6 +1,6 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-import { CHART } from '@/config'
+import { CHART, SECTORS } from '@/config'
 import { formatMoneyCompact } from '@/lib/format'
 import type { MonthPoint } from '@/store/selectors'
 import { AXIS_LINE, AXIS_TICK } from './axis'
@@ -89,9 +89,9 @@ export function IncomeOutgoChart({ data, height = 280 }: { data: MonthPoint[]; h
 /** The same 12 months split by sector, for the reports page. */
 export function SectorIncomeChart({ data, height = 280 }: { data: MonthPoint[]; height?: number }) {
   const series = [
-    { key: 'temple', label: 'Temple', color: CHART.temple },
-    { key: 'sevalaya', label: 'Sevalaya', color: CHART.sevalaya },
-    { key: 'sangam', label: 'Tamil Sangam', color: CHART.sangam },
+    { key: 'temple', label: SECTORS.temple.name, color: CHART.temple },
+    { key: 'sevalaya', label: SECTORS.sevalaya.name, color: CHART.sevalaya },
+    { key: 'sangam', label: SECTORS.sangam.name, color: CHART.sangam },
   ]
 
   return (

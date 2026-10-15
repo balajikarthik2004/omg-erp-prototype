@@ -8,6 +8,7 @@ import { formatMoney } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Input } from '@/components/ui/Input'
+import { Etching } from '@/components/ui/Ornament'
 import { Tabs } from '@/components/ui/Tabs'
 import { PHOTOS, type PhotoKey } from '@/lib/photos'
 import { CATALOG } from '@/mock/seed'
@@ -22,51 +23,56 @@ const SECTOR_HERO: Record<
   SectorId,
   {
     photo: PhotoKey
+    /** A banner-shaped photo, where the one in PHOTOS is portrait. */
+    photoSrc?: string
+    photoAlt?: string
     cardBg: string
     borderColor: string
-    glowColor: string
-    tamilColor: string
+    /** A token name, read as a CSS variable for the corner glow. */
+    glow: string
     photoPosition: string
-    badges: { label: string; dotColor: string }[]
+    badges: { label: string; dotClass: string }[]
   }
 > = {
   temple: {
     photo: 'temple',
-    cardBg: 'bg-gradient-to-br from-[#2D0907] via-[#48110D] to-[#1F0605]',
-    borderColor: 'border-kumkum-700/50',
-    glowColor: '#E22E26',
-    tamilColor: 'text-kumkum-300',
-    photoPosition: 'object-center sm:object-[50%_72%]',
+    // The portrait gopuram loses its tower and its lamps to a landscape
+    // crop. This one is shot wide, so the whole frame survives.
+    photoSrc: '/images/temple-gopuram-grand.webp',
+    photoAlt:
+      'A temple raja gopuram at golden hour, with rows of oil lamps lit along the steps and devotees walking up',
+    cardBg: 'bg-linear-to-br from-navy-950 via-navy-900 to-kumkum-900',
+    borderColor: 'border-kumkum-800',
+    glow: '--color-kumkum-500',
+    photoPosition: 'object-center',
     badges: [
-      { label: 'Sacred Kovil Rituals', dotColor: 'bg-kumkum-400' },
-      { label: 'Daily Deepams & Archanai', dotColor: 'bg-amber-400' },
-      { label: 'Double-signed CA Ledger', dotColor: 'bg-navy-300' },
+      { label: 'Sacred kovil rituals', dotClass: 'bg-kumkum-400' },
+      { label: 'Daily deepams and archanai', dotClass: 'bg-turmeric-400' },
+      { label: 'Double-signed CA ledger', dotClass: 'bg-navy-300' },
     ],
   },
   sevalaya: {
     photo: 'sevalaya',
-    cardBg: 'bg-gradient-to-br from-[#082216] via-[#0E3624] to-[#06180F]',
-    borderColor: 'border-tulsi-600/50',
-    glowColor: '#11865A',
-    tamilColor: 'text-emerald-300',
+    cardBg: 'bg-linear-to-br from-navy-950 via-navy-900 to-tulsi-700',
+    borderColor: 'border-tulsi-700',
+    glow: '--color-tulsi-500',
     photoPosition: 'object-center sm:object-[50%_55%]',
     badges: [
-      { label: 'Daily Annadhanam', dotColor: 'bg-emerald-400' },
-      { label: 'Community Welfare', dotColor: 'bg-amber-400' },
-      { label: 'Double-signed CA Ledger', dotColor: 'bg-navy-300' },
+      { label: 'Daily annadhanam', dotClass: 'bg-tulsi-500' },
+      { label: 'Community welfare', dotClass: 'bg-turmeric-400' },
+      { label: 'Double-signed CA ledger', dotClass: 'bg-navy-300' },
     ],
   },
   sangam: {
     photo: 'sangam',
-    cardBg: 'bg-gradient-to-br from-[#0A1A36] via-[#102B56] to-[#071326]',
-    borderColor: 'border-peacock-500/50',
-    glowColor: '#4F58CA',
-    tamilColor: 'text-navy-300',
+    cardBg: 'bg-linear-to-br from-navy-950 via-navy-900 to-navy-700',
+    borderColor: 'border-navy-700',
+    glow: '--color-peacock-500',
     photoPosition: 'object-center sm:object-[50%_48%]',
     badges: [
-      { label: 'Tamil Heritage & Arts', dotColor: 'bg-peacock-400' },
-      { label: 'Music & Cultural Programs', dotColor: 'bg-amber-400' },
-      { label: 'Double-signed CA Ledger', dotColor: 'bg-navy-300' },
+      { label: 'Tamil heritage and arts', dotClass: 'bg-peacock-500' },
+      { label: 'Music and cultural programmes', dotClass: 'bg-turmeric-400' },
+      { label: 'Double-signed CA ledger', dotClass: 'bg-navy-300' },
     ],
   },
 }
@@ -79,6 +85,39 @@ const TABS: { id: DonationCategory; label: string; blurb: string }[] = [
   { id: 'activity', label: 'Activities', blurb: 'Festivals, classes and community work through the year.' },
   { id: 'project', label: 'Projects', blurb: 'Larger works that take months, and every gift towards them.' },
 ]
+
+/**
+ * One category can mean two things.
+ *
+ * `pooja` is archanai and homam at the Temple, but the very same category at
+ * Sevalaya holds sponsored meals — so the tab is named for what is actually
+ * inside it. Only the label moves: the stored category stays `pooja`, which
+ * is what the receipts, the ledger and the category reports group by.
+ */
+const TAB_BY_SECTOR: Partial<
+  Record<SectorId, Partial<Record<DonationCategory, { label: string; blurb: string }>>>
+> = {
+  sevalaya: {
+    hundi: {
+      label: 'Sponsor',
+      blurb: 'A meal for one person: rice, sambar, poriyal and curd. Give as many as you like.',
+    },
+    pooja: {
+      label: 'Annadhanam',
+      blurb: 'Feed everyone who comes, on a day you choose and in your family name.',
+    },
+  },
+  sangam: {
+    hundi: {
+      label: 'Support',
+      blurb: 'Any amount towards the year of classes, festivals and cultural evenings.',
+    },
+    pooja: {
+      label: 'Dedications',
+      blurb: 'Dedicate an evening of the festival in your family name.',
+    },
+  },
+}
 
 /**
  * The sector catalog. `sectorId` pins it to one sector for a route that does
@@ -98,7 +137,10 @@ export function CatalogPage({ sectorId: pinned }: { sectorId?: SectorId } = {}) 
   const items = useMemo(() => CATALOG.filter((c) => c.sectorId === sectorId && c.active), [sectorId])
 
   // A sector only shows the categories it actually offers.
-  const tabs = TABS.filter((t) => items.some((i) => i.category === t.id))
+  const tabs = TABS.filter((t) => items.some((i) => i.category === t.id)).map((t) => ({
+    ...t,
+    ...(TAB_BY_SECTOR[sectorId]?.[t.id] ?? {}),
+  }))
   const tab = tabs.some((t) => t.id === chosenTab) ? chosenTab : (tabs[0]?.id ?? 'hundi')
 
   const visible = (() => {
@@ -116,7 +158,7 @@ export function CatalogPage({ sectorId: pinned }: { sectorId?: SectorId } = {}) 
   }
 
   const meta = SECTORS[sectorId]
-  const activeTab = TABS.find((t) => t.id === tab) ?? TABS[0]!
+  const activeTab = tabs.find((t) => t.id === tab) ?? tabs[0] ?? TABS[0]!
 
   const hero = SECTOR_HERO[sectorId]
 
@@ -125,21 +167,26 @@ export function CatalogPage({ sectorId: pinned }: { sectorId?: SectorId } = {}) 
       <div className="mx-auto max-w-8xl px-5 pt-4 sm:px-8 sm:pt-6">
         <header
           className={cn(
-            'relative isolate overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl border p-5 sm:p-6 lg:px-8 lg:py-6',
+            'relative isolate overflow-hidden rounded-2xl border shadow-xl sm:rounded-3xl',
+            'p-4 sm:p-5 lg:px-7 lg:py-5',
             hero.cardBg,
             hero.borderColor,
           )}
         >
-          {/* Subtle background glow */}
+          {/* A kolam watermark and one warm corner glow: the only ornament. */}
           <div
-            className="pointer-events-none absolute -right-10 -bottom-10 h-64 w-64 opacity-[0.08]"
-            style={{
-              backgroundImage: `radial-gradient(circle, ${hero.glowColor} 15%, transparent 70%)`,
-            }}
+            className="pointer-events-none absolute -right-16 -top-10 hidden h-64 w-64 opacity-[0.10] sm:block"
+            aria-hidden
+          >
+            <Etching src="/images/hero-mandala-etching.png" className="bg-turmeric-100" position="center" />
+          </div>
+          <div
+            className="pointer-events-none absolute -bottom-10 -right-10 h-64 w-64 opacity-[0.10]"
+            style={{ backgroundImage: `radial-gradient(circle, var(${hero.glow}) 15%, transparent 70%)` }}
             aria-hidden
           />
 
-          <div className="grid gap-6 lg:grid-cols-12 lg:items-center">
+          <div className="grid gap-5 lg:grid-cols-12 lg:items-center">
             {/* Left Info Column */}
             <div className="lg:col-span-7">
               <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-[12.5px] text-sandal-200/70">
@@ -169,9 +216,9 @@ export function CatalogPage({ sectorId: pinned }: { sectorId?: SectorId } = {}) 
                 {hero.badges.map((b) => (
                   <span
                     key={b.label}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 font-semibold backdrop-blur-xs"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/10 px-3 py-1 font-semibold backdrop-blur-xs"
                   >
-                    <span className={cn('size-2 rounded-full', b.dotColor)} />
+                    <span className={cn('size-1.5 rounded-full', b.dotClass)} aria-hidden />
                     {b.label}
                   </span>
                 ))}
@@ -180,20 +227,27 @@ export function CatalogPage({ sectorId: pinned }: { sectorId?: SectorId } = {}) 
 
             {/* Right Contained Image */}
             <div className="lg:col-span-5">
-              <div className="group relative overflow-hidden rounded-2xl shadow-xl border-2 border-sandal-200/20 bg-navy-950">
-                <div className="aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
+              {/* 16:10 keeps the tower, the sky and the lamp rows in frame
+                  while staying short: the photo is 1.34 wide, so this trims
+                  only sky and foreground, never the gopuram. */}
+              <div className="group relative overflow-hidden rounded-2xl border border-turmeric-400/35 bg-navy-950 shadow-xl">
+                <div className="aspect-[16/10] overflow-hidden">
                   <img
-                    src={PHOTOS[hero.photo].src}
-                    alt={PHOTOS[hero.photo].alt}
+                    src={hero.photoSrc ?? PHOTOS[hero.photo].src}
+                    alt={hero.photoAlt ?? PHOTOS[hero.photo].alt}
                     className={cn(
-                      'h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]',
+                      'h-full w-full object-cover saturate-[1.06] transition-transform duration-500',
+                      'group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100',
                       hero.photoPosition,
                     )}
                     loading="eager"
                   />
-                  {/* Subtle inner shadow / border */}
-                  <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/20" />
                 </div>
+                {/* A brass hairline, so the photo reads as framed, not pasted. */}
+                <div
+                  className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-turmeric-400/25"
+                  aria-hidden
+                />
               </div>
             </div>
           </div>

@@ -115,7 +115,7 @@ export function QuickPosterGenerator() {
             options={[
               { value: 'temple', label: 'Temple (கோயில்)' },
               { value: 'sevalaya', label: 'Sevalaya (சேவாலயா)' },
-              { value: 'sangam', label: 'Tamil Sangam (தமிழ்ச் சங்கம்)' },
+              { value: 'sangam', label: 'Tamil Heritage (தமிழ்ச் சங்கம்)' },
             ]}
           />
 

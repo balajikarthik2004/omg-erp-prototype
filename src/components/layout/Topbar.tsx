@@ -14,7 +14,7 @@ const FILTERS: { value: SectorFilter; label: string; short: string }[] = [
   ...SECTOR_IDS.map((id) => ({
     value: id as SectorFilter,
     label: SECTORS[id].name,
-    short: SECTORS[id].name === 'Tamil Sangam' ? 'Sangam' : SECTORS[id].name,
+    short: id === 'sangam' ? 'Heritage' : SECTORS[id].name,
   })),
 ]
 

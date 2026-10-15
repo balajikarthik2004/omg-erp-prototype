@@ -115,7 +115,7 @@ export function HomeHero() {
               Book a pooja, sponsor annadhanam or give to a project across{' '}
               <strong className="font-semibold text-stone-900">Temple</strong>,{' '}
               <strong className="font-semibold text-stone-900">Sevalaya</strong> and{' '}
-              <strong className="font-semibold text-stone-900">Tamil Sangam</strong>. Every offering is
+              <strong className="font-semibold text-stone-900">Tamil Heritage</strong>. Every offering is
               receipted on the spot and signed off by two people.
             </p>
 
@@ -176,8 +176,9 @@ export function HomeHero() {
                   decoding="async"
                   // The photo is landscape in a portrait arch, so cover scales it to the
                   // frame height and crops the sides: only the horizontal position
-                  // does anything here. Centred puts the gopuram on the arch axis.
-                  className="h-full w-full scale-102 object-cover object-center saturate-[1.1] transition-transform duration-1000 ease-out group-hover:scale-106 motion-reduce:transition-none motion-reduce:group-hover:scale-102"
+                  // does anything here. 56% slides the view right, which carries the
+                  // gopuram a little left inside the arch.
+                  className="h-full w-full scale-102 object-cover object-[56%_center] saturate-[1.1] transition-transform duration-1000 ease-out group-hover:scale-106 motion-reduce:transition-none motion-reduce:group-hover:scale-102"
                 />
 
                 <div
