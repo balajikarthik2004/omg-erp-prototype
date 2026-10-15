@@ -5,12 +5,12 @@ export const PHOTOS = {
     alt: 'A South Indian temple gopuram at dusk, with rows of oil lamps lit along the steps.',
   },
   sevalaya: {
-    src: '/images/sevalaya-annadhanam.webp',
+    src: '/images/Temple Annadhanam.png',
     alt: 'Annadhanam being served on banana leaves to a long row of seated guests.',
   },
   sangam: {
-    src: '/images/sangam-hall.webp',
-    alt: 'A Tamil sangam hall set for a music evening, with garlands, a tanpura and a mridangam.',
+    src: '/images/tamil heritage.png',
+    alt: 'Tamil Heritage, arts, literature and cultural traditions.',
   },
   gaushala: {
     src: '/images/sevalaya-gaushala.webp',

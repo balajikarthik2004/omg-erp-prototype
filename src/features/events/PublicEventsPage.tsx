@@ -66,7 +66,7 @@ export function PublicEventsPage() {
               <div className="group relative overflow-hidden rounded-2xl shadow-xl border-2 border-sandal-200/20 bg-navy-950">
                 <div className="aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
                   <img
-                    src="/images/events-diya.webp"
+                    src="/images/Festival.png"
                     alt="A glowing brass deepam with fresh jasmine flower garlands lit for temple and community festival events"
                     className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
                     loading="eager"
