@@ -123,7 +123,6 @@ export function GaushalaPage() {
               <h1 className="mt-2.5 font-display text-[24px] leading-[1.08] text-sandal-50 sm:text-[32px] lg:text-[36px]">
                 Gaushala
               </h1>
-              <p className="mt-0.5 font-display text-[16px] text-navy-300 sm:text-[18px]">கோசாலை</p>
               <p className="mt-2.5 max-w-xl text-[14px] sm:text-[15px] leading-relaxed text-sandal-100/90">
                 Sixteen indigenous cows, calves and bulls, fed twice a day and cared for with lifelong devotion. Most of the
                 people who keep them fed have never stood in this yard.

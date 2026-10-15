@@ -99,10 +99,9 @@ export function ItemDetailPage() {
       </Link>
 
       <header className="mt-4 mb-6">
-        <SectorChip sectorId={sectorId} withTamil />
+        <SectorChip sectorId={sectorId} />
         <div className="mt-2 flex flex-wrap items-baseline gap-3">
           <h1 className="font-display text-[22px] sm:text-[30px] leading-tight text-stone-900">{item.name}</h1>
-          {item.tamil ? <span className="text-[18px] text-stone-500">{item.tamil}</span> : null}
         </div>
         <p className="mt-1 max-w-2xl text-[15px] leading-relaxed text-stone-700">{item.description}</p>
       </header>

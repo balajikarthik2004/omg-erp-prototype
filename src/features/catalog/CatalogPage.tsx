@@ -161,9 +161,6 @@ export function CatalogPage({ sectorId: pinned }: { sectorId?: SectorId } = {}) 
               <h1 className="mt-2.5 font-display text-[24px] leading-[1.08] text-sandal-50 sm:text-[32px] lg:text-[36px]">
                 {sectorId === 'sevalaya' ? 'Seva' : meta.name}
               </h1>
-              <p className={cn('mt-0.5 font-display text-[16px] sm:text-[18px]', hero.tamilColor)}>
-                {sectorId === 'sevalaya' ? 'சேவை' : meta.tamil}
-              </p>
               <p className="mt-2.5 max-w-xl text-[14px] sm:text-[15px] leading-relaxed text-sandal-100/90">
                 {meta.blurb}
               </p>
@@ -286,7 +283,6 @@ function OfferingCard({ item, sectorId }: { item: CatalogItem; sectorId: SectorI
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="font-display text-[19px] leading-snug text-stone-900">{item.name}</h2>
-          {item.tamil ? <p className="mt-0.5 text-[14px] text-stone-500">{item.tamil}</p> : null}
         </div>
         {item.popular ? (
           <span className="shrink-0 rounded-full border border-navy-200/40 bg-navy-50 px-2 py-0.5 text-[11px] font-semibold tracking-[0.08em] text-navy-600 uppercase">

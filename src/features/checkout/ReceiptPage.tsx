@@ -112,7 +112,7 @@ export function ReceiptPage() {
                 {entity?.name ?? tenantName}
               </p>
               <p className="mt-0.5 text-[12px] leading-snug text-stone-500">
-                {entity?.address ?? `${sector.name} · ${sector.tamil}`}
+                {entity?.address ?? sector.name}
               </p>
             </div>
           </div>
@@ -225,7 +225,7 @@ export function ReceiptPage() {
         <footer className="flex shrink-0 items-end justify-between gap-6 px-6 py-3 sm:px-8">
           <div className="min-w-0 flex-1">
             <p className="font-display text-[14px] text-stone-900">
-              நன்றி <span className="text-stone-500">· Thank you</span>
+              Thank you for your offering
             </p>
             <Declaration donation={donation} />
           </div>

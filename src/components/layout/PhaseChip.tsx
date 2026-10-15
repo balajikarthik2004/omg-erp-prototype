@@ -21,10 +21,10 @@ export function PhaseChip({ phase, className }: { phase: Phase; className?: stri
 
 export function SectorChip({
   sectorId,
-  withTamil,
   className,
 }: {
   sectorId: SectorId
+  /** Accepted but no longer rendered — the chips are English-only now. */
   withTamil?: boolean
   className?: string
 }) {
@@ -39,7 +39,6 @@ export function SectorChip({
     >
       <span className={cn('size-1.5 rounded-full', meta.dotClass)} aria-hidden />
       {meta.name}
-      {withTamil ? <span className="text-[12px] opacity-70">{meta.tamil}</span> : null}
     </span>
   )
 }

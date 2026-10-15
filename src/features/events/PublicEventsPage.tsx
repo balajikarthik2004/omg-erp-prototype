@@ -41,7 +41,6 @@ export function PublicEventsPage() {
               <h1 className="mt-2.5 font-display text-[24px] leading-[1.08] text-sandal-50 sm:text-[32px] lg:text-[36px]">
                 Events & Festivals
               </h1>
-              <p className="mt-0.5 font-display text-[16px] text-amber-300 sm:text-[18px]">நிகழ்வுகள்</p>
               <p className="mt-2.5 max-w-xl text-[14px] sm:text-[15px] leading-relaxed text-sandal-100/90">
                 Festivals, sacred celebrations, music concerts and community gatherings. Register online for instant QR-coded entry passes.
               </p>
@@ -93,7 +92,7 @@ export function PublicEventsPage() {
             return (
               <li key={e.id}>
                 <Link to={`/register/${e.id}`} className="group flex h-full flex-col rounded-card border border-sandal-200 bg-sandal-50 p-6 shadow-card transition-all duration-200 hover:-translate-y-1 hover:shadow-lift focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:outline-none">
-                  <SectorChip sectorId={e.sectorId} withTamil />
+                  <SectorChip sectorId={e.sectorId} />
                   <h2 className="mt-3 font-heritage text-[28px] leading-tight font-semibold text-stone-900">{e.name}</h2>
                   <p className="mt-3 flex items-start gap-2 text-[14px] text-stone-700"><CalendarDays className="mt-0.5 size-4 shrink-0 text-turmeric-700" aria-hidden />{formatDateTime(e.startAt)}</p>
                   <p className="mt-1.5 flex items-start gap-2 text-[14px] text-stone-700"><MapPin className="mt-0.5 size-4 shrink-0 text-turmeric-700" aria-hidden />{e.venue}</p>

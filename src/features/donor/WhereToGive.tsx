@@ -22,7 +22,7 @@ const CARD_CONFIG: Record<
   {
     photo: PhotoKey
     position: string
-    tamil: string
+    subtitle: string
     blurb: string
     cardBg: string
     tileBg: string
@@ -38,7 +38,7 @@ const CARD_CONFIG: Record<
   temple: {
     photo: 'temple',
     position: '50% 70%',
-    tamil: 'கோவில்',
+    subtitle: 'Sacred Worship & Seva',
     blurb: 'Hundi, poojas, festivals and temple projects that preserve our heritage.',
     cardBg: 'bg-linear-to-b from-white via-rose-50/30 to-white',
     tileBg: 'bg-linear-to-br from-kumkum-500 to-kumkum-600',
@@ -53,7 +53,7 @@ const CARD_CONFIG: Record<
   sevalaya: {
     photo: 'sevalaya',
     position: '50% 55%',
-    tamil: 'சேவாலயா',
+    subtitle: 'Annadhanam & Social Care',
     blurb: 'Annadhanam, education and welfare programmes for all.',
     cardBg: 'bg-linear-to-b from-white via-emerald-50/30 to-white',
     tileBg: 'bg-linear-to-br from-tulsi-500 to-tulsi-600',
@@ -67,7 +67,7 @@ const CARD_CONFIG: Record<
   sangam: {
     photo: 'sangam',
     position: '50% 46%',
-    tamil: 'தமிழ்ச்சங்கம்',
+    subtitle: 'Heritage, Arts & Culture',
     blurb: 'Memberships, cultural events, classes and community projects.',
     cardBg: 'bg-linear-to-b from-white via-navy-50/35 to-white',
     tileBg: 'bg-linear-to-br from-navy-600 to-navy-700',
@@ -188,7 +188,7 @@ export function WhereToGive() {
                         <h3 className="font-heritage text-[22px] leading-none font-bold text-stone-900 sm:text-[30px]">
                           {sector.name}
                         </h3>
-                        <p className={cn('mt-1 text-[16px]', config.tagColor)}>{config.tamil}</p>
+                        <p className={cn('mt-1.5 text-[12.5px] font-bold tracking-wider uppercase', config.tagColor)}>{config.subtitle}</p>
                       </div>
                     </div>
 
