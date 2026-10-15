@@ -7,7 +7,36 @@ import { Kolam, OmgMark } from '@/components/ui/Ornament'
 import { useSession, useCurrentUser } from '@/store/session'
 import { useDb } from '@/store/db'
 import { actionableTasks } from '@/store/selectors'
-import { visibleGroups } from './nav'
+import { visibleGroups, type NavGroup } from './nav'
+
+/**
+ * The group heading. A flow group shows its step number, so the four phases
+ * read as a sequence rather than four unrelated folders; a module group shows
+ * only its name, because it is a vertical and not a step in the flow.
+ */
+function GroupHeading({ group }: { group: NavGroup }) {
+  const flow = group.kind === 'flow'
+  return (
+    <div className="mb-1.5 flex items-center gap-2 px-3" title={group.hint}>
+      {flow ? (
+        <span
+          className={cn(
+            'flex size-4 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-bold text-white',
+            PHASES[group.phase].markerClass,
+          )}
+          aria-hidden
+        >
+          {group.step}
+        </span>
+      ) : (
+        <span className={cn('size-1.5 shrink-0 rounded-full', PHASES[group.phase].markerClass)} aria-hidden />
+      )}
+      <span className="truncate text-[11px] font-bold uppercase tracking-[0.14em] text-white/55">
+        {group.label}
+      </span>
+    </div>
+  )
+}
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const user = useCurrentUser()
@@ -20,17 +49,19 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const myEventTasks = mine.filter((t) => t.kind.startsWith('event_') && t.kind !== 'event_order').length
 
   return (
-    <div data-brand={tenant?.brand ?? 'kumkum'} className="flex h-full flex-col bg-gradient-to-b from-[#0F133B] via-[#121640] to-[#1C0F22] text-white border-r border-navy-800/80 shadow-2xl">
-      <div className="flex items-center justify-between gap-2 border-b border-white/10 px-5 py-4.5">
-        <NavLink to="/console" className="flex items-center gap-3" onClick={onNavigate}>
-          <OmgMark size={36} onDark />
-          <span className="leading-none">
-            <span className="block max-w-[150px] truncate font-heritage text-[18px] font-bold tracking-wide text-white">
+    <div
+      data-brand={tenant?.brand ?? 'kumkum'}
+      className="surface-sanctum flex h-full flex-col border-r border-navy-950/60 text-white"
+    >
+      <div className="flex items-center justify-between gap-2 border-b border-white/10 px-4 py-4">
+        <NavLink to="/console" className="flex min-w-0 items-center gap-2.5" onClick={onNavigate}>
+          <OmgMark size={32} onDark />
+          <span className="min-w-0 leading-none">
+            <span className="block truncate font-display text-[15px] font-semibold tracking-tight text-white">
               {tenant?.name ?? 'OMG'}
             </span>
-            <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-extrabold tracking-[0.18em] text-kumkum-400 uppercase">
-              <span className="size-1.5 rounded-full bg-kumkum-500 animate-pulse" />
-              Console Portal
+            <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.16em] text-white/45">
+              Admin console
             </span>
           </span>
         </NavLink>
@@ -46,82 +77,88 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ) : null}
       </div>
 
-      <nav className="scrollbar-thin flex-1 overflow-y-auto px-3 pb-4">
-        {groups.map((group) => (
-          <div key={`${group.phase}-${group.label}`} className="mb-6">
-            <div className="mb-2 flex items-center gap-2 px-3">
-              <span className={cn('size-2 rounded-full', PHASES[group.phase].markerClass)} aria-hidden />
-              <span className="text-[10px] font-extrabold tracking-[0.18em] text-white/50 uppercase">
-                {group.label}
-              </span>
+      <nav aria-label="Console" className="scrollbar-thin flex-1 overflow-y-auto px-2.5 py-4">
+        {groups.map((group, i) => {
+          const startsVerticals = group.kind === 'module' && groups[i - 1]?.kind !== 'module'
+          return (
+            <div
+              key={`${group.kind}-${group.label}`}
+              className={cn('mb-5', startsVerticals && 'mt-1 border-t border-white/10 pt-5')}
+            >
+              <GroupHeading group={group} />
+              <ul className="flex flex-col gap-0.5">
+                {group.items.map((item) => {
+                  const Icon = item.icon
+                  const count = item.badge === 'approvals' ? myTasks : item.badge === 'eventApprovals' ? myEventTasks : 0
+                  return (
+                    <li key={item.to}>
+                      <NavLink
+                        to={item.to}
+                        end={item.end}
+                        onClick={onNavigate}
+                        className={({ isActive }) =>
+                          cn(
+                            'group relative flex items-center gap-2.5 rounded-lg py-2 pl-3 pr-2.5 text-[13.5px]',
+                            'transition-colors duration-150',
+                            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
+                            isActive
+                              ? 'bg-white/10 font-semibold text-white'
+                              : 'font-medium text-white/70 hover:bg-white/5 hover:text-white',
+                          )
+                        }
+                      >
+                        {({ isActive }) => (
+                          <>
+                            <span
+                              className={cn(
+                                'absolute left-0 top-1/2 h-4.5 w-[3px] -translate-y-1/2 rounded-r-full bg-kumkum-500',
+                                'transition-opacity duration-150',
+                                isActive ? 'opacity-100' : 'opacity-0',
+                              )}
+                              aria-hidden
+                            />
+                            <Icon
+                              className={cn(
+                                'size-4 shrink-0 transition-colors duration-150',
+                                isActive ? 'text-kumkum-400' : 'text-white/50 group-hover:text-white/80',
+                              )}
+                              aria-hidden
+                            />
+                            <span className="flex-1 truncate">{item.label}</span>
+                            {count > 0 ? (
+                              <span
+                                className="rounded-full bg-kumkum-600 px-1.5 py-0.5 font-mono text-[10.5px] font-bold tabular-nums text-white"
+                                aria-label={`${count} waiting`}
+                              >
+                                {count}
+                              </span>
+                            ) : null}
+                          </>
+                        )}
+                      </NavLink>
+                    </li>
+                  )
+                })}
+              </ul>
             </div>
-            <ul className="flex flex-col gap-0.5">
-              {group.items.map((item) => {
-                const Icon = item.icon
-                return (
-                  <li key={item.to}>
-                    <NavLink
-                      to={item.to}
-                      end={item.end}
-                      onClick={onNavigate}
-                      className={({ isActive }) =>
-                        cn(
-                          'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] transition-all duration-150',
-                          isActive
-                            ? 'bg-gradient-to-r from-kumkum-500/25 via-kumkum-500/15 to-transparent font-bold text-white shadow-xs ring-1 ring-white/15'
-                            : 'text-white/75 hover:bg-white/10 hover:text-white font-medium',
-                        )
-                      }
-                    >
-                      {({ isActive }) => (
-                        <>
-                          <span
-                            className={cn(
-                              'absolute top-1/2 -left-3 h-5 w-[3.5px] -translate-y-1/2 rounded-r-full bg-kumkum-500 transition-opacity duration-150 shadow-sm shadow-kumkum-500/50',
-                              isActive ? 'opacity-100' : 'opacity-0',
-                            )}
-                            aria-hidden
-                          />
-                          <Icon
-                            className={cn(
-                              'size-4.5 shrink-0 transition-colors duration-150',
-                              isActive ? 'text-kumkum-400' : 'text-white/60 group-hover:text-white',
-                            )}
-                            aria-hidden
-                          />
-                          <span className="flex-1 truncate">{item.label}</span>
-                          {(item.badge === 'approvals' ? myTasks : item.badge === 'eventApprovals' ? myEventTasks : 0) > 0 ? (
-                            <span className="rounded-full bg-gradient-to-r from-kumkum-500 to-kumkum-600 px-2 py-0.5 font-mono text-[11px] font-black text-white shadow-xs tabular-nums">
-                              {item.badge === 'approvals' ? myTasks : myEventTasks}
-                            </span>
-                          ) : null}
-                        </>
-                      )}
-                    </NavLink>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        ))}
+          )
+        })}
       </nav>
 
-      <div className="border-t border-white/10 px-5 py-4">
+      <div className="border-t border-white/10 px-4 py-3.5">
         <NavLink
           to="/"
           onClick={onNavigate}
-          className="inline-flex items-center gap-1.5 text-[13px] font-bold text-turmeric-300 transition-colors duration-150 hover:text-white"
+          className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-white/70 transition-colors duration-150 hover:text-white"
         >
           <ExternalLink className="size-3.5" aria-hidden />
-          <span>Open Devotee Portal</span>
+          <span>Open the donor site</span>
         </NavLink>
-        <div className="mt-3 flex items-end justify-between">
-          <p className="text-[11px] leading-relaxed text-white/40 font-medium">
-            OMG Enterprise Platform
-            <br />
-            Double-Signed CA Ledger
+        <div className="mt-2.5 flex items-end justify-between gap-2">
+          <p className="text-[11px] leading-relaxed text-white/35">
+            Every entry is signed by two people.
           </p>
-          <Kolam className="-mr-1 -mb-1 text-white/15" size={50} />
+          <Kolam className="-mb-1 -mr-1 shrink-0 text-white/10" size={44} />
         </div>
       </div>
     </div>
@@ -134,8 +171,8 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className="no-print hidden w-[248px] shrink-0 lg:block">
-        <div className="fixed inset-y-0 left-0 w-[248px]">
+      <aside className="no-print hidden w-[252px] shrink-0 lg:block">
+        <div className="fixed inset-y-0 left-0 w-[252px]">
           <SidebarContent />
         </div>
       </aside>
@@ -143,13 +180,13 @@ export function Sidebar() {
       {sidebarOpen ? (
         <div className="no-print fixed inset-0 z-50 lg:hidden">
           <div
-            className="absolute inset-0 bg-stone-900/55 backdrop-blur-sm"
+            className="absolute inset-0 bg-navy-950/60 backdrop-blur-sm"
             style={{ animation: 'omg-fade-in 150ms ease-out' }}
             onClick={() => setSidebarOpen(false)}
             aria-hidden
           />
           <div
-            className="relative h-full w-[272px] max-w-[85vw] shadow-sheet"
+            className="relative h-full w-[276px] max-w-[85vw] shadow-sheet"
             style={{ animation: 'omg-slide-in-right 200ms var(--ease-out-soft)' }}
           >
             <SidebarContent onNavigate={() => setSidebarOpen(false)} />

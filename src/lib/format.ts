@@ -114,3 +114,68 @@ export function greetingName(fullName: string): string {
   const first = parts.find((part) => part.replace(/\./g, '').length > 1)
   return first ?? parts[0] ?? ''
 }
+
+/* ---------------------------------------------------------------------------
+   Amount in words.
+
+   A real donation receipt spells the total out underneath the figure: it is
+   what makes a receipt hard to alter after the fact, and every printed temple
+   or trust receipt carries the line. Kept here beside formatMoney so both
+   read the same currency out of config.
+   ------------------------------------------------------------------------ */
+
+const ONES = [
+  'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+  'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen',
+]
+const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+const SCALES: [number, string][] = [
+  [1_000_000_000, 'billion'],
+  [1_000_000, 'million'],
+  [1_000, 'thousand'],
+]
+
+/** The minor and major unit names, by currency. */
+const UNITS: Record<string, [string, string, string, string]> = {
+  USD: ['dollar', 'dollars', 'cent', 'cents'],
+  INR: ['rupee', 'rupees', 'paisa', 'paise'],
+  GBP: ['pound', 'pounds', 'penny', 'pence'],
+  EUR: ['euro', 'euros', 'cent', 'cents'],
+}
+
+function spell(n: number): string {
+  if (n < 20) return ONES[n]!
+  if (n < 100) {
+    const rest = n % 10
+    return TENS[Math.floor(n / 10)]! + (rest ? `-${ONES[rest]}` : '')
+  }
+  if (n < 1000) {
+    const rest = n % 100
+    return `${ONES[Math.floor(n / 100)]} hundred` + (rest ? ` and ${spell(rest)}` : '')
+  }
+  for (const [value, name] of SCALES) {
+    if (n >= value) {
+      const rest = n % value
+      if (!rest) return `${spell(Math.floor(n / value))} ${name}`
+      // "One thousand and one", never "One thousand one": a remainder under a
+      // hundred takes the conjunction, exactly as it is written out by hand.
+      const join = rest < 100 ? ' and ' : ' '
+      return `${spell(Math.floor(n / value))} ${name}${join}${spell(rest)}`
+    }
+  }
+  return ONES[0]!
+}
+
+/** cents -> "Two thousand three hundred and fifty dollars only" */
+export function amountInWords(cents: number): string {
+  const [one, many, minorOne, minorMany] = UNITS[APP.currency] ?? UNITS.USD!
+  const total = Math.abs(Math.round(cents))
+  const major = Math.floor(total / 100)
+  const minor = total % 100
+
+  const parts = [`${spell(major)} ${major === 1 ? one : many}`]
+  if (minor > 0) parts.push(`${spell(minor)} ${minor === 1 ? minorOne : minorMany}`)
+
+  const words = parts.join(' and ') + ' only'
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}

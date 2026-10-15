@@ -1,13 +1,12 @@
 import { Link, useParams } from 'react-router-dom'
-import { ArrowRight, CheckCircle2, Download, Printer } from 'lucide-react'
+import { ArrowRight, Download, Printer } from 'lucide-react'
 
 import { SECTORS } from '@/config'
-import { formatDate, formatDateTime, formatMoney, titleCase } from '@/lib/format'
+import { amountInWords, formatDate, formatDateTime, formatMoney, titleCase } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { Money } from '@/components/ui/Money'
 import { toast } from '@/lib/toast'
-import { ArchMark, Divider, Kolam, OmgMark } from '@/components/ui/Ornament'
+import { Kolam, OmgMark } from '@/components/ui/Ornament'
 import { offeringById } from '@/mock/offerings'
 import { GAUSHALA_ENTITIES, RECEIPT_TEMPLATES } from '@/mock/gaushala'
 import { SETTLEMENT_CURRENCY, formatIn } from '@/lib/currency'
@@ -15,6 +14,21 @@ import { FUNDS } from '@/mock/seed'
 import { useDb } from '@/store/db'
 import type { Donation } from '@/types'
 
+/**
+ * A printed donation receipt, laid out the way a real one is.
+ *
+ * Letterhead, a ruled particulars table, the total closed off by a double
+ * rule with the amount spelled out beneath it, then the declaration and a
+ * signature line. The order is fixed by convention, not by taste — someone
+ * filing this for tax reads it top to bottom and expects each block where it
+ * always is.
+ *
+ * The sheet is locked to the viewport so the whole receipt is readable
+ * without scrolling, and the donor footer is suppressed for this route. Only
+ * the particulars give way when a donation carries more lines than will fit:
+ * clipping the total or the tax wording would make the receipt useless.
+ * Printing unwinds the lock so a long receipt still prints in full.
+ */
 export function ReceiptPage() {
   const { donationId } = useParams<{ donationId: string }>()
   const donations = useDb((s) => s.donations)
@@ -41,84 +55,140 @@ export function ReceiptPage() {
   const sector = SECTORS[donation.sectorId]
   const donor = donors.find((d) => d.id === donation.donorId)
   const fund = FUNDS.find((f) => f.id === donation.fundId)
+  const template = donation.receiptTemplateId
+    ? RECEIPT_TEMPLATES.find((t) => t.id === donation.receiptTemplateId)
+    : undefined
+  const entity = template ? GAUSHALA_ENTITIES.find((e) => e.id === template.entityId) : undefined
   const settled = donation.status !== 'pending' && donation.status !== 'paid'
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-      <div className="no-print mb-8 flex flex-col items-center text-center">
-        <span className="flex size-14 items-center justify-center rounded-full border border-tulsi-500/25 bg-tulsi-50">
-          <CheckCircle2 className="size-7 text-tulsi-700" aria-hidden />
-        </span>
-        <h1 className="mt-4 font-display text-[22px] leading-tight text-stone-900 sm:text-[34px]">
-          {settled ? 'Your offering is received' : donation.status === 'paid' ? 'Payment confirmed' : 'Waiting for Square'}
-        </h1>
-        <p className="mt-2 max-w-md text-[15px] text-stone-500">
-          {settled
-            ? 'A copy has gone to your email. Keep the receipt number for your records.'
-            : 'The receipt is issued once Square confirms the payment.'}
+    <div
+      className={[
+        'mx-auto flex w-full max-w-[46rem] flex-col gap-3 px-4 py-4',
+        'h-[calc(100dvh-4rem)] sm:h-[calc(100dvh-4.375rem)]',
+        'print:block print:h-auto print:max-w-none print:p-0',
+      ].join(' ')}
+    >
+      <div className="no-print flex shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <p className="text-[13px] text-stone-500">
+          {settled ? 'A copy has gone to your email. Keep this for your records.' : 'Issued once Square confirms the payment.'}
         </p>
+        <div className="flex shrink-0 items-center gap-2">
+          <Button
+            size="sm"
+            variant="secondary"
+            icon={<Download className="size-4" aria-hidden />}
+            onClick={() => toast.info('Coming in the next build', 'PDF receipts are generated server-side.')}
+          >
+            PDF
+          </Button>
+          <Button size="sm" variant="secondary" icon={<Printer className="size-4" aria-hidden />} onClick={() => window.print()}>
+            Print
+          </Button>
+          <Link to="/my/donations">
+            <Button size="sm" variant="ghost" rightIcon={<ArrowRight className="size-4" aria-hidden />}>
+              My donations
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      {/* Printable receipt */}
-      <article className="overflow-hidden rounded-card border border-sandal-200 bg-sandal-50 shadow-card">
-        <header className="relative isolate overflow-hidden surface-sanctum px-6 py-7 text-sandal-50 sm:px-8">
-          <ArchMark className="pointer-events-none absolute -right-4 -bottom-10 text-navy-300/20" size={150} />
-          <div className="relative flex items-start justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2.5">
-                <OmgMark size={30} />
-                <span className="font-display text-[17px] tracking-wide">{tenantName}</span>
-              </div>
-              <p className="mt-4 font-display text-[24px] leading-tight sm:text-[27px]">
-                {sector.name}
-                <span className="ml-2.5 text-navy-300/90">{sector.tamil}</span>
+      <article
+        className={[
+          'relative flex min-h-0 flex-1 flex-col overflow-hidden bg-sandal-50',
+          'rounded-card border border-sandal-300 shadow-card',
+          'print:block print:min-h-0 print:overflow-visible print:rounded-none print:border-0 print:shadow-none',
+        ].join(' ')}
+      >
+        {/* A band of the sector colour across the head of the sheet. */}
+        <div className="h-1 shrink-0 bg-navy-900" aria-hidden />
+
+        {/* Letterhead ------------------------------------------------- */}
+        <header className="flex shrink-0 items-start justify-between gap-5 border-b-2 border-navy-900 px-6 pb-3.5 pt-4 sm:px-8">
+          <div className="flex min-w-0 items-start gap-3">
+            <OmgMark size={38} />
+            <div className="min-w-0">
+              <p className="truncate font-display text-[17px] font-semibold leading-tight text-stone-900">
+                {entity?.name ?? tenantName}
               </p>
-              <p className="mt-1 text-[11px] tracking-[0.14em] text-navy-300/80 uppercase">
-                Official donation receipt
+              <p className="mt-0.5 text-[12px] leading-snug text-stone-500">
+                {entity?.address ?? `${sector.name} · ${sector.tamil}`}
               </p>
-            </div>
-            <div className="shrink-0 text-right">
-              <p className="text-[11px] tracking-[0.12em] text-sandal-200/70 uppercase">Receipt no.</p>
-              <p className="mt-1 font-mono text-[15px] tabular-nums">{donation.receiptNo}</p>
             </div>
           </div>
+          {template && template.fields.length > 0 ? (
+            <dl className="hidden shrink-0 text-right sm:block">
+              {template.fields.slice(0, 2).map((field) => (
+                <div key={field.label} className="text-[11px] leading-snug">
+                  <dt className="inline uppercase tracking-wide text-stone-500">{field.label}: </dt>
+                  <dd className="inline font-mono text-stone-700">{field.value}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : null}
         </header>
 
-        <div className="px-6 py-6 sm:px-8">
-          <dl className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
-            <Field label="Received" value={formatDateTime(donation.createdAt)} />
-            <Field label="Method" value={titleCase(donation.method)} />
-            <Field label="Donation ref." value={donation.id} mono />
-            <Field label="From" value={donor?.name ?? 'Anonymous devotee'} className="col-span-2 sm:col-span-1" />
-            <Field label="Credited to fund" value={fund?.name ?? '—'} className="col-span-2" />
-          </dl>
+        {/* Document title --------------------------------------------- */}
+        <p className="shrink-0 border-b border-sandal-200 bg-sandal-100 py-1.5 text-center text-[11px] font-bold uppercase tracking-[0.3em] text-stone-700">
+          Donation Receipt
+        </p>
 
-          <Divider className="my-6" tone="quiet" />
+        {/* Receipt metadata ------------------------------------------- */}
+        <dl className="grid shrink-0 grid-cols-2 border-b border-sandal-200 sm:grid-cols-4">
+          <Meta label="Receipt no." value={donation.receiptNo} strong />
+          <Meta label="Date" value={formatDateTime(donation.createdAt)} />
+          <Meta label="Reference" value={donation.id} />
+          <Meta label="Method" value={titleCase(donation.method)} plain />
+        </dl>
 
-          <table className="w-full border-collapse text-[14px]">
+        {/* Received from ---------------------------------------------- */}
+        <div className="flex shrink-0 flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-sandal-200 px-6 py-3 sm:px-8">
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-[0.14em] text-stone-500">Received with thanks from</p>
+            <p className="mt-0.5 truncate font-display text-[17px] font-semibold text-stone-900">
+              {donor?.name ?? 'Anonymous devotee'}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] uppercase tracking-[0.14em] text-stone-500">Credited to</p>
+            <p className="mt-0.5 text-[13.5px] text-stone-900">{fund?.name ?? '—'}</p>
+          </div>
+        </div>
+
+        {/* Particulars ------------------------------------------------- */}
+        <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-6 sm:px-8 print:overflow-visible">
+          <table className="w-full border-collapse">
             <thead>
-              <tr>
-                <th className="pb-2 text-left text-[11px] tracking-[0.12em] text-stone-500 uppercase">Offering</th>
-                <th className="pb-2 text-right text-[11px] tracking-[0.12em] text-stone-500 uppercase">Amount</th>
+              <tr className="border-b border-sandal-300">
+                <th className="w-8 py-2 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-stone-500">
+                  #
+                </th>
+                <th className="py-2 text-left text-[10px] font-bold uppercase tracking-[0.12em] text-stone-500">
+                  Particulars
+                </th>
+                <th className="py-2 text-right text-[10px] font-bold uppercase tracking-[0.12em] text-stone-500">
+                  Amount
+                </th>
               </tr>
             </thead>
             <tbody>
               {donation.lines.map((line, i) => {
                 const item = offeringById(line.itemId)
                 return (
-                  <tr key={`${line.itemId}-${i}`} className="border-t border-sandal-200">
-                    <td className="py-3 pr-4">
-                      <p className="text-[15px] text-stone-900">
+                  <tr key={`${line.itemId}-${i}`} className="border-b border-dotted border-sandal-300 last:border-solid">
+                    <td className="py-2.5 align-top font-mono text-[12.5px] tabular-nums text-stone-500">{i + 1}</td>
+                    <td className="py-2.5 pr-4 align-top">
+                      <p className="text-[14px] text-stone-900">
                         {item?.name ?? line.itemId}
                         {line.quantity && line.quantity > 1 ? ` × ${line.quantity} tickets` : ''}
                       </p>
                       {line.recurring ? (
-                        <p className="mt-1 text-[13px] text-stone-500">
-                          Renews {line.recurring === 'annual' ? 'every year' : 'every month'} until you stop it.
+                        <p className="mt-0.5 text-[12px] text-stone-500">
+                          Renews {line.recurring === 'annual' ? 'every year' : 'every month'} until stopped.
                         </p>
                       ) : null}
                       {line.dedication ? (
-                        <p className="mt-1 text-[13px] leading-relaxed text-stone-500">
+                        <p className="mt-0.5 text-[12px] leading-relaxed text-stone-500">
                           For {line.dedication.name}
                           {line.dedication.nakshatra ? ` · ${line.dedication.nakshatra}` : ''}
                           {line.dedication.gothram ? ` · ${line.dedication.gothram} gothram` : ''}
@@ -126,56 +196,76 @@ export function ReceiptPage() {
                         </p>
                       ) : null}
                     </td>
-                    <td className="py-3 text-right align-top">
-                      <Money value={line.amount} className="text-[15px]" />
+                    <td className="py-2.5 text-right align-top font-mono text-[14px] tabular-nums text-stone-900">
+                      {formatMoney(line.amount)}
                     </td>
                   </tr>
                 )
               })}
             </tbody>
-            <tfoot>
-              <tr className="border-t-2 border-navy-200/50">
-                <td className="pt-3 text-right text-[14px] font-medium text-stone-900">Total received</td>
-                <td className="pt-3 text-right">
-                  <Money value={donation.gross} className="font-display text-[22px]" />
-                </td>
-              </tr>
-            </tfoot>
           </table>
+        </div>
 
-          <ExchangeNote donation={donation} />
+        {/* Total, closed off by a double rule, then spelled out --------- */}
+        <div className="shrink-0 border-y-2 border-navy-900 bg-sandal-100 px-6 py-2.5 sm:px-8">
+          <div className="flex items-baseline justify-between gap-4">
+            <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-700">Total received</span>
+            <span className="font-mono text-[21px] font-bold tabular-nums text-stone-900">
+              {formatMoney(donation.gross)}
+            </span>
+          </div>
+          <p className="mt-0.5 text-[12px] italic leading-snug text-stone-500">
+            {amountInWords(donation.gross)}
+          </p>
+        </div>
 
-          <div className="mt-7 rounded-card bg-sandal-100 px-5 py-5 texture-sandal">
-            <div className="flex items-end justify-between gap-4">
-              <div>
-                <p className="font-display text-[22px] leading-tight text-stone-900">நன்றி</p>
-                <p className="mt-1 text-[15px] text-stone-700">
-                  Thank you. May your offering return to you as peace and good health.
-                </p>
-              </div>
-              <Kolam className="hidden shrink-0 text-navy-400/70 sm:block" size={64} />
-            </div>
+        <ExchangeNote donation={donation} />
+
+        {/* Declaration and signature ----------------------------------- */}
+        <footer className="flex shrink-0 items-end justify-between gap-6 px-6 py-3 sm:px-8">
+          <div className="min-w-0 flex-1">
+            <p className="font-display text-[14px] text-stone-900">
+              நன்றி <span className="text-stone-500">· Thank you</span>
+            </p>
+            <Declaration donation={donation} />
           </div>
 
-          <Declaration donation={donation} />
-        </div>
+          <div className="hidden shrink-0 text-center sm:block">
+            <Kolam className="mx-auto text-navy-400/50" size={38} />
+            <p className="mt-1 w-40 border-t border-stone-500 pt-1 text-[10px] uppercase tracking-[0.12em] text-stone-500">
+              Authorised signatory
+            </p>
+          </div>
+        </footer>
       </article>
+    </div>
+  )
+}
 
-      <div className="no-print mt-7 flex flex-wrap items-center justify-center gap-3">
-        <Button
-          variant="secondary"
-          icon={<Download className="size-4" aria-hidden />}
-          onClick={() => toast.info('Coming in the next build', 'PDF receipts are generated server-side.')}
-        >
-          Download PDF
-        </Button>
-        <Button variant="secondary" icon={<Printer className="size-4" aria-hidden />} onClick={() => window.print()}>
-          Print
-        </Button>
-        <Link to="/my/donations">
-          <Button variant="ghost" rightIcon={<ArrowRight className="size-4" aria-hidden />}>View all my donations</Button>
-        </Link>
-      </div>
+/** One cell of the metadata strip, ruled like a paper form. */
+function Meta({
+  label,
+  value,
+  strong,
+  plain,
+}: {
+  label: string
+  value: string
+  strong?: boolean
+  plain?: boolean
+}) {
+  return (
+    <div className="border-r border-sandal-200 px-6 py-2 last:border-r-0 sm:px-5 sm:last:border-r-0">
+      <dt className="text-[10px] uppercase tracking-[0.14em] text-stone-500">{label}</dt>
+      <dd
+        className={[
+          'mt-0.5 truncate text-stone-900',
+          plain ? 'text-[13px]' : 'font-mono tabular-nums',
+          strong ? 'text-[14px] font-bold' : 'text-[12.5px]',
+        ].join(' ')}
+      >
+        {value}
+      </dd>
     </div>
   )
 }
@@ -193,20 +283,15 @@ function ExchangeNote({ donation }: { donation: Donation }) {
   if (!donation.displayGross || !donation.fxRate) return null
 
   return (
-    <dl className="mt-5 rounded-card border border-sandal-200 bg-white px-5 py-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <dt className="text-[11px] tracking-[0.12em] text-stone-500 uppercase">Shown to you as</dt>
-        <dd className="font-mono text-[15px] text-stone-900 tabular-nums">
+    <dl className="flex shrink-0 flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-sandal-200 px-6 py-2 sm:px-8">
+      <div className="flex items-baseline gap-2">
+        <dt className="text-[10px] uppercase tracking-[0.12em] text-stone-500">Shown to you as</dt>
+        <dd className="font-mono text-[13px] tabular-nums text-stone-900">
           {formatIn(donation.displayGross, donation.donorCurrency)}
         </dd>
       </div>
-      <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <dt className="text-[11px] tracking-[0.12em] text-stone-500 uppercase">Charged and settled as</dt>
-        <dd className="font-mono text-[15px] text-stone-900 tabular-nums">{formatMoney(donation.gross)}</dd>
-      </div>
-      <p className="mt-2.5 text-[12px] leading-relaxed text-stone-500">
-        Rate applied on the day of payment: 1 {SETTLEMENT_CURRENCY} = {donation.fxRate} {donation.donorCurrency}. Your
-        bank may apply its own charge on top of this.
+      <p className="text-[11px] text-stone-500">
+        Settled at 1 {SETTLEMENT_CURRENCY} = {donation.fxRate} {donation.donorCurrency} on the day of payment.
       </p>
     </dl>
   )
@@ -223,68 +308,23 @@ function Declaration({ donation }: { donation: Donation }) {
   const template = donation.receiptTemplateId
     ? RECEIPT_TEMPLATES.find((t) => t.id === donation.receiptTemplateId)
     : undefined
-  const entity = template ? GAUSHALA_ENTITIES.find((e) => e.id === template.entityId) : undefined
 
   const feeLine = `${formatMoney(donation.net)} reaches the fund after a ${formatMoney(donation.fee)} processing fee, which the organisation absorbs.`
 
-  if (!template) {
-    return (
-      <p className="mt-5 text-[12px] leading-relaxed text-stone-500">
-        This organisation is recognised as a tax-exempt charity. No goods or services were provided in exchange for
-        this contribution beyond intangible religious benefits. Retain this receipt for your tax records. {feeLine}
-      </p>
-    )
-  }
-
   return (
-    <div className="mt-5">
-      {entity ? (
-        <p className="text-[12px] leading-relaxed text-stone-700">
-          <span className="font-semibold">{entity.name}</span>
-          <span className="text-stone-500"> · {entity.address}</span>
-        </p>
-      ) : null}
-
-      {template.fields.length > 0 ? (
-        <dl className="mt-1.5 flex flex-wrap gap-x-5 gap-y-1">
-          {template.fields.map((field) => (
-            <div key={field.label} className="text-[12px]">
-              <dt className="inline tracking-wide text-stone-500 uppercase">{field.label}: </dt>
-              <dd className="inline font-mono text-stone-900">{field.value}</dd>
-            </div>
-          ))}
-        </dl>
-      ) : null}
-
-      <p className="mt-2 text-[12px] leading-relaxed text-stone-500">
-        {template.declaration} {feeLine}
+    <>
+      <p className="mt-1 text-[11px] leading-relaxed text-stone-500">
+        {template
+          ? template.declaration
+          : 'This organisation is recognised as a tax-exempt charity. No goods or services were provided in exchange for this contribution beyond intangible religious benefits.'}{' '}
+        {feeLine}
       </p>
-
-      {!template.reviewed ? (
-        <p className="no-print mt-2 text-[12px] leading-relaxed text-marigold-500">
-          Prototype: this tax wording has not yet been reviewed by an accountant qualified in{' '}
+      {template && !template.reviewed ? (
+        <p className="no-print mt-1 text-[11px] leading-relaxed text-marigold-500">
+          Prototype: this tax wording has not been reviewed by an accountant qualified in{' '}
           {template.donorCountries.includes('*') ? 'the donor country' : template.donorCountries.join(', ')}.
         </p>
       ) : null}
-    </div>
-  )
-}
-
-function Field({
-  label,
-  value,
-  mono,
-  className,
-}: {
-  label: string
-  value: string
-  mono?: boolean
-  className?: string
-}) {
-  return (
-    <div className={className}>
-      <dt className="text-[11px] tracking-[0.12em] text-stone-500 uppercase">{label}</dt>
-      <dd className={`mt-1 text-[14px] text-stone-900 ${mono ? 'font-mono tabular-nums' : ''}`}>{value}</dd>
-    </div>
+    </>
   )
 }

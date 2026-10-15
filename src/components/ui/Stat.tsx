@@ -27,34 +27,35 @@ export function Stat({
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-2xl border-2 border-navy-100/90 bg-white p-5.5 shadow-card hover:shadow-lift transition-all duration-200',
+        'relative overflow-hidden rounded-card border border-sandal-200 bg-sandal-50 p-5 shadow-card',
+        'transition-shadow duration-200 hover:shadow-lift',
         className,
       )}
     >
-      {accentClass ? <div className={cn('absolute inset-x-0 top-0 h-1.5', accentClass)} aria-hidden /> : null}
+      {accentClass ? <div className={cn('absolute inset-x-0 top-0 h-1', accentClass)} aria-hidden /> : null}
 
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">{label}</p>
+        <p className="text-[12px] font-bold uppercase tracking-[0.06em] text-stone-500">{label}</p>
         {icon ? (
-          <span className="flex size-8 items-center justify-center rounded-xl bg-navy-50 text-navy-600 border border-navy-100 shadow-2xs">
+          <span className="flex size-8 items-center justify-center rounded-lg border border-sandal-200 bg-sandal-100 text-navy-600">
             {icon}
           </span>
         ) : null}
       </div>
 
-      <p className="mt-3.5 font-heritage text-[26px] sm:text-[34px] leading-none font-bold text-navy-950">{value}</p>
+      <p className="mt-3 font-display text-[26px] font-semibold leading-none tracking-tight text-stone-900 sm:text-[30px]">{value}</p>
 
       {typeof delta === 'number' || sub ? (
         <div className="mt-3.5 flex flex-wrap items-center gap-x-2 gap-y-1">
           {typeof delta === 'number' ? (
             <span
               className={cn(
-                'inline-flex items-center gap-0.5 rounded-lg px-2 py-0.5 font-mono text-[11.5px] font-bold tabular-nums border shadow-2xs',
+                'inline-flex items-center gap-0.5 rounded-md border px-1.5 py-0.5 font-mono text-[11.5px] font-bold tabular-nums',
                 deltaMeaning === 'neutral'
-                  ? 'bg-navy-50 text-navy-800 border-navy-200'
+                  ? 'border-sandal-200 bg-sandal-100 text-stone-700'
                   : up
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                    : 'bg-rose-50 text-rose-800 border-rose-200',
+                    ? 'border-tulsi-500/25 bg-tulsi-50 text-tulsi-700'
+                    : 'border-danger-600/25 bg-danger-50 text-danger-600',
               )}
             >
               {up ? (
@@ -65,7 +66,7 @@ export function Stat({
               {Math.abs(delta).toFixed(1)}%
             </span>
           ) : null}
-          {sub ? <span className="text-[13px] font-medium text-stone-600">{sub}</span> : null}
+          {sub ? <span className="text-[13px] text-stone-500">{sub}</span> : null}
         </div>
       ) : null}
     </div>

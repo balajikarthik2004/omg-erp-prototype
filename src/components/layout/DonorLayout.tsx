@@ -215,7 +215,9 @@ export function DonorLayout() {
         <Outlet />
       </main>
 
-      <Footer />
+      {/* A receipt is a single-page document: it fits the viewport and ends
+          at the page edge, so the marketing footer has no place under it. */}
+      {pathname.startsWith('/receipt/') ? null : <Footer />}
     </div>
   )
 }

@@ -6,22 +6,22 @@ type Variant = 'primary' | 'secondary' | 'navy' | 'ghost' | 'danger' | 'success'
 type Size = 'sm' | 'md' | 'lg'
 
 const VARIANTS: Record<Variant, string> = {
-  // OMG primary: the brand red gradient.
+  // OMG primary: flat brand red. No gradients on buttons.
   primary:
-    'bg-gradient-to-r from-kumkum-500 to-kumkum-600 text-white font-bold shadow-sm hover:from-kumkum-600 hover:to-kumkum-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all',
+    'bg-kumkum-600 text-white font-bold shadow-flat hover:bg-kumkum-700 active:bg-kumkum-800 disabled:opacity-50 disabled:cursor-not-allowed',
   secondary:
-    'bg-white text-navy-950 font-bold border-2 border-navy-200/90 shadow-2xs hover:bg-navy-50 hover:border-navy-300 active:scale-[0.98] disabled:border-navy-100 disabled:bg-navy-50 disabled:text-navy-400 transition-all',
+    'bg-sandal-50 text-stone-900 font-semibold border border-sandal-200 shadow-flat hover:bg-sandal-100 disabled:bg-sandal-100 disabled:text-stone-500',
   // The OMG secondary: navy, for a solid action that must not read as primary.
   navy:
-    'bg-navy-900 text-white font-bold shadow-sm hover:bg-navy-950 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all',
-  ghost: 'bg-transparent text-navy-800 font-semibold hover:bg-navy-100/70 hover:text-navy-950 disabled:text-navy-400 transition-all',
+    'bg-navy-900 text-white font-semibold shadow-flat hover:bg-navy-950 disabled:opacity-50 disabled:cursor-not-allowed',
+  ghost: 'bg-transparent text-stone-700 font-semibold hover:bg-sandal-100 hover:text-stone-900 disabled:text-stone-500',
   danger:
-    'bg-danger-600 text-white font-bold shadow-sm hover:bg-danger-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all',
+    'bg-danger-600 text-white font-semibold shadow-flat hover:bg-danger-700 disabled:opacity-50 disabled:cursor-not-allowed',
 
   success:
-    'bg-emerald-600 text-white font-bold shadow-sm hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all',
+    'bg-tulsi-500 text-white font-semibold shadow-flat hover:bg-tulsi-700 disabled:opacity-50 disabled:cursor-not-allowed',
   accent:
-    'bg-turmeric-400 text-navy-950 font-bold shadow-sm hover:bg-turmeric-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all',
+    'bg-turmeric-400 text-stone-900 font-semibold shadow-flat hover:bg-turmeric-500 disabled:opacity-50 disabled:cursor-not-allowed',
 }
 
 const SIZES: Record<Size, string> = {
@@ -50,7 +50,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       className={cn(
         'inline-flex items-center justify-center font-medium whitespace-nowrap',
         'transition-colors duration-150 ease-out-soft',
-        'focus-visible:ring-2 focus-visible:ring-kumkum-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+        'focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 focus-visible:ring-offset-sandal-50',
         'disabled:cursor-not-allowed',
         SIZES[size],
         VARIANTS[variant],
