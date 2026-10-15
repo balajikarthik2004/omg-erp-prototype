@@ -38,26 +38,26 @@ export function UtilisationBars({
             <div className="mb-1.5 flex items-baseline justify-between gap-3">
               <Link
                 to={`/console/budgets?focus=${head.id}`}
-                className="truncate text-[14px] font-medium text-navy-950 hover:text-kumkum-600 transition-colors"
+                className="truncate text-[14px] font-medium text-stone-900 transition-colors hover:text-kumkum-600"
               >
                 {head.name}
               </Link>
               <span
                 className={cn(
                   'shrink-0 font-mono text-[13px] font-bold tabular-nums',
-                  over ? 'text-danger-600' : near ? 'text-amber-600' : 'text-navy-700',
+                  over ? 'text-danger-600' : near ? 'text-marigold-500' : 'text-stone-700',
                 )}
               >
                 {formatPct(used, 0)}
               </span>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-navy-100">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-sandal-200">
               <span
-                className={cn('block h-full rounded-full', over ? 'bg-danger-600' : near ? 'bg-amber-500' : 'bg-emerald-500')}
+                className={cn('block h-full rounded-full', over ? 'bg-danger-600' : near ? 'bg-marigold-500' : 'bg-tulsi-500')}
                 style={{ width: `${Math.min(100, used)}%` }}
               />
             </div>
-            <p className="mt-1 text-[12px] text-navy-600/70 font-medium">
+            <p className="mt-1 text-[12px] text-stone-500">
               {over ? (
                 <span className="text-danger-600 font-semibold">{formatMoney(Math.abs(free))} over the allocation</span>
               ) : (
