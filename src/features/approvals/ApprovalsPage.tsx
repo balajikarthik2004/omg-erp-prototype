@@ -31,7 +31,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { Tabs } from '@/components/ui/Tabs'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { SectorChip } from '@/components/layout/PhaseChip'
-import { roleLabel, useDb } from '@/store/db'
+import { useDb } from '@/store/db'
 import { currentUser, useSession } from '@/store/session'
 import { approvalTasks, taskBlock } from '@/store/selectors'
 import { userName } from '@/mock/seed'
@@ -88,9 +88,7 @@ export function ApprovalsPage() {
   return (
     <div>
       <PageHeader
-        phase="control"
         title="Approvals"
-        description={`Everything waiting on a decision. You are signed in as ${roleLabel(user.role)}.`}
         actions={
           canEscalate && escalatable.length > 0 ? (
             <Button

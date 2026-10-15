@@ -1,5 +1,5 @@
-import { NavLink } from 'react-router-dom'
-import { ExternalLink, X } from 'lucide-react'
+import { NavLink, useLocation } from 'react-router-dom'
+import { ChevronDown, ExternalLink, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react'
 
 import { PHASES } from '@/config'
 import { cn } from '@/lib/cn'
@@ -7,40 +7,181 @@ import { Kolam, OmgMark } from '@/components/ui/Ornament'
 import { useSession, useCurrentUser } from '@/store/session'
 import { useDb } from '@/store/db'
 import { actionableTasks } from '@/store/selectors'
-import { visibleGroups, type NavGroup } from './nav'
+import { visibleGroups, type NavGroup, type NavItem } from './nav'
+
+/**
+ * The money flow is the point of this console, so its groups start open and
+ * the optional verticals start closed. Three verticals are 23 of a partner's
+ * 40 links; left open they push Collect and Control off the screen.
+ *
+ * Unless a vertical is all the person has. A Gaushala admin's whole menu is
+ * one module group, and closing it by default would leave them staring at an
+ * empty sidebar, so `onlyModules` opens it again.
+ */
+function defaultOpen(group: NavGroup, onlyModules: boolean) {
+  return onlyModules || group.kind !== 'module'
+}
+
+const RAIL = 'w-[68px]'
+const FULL = 'w-[252px]'
 
 /**
  * The group heading. A flow group shows its step number, so the four phases
  * read as a sequence rather than four unrelated folders; a module group shows
  * only its name, because it is a vertical and not a step in the flow.
+ *
+ * Collapsed to the rail there is no room for a label, so the step marker
+ * stands alone and carries the group name as its title.
  */
-function GroupHeading({ group }: { group: NavGroup }) {
+function GroupHeading({
+  group,
+  collapsed,
+  open,
+  onToggle,
+}: {
+  group: NavGroup
+  collapsed: boolean
+  open: boolean
+  onToggle: () => void
+}) {
   const flow = group.kind === 'flow'
-  return (
-    <div className="mb-1.5 flex items-center gap-2 px-3" title={group.hint}>
-      {flow ? (
-        <span
-          className={cn(
-            'flex size-4 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-bold text-white',
-            PHASES[group.phase].markerClass,
-          )}
-          aria-hidden
-        >
-          {group.step}
-        </span>
-      ) : (
-        <span className={cn('size-1.5 shrink-0 rounded-full', PHASES[group.phase].markerClass)} aria-hidden />
+  const marker = flow ? (
+    <span
+      className={cn(
+        'flex size-4 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-bold text-white',
+        PHASES[group.phase].markerClass,
       )}
-      <span className="truncate text-[11px] font-bold uppercase tracking-[0.14em] text-white/55">
+      aria-hidden
+    >
+      {group.step}
+    </span>
+  ) : (
+    <span className={cn('size-1.5 shrink-0 rounded-full', PHASES[group.phase].markerClass)} aria-hidden />
+  )
+
+  if (collapsed) {
+    return (
+      <div className="mb-1.5 flex justify-center" title={group.label}>
+        {marker}
+      </div>
+    )
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-expanded={open}
+      title={group.hint}
+      className={cn(
+        'mb-1.5 flex w-full items-center gap-2 rounded-md px-3 py-1 text-left',
+        'transition-colors duration-150 hover:bg-white/5',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
+      )}
+    >
+      {marker}
+      <span className="flex-1 truncate text-[11px] font-bold uppercase tracking-[0.14em] text-white/55">
         {group.label}
       </span>
-    </div>
+      <ChevronDown
+        className={cn(
+          'size-3.5 shrink-0 text-white/35 transition-transform duration-150',
+          open ? 'rotate-0' : '-rotate-90',
+        )}
+        aria-hidden
+      />
+    </button>
   )
 }
 
-function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+function NavRow({
+  item,
+  count,
+  collapsed,
+  onNavigate,
+}: {
+  item: NavItem
+  count: number
+  collapsed: boolean
+  onNavigate?: () => void
+}) {
+  const Icon = item.icon
+  return (
+    <NavLink
+      to={item.to}
+      end={item.end}
+      onClick={onNavigate}
+      title={collapsed ? item.label : undefined}
+      className={({ isActive }) =>
+        cn(
+          'group relative flex items-center rounded-lg py-2 text-[13.5px]',
+          'transition-colors duration-150',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
+          collapsed ? 'justify-center px-0' : 'gap-2.5 pl-3 pr-2.5',
+          isActive
+            ? 'bg-white/10 font-semibold text-white'
+            : 'font-medium text-white/70 hover:bg-white/5 hover:text-white',
+        )
+      }
+    >
+      {({ isActive }) => (
+        <>
+          <span
+            className={cn(
+              'absolute left-0 top-1/2 h-4.5 w-[3px] -translate-y-1/2 rounded-r-full bg-kumkum-500',
+              'transition-opacity duration-150',
+              isActive ? 'opacity-100' : 'opacity-0',
+            )}
+            aria-hidden
+          />
+          <span className="relative shrink-0">
+            <Icon
+              className={cn(
+                'size-4 transition-colors duration-150',
+                isActive ? 'text-kumkum-400' : 'text-white/50 group-hover:text-white/80',
+              )}
+              aria-hidden
+            />
+            {/* On the rail the count has nowhere to sit, so it becomes a dot. */}
+            {collapsed && count > 0 ? (
+              <span
+                className="absolute -right-1 -top-1 size-2 rounded-full bg-kumkum-500 ring-2 ring-navy-900"
+                aria-hidden
+              />
+            ) : null}
+          </span>
+
+          {collapsed ? (
+            <span className="sr-only">
+              {item.label}
+              {count > 0 ? `, ${count} waiting` : ''}
+            </span>
+          ) : (
+            <>
+              <span className="flex-1 truncate">{item.label}</span>
+              {count > 0 ? (
+                <span
+                  className="rounded-full bg-kumkum-600 px-1.5 py-0.5 font-mono text-[10.5px] font-bold tabular-nums text-white"
+                  aria-label={`${count} waiting`}
+                >
+                  {count}
+                </span>
+              ) : null}
+            </>
+          )}
+        </>
+      )}
+    </NavLink>
+  )
+}
+
+function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => void; collapsed?: boolean }) {
   const user = useCurrentUser()
   const sectorFilter = useSession((s) => s.sectorFilter)
+  const toggleCollapsed = useSession((s) => s.toggleSidebarCollapsed)
+  const openGroups = useSession((s) => s.navOpenGroups)
+  const toggleGroup = useSession((s) => s.toggleNavGroup)
+  const { pathname } = useLocation()
   const db = useDb()
   const tenant = db.tenants.find((t) => t.id === db.activeTenantId)
   const groups = visibleGroups(user.role, tenant?.modules)
@@ -48,23 +189,45 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const myTasks = mine.length
   const myEventTasks = mine.filter((t) => t.kind.startsWith('event_') && t.kind !== 'event_order').length
 
+  const onlyModules = groups.every((g) => g.kind === 'module')
+
+  function isOpen(group: NavGroup) {
+    if (collapsed) return true
+    const holdsCurrent = group.items.some((i) => (i.end ? pathname === i.to : pathname.startsWith(i.to)))
+    if (holdsCurrent) return true
+    return openGroups[group.label] ?? defaultOpen(group, onlyModules)
+  }
+
   return (
     <div
       data-brand={tenant?.brand ?? 'kumkum'}
       className="surface-sanctum flex h-full flex-col border-r border-navy-950/60 text-white"
     >
-      <div className="flex items-center justify-between gap-2 border-b border-white/10 px-4 py-4">
-        <NavLink to="/console" className="flex min-w-0 items-center gap-2.5" onClick={onNavigate}>
-          <OmgMark size={32} onDark />
-          <span className="min-w-0 leading-none">
-            <span className="block truncate font-display text-[15px] font-semibold tracking-tight text-white">
-              {tenant?.name ?? 'OMG'}
+      <div
+        className={cn(
+          'flex shrink-0 items-center gap-2 border-b border-white/10 py-4',
+          collapsed ? 'justify-center px-0' : 'justify-between px-4',
+        )}
+      >
+        <NavLink
+          to="/console"
+          className="flex min-w-0 items-center gap-2.5"
+          onClick={onNavigate}
+          title={collapsed ? (tenant?.name ?? 'OMG') : undefined}
+        >
+          <OmgMark size={collapsed ? 30 : 32} onDark />
+          {collapsed ? null : (
+            <span className="min-w-0 leading-none">
+              <span className="block truncate font-display text-[15px] font-semibold tracking-tight text-white">
+                {tenant?.name ?? 'OMG'}
+              </span>
+              <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.16em] text-white/45">
+                Admin console
+              </span>
             </span>
-            <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.16em] text-white/45">
-              Admin console
-            </span>
-          </span>
+          )}
         </NavLink>
+
         {onNavigate ? (
           <button
             type="button"
@@ -77,7 +240,12 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ) : null}
       </div>
 
-      <nav aria-label="Console" className="scrollbar-thin flex-1 overflow-y-auto px-2.5 py-4">
+      {/* A group holding the page you are on is always open, whatever was
+          stored — otherwise the active row could be hidden from view. */}
+      <nav
+        aria-label="Console"
+        className={cn('scrollbar-thin min-h-0 flex-1 overflow-y-auto py-4', collapsed ? 'px-3' : 'px-2.5')}
+      >
         {groups.map((group, i) => {
           const startsVerticals = group.kind === 'module' && groups[i - 1]?.kind !== 'module'
           return (
@@ -85,81 +253,75 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               key={`${group.kind}-${group.label}`}
               className={cn('mb-5', startsVerticals && 'mt-1 border-t border-white/10 pt-5')}
             >
-              <GroupHeading group={group} />
-              <ul className="flex flex-col gap-0.5">
-                {group.items.map((item) => {
-                  const Icon = item.icon
-                  const count = item.badge === 'approvals' ? myTasks : item.badge === 'eventApprovals' ? myEventTasks : 0
-                  return (
+              <GroupHeading
+                group={group}
+                collapsed={collapsed}
+                open={isOpen(group)}
+                onToggle={() => toggleGroup(group.label, !isOpen(group))}
+              />
+              {isOpen(group) ? (
+                <ul className="flex flex-col gap-0.5">
+                  {group.items.map((item) => (
                     <li key={item.to}>
-                      <NavLink
-                        to={item.to}
-                        end={item.end}
-                        onClick={onNavigate}
-                        className={({ isActive }) =>
-                          cn(
-                            'group relative flex items-center gap-2.5 rounded-lg py-2 pl-3 pr-2.5 text-[13.5px]',
-                            'transition-colors duration-150',
-                            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
-                            isActive
-                              ? 'bg-white/10 font-semibold text-white'
-                              : 'font-medium text-white/70 hover:bg-white/5 hover:text-white',
-                          )
+                      <NavRow
+                        item={item}
+                        collapsed={collapsed}
+                        onNavigate={onNavigate}
+                        count={
+                          item.badge === 'approvals' ? myTasks : item.badge === 'eventApprovals' ? myEventTasks : 0
                         }
-                      >
-                        {({ isActive }) => (
-                          <>
-                            <span
-                              className={cn(
-                                'absolute left-0 top-1/2 h-4.5 w-[3px] -translate-y-1/2 rounded-r-full bg-kumkum-500',
-                                'transition-opacity duration-150',
-                                isActive ? 'opacity-100' : 'opacity-0',
-                              )}
-                              aria-hidden
-                            />
-                            <Icon
-                              className={cn(
-                                'size-4 shrink-0 transition-colors duration-150',
-                                isActive ? 'text-kumkum-400' : 'text-white/50 group-hover:text-white/80',
-                              )}
-                              aria-hidden
-                            />
-                            <span className="flex-1 truncate">{item.label}</span>
-                            {count > 0 ? (
-                              <span
-                                className="rounded-full bg-kumkum-600 px-1.5 py-0.5 font-mono text-[10.5px] font-bold tabular-nums text-white"
-                                aria-label={`${count} waiting`}
-                              >
-                                {count}
-                              </span>
-                            ) : null}
-                          </>
-                        )}
-                      </NavLink>
+                      />
                     </li>
-                  )
-                })}
-              </ul>
+                  ))}
+                </ul>
+              ) : null}
             </div>
           )
         })}
       </nav>
 
-      <div className="border-t border-white/10 px-4 py-3.5">
-        <NavLink
-          to="/"
-          onClick={onNavigate}
-          className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-white/70 transition-colors duration-150 hover:text-white"
+      <div className={cn('shrink-0 border-t border-white/10 py-3', collapsed ? 'px-3' : 'px-4')}>
+        {/* The rail toggle lives with the chrome it controls, desktop only. */}
+        <button
+          type="button"
+          onClick={toggleCollapsed}
+          aria-label={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
+          title={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
+          className={cn(
+            'hidden w-full items-center gap-2 rounded-lg py-2 text-[12.5px] font-semibold text-white/60',
+            'transition-colors duration-150 hover:bg-white/5 hover:text-white lg:flex',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
+            collapsed ? 'justify-center px-0' : 'px-2',
+          )}
         >
-          <ExternalLink className="size-3.5" aria-hidden />
-          <span>Open the donor site</span>
-        </NavLink>
-        <div className="mt-2.5 flex items-end justify-between gap-2">
-          <p className="text-[11px] leading-relaxed text-white/35">
-            Every entry is signed by two people.
-          </p>
-          <Kolam className="-mb-1 -mr-1 shrink-0 text-white/10" size={44} />
-        </div>
+          {collapsed ? (
+            <PanelLeftOpen className="size-4 shrink-0" aria-hidden />
+          ) : (
+            <>
+              <PanelLeftClose className="size-4 shrink-0" aria-hidden />
+              <span>Collapse</span>
+            </>
+          )}
+        </button>
+
+        {collapsed ? null : (
+          <>
+            <NavLink
+              to="/"
+              onClick={onNavigate}
+              className="mt-1 inline-flex items-center gap-1.5 px-2 text-[12.5px] font-semibold text-white/70 transition-colors duration-150 hover:text-white"
+            >
+              <ExternalLink className="size-3.5" aria-hidden />
+              <span>Open the donor site</span>
+            </NavLink>
+            <div className="mt-2.5 flex items-end justify-between gap-2">
+              <p className="px-2 text-[11px] leading-relaxed text-white/35">
+                Every entry is signed by two people.
+              </p>
+              <Kolam className="-mb-1 -mr-1 shrink-0 text-white/10" size={44} />
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
@@ -168,12 +330,13 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 export function Sidebar() {
   const sidebarOpen = useSession((s) => s.sidebarOpen)
   const setSidebarOpen = useSession((s) => s.setSidebarOpen)
+  const collapsed = useSession((s) => s.sidebarCollapsed)
 
   return (
     <>
-      <aside className="no-print hidden w-[252px] shrink-0 lg:block">
-        <div className="fixed inset-y-0 left-0 w-[252px]">
-          <SidebarContent />
+      <aside className={cn('no-print hidden shrink-0 lg:block', collapsed ? RAIL : FULL)}>
+        <div className={cn('fixed inset-y-0 left-0', collapsed ? RAIL : FULL)}>
+          <SidebarContent collapsed={collapsed} />
         </div>
       </aside>
 
@@ -189,6 +352,7 @@ export function Sidebar() {
             className="relative h-full w-[276px] max-w-[85vw] shadow-sheet"
             style={{ animation: 'omg-slide-in-right 200ms var(--ease-out-soft)' }}
           >
+            {/* The drawer is always full width — a rail inside it is pointless. */}
             <SidebarContent onNavigate={() => setSidebarOpen(false)} />
           </div>
         </div>

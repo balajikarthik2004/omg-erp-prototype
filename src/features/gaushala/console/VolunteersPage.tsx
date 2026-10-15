@@ -79,8 +79,6 @@ export function VolunteersPage() {
     <div>
       <PageHeader
         title="Volunteers"
-        description="Applications, shifts, hours and certificates."
-        phase="collect"
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="sm:w-72">

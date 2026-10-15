@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Banknote, ClipboardList, PiggyBank, TrendingDown } from 'lucide-react'
 
-import { formatAge, formatDue, formatMoneyCompact, greetingName } from '@/lib/format'
+import { formatAge, formatDue, formatMoneyCompact } from '@/lib/format'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { CardSkeleton, Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -14,7 +14,7 @@ import { FundDonut } from '@/components/charts/FundDonut'
 import { IncomeOutgoChart } from '@/components/charts/IncomeOutgoChart'
 import { UtilisationBars } from '@/components/charts/UtilisationBars'
 import { useDb } from '@/store/db'
-import { useCurrentUser, useSession } from '@/store/session'
+import { useSession } from '@/store/session'
 import {
   approvalTasks,
   budgetsNearLimit,
@@ -23,7 +23,7 @@ import {
   monthlySeries,
   recentActivity,
 } from '@/store/selectors'
-import { ROLE_LABEL, userName } from '@/mock/seed'
+import { userName } from '@/mock/seed'
 
 /** A headline figure reads in Montserrat; mono is for ledger columns. */
 const KPI_FIGURE = 'font-display font-semibold tracking-tight'
@@ -31,7 +31,6 @@ const KPI_FIGURE = 'font-display font-semibold tracking-tight'
 export function DashboardPage() {
   const db = useDb()
   const filter = useSession((s) => s.sectorFilter)
-  const user = useCurrentUser()
 
   const data = useMemo(() => {
     if (!db.ready) return null
@@ -48,9 +47,7 @@ export function DashboardPage() {
   return (
     <div>
       <PageHeader
-        phase="report"
-        title={`Good day, ${greetingName(user.name)}`}
-        description={`Signed in as ${ROLE_LABEL[user.role]}. Here is where the money came from this month, where it went, and what is waiting on a signature.`}
+        title="Dashboard"
       />
 
       {!data ? (

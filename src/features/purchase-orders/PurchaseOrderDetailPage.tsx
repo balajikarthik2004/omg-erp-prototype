@@ -81,7 +81,6 @@ export function PurchaseOrderDetailPage() {
       </Link>
 
       <PageHeader
-        phase="spend"
         title={po.poNo}
         description={`${supplier?.name ?? 'Supplier'} · raised by ${userName(po.preparedBy)} on ${formatDate(po.createdAt)}`}
         actions={

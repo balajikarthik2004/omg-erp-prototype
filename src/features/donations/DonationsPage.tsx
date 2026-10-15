@@ -95,7 +95,6 @@ export function DonationsPage() {
   return (
     <div>
       <PageHeader
-        phase="collect"
         title="Donations"
         description={`${rows.length.toLocaleString()} donations · ${formatMoney(total)} received`}
         actions={

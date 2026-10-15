@@ -95,9 +95,7 @@ export function AuditPage() {
   return (
     <div>
       <PageHeader
-        phase="report"
         title="Audit log"
-        description="Who did what, when, and what changed. Entries are written automatically and cannot be edited."
         actions={
           <span className="inline-flex items-center gap-1.5 rounded-full border border-sandal-200 bg-sandal-100 px-3 py-1 text-[12px] text-stone-700">
             <History className="size-3.5" aria-hidden />

@@ -111,9 +111,7 @@ export function ApprovalCenterPage() {
   return (
     <div>
       <PageHeader
-        phase="control"
         title={<span className="flex flex-wrap items-center gap-3">Approval Center<span className="inline-flex items-center gap-1.5 rounded-full border border-turmeric-100 bg-turmeric-50 px-3 py-1 font-sans text-[13px] font-medium text-turmeric-700"><ShieldCheck className="size-4" aria-hidden />Four-eyes governance</span></span>}
-        description="Review event budgets and posters with clear accountability. Whoever prepared something can never approve it."
         actions={
           <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-sandal-200 bg-sandal-100 p-1" role="group" aria-label="Switch role">
             <span className="px-2 text-[12px] text-stone-500">Switch role</span>

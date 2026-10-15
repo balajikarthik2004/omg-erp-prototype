@@ -118,9 +118,7 @@ export function ComplianceVaultPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        phase="control"
         title="Compliance Vault"
-        description="Statutory non-profit registry, Form CSR-1 credentials, Income-tax Act 2025 approvals (Sec 332 & 354), and 3-year track record audit verification."
         actions={
           <Button
             variant="primary"

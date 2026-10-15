@@ -66,9 +66,7 @@ export function CsrDealsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        phase="control"
         title="MoUs, Grants & Tranche Disbursements"
-        description="MCA bilateral agreements, dual-signatory CA & Trustee sanction, 5% admin cap covenants, and sequential UC gates for instalment release."
       />
 
       <div className="space-y-6">

@@ -54,9 +54,7 @@ export function BudgetsPage() {
   return (
     <div>
       <PageHeader
-        phase="control"
         title="Budgets"
-        description="Allocated, committed and spent for every head. Available is derived, never stored."
       />
 
       {!db.ready ? (

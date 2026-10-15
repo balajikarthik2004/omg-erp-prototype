@@ -79,7 +79,6 @@ export function PurchaseOrdersPage() {
   return (
     <div>
       <PageHeader
-        phase="spend"
         title="Purchase orders"
         description={`${rows.length} orders · ${formatMoney(openValue)} committed but not yet paid`}
         actions={

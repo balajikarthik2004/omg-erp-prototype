@@ -108,9 +108,7 @@ export function PaymentsPage() {
   return (
     <div>
       <PageHeader
-        phase="spend"
         title="Payments"
-        description="Supplier invoices matched against the order and the goods receipt. Nothing is paid on one person's say-so."
       >
         <div className="flex flex-col gap-3">
           <Tabs

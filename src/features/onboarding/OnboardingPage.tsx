@@ -75,9 +75,7 @@ export function OnboardingPage() {
   return (
     <div>
       <PageHeader
-        phase="onboard"
         title="Customers"
-        description="Each customer has its own books, brand, verticals, approvers and approval limits. Switch between them to see that nothing is shared."
         actions={
           canOnboard ? (
             <Link to="/console/onboarding/new">

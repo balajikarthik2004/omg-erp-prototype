@@ -33,6 +33,10 @@ interface SessionState {
   signedIn: boolean
   cart: CartLine[]
   sidebarOpen: boolean
+  /** Desktop only: the sidebar collapsed to an icon rail. */
+  sidebarCollapsed: boolean
+  /** Sidebar groups the person has opened or closed, by group label. */
+  navOpenGroups: Record<string, boolean>
   /**
    * Where the donor says they are, and the money they are shown. Guessed once
    * from the browser and overridable on the Gaushala page. It decides the
@@ -46,6 +50,8 @@ interface SessionState {
   signIn: () => void
   signOut: () => void
   setSidebarOpen: (open: boolean) => void
+  toggleSidebarCollapsed: () => void
+  toggleNavGroup: (label: string, open: boolean) => void
   setDisplayCurrency: (currency: Currency) => void
   setDonorCountry: (country: string) => void
 
@@ -63,6 +69,8 @@ export const useSession = create<SessionState>()(
       signedIn: false,
       cart: [],
       sidebarOpen: false,
+      sidebarCollapsed: false,
+      navOpenGroups: {},
       donorCountry: detectCountry(),
       // Prices open in the settlement currency, so every visitor sees the
       // same dollar figures the ledger and the console are kept in. The
@@ -74,6 +82,9 @@ export const useSession = create<SessionState>()(
       signIn: () => set({ signedIn: true }),
       signOut: () => set({ signedIn: false, cart: [] }),
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
+      toggleSidebarCollapsed: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+      toggleNavGroup: (label, open) =>
+        set((s) => ({ navOpenGroups: { ...s.navOpenGroups, [label]: open } })),
       setDisplayCurrency: (currency) => set({ displayCurrency: currency }),
       setDonorCountry: (country) => set({ donorCountry: country, displayCurrency: currencyForCountry(country) }),
 
@@ -105,6 +116,8 @@ export const useSession = create<SessionState>()(
       partialize: (s) => ({
         personaId: s.personaId,
         sectorFilter: s.sectorFilter,
+        sidebarCollapsed: s.sidebarCollapsed,
+        navOpenGroups: s.navOpenGroups,
         donorCountry: s.donorCountry,
         displayCurrency: s.displayCurrency,
       }),

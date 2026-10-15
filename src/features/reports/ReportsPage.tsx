@@ -40,9 +40,7 @@ export function ReportsPage() {
   return (
     <div>
       <PageHeader
-        phase="report"
         title="Reports"
-        description="Twelve months of giving and spending, by sector, by category and by budget head."
         actions={
           <div className="flex gap-2">
             <Button

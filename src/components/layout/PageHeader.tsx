@@ -1,19 +1,15 @@
 import type { ReactNode } from 'react'
-import type { Phase } from '@/config'
 import { cn } from '@/lib/cn'
-import { PhaseChip } from './PhaseChip'
 
 export function PageHeader({
   title,
   description,
-  phase,
   actions,
   children,
   className,
 }: {
   title: ReactNode
   description?: ReactNode
-  phase: Phase
   actions?: ReactNode
   /** Filters and tabs that belong under the gold rule. */
   children?: ReactNode
@@ -23,7 +19,6 @@ export function PageHeader({
     <header className={cn('mb-7', className)}>
       <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
         <div className="min-w-0">
-          <PhaseChip phase={phase} />
           <h1 className="mt-2.5 font-display text-[23px] font-semibold tracking-tight text-stone-900 sm:text-[30px]">
             {title}
           </h1>
