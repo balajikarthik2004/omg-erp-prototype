@@ -18,7 +18,7 @@ export const USERS: User[] = [
   { id: 'u-store', name: 'Vasanthi Murugan', role: 'store_keeper', email: 'vasanthi@omg.org', sectorIds: ['temple', 'sevalaya'] },
   { id: 'u-proc', name: 'Dinesh Kumar', role: 'procurement_officer', email: 'dinesh@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-cas', name: 'Anitha Rajan', role: 'ca_staff', email: 'anitha@caoffice.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
-  { id: 'u-cap', name: 'R. Balasubramanian', role: 'ca_partner', email: 'bala@caoffice.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
+  { id: 'u-cap', name: 'R. Perumal', role: 'ca_partner', email: 'bala@caoffice.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-tru', name: 'Meenakshi Sundaram', role: 'trustee', email: 'meenakshi@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   // Gaushala. Scoped to Sevalaya, and only ever to the cow shelter inside it.
   { id: 'u-gau-adm', name: 'Thirumalai Raghavan', role: 'gaushala_admin', email: 'thirumalai@omg.org', sectorIds: ['sevalaya'] },

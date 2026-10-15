@@ -907,7 +907,7 @@ function makeAudit(
   const events: AuditEvent[] = []
   const actors = [
     { id: 'u-cas', name: 'Anitha Rajan', role: 'ca_staff' as const },
-    { id: 'u-cap', name: 'R. Balasubramanian', role: 'ca_partner' as const },
+    { id: 'u-cap', name: 'R. Perumal', role: 'ca_partner' as const },
     { id: 'u-proc', name: 'Dinesh Kumar', role: 'procurement_officer' as const },
     { id: 'u-store', name: 'Vasanthi Murugan', role: 'store_keeper' as const },
     { id: 'u-adm', name: 'Saravanan Pillai', role: 'sector_admin' as const },

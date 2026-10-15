@@ -28,7 +28,7 @@ are. The store resets to seed data on every reload, so reload to start clean.
 | Store Keeper | Vasanthi Murugan |
 | Procurement Officer | Dinesh Kumar |
 | CA Staff | Anitha Rajan |
-| CA Partner | R. Balasubramanian |
+| CA Partner | R. Perumal |
 | Trustee | Meenakshi Sundaram |
 
 ### 00 Onboard a customer (Super Admin)
@@ -73,7 +73,7 @@ are. The store resets to seed data on every reload, so reload to start clean.
 | 8 Budgets | **Budgets** (unchanged) | Allocated, Committed, Spent, Available. |
 | 9 Period close | **Anitha** → **Period close** → open the **current month** | Refused: *Close September 2026 first.* Months close in order. |
 | | Open **September 2026**, read the checklist, **Send for close** | Status Pending. Anitha cannot lock it. |
-| | **R. Balasubramanian** → **Approvals** or **Period close** → **Close and lock** | September is Closed. Trustee cannot lock; only the Partner. |
+| | **R. Perumal** → **Approvals** or **Period close** → **Close and lock** | September is Closed. Trustee cannot lock; only the Partner. |
 | | Reconcile the 3 payouts and the cash counts, close October (Anitha prepares, Partner locks) | The checklist says what blocks the close until you clear it. |
 | | As Anitha, approve a pending allotment | Refused: *October 2026 is closed.* Same for cash confirmation and payment release. |
 | | As the Partner, **Reopen this month** with a reason | Reopens; approval now works; the reopen is in the **Audit log**. |
@@ -143,7 +143,7 @@ poster, tickets, signed check-in, sponsors, orders against budget lines, close, 
 | | **Sponsors and donations** | Cash adds to the event fund and the ledger. In-kind is listed separately and never counted as cash. |
 | | **Orders** | Raise an order above what is left on a line: blocked. A CA approves (not the raiser) and a *different* CA pays. The fund falls and the ledger posts. |
 | 6 Close | **Overview → End event**, then **Profit and loss** | Spent against budget per line, cash in, cash out, profit or loss. **Close event** is refused while an order is open. |
-| | **Anitha** or **R. Balasubramanian** → **Close event** | Locked. Unspent fund returns to the sector, and the actual spend is saved. A new event of the same kind now sees this year in its past years. |
+| | **Anitha** or **R. Perumal** → **Close event** | Locked. Unspent fund returns to the sector, and the actual spend is saved. A new event of the same kind now sees this year in its past years. |
 | Cancel | A draft, confirmed or published event → **Cancel event** | Needs a reason. The fund returns, open orders cancel, paid tickets are marked for refund. |
 
 The event workspace tabs are Overview, Budget workspace, AI poster studio, Registrations and QR, Purchases and sponsors, Event P&L and Audit trail.
@@ -175,10 +175,10 @@ project budget, four-eyes at every gate, and CSR items in the approvals inbox.
 | 1 Get ready | **Anitha Rajan** → **Approvals**: *CSR compliance papers* has the Tamil Sangam registration. Open **Compliance Vault**, **Review** it | Verified. A paper a CA uploaded themselves shows **Review** disabled with *You prepared this.* |
 | 2 Plan project | **Saravanan** → **CSR Projects** → **Create CSR Project**. Add a POOJA line unmarked | Refused. Mark it blocked, submit: status SUBMITTED. CA Partner sees **Sanction** disabled (*Only a Trustee approves*). **Meenakshi** (Trustee) sanctions: OPEN_FOR_FUNDING. |
 | 3 Find company | **Corporate Pipeline** → **AI Proposal** | The project list holds only Trustee-approved projects of CSR-ready entities. Convert it: an MoU draft. |
-| 4 Sign agreement | **MoUs & Tranches**: **R. Balasubramanian** signs, then **Meenakshi** | After both: ACTIVE, with its own CSR fund and a `CSR · <project>` budget head. The deal owner cannot sign. |
+| 4 Sign agreement | **MoUs & Tranches**: **R. Perumal** signs, then **Meenakshi** | After both: ACTIVE, with its own CSR fund and a `CSR · <project>` budget head. The deal owner cannot sign. |
 | 5 Receive & spend | **Record Receipt** on Tranche #1 | Fund credited, and **Ledger** shows *CSR grant received* (Bank / CSR grant income). Tranche #2 says it needs Tranche #1's signed UC. |
 | | **Fund allotments**: allot the CSR fund to *Kitchen Operations* | Refused: CSR money goes only to its own project budget. Allot it to the `CSR · …` head instead, then raise a PO on that head (CA approves as usual). |
-| 6 Report back | **UCs & Reports** → **Draft UC** as Anitha, then try **Certify & Sign** as Anitha | Disabled (*You prepared this*). R. Balasubramanian signs with an 18-character UDIN; Tranche #2 unlocks. The **CSR fund statement** shows received, allotted, committed, spent and available per grant. |
+| 6 Report back | **UCs & Reports** → **Draft UC** as Anitha, then try **Certify & Sign** as Anitha | Disabled (*You prepared this*). R. Perumal signs with an 18-character UDIN; Tranche #2 unlocks. The **CSR fund statement** shows received, allotted, committed, spent and available per grant. |
 
 Seeded state: the TVS grant has both tranches received; Tranche #1 (₹15L) was allotted to its project budget and spent,
 with a signed UC. Tranche #2 sits unallotted in the TVS CSR fund. The Murugappa heritage MoU is signed, with Tranche #1 due.

@@ -89,8 +89,8 @@ export function titleCase(value: string): string {
 }
 
 /**
- * The name to greet someone by. "R. Balasubramanian" should greet as
- * "Balasubramanian", not "R." — so an initial is skipped.
+ * The name to greet someone by. "R. Perumal" should greet as
+ * "Perumal", not "R." — so an initial is skipped.
  */
 export function greetingName(fullName: string): string {
   const parts = fullName.split(/\s+/).filter(Boolean)
