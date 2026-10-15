@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { userById } from '@/mock/seed'
@@ -391,20 +392,15 @@ export function CsrProjectsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
-                Implementing Agency
-              </label>
-              <select
-                className="w-full rounded-lg border border-sandalwood-300 bg-white py-2 px-3 text-xs text-sandalwood-900 focus:outline-hidden"
+              <Select
+                label="Implementing Agency"
                 value={entityId}
                 onChange={(e) => setEntityId(e.target.value)}
-              >
-                {entities.map((e) => (
-                  <option key={e.id} value={e.id}>
-                    {e.legalName} ({e.readinessStatus})
-                  </option>
-                ))}
-              </select>
+                options={entities.map((e) => ({
+                  value: e.id,
+                  label: `${e.legalName} (${e.readinessStatus})`,
+                }))}
+              />
             </div>
 
             <div className="grid grid-cols-3 gap-3">
@@ -420,20 +416,15 @@ export function CsrProjectsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
-                  Schedule VII Clause
-                </label>
-                <select
-                  className="w-full rounded-lg border border-sandalwood-300 bg-white py-2 px-3 text-xs text-sandalwood-900 focus:outline-hidden"
+                <Select
+                  label="Schedule VII Clause"
                   value={scheduleViiCode}
                   onChange={(e) => setScheduleViiCode(e.target.value)}
-                >
-                  {CSR_SCHEDULE_VII_ITEMS.map((item) => (
-                    <option key={item.code} value={item.code}>
-                      ({item.code}) {item.title}
-                    </option>
-                  ))}
-                </select>
+                  options={CSR_SCHEDULE_VII_ITEMS.map((item) => ({
+                    value: item.code,
+                    label: `(${item.code}) ${item.title}`,
+                  }))}
+                />
               </div>
             </div>
 
@@ -501,24 +492,25 @@ export function CsrProjectsPage() {
                     key={line.id}
                     className="flex flex-wrap items-center gap-2 rounded-md border border-sandalwood-200 bg-sandalwood-50/50 p-2 text-xs"
                   >
-                    <div className="w-36">
-                      <select
-                        className="w-full rounded-md border border-sandalwood-300 bg-white py-1.5 px-2 text-xs"
+                    <div className="w-44">
+                      <Select
+                        size="sm"
                         value={line.category}
                         onChange={(e) =>
                           handleUpdateLine(line.id, {
                             category: e.target.value as CsrBudgetCategory,
                           })
                         }
-                      >
-                        <option value="MATERIALS">MATERIALS</option>
-                        <option value="SALARIES">SALARIES</option>
-                        <option value="EQUIPMENT">EQUIPMENT</option>
-                        <option value="CONSTRUCTION">CONSTRUCTION</option>
-                        <option value="ADMIN_OVERHEAD">ADMIN_OVERHEAD</option>
-                        <option value="POOJA">POOJA (BLOCKED)</option>
-                        <option value="FESTIVAL">FESTIVAL (BLOCKED)</option>
-                      </select>
+                        options={[
+                          { value: 'MATERIALS', label: 'MATERIALS' },
+                          { value: 'SALARIES', label: 'SALARIES' },
+                          { value: 'EQUIPMENT', label: 'EQUIPMENT' },
+                          { value: 'CONSTRUCTION', label: 'CONSTRUCTION' },
+                          { value: 'ADMIN_OVERHEAD', label: 'ADMIN_OVERHEAD' },
+                          { value: 'POOJA', label: 'POOJA (BLOCKED)' },
+                          { value: 'FESTIVAL', label: 'FESTIVAL (BLOCKED)' },
+                        ]}
+                      />
                     </div>
 
                     <div className="flex-1 min-w-[150px]">

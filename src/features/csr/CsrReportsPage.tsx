@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { userById, userName } from '@/mock/seed'
@@ -408,41 +409,31 @@ export function CsrReportsPage() {
         >
           <form onSubmit={handleDraftUcSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
-                Select Active Corporate Grant
-              </label>
-              <select
-                className="w-full rounded-lg border border-sandalwood-300 bg-white py-2 px-3 text-xs text-sandalwood-900 focus:outline-hidden"
+              <Select
+                label="Select Active Corporate Grant"
                 value={selectedDealId}
                 onChange={(e) => {
                   setSelectedDealId(e.target.value)
                   const d = ucDeals.find((x) => x.id === e.target.value)
                   if (d && ucReady(d)[0]) setSelectedTrancheId(ucReady(d)[0]!.id)
                 }}
-              >
-                {ucDeals.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {companies.find((c) => c.id === d.companyId)?.name} — {formatMoney(d.committedAmount)}
-                  </option>
-                ))}
-              </select>
+                options={ucDeals.map((d) => ({
+                  value: d.id,
+                  label: `${companies.find((c) => c.id === d.companyId)?.name} — ${formatMoney(d.committedAmount)}`,
+                }))}
+              />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
-                Instalment / Tranche
-              </label>
-              <select
-                className="w-full rounded-lg border border-sandalwood-300 bg-white py-2 px-3 text-xs text-sandalwood-900 focus:outline-hidden"
+              <Select
+                label="Instalment / Tranche"
                 value={selectedTrancheId}
                 onChange={(e) => setSelectedTrancheId(e.target.value)}
-              >
-                {ucReady(ucDeals.find((d) => d.id === selectedDealId) ?? ucDeals[0]!).map((t) => (
-                  <option key={t.id} value={t.id}>
-                    Tranche #{t.seqNo} ({formatMoney(t.amount)}) — {t.status}
-                  </option>
-                ))}
-              </select>
+                options={ucReady(ucDeals.find((d) => d.id === selectedDealId) ?? ucDeals[0]!).map((t) => ({
+                  value: t.id,
+                  label: `Tranche #${t.seqNo} (${formatMoney(t.amount)}) — ${t.status}`,
+                }))}
+              />
             </div>
 
             <div>
@@ -491,20 +482,15 @@ export function CsrReportsPage() {
         >
           <form onSubmit={handleAddProgressSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
-                CSR Project
-              </label>
-              <select
-                className="w-full rounded-lg border border-sandalwood-300 bg-white py-2 px-3 text-xs text-sandalwood-900 focus:outline-hidden"
+              <Select
+                label="CSR Project"
                 value={progressProjectId}
                 onChange={(e) => setProgressProjectId(e.target.value)}
-              >
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.title}
-                  </option>
-                ))}
-              </select>
+                options={projects.map((p) => ({
+                  value: p.id,
+                  label: p.title,
+                }))}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-3">

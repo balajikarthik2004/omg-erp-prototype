@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom'
 import { Search } from 'lucide-react'
 
 import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
 import { Tabs } from '@/components/ui/Tabs'
 import { CURRENCIES, type Currency } from '@/lib/currency'
 import { GAUSHALA_SEWAS } from '@/mock/gaushala'
@@ -245,19 +246,19 @@ export function GaushalaPage() {
  */
 function CurrencySwitcher({ value, onChange }: { value: Currency; onChange: (c: Currency) => void }) {
   return (
-    <label className="flex items-center gap-2 text-[13px] text-stone-500">
-      <span>Show prices in</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value as Currency)}
-        className="rounded-lg border border-sandal-200 bg-white px-2.5 py-1.5 text-[13px] font-semibold text-stone-900 shadow-2xs focus:border-kumkum-500 focus:ring-3 focus:ring-kumkum-500/15 focus:outline-none"
-      >
-        {Object.values(CURRENCIES).map((c) => (
-          <option key={c.code} value={c.code}>
-            {c.code} — {c.label}
-          </option>
-        ))}
-      </select>
-    </label>
+    <div className="flex items-center gap-2 text-[13px] text-stone-500">
+      <span className="shrink-0">Show prices in</span>
+      <div className="w-44">
+        <Select
+          size="sm"
+          value={value}
+          onChange={(e) => onChange(e.target.value as Currency)}
+          options={Object.values(CURRENCIES).map((c) => ({
+            value: c.code,
+            label: `${c.code} — ${c.label}`,
+          }))}
+        />
+      </div>
+    </div>
   )
 }

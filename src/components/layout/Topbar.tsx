@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Building2, ChevronRight, Menu } from 'lucide-react'
+import { ChevronRight, Menu } from 'lucide-react'
 
 import { SECTOR_IDS, SECTORS } from '@/config'
 import { cn } from '@/lib/cn'
@@ -8,6 +8,7 @@ import { useDb } from '@/store/db'
 import { useSession, type SectorFilter } from '@/store/session'
 import { locate } from './nav'
 import { PersonaSwitcher } from './PersonaSwitcher'
+import { Select } from '@/components/ui/Select'
 
 const FILTERS: { value: SectorFilter; label: string; short: string }[] = [
   { value: 'all', label: 'All sectors', short: 'All' },
@@ -70,22 +71,15 @@ export function Topbar() {
 
         <div className="flex min-w-0 flex-1 items-center justify-end gap-2.5 sm:flex-none">
           {tenants.length > 1 ? (
-            <label className="flex items-center gap-1.5 rounded-lg border border-sandal-200 bg-sandal-50 py-1 pl-2.5 pr-1 text-[13px]">
-              <Building2 className="size-4 shrink-0 text-stone-500" aria-hidden />
-              <span className="sr-only">Customer</span>
-              <select
+            <div className="w-44">
+              <Select
+                size="sm"
                 aria-label="Customer"
                 value={activeTenantId}
                 onChange={(e) => switchTenant(e.target.value)}
-                className="max-w-40 truncate rounded-md bg-transparent py-0.5 pr-1 text-[13px] font-semibold text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400"
-              >
-                {tenants.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+                options={tenants.map((t) => ({ value: t.id, label: t.name }))}
+              />
+            </div>
           ) : null}
 
           <div

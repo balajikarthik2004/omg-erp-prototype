@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { userById } from '@/mock/seed'
@@ -415,24 +416,22 @@ export function ComplianceVaultPage() {
             </p>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
-                Document Classification
-              </label>
-              <select
-                className="w-full rounded-lg border border-sandalwood-300 bg-white py-2 px-3 text-xs text-sandalwood-900 focus:outline-hidden"
+              <Select
+                label="Document Classification"
                 value={newDocType}
                 onChange={(e) => setNewDocType(e.target.value as CsrDocType)}
-              >
-                <option value="REG_CERT">Trust Deed / Registration Certificate</option>
-                <option value="RNPO_332">RNPO Registration (Income-tax Act 2025 Sec 332 / 12A)</option>
-                <option value="APPROVAL_354">Tax Approval (Income-tax Act 2025 Sec 354 / 80G)</option>
-                <option value="CSR1">MCA Form CSR-1 Registration</option>
-                <option value="AUDITED_ACCOUNTS">Audited Balance Sheet & P&L (3 Years)</option>
-                <option value="ITR">Income Tax Return (ITR-7)</option>
-                <option value="BOARD_RESOLUTION">Board Resolution for CSR Execution</option>
-                <option value="DARPAN">NITI Aayog NGO Darpan Certificate</option>
-                <option value="BANK_PROOF">Dedicated CSR Bank Account Proof</option>
-              </select>
+                options={[
+                  { value: 'REG_CERT', label: 'Trust Deed / Registration Certificate' },
+                  { value: 'RNPO_332', label: 'RNPO Registration (Income-tax Act 2025 Sec 332 / 12A)' },
+                  { value: 'APPROVAL_354', label: 'Tax Approval (Income-tax Act 2025 Sec 354 / 80G)' },
+                  { value: 'CSR1', label: 'MCA Form CSR-1 Registration' },
+                  { value: 'AUDITED_ACCOUNTS', label: 'Audited Balance Sheet & P&L (3 Years)' },
+                  { value: 'ITR', label: 'Income Tax Return (ITR-7)' },
+                  { value: 'BOARD_RESOLUTION', label: 'Board Resolution for CSR Execution' },
+                  { value: 'DARPAN', label: 'NITI Aayog NGO Darpan Certificate' },
+                  { value: 'BANK_PROOF', label: 'Dedicated CSR Bank Account Proof' },
+                ]}
+              />
             </div>
 
             <div>
