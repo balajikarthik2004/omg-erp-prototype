@@ -249,7 +249,15 @@ export interface ProgramsSeed {
   transparencyDocs: TransparencyDoc[]
 }
 
-const FESTIVALS: { name: string; tamil?: string; monthDay: [number, number]; rituals: string[]; summary: string; image?: string }[] = [
+const FESTIVALS: {
+  name: string
+  tamil?: string
+  monthDay: [number, number]
+  rituals: string[]
+  summary: string
+  image?: string
+  completed?: boolean
+}[] = [
   {
     name: 'Gopashtami',
     tamil: 'கோபாஷ்டமி',
@@ -263,6 +271,8 @@ const FESTIVALS: { name: string; tamil?: string; monthDay: [number, number]; rit
     monthDay: [10, 1],
     rituals: ['Govardhan hill of fodder built in the yard', 'Parikrama with the herd', 'Annakut offering'],
     summary: 'A hill of fodder is built in the yard and the herd walks around it. The oldest ritual we keep here.',
+    image: '/images/Govardhan Puja.png',
+    completed: true,
   },
   {
     name: 'Makar Sankranti Cow Pooja',
@@ -277,19 +287,15 @@ const FESTIVALS: { name: string; tamil?: string; monthDay: [number, number]; rit
     monthDay: [1, 26],
     rituals: ['Night-long bhajan beside the sheds', 'Abhishekam at midnight', 'Milk offering'],
     summary: 'The herd is quiet all night while the bhajan goes on beside the sheds. Visitors sit through till dawn.',
+    image: '/images/Mahashivratri.png',
+    completed: true,
   },
   {
     name: 'Pradosham Go Seva',
     monthDay: [5, 12],
     rituals: ['Evening lamp round', 'Feeding in the name of each sankalpa received'],
     summary: 'Held every Pradosham evening: a lamp round, then feeding in the name of everyone who asked for it.',
-    image: '/images/pradosham.png',
-  },
-  {
-    name: 'Pitru Paksha Fortnight',
-    monthDay: [8, 20],
-    rituals: ['Daily feeding with ancestral sankalpa', 'Tarpanam beside the shed', 'Names read at the morning feed'],
-    summary: 'A fortnight of feeding in the names of ancestors, for families who cannot travel to do it themselves.',
+    image: '/images/Pradosham.png',
   },
 ]
 
@@ -442,12 +448,16 @@ export function makeProgramsSeed(now: Date, cows: Cow[], donors: Donor[]): Progr
     // Place each festival on its month-day, in whichever year keeps the
     // calendar straddling today: some already held, some still to come.
     let when = new Date(now.getFullYear(), fest.monthDay[0], fest.monthDay[1], 6, 30, 0, 0)
-    if (i % 2 === 0 && when.getTime() < now.getTime()) {
-      when = new Date(now.getFullYear() + 1, fest.monthDay[0], fest.monthDay[1], 6, 30, 0, 0)
-    } else if (i % 2 === 1 && when.getTime() > now.getTime()) {
-      when = new Date(now.getFullYear() - 1, fest.monthDay[0], fest.monthDay[1], 6, 30, 0, 0)
+    if (fest.completed) {
+      if (when.getTime() >= now.getTime()) {
+        when = new Date(now.getFullYear() - 1, fest.monthDay[0], fest.monthDay[1], 6, 30, 0, 0)
+      }
+    } else {
+      if (when.getTime() <= now.getTime()) {
+        when = new Date(now.getFullYear() + 1, fest.monthDay[0], fest.monthDay[1], 6, 30, 0, 0)
+      }
     }
-    const upcoming = when.getTime() > now.getTime()
+    const upcoming = !fest.completed && when.getTime() > now.getTime()
     const isPaid = i % 3 === 1
     const capacity = 60 + i * 20
     const registered = upcoming ? rng.int(8, Math.floor(capacity * 0.7)) : rng.int(Math.floor(capacity * 0.6), capacity)

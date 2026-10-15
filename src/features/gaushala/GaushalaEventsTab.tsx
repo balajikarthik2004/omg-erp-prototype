@@ -89,12 +89,14 @@ export function GaushalaEventsTab({ currency }: { currency: Currency }) {
   )
 }
 
-export function getEventImage(event: { name: string; image?: string }): string | undefined {
+function getEventImage(event: { name: string; image?: string }): string | undefined {
   if (event.image) return event.image
   const n = event.name.toLowerCase()
-  if (n.includes('pradosham')) return '/images/pradosham.png'
+  if (n.includes('pradosham')) return '/images/Pradosham.png'
   if (n.includes('gopashtami') || n.includes('gopastami')) return '/images/gopashtami.png'
   if (n.includes('sankranti') || n.includes('makar')) return '/images/makar-sankranti.png'
+  if (n.includes('govardhan')) return '/images/Govardhan Puja.png'
+  if (n.includes('mahashivratri') || n.includes('shivratri')) return '/images/Mahashivratri.png'
   return undefined
 }
 

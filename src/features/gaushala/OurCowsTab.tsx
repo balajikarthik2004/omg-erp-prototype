@@ -1,10 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CalendarDays, HeartHandshake, Milk, Stethoscope, UserRound } from 'lucide-react'
+import { CalendarDays, HeartHandshake, Milk, Stethoscope, UserRound, X } from 'lucide-react'
 
 import { cn } from '@/lib/cn'
 import { formatDate, formatMoney } from '@/lib/format'
-import { Drawer } from '@/components/ui/Drawer'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Tabs } from '@/components/ui/Tabs'
 import { userName } from '@/mock/seed'
@@ -83,7 +82,7 @@ export function OurCowsTab({ query, onClearQuery }: { query: string; onClearQuer
         )}
       </div>
 
-      <CowDrawer cow={open} onClose={() => setOpen(null)} />
+      <CowStoryModal cow={open} onClose={() => setOpen(null)} />
     </div>
   )
 }
@@ -101,7 +100,7 @@ function CowCard({ cow, onOpen }: { cow: Cow; onOpen: () => void }) {
     >
       <div className="flex items-start gap-4">
         <span className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-sandal-200 bg-white">
-          <CowPortrait portrait={cow.portrait} size={76} />
+          <CowPortrait cow={cow} size={76} />
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-baseline gap-x-2">
@@ -122,106 +121,204 @@ function CowCard({ cow, onOpen }: { cow: Cow; onOpen: () => void }) {
 
       <span className="mt-4 flex items-center justify-between border-t border-sandal-200 pt-4 text-[13px]">
         <span className="text-stone-500">Rescued {formatDate(cow.rescuedAt)}</span>
-        <span className="font-medium text-kumkum-700 group-hover:underline">Read her story</span>
+        <span className="font-medium text-kumkum-700 group-hover:underline">
+          {cow.gender === 'female' ? 'Read her story' : 'Read his story'}
+        </span>
       </span>
     </button>
   )
 }
 
-function CowDrawer({ cow, onClose }: { cow: Cow | null; onClose: () => void }) {
+function CowStoryModal({ cow, onClose }: { cow: Cow | null; onClose: () => void }) {
   const health = useDb((s) => s.cowHealth)
+
+  useEffect(() => {
+    if (!cow) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [cow, onClose])
+
   if (!cow) return null
 
   const records = health.filter((h) => h.cowId === cow.id).slice(0, 6)
+  const isFemale = cow.gender === 'female'
+  const cowImg = cow.image ?? `/images/cows/${cow.name}.png`
 
   return (
-    <Drawer
-      open
-      onClose={onClose}
-      title={cow.name}
-      subtitle={`${cow.breed} · ${cow.ageYears} ${cow.ageYears === 1 ? 'year' : 'years'} old`}
-      width="lg"
-    >
-      <div className="space-y-6 px-6 py-5">
-        <div className="flex items-center gap-4">
-          <span className="flex size-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-navy-100 bg-navy-50">
-            <CowPortrait portrait={cow.portrait} size={108} />
-          </span>
-          <div className="min-w-0 space-y-2">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-stone-950/70 backdrop-blur-sm transition-opacity duration-300"
+        onClick={onClose}
+        aria-hidden
+      />
+
+      {/* Modal Dialog Container */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${cow.name}'s story`}
+        className="relative my-auto w-full max-w-2xl overflow-hidden rounded-3xl border border-sandal-200 bg-white shadow-2xl transition-all duration-300 animate-in fade-in zoom-in-95"
+      >
+        {/* Floating Close Button */}
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute top-4 right-4 z-20 flex size-9 items-center justify-center rounded-full bg-stone-900/60 text-white backdrop-blur-md transition-all duration-200 hover:bg-stone-950 hover:scale-105"
+        >
+          <X className="size-5" aria-hidden />
+        </button>
+
+        {/* Large Prominent Photo Header */}
+        <div className="relative aspect-[16/10] sm:aspect-[3/2] w-full max-h-[380px] overflow-hidden bg-navy-950">
+          <img
+            src={cowImg}
+            alt={cow.name}
+            className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+          />
+          {/* Subtle gradient overlays for contrast and readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/25 to-stone-950/20" />
+
+          {/* Top Badges */}
+          <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
             <StatusBadge status={cow.status} />
-            <dl className="space-y-1 text-[13.5px] text-navy-800">
-              <Row icon={<CalendarDays className="size-3.5" aria-hidden />} label="Arrived">
-                {formatDate(cow.rescuedAt)}
-              </Row>
-              <Row icon={<UserRound className="size-3.5" aria-hidden />} label="Caretaker">
-                {userName(cow.caretakerId)}
-              </Row>
-              {cow.milkYield ? (
-                <Row icon={<Milk className="size-3.5" aria-hidden />} label="Milk">
-                  {cow.milkYield} litres a day
-                </Row>
+            <span className="rounded-full bg-white/90 px-3 py-1 text-[12px] font-semibold tracking-wide text-stone-800 shadow-sm backdrop-blur-sm">
+              {cow.breed}
+            </span>
+            <span className="rounded-full bg-black/40 px-3 py-1 text-[12px] font-medium text-white backdrop-blur-sm capitalize">
+              {cow.kind === 'ox' ? 'Working ox' : `${cow.kind}`}
+            </span>
+          </div>
+
+          {/* Bottom Floating Title */}
+          <div className="absolute bottom-4 left-5 right-5 text-white">
+            <div className="flex flex-wrap items-baseline gap-2.5">
+              <h3 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-white drop-shadow-md">
+                {cow.name}
+              </h3>
+              {cow.tamil ? (
+                <span className="text-base sm:text-lg font-medium text-stone-200 drop-shadow-sm">
+                  {cow.tamil}
+                </span>
               ) : null}
-            </dl>
+            </div>
+            <p className="mt-1 text-xs sm:text-[13.5px] text-stone-200 font-medium">
+              {isFemale ? 'Female' : 'Male'} · {cow.ageYears} {cow.ageYears === 1 ? 'year' : 'years'} old
+              {cow.milkYield ? ` · ${cow.milkYield} litres milk / day` : ''}
+            </p>
           </div>
         </div>
 
-        <p className="text-[14.5px] leading-relaxed text-navy-900">{cow.story}</p>
+        {/* Scrollable Content Body */}
+        <div className="scrollbar-thin max-h-[calc(85vh-260px)] sm:max-h-[calc(85vh-320px)] overflow-y-auto px-6 py-6 sm:px-7 space-y-5">
+          {/* Quick Info Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="rounded-2xl border border-sandal-200 bg-sandal-50/60 p-3.5">
+              <span className="flex items-center gap-1.5 text-[11.5px] font-bold text-stone-500 uppercase tracking-wider">
+                <CalendarDays className="size-3.5 text-kumkum-600" aria-hidden />
+                Arrived
+              </span>
+              <p className="mt-1 font-semibold text-[13.5px] text-stone-800">{formatDate(cow.rescuedAt)}</p>
+            </div>
 
-        {cow.healthNote ? (
-          <p className="flex items-start gap-2 rounded-xl border border-marigold-50 bg-marigold-50/60 px-3.5 py-2.5 text-[13.5px] leading-relaxed text-marigold-500">
-            <Stethoscope className="mt-0.5 size-4 shrink-0" aria-hidden />
-            <span>{cow.healthNote}</span>
-          </p>
-        ) : null}
+            <div className="rounded-2xl border border-sandal-200 bg-sandal-50/60 p-3.5">
+              <span className="flex items-center gap-1.5 text-[11.5px] font-bold text-stone-500 uppercase tracking-wider">
+                <UserRound className="size-3.5 text-kumkum-600" aria-hidden />
+                Caretaker
+              </span>
+              <p className="mt-1 font-semibold text-[13.5px] text-stone-800 truncate">{userName(cow.caretakerId)}</p>
+            </div>
 
-        {records.length > 0 ? (
-          <section>
-            <h4 className="text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">
-              Health record
+            <div className="col-span-2 sm:col-span-1 rounded-2xl border border-sandal-200 bg-sandal-50/60 p-3.5">
+              <span className="flex items-center gap-1.5 text-[11.5px] font-bold text-stone-500 uppercase tracking-wider">
+                <Milk className="size-3.5 text-kumkum-600" aria-hidden />
+                Daily Milk
+              </span>
+              <p className="mt-1 font-semibold text-[13.5px] text-stone-800">
+                {cow.milkYield ? `${cow.milkYield} litres` : 'Retired / Non-milking'}
+              </p>
+            </div>
+          </div>
+
+          {/* Rescue Story Card */}
+          <div className="rounded-2xl border border-sandal-200 bg-gradient-to-br from-white to-sandal-50/50 p-4.5 sm:p-5">
+            <h4 className="text-[12px] font-extrabold tracking-wider text-stone-500 uppercase">
+              {isFemale ? 'Her Story' : 'His Story'}
             </h4>
-            <ul className="mt-3 space-y-2.5">
-              {records.map((r) => (
-                <li key={r.id} className="rounded-xl border border-navy-100 bg-navy-50/50 px-3.5 py-2.5">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="text-[13.5px] font-semibold text-navy-950 capitalize">{r.kind}</span>
-                    <span className="font-mono text-[12.5px] text-navy-600 tabular-nums">{formatDate(r.at)}</span>
-                  </div>
-                  <p className="mt-0.5 text-[13px] leading-relaxed text-navy-700">{r.note}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
+            <p className="mt-2 text-[14.5px] sm:text-[15px] leading-relaxed text-stone-800 font-serif italic">
+              "{cow.story}"
+            </p>
+          </div>
 
-        <section className="rounded-xl border border-navy-100 bg-white p-4">
-          <p className="text-[13.5px] leading-relaxed text-navy-800">
-            Keeping {cow.name} costs <strong className="font-mono tabular-nums">{formatMoney(cow.monthlyCare)}</strong>{' '}
-            a month — feed, bedding, a caretaker and a vet on call.
-          </p>
-          <div className="mt-3.5 flex flex-wrap gap-2">
+          {/* Health Note If Present */}
+          {cow.healthNote ? (
+            <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-[13.5px] text-amber-950">
+              <Stethoscope className="mt-0.5 size-4.5 shrink-0 text-amber-700" aria-hidden />
+              <div>
+                <strong className="block font-bold text-[12px] text-amber-800 uppercase tracking-wider">
+                  Care & Health Note
+                </strong>
+                <p className="mt-0.5 leading-relaxed text-amber-900">{cow.healthNote}</p>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Health Records If Any */}
+          {records.length > 0 ? (
+            <section>
+              <h4 className="text-[11.5px] font-extrabold tracking-[0.14em] text-stone-500 uppercase">
+                Veterinary records ({records.length})
+              </h4>
+              <ul className="mt-2.5 space-y-2">
+                {records.map((r) => (
+                  <li key={r.id} className="rounded-xl border border-sandal-200 bg-stone-50/60 px-3.5 py-2.5">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="text-[13px] font-semibold text-stone-900 capitalize">{r.kind}</span>
+                      <span className="font-mono text-[12px] text-stone-500 tabular-nums">{formatDate(r.at)}</span>
+                    </div>
+                    <p className="mt-0.5 text-[12.5px] leading-relaxed text-stone-600">{r.note}</p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+        </div>
+
+        {/* Modal Footer / Action Bar */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-sandal-200 bg-sandal-50/80 px-6 py-4">
+          <div>
+            <p className="text-[13px] text-stone-600">
+              Monthly care: <strong className="font-mono text-stone-900 font-bold">{formatMoney(cow.monthlyCare)}</strong> / month
+            </p>
+            <p className="text-[11.5px] text-stone-500">Includes fresh green fodder, bran mash, and vet rounds.</p>
+          </div>
+          <div className="flex w-full sm:w-auto items-center gap-2">
             <Link
               to={`/sevalaya/gaushala/${cow.kind === 'calf' ? 'gau-care-calf' : cow.kind === 'cow' ? 'gau-care-cow' : 'gau-care-bull'}`}
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-kumkum-500 to-kumkum-600 px-4 text-[14px] font-bold text-white shadow-sm transition-all hover:from-kumkum-600 hover:to-kumkum-700 active:scale-[0.98]"
+              className="inline-flex flex-1 sm:flex-none h-10 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-kumkum-500 to-kumkum-600 px-5 text-[13.5px] font-bold text-white shadow-sm transition-all hover:from-kumkum-600 hover:to-kumkum-700 active:scale-[0.98]"
             >
               <HeartHandshake className="size-4" aria-hidden />
-              Sponsor her care
+              Sponsor {isFemale ? 'her' : 'his'} care
             </Link>
+            <button
+              type="button"
+              onClick={onClose}
+              className="h-10 rounded-xl border border-stone-300 bg-white px-4 text-[13.5px] font-medium text-stone-700 hover:bg-stone-100 transition-colors"
+            >
+              Close
+            </button>
           </div>
-          <p className="mt-2.5 text-[12.5px] text-navy-600">
-            Full adoption, with monthly photographs and a certificate, opens in the next release.
-          </p>
-        </section>
+        </div>
       </div>
-    </Drawer>
-  )
-}
-
-function Row({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-navy-500">{icon}</span>
-      <dt className="sr-only">{label}</dt>
-      <dd>{children}</dd>
     </div>
   )
 }
+
