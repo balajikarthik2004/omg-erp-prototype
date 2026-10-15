@@ -10,7 +10,7 @@ import type { FundSlice } from '@/store/selectors'
  * Balances rolled up to sector, not one hue per fund — a dozen generated hues
  * would be unreadable. The list beside it carries every fund by name.
  */
-export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; height?: number }) {
+export function FundDonut({ slices, height = 230 }: { slices: FundSlice[]; height?: number }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
   const bySector = new Map<SectorId, number>()
@@ -35,6 +35,9 @@ export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; heigh
 
   const activeSector = activeIndex !== null ? data[activeIndex] : null
   const percent = activeSector && total > 0 ? Math.round((activeSector.value / total) * 100) : null
+  const currentVal = activeSector ? activeSector.value : total
+  const formattedAmount = formatMoney(currentVal)
+  const amountLen = formattedAmount.length
 
   return (
     <div className="flex flex-col items-center gap-6" onMouseLeave={() => setActiveIndex(null)}>
@@ -64,8 +67,8 @@ export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; heigh
               data={data}
               dataKey="value"
               nameKey="label"
-              innerRadius="64%"
-              outerRadius="100%"
+              innerRadius="68%"
+              outerRadius="98%"
               paddingAngle={2.5}
               stroke="#FFFFFF"
               strokeWidth={2.5}
@@ -94,18 +97,32 @@ export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; heigh
             </Pie>
           </PieChart>
         </ResponsiveContainer>
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-3 transition-all duration-150">
-          <span className="truncate max-w-32.5 text-[11px] font-bold tracking-widest text-navy-600 uppercase">
-            {activeSector ? activeSector.label : 'Held'}
-          </span>
-          <span className="font-heritage text-[22px] font-bold text-navy-950 leading-tight mt-0.5">
-            {formatMoney(activeSector ? activeSector.value : total)}
-          </span>
-          {percent !== null ? (
-            <span className="font-mono text-[11px] font-semibold text-navy-600">{percent}% of total</span>
-          ) : (
-            <span className="text-[11px] font-medium text-navy-400">Total held</span>
-          )}
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center select-none transition-all duration-150">
+          <div className="flex flex-col items-center justify-center max-w-[62%] px-1">
+            <span className="truncate max-w-full text-[10.5px] font-bold tracking-wider text-navy-600 uppercase">
+              {activeSector ? activeSector.label : 'Held'}
+            </span>
+            <span
+              className={cn(
+                'font-heritage font-bold text-navy-950 leading-tight mt-0.5 tracking-tight tabular-nums select-none max-w-full truncate',
+                amountLen > 13
+                  ? 'text-[15px]'
+                  : amountLen > 10
+                    ? 'text-[17px]'
+                    : amountLen > 8
+                      ? 'text-[19px]'
+                      : 'text-[22px]',
+              )}
+              title={formattedAmount}
+            >
+              {formattedAmount}
+            </span>
+            {percent !== null ? (
+              <span className="font-mono text-[10.5px] font-semibold text-navy-600 mt-0.5">{percent}% of total</span>
+            ) : (
+              <span className="text-[10.5px] font-medium text-navy-400 mt-0.5">Total held</span>
+            )}
+          </div>
         </div>
       </div>
 
