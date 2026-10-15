@@ -179,16 +179,33 @@ export function GaushalaPage() {
         />
 
         {searchable || priced ? (
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             {searchable ? (
-              <div className="sm:w-80">
-                <Input
-                  aria-label={`Search ${active.label.toLowerCase()}`}
-                  placeholder={tab === 'sewas' ? 'Search sewas' : 'Search the herd'}
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  leading={<Search className="size-4" aria-hidden />}
-                />
+              <div className="relative flex-1 sm:max-w-xl md:max-w-2xl">
+                <div className="relative flex items-center">
+                  <Input
+                    aria-label={`Search ${active.label.toLowerCase()}`}
+                    placeholder={
+                      tab === 'sewas'
+                        ? 'Search all sewas (e.g. grass, calf care, medical, shed...)'
+                        : 'Search the herd by name, tag or breed...'
+                    }
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    leading={<Search className="size-5 text-navy-400" aria-hidden />}
+                    className="h-12 sm:h-13 pl-11 pr-10 text-[15px] sm:text-[16px] rounded-2xl border-navy-200/90 shadow-sm focus:border-navy-500 focus:ring-4 focus:ring-navy-500/10 placeholder:text-stone-400"
+                  />
+                  {query ? (
+                    <button
+                      type="button"
+                      onClick={() => setQuery('')}
+                      className="absolute right-3.5 flex size-6 items-center justify-center rounded-full bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900 transition-colors text-xs font-bold"
+                      aria-label="Clear search"
+                    >
+                      ✕
+                    </button>
+                  ) : null}
+                </div>
               </div>
             ) : (
               <span />

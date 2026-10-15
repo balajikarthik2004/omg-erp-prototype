@@ -180,7 +180,6 @@ export const CATALOG: CatalogItem[] = [
   { id: 'cat-tmp-corpus', sectorId: 'temple', category: 'project', name: 'Temple Corpus Endowment', description: 'A permanent fund. Only the income from it is ever spent.', price: null, presets: [100100, 250100, 500100], fundId: 'fund-tmp-corpus', active: true },
 
   /* Sevalaya — Hundi */
-  { id: 'cat-sev-general', sectorId: 'sevalaya', category: 'hundi', name: 'General Donation', description: 'Used where the need is greatest that week.', price: null, presets: [2100, 5100, 10100, 25100], fundId: 'fund-sev-gen', active: true, popular: true },
   { id: 'cat-sev-meal', sectorId: 'sevalaya', category: 'hundi', name: 'Sponsor One Meal', description: 'A full meal for one person: rice, sambar, poriyal and curd.', price: 1100, fundId: 'fund-sev-anna', active: true, popular: true },
 
   /* Sevalaya — Pooja (dedicated days) */

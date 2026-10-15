@@ -93,13 +93,13 @@ export const CATEGORY_DEFAULT_IMAGES: Record<string, SewaImageInfo> = {
     badgeColor: 'bg-rose-700/90 text-white',
   },
   infrastructure: {
-    src: '/images/sewa-infrastructure.webp',
+    src: '/images/cowshed.png',
     alt: 'Spacious shelter shed with feeding troughs and water tank',
     badge: 'Infrastructure',
     badgeColor: 'bg-amber-600/90 text-white',
   },
   cow_care: {
-    src: '/images/sewa-cow-care.webp',
+    src: '/images/cow.png',
     alt: 'Caretaker grooming and caring for sacred cow in gaushala',
     badge: 'Cow Care',
     badgeColor: 'bg-navy-700/90 text-white',
@@ -110,28 +110,66 @@ export const CATEGORY_DEFAULT_IMAGES: Record<string, SewaImageInfo> = {
     badge: 'General',
     badgeColor: 'bg-navy-800/90 text-white',
   },
-  occasion: {
-    src: '/images/sewa-cow-care.webp',
-    alt: 'Special occasion pooja and green fodder feeding for cows',
-    badge: 'Occasion',
-    badgeColor: 'bg-kumkum-700/90 text-white',
+}
+
+/**
+ * Direct mapping for the 3 Monthly Care sewas to the user's specific photos in public/images/
+ * 1. cow  -> /images/cow.png  (Monthly Care of a Cow)
+ * 2. calf -> /images/calf.png (Monthly Care of a Calf)
+ * 3. bull -> /images/bull.png (Monthly Care of a Bull)
+ */
+export const MONTHLY_CARE_IMAGES: Record<string, SewaImageInfo> = {
+  'gau-care-cow': {
+    src: '/images/cow.png',
+    alt: 'Sacred cow receiving complete monthly nourishment, shelter and medical care in gaushala',
+    badge: 'Cow Care',
+    badgeColor: 'bg-navy-700/90 text-white',
+  },
+  'gau-care-calf': {
+    src: '/images/calf.png',
+    alt: 'Young calf receiving special feed, milk and nurturing care in gaushala',
+    badge: 'Calf Care',
+    badgeColor: 'bg-navy-700/90 text-white',
+  },
+  'gau-care-bull': {
+    src: '/images/bull.png',
+    alt: 'Sturdy bull receiving dedicated monthly nutrition, bedding and shelter care in gaushala',
+    badge: 'Bull Care',
+    badgeColor: 'bg-navy-700/90 text-white',
+  },
+}
+
+/**
+ * Direct mapping for the 3 Infrastructure sewas to the user's specific photos in public/images/
+ * 1. cowshed   -> /images/cowshed.png   (New Shelter Shed)
+ * 2. watertank -> /images/watertank.png (Water Tank)
+ * 3. repair    -> /images/repair.png    (Shelter Repair)
+ */
+export const INFRASTRUCTURE_IMAGES: Record<string, SewaImageInfo> = {
+  'gau-shed': {
+    src: '/images/cowshed.png',
+    alt: 'New open-sided shelter shed for cattle in gaushala',
+    badge: 'Shelter Shed',
+    badgeColor: 'bg-amber-700/90 text-white',
+  },
+  'gau-water-tank': {
+    src: '/images/watertank.png',
+    alt: 'Clean water storage tank and pipeline for cattle drinking troughs',
+    badge: 'Water Tank',
+    badgeColor: 'bg-sky-700/90 text-white',
+  },
+  'gau-shelter-repair': {
+    src: '/images/repair.png',
+    alt: 'Shelter maintenance, roof repair, and fencing work in gaushala',
+    badge: 'Shelter Repair',
+    badgeColor: 'bg-stone-700/90 text-white',
   },
 }
 
 export const ITEM_SPECIFIC_IMAGES: Record<string, SewaImageInfo> = {
   ...FODDER_IMAGES,
-  'gau-care-calf': {
-    src: '/images/cow-02.webp',
-    alt: 'Young calf receiving special feed and care in gaushala',
-    badge: 'Calf Care',
-    badgeColor: 'bg-navy-700/90 text-white',
-  },
-  'gau-care-bull': {
-    src: '/images/cow-06.webp',
-    alt: 'Cared-for bull in the gaushala shelter',
-    badge: 'Bull Care',
-    badgeColor: 'bg-navy-700/90 text-white',
-  },
+  ...MONTHLY_CARE_IMAGES,
+  ...INFRASTRUCTURE_IMAGES,
 }
 
 export function getSewaImage(sewa: { id: string; gaushalaCategory?: string }): SewaImageInfo {

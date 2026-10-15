@@ -215,14 +215,27 @@ export function CatalogPage({ sectorId: pinned }: { sectorId?: SectorId } = {}) 
               count: items.filter((i) => i.category === t.id).length,
             }))}
           />
-          <div className="lg:w-72">
-            <Input
-              aria-label="Search this catalog"
-              placeholder="Search offerings"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              leading={<Search className="size-4" aria-hidden />}
-            />
+          <div className="w-full sm:max-w-md lg:w-96">
+            <div className="relative flex items-center">
+              <Input
+                aria-label="Search this catalog"
+                placeholder="Search offerings by name or keyword..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                leading={<Search className="size-5 text-navy-400" aria-hidden />}
+                className="h-12 pl-11 pr-10 text-[15px] rounded-2xl border-navy-200/90 shadow-sm focus:border-navy-500 focus:ring-4 focus:ring-navy-500/10 placeholder:text-stone-400"
+              />
+              {query ? (
+                <button
+                  type="button"
+                  onClick={() => setQuery('')}
+                  className="absolute right-3.5 flex size-6 items-center justify-center rounded-full bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900 transition-colors text-xs font-bold"
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
 

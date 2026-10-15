@@ -63,8 +63,6 @@ export type GaushalaSewaCategory =
   | 'cow_care'
   | 'medical'
   | 'infrastructure'
-  | 'general'
-  | 'occasion'
 
 export interface GaushalaSewaCategoryMeta {
   id: GaushalaSewaCategory
