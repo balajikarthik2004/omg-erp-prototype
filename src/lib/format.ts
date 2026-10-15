@@ -1,6 +1,22 @@
 import { format, formatDistanceToNowStrict, parseISO } from 'date-fns'
 import { APP } from '@/config'
 
+/**
+ * Money shows either no decimals or two — never one. Whole amounts read as
+ * "$12,450" rather than "$12,450.00", since the trailing zeros are noise on a
+ * page of round offerings, but cents are never dropped: a 2.6% + $0.15
+ * gateway fee still shows as "$2.76", so a column still sums to the ledger.
+ *
+ * Two formatters rather than one, because a single `minimumFractionDigits: 0,
+ * maximumFractionDigits: 2` formatter renders $100.50 as "$100.5".
+ */
+const moneyWhole = new Intl.NumberFormat(APP.locale, {
+  style: 'currency',
+  currency: APP.currency,
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+})
+
 const moneyFmt = new Intl.NumberFormat(APP.locale, {
   style: 'currency',
   currency: APP.currency,
@@ -15,9 +31,10 @@ const compactFmt = new Intl.NumberFormat(APP.locale, {
   maximumFractionDigits: 1,
 })
 
-/** cents -> "$12,450.00" */
+/** cents -> "$12,450" / "$12,450.75" */
 export function formatMoney(cents: number): string {
-  return moneyFmt.format(cents / 100)
+  const whole = Math.round(cents)
+  return (whole % 100 === 0 ? moneyWhole : moneyFmt).format(whole / 100)
 }
 
 /** cents -> "$12.5K", for chart axes and tight KPI space. */

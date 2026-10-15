@@ -67,7 +67,7 @@ export function ItemDetailPage() {
 
   function submit() {
     const next: Record<string, string> = {}
-    if (total < 100) next.amount = 'Enter at least $1.00.'
+    if (total < 100) next.amount = 'Enter at least $1.'
     if (item!.needsDedication && name.trim().length < 2) next.name = 'Enter the name to be recited.'
     if (item!.needsDate && !serviceDate) next.date = 'Pick the date for this service.'
     setErrors(next)

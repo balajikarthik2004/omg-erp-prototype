@@ -84,27 +84,34 @@ export function fxRate(currency: Currency): number {
   return CURRENCIES[currency].perSettlementUnit
 }
 
-const formatters = new Map<Currency, Intl.NumberFormat>()
+const formatters = new Map<string, Intl.NumberFormat>()
 
-function formatterFor(currency: Currency): Intl.NumberFormat {
-  let fmt = formatters.get(currency)
+/**
+ * Same rule as the settlement formatter: no decimals or two, never one. Keyed
+ * on both the currency and which of the two it is. Rupees are always whole —
+ * nobody prices a sewa in paise.
+ */
+function formatterFor(currency: Currency, whole: boolean): Intl.NumberFormat {
+  const key = `${currency}:${whole ? 'w' : 'c'}`
+  let fmt = formatters.get(key)
   if (!fmt) {
     const meta = CURRENCIES[currency]
+    const digits = whole || currency === 'INR' ? 0 : 2
     fmt = new Intl.NumberFormat(meta.locale, {
       style: 'currency',
       currency,
-      // Rupees and yen-like amounts read better whole at these sizes.
-      minimumFractionDigits: currency === 'INR' ? 0 : 2,
-      maximumFractionDigits: currency === 'INR' ? 0 : 2,
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
     })
-    formatters.set(currency, fmt)
+    formatters.set(key, fmt)
   }
   return fmt
 }
 
-/** Cents already in `currency` -> "₹9,724" / "£87.00". */
+/** Cents already in `currency` -> "₹9,724" / "£87" / "£87.50". */
 export function formatIn(cents: number, currency: Currency): string {
-  return formatterFor(currency).format(cents / 100)
+  const whole = Math.round(cents)
+  return formatterFor(currency, whole % 100 === 0).format(whole / 100)
 }
 
 /**

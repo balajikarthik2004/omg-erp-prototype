@@ -1,7 +1,12 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-import { currencyForCountry, detectCountry, type Currency } from '@/lib/currency'
+import {
+  SETTLEMENT_CURRENCY,
+  currencyForCountry,
+  detectCountry,
+  type Currency,
+} from '@/lib/currency'
 import type { Dedication, Role, SectorId } from '@/types'
 import { USERS } from '@/mock/seed'
 
@@ -59,7 +64,10 @@ export const useSession = create<SessionState>()(
       cart: [],
       sidebarOpen: false,
       donorCountry: detectCountry(),
-      displayCurrency: currencyForCountry(detectCountry()),
+      // Prices open in the settlement currency, so every visitor sees the
+      // same dollar figures the ledger and the console are kept in. The
+      // switcher on the page still converts for a donor who wants it.
+      displayCurrency: SETTLEMENT_CURRENCY,
 
       setPersona: (id) => set({ personaId: id }),
       setSectorFilter: (value) => set({ sectorFilter: value }),
@@ -84,6 +92,15 @@ export const useSession = create<SessionState>()(
     {
       name: 'omg-session',
       storage: createJSONStorage(() => localStorage),
+      // v1 dropped the browser-detected display currency. Without the bump a
+      // visitor who had already been shown rupees would keep seeing them.
+      version: 1,
+      migrate: (state, from) => {
+        if (from < 1 && state && typeof state === 'object') {
+          return { ...(state as object), displayCurrency: SETTLEMENT_CURRENCY }
+        }
+        return state
+      },
       // Only the demo controls persist. Business data never does.
       partialize: (s) => ({
         personaId: s.personaId,

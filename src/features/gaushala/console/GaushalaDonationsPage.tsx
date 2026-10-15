@@ -103,7 +103,7 @@ export function GaushalaDonationsPage() {
       cell: (d) =>
         d.donorCurrency && d.displayGross ? (
           <span className="font-mono text-[13.5px] text-navy-700 tabular-nums">
-            {d.displayGross / 100} {d.donorCurrency}
+            {formatIn(d.displayGross, d.donorCurrency)}
           </span>
         ) : (
           <span className="text-[13px] text-navy-600">—</span>

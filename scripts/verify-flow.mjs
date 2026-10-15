@@ -416,7 +416,7 @@ section('Events: poster, four-eyes, public page')
   const svg = await poster.renderPosterSvg({ event: ev(), design: db().eventPosters.find((x) => x.id === d2.id), organisation: 'Kaveri Heritage', registrationUrl: 'http://x/register/' + evId })
   ok(svg.includes('Margazhi Music Festival') && svg.includes('Dr. Raman') && svg.includes('Temple Hall') && svg.includes('+1 555 0100'), 'poster carries the exact event text')
   ok(/shape-rendering="crispEdges"/.test(svg), 'poster carries a QR code')
-  ok(svg.includes('$20.00 per person'), 'poster shows the ticket price')
+  ok(svg.includes('$20 per person'), 'poster shows the ticket price')
 
   const edit = db().updateEvent(evId, { venue: 'Temple Main Hall' }, U['u-adm'])
   ok(edit.ok && ev().status === 'confirmed' && ev().posterStatus === 'stale', 'changing the venue after publishing makes the poster stale and unpublishes it')
