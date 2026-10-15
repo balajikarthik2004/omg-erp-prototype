@@ -31,7 +31,6 @@ import {
   Wallet,
   FileCheck2,
   Handshake,
-  ShieldCheck,
   type LucideIcon,
 } from 'lucide-react'
 
