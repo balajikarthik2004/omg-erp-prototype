@@ -8,7 +8,6 @@ import { CardSkeleton, Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Money } from '@/components/ui/Money'
 import { Stat } from '@/components/ui/Stat'
-import { PageHeader } from '@/components/layout/PageHeader'
 import { SectorChip } from '@/components/layout/PhaseChip'
 import { FundDonut } from '@/components/charts/FundDonut'
 import { IncomeOutgoChart } from '@/components/charts/IncomeOutgoChart'
@@ -46,9 +45,9 @@ export function DashboardPage() {
 
   return (
     <div>
-      <PageHeader
-        title="Dashboard"
-      />
+      {/* The topbar breadcrumb already names this page, so the heading is
+          carried for screen readers only rather than printed twice. */}
+      <h1 className="sr-only">Dashboard</h1>
 
       {!data ? (
         <div className="flex flex-col gap-6">

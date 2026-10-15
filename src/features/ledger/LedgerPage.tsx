@@ -149,10 +149,10 @@ export function LedgerPage() {
                               {FUNDS.find((f) => f.id === line.fundId)?.name ?? line.fundId}
                             </td>
                             <td className="px-4 py-2 text-right">
-                              {line.debit > 0 ? <Money value={line.debit} /> : <span className="text-stone-500">—</span>}
+                              {line.debit > 0 ? <Money exact value={line.debit} /> : <span className="text-stone-500">—</span>}
                             </td>
                             <td className="px-4 py-2 text-right">
-                              {line.credit > 0 ? <Money value={line.credit} /> : <span className="text-stone-500">—</span>}
+                              {line.credit > 0 ? <Money exact value={line.credit} /> : <span className="text-stone-500">—</span>}
                             </td>
                           </tr>
                         ))}
@@ -161,10 +161,10 @@ export function LedgerPage() {
                             {balanced ? 'Balanced' : 'Out of balance — needs review'}
                           </td>
                           <td className="px-4 py-2 text-right">
-                            <Money value={debit} className="font-medium" />
+                            <Money exact value={debit} className="font-medium" />
                           </td>
                           <td className="px-4 py-2 text-right">
-                            <Money value={credit} className="font-medium" />
+                            <Money exact value={credit} className="font-medium" />
                           </td>
                         </tr>
                       </tbody>

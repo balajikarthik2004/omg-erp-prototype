@@ -60,6 +60,7 @@ export function EventDetailPage() {
     <div>
       <PageHeader
         title={event.name}
+        showTitle
         description={`${formatDateTime(event.startAt)} · ${event.venue}`}
         actions={
           <div className="flex flex-wrap items-center gap-2">
