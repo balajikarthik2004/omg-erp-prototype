@@ -167,9 +167,9 @@ export const CATALOG: CatalogItem[] = [
 
   /* Temple — Activities */
   { id: 'cat-tmp-navaratri', sectorId: 'temple', category: 'activity', name: 'Navaratri Golu Sponsorship', description: 'Nine evenings of music, kolu display and sundal prasadam.', price: 50100, fundId: 'fund-tmp-fest', active: true, popular: true, image: '/images/catalogue/Navaratri.png' },
-  { id: 'cat-tmp-deepavali', sectorId: 'temple', category: 'activity', name: 'Deepavali Annadhanam', description: 'A festival meal for devotees on Deepavali morning.', price: 25100, fundId: 'fund-tmp-fest', active: true },
-  { id: 'cat-tmp-thiru', sectorId: 'temple', category: 'activity', name: 'Thiruvilakku Pooja', description: 'Group lamp pooja on the first Friday of the month.', price: 5100, needsDate: true, fundId: 'fund-tmp-fest', active: true },
-  { id: 'cat-tmp-ther', sectorId: 'temple', category: 'activity', name: 'Car Festival (Ther) Contribution', description: 'Towards the annual chariot procession through the streets.', price: null, presets: [5100, 10100, 25100, 50100], fundId: 'fund-tmp-fest', active: true },
+  { id: 'cat-tmp-deepavali', sectorId: 'temple', category: 'activity', name: 'Deepavali Annadhanam', description: 'A festival meal for devotees on Deepavali morning.', price: 25100, fundId: 'fund-tmp-fest', active: true, image: '/images/catalogue/Deepavali Annadhanam.png' },
+  { id: 'cat-tmp-thiru', sectorId: 'temple', category: 'activity', name: 'Thiruvilakku Pooja', description: 'Group lamp pooja on the first Friday of the month.', price: 5100, needsDate: true, fundId: 'fund-tmp-fest', active: true, image: '/images/catalogue/Thiruvilakku Pooja.png' },
+  { id: 'cat-tmp-ther', sectorId: 'temple', category: 'activity', name: 'Car Festival (Ther) Contribution', description: 'Towards the annual chariot procession through the streets.', price: null, presets: [5100, 10100, 25100, 50100], fundId: 'fund-tmp-fest', active: true, image: '/images/catalogue/Car Festival.png' },
 
   /* Temple — Events (ticketed) */
   { id: 'cat-tmp-kalyanam', sectorId: 'temple', category: 'event', name: 'Thirukalyanam Utsavam', tamil: 'திருக்கல்யாணம்', description: 'The annual celestial wedding. Reserve seats for the family. One ticket per person.', price: 2500, ticketed: true, fundId: 'fund-tmp-fest', active: true, popular: true, image: '/images/catalogue/Thirukalyanam.png' },

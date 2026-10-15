@@ -266,7 +266,7 @@ export function makeEventsSeed(now: Date): EventsSeed {
   fund(kalyanam, at(-33))
 
   /* 4. Deepavali: confirmed, no history yet for this kind of event. */
-  const diwali = base({ id: 'evt-deepavali-2026', sectorId: 'temple', eventType: 'DIWALI', name: 'Deepavali Celebration', startAt: at(26, 17), endAt: at(26, 21), venue: 'Temple Courtyard', chiefGuest: 'Sri Venkatesan', status: 'confirmed', capacity: 800, createdAt: at(-35), lastPreparerId: 'u-adm' })
+  const diwali = base({ id: 'evt-deepavali-2026', sectorId: 'temple', eventType: 'DIWALI', name: 'Deepavali Celebration', startAt: at(26, 17), endAt: at(26, 21), venue: 'Temple Courtyard', chiefGuest: 'Sri Venkatesan', status: 'confirmed', capacity: 800, createdAt: at(-35), lastPreparerId: 'u-adm', image: '/images/catalogue/Deepavali Annadhanam.png' })
   events.push(diwali)
   addLines(diwali.id, 'DIWALI', [{ category: 'Lamps, oil & ghee', requested: 240_000, approved: 240_000 }, { category: 'Decoration & Stage', requested: 90_000, approved: 85_000 }, { category: 'Prasadam & Annadhanam', requested: 150_000, approved: 150_000 }, { category: 'Fireworks & safety', requested: 40_000, approved: 40_000 }])
   approve(diwali.id, 1, 'u-cap', 'u-adm', 'First Deepavali on the platform, so no history. Reviewed against quotes.', at(-28))
