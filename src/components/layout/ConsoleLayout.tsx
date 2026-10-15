@@ -18,12 +18,15 @@ export function ConsoleLayout() {
   }, [pathname])
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-[#F2F4FC] via-[#E8ECFA] to-[#F1F3FB]">
+    <div className="flex min-h-screen bg-navy-50">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
+        {/* Capped, so a table does not stretch to 2500px on a wide monitor. */}
         <main className="flex-1 px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-5">
-          <Outlet />
+          <div className="mx-auto w-full max-w-[1400px]">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

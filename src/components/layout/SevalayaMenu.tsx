@@ -6,13 +6,9 @@ import { cn } from '@/lib/cn'
 import { SEVALAYA_ITEMS } from './sevalayaNav'
 
 /**
- * Sevalaya in the top nav, as a two-item menu.
- *
- * It opens on hover for a mouse and on click or Enter for everything else,
- * because hover alone is not reachable from a keyboard and is a trap on a
- * touch screen. Closing is handled on pointer-out, Escape and outside click.
+ * Sevalaya in the top nav, as a two-item menu (English only).
  */
-export function SevalayaMenu({ tamil }: { tamil: string }) {
+export function SevalayaMenu() {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const closeTimer = useRef<number | undefined>(undefined)
@@ -39,7 +35,6 @@ export function SevalayaMenu({ tamil }: { tamil: string }) {
 
   useEffect(() => () => window.clearTimeout(closeTimer.current), [])
 
-  // A short grace period, so crossing the gap to the panel does not close it.
   const openNow = () => {
     window.clearTimeout(closeTimer.current)
     setOpen(true)
@@ -58,23 +53,18 @@ export function SevalayaMenu({ tamil }: { tamil: string }) {
         aria-controls={menuId}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          'group relative flex items-center gap-1.5 rounded-lg px-3 py-2 transition-colors duration-150',
-          active ? 'text-stone-900' : 'text-stone-700 hover:text-kumkum-500',
+          'group relative flex items-center gap-1 rounded-lg px-3 py-2 text-[13px] font-bold tracking-wide transition-colors duration-150',
+          active ? 'text-navy-950' : 'text-stone-700 hover:text-[#E22E26]',
         )}
       >
-        <span className="text-left">
-          <span className="block text-xs font-bold uppercase tracking-wider leading-tight whitespace-nowrap">
-            Sevalaya
-          </span>
-          <span className="block text-[11px] leading-tight whitespace-nowrap text-stone-500">{tamil}</span>
-        </span>
+        <span>Sevalaya</span>
         <ChevronDown
-          className={cn('size-3.5 shrink-0 transition-transform duration-150', open && 'rotate-180')}
+          className={cn('size-3.5 text-stone-400 group-hover:text-[#E22E26] transition-transform duration-150', open && 'rotate-180')}
           aria-hidden
         />
         <span
           className={cn(
-            'absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-kumkum-500 transition-opacity duration-150',
+            'absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-[#E22E26] transition-opacity duration-150',
             active ? 'opacity-100' : 'opacity-0',
           )}
           aria-hidden
@@ -103,7 +93,6 @@ export function SevalayaMenu({ tamil }: { tamil: string }) {
                   <span className="flex items-baseline gap-2">
                     <span className="font-mono text-[12px] font-bold text-kumkum-600 tabular-nums">{i + 1}.</span>
                     <span className="text-[15px] font-bold text-stone-900">{item.label}</span>
-                    <span className="text-[13px] text-stone-500">{item.tamil}</span>
                   </span>
                   <span className="mt-0.5 block pl-6 text-[13px] leading-relaxed text-stone-500">{item.blurb}</span>
                 </NavLink>

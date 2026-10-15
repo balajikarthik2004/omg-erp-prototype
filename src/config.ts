@@ -49,7 +49,7 @@ export const SECTORS: Record<SectorId, SectorMeta> = {
   },
   sangam: {
     id: 'sangam',
-    name: 'Tamil Sangam',
+    name: 'Tamil Heritage',
     tamil: 'தமிழ்ச் சங்கம்',
     blurb: 'Memberships, cultural events, classes and community projects.',
     tone: 'peacock',

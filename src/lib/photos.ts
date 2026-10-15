@@ -29,11 +29,11 @@ export const PHOTOS = {
     alt: 'Veterinarian treating cows and providing medicine in gaushala.',
   },
   sewaInfrastructure: {
-    src: '/images/sewa-infrastructure.webp',
+    src: '/images/cowshed.png',
     alt: 'Spacious shelter shed with feeding troughs and water tank in gaushala.',
   },
   sewaCowCare: {
-    src: '/images/sewa-cow-care.webp',
+    src: '/images/cow.png',
     alt: 'Caretaker grooming and caring for sacred cow in gaushala.',
   },
   project: {

@@ -38,7 +38,7 @@ const RULE = '#E3CDA4'
 const SECTOR_LABEL: Record<SectorId, string> = {
   temple: 'கோயில் · Temple',
   sevalaya: 'சேவாலயா · Sevalaya',
-  sangam: 'தமிழ்ச் சங்கம் · Tamil Sangam',
+  sangam: 'தமிழ்ச் சங்கம் · Tamil Heritage',
 }
 
 /* ---------------------------------------------------------------- prompt */

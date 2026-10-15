@@ -63,8 +63,6 @@ export type GaushalaSewaCategory =
   | 'cow_care'
   | 'medical'
   | 'infrastructure'
-  | 'general'
-  | 'occasion'
 
 export interface GaushalaSewaCategoryMeta {
   id: GaushalaSewaCategory
@@ -317,6 +315,7 @@ export interface GaushalaEvent {
   /** Pictures from the last time it was held. */
   galleryArt: number[]
   tenantId?: string
+  image?: string
 }
 
 export interface GaushalaEventRsvp {

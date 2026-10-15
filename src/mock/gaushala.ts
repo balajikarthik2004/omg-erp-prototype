@@ -51,18 +51,6 @@ export const SEWA_CATEGORIES: GaushalaSewaCategoryMeta[] = [
     tamil: 'கட்டமைப்பு',
     blurb: 'Sheds, water tanks and repairs. Larger works, built from many gifts.',
   },
-  {
-    id: 'general',
-    label: 'General Donation',
-    tamil: 'பொது நன்கொடை',
-    blurb: 'Used where the need is greatest that week. Give once, or a little every month.',
-  },
-  {
-    id: 'occasion',
-    label: 'Occasion Sewa',
-    tamil: 'சிறப்பு சேவை',
-    blurb: 'Mark a birthday, an anniversary or a remembrance day by feeding the herd in that name.',
-  },
 ]
 
 export const SEWA_CATEGORY_LABEL: Record<GaushalaSewaCategory, string> = Object.fromEntries(
@@ -206,59 +194,18 @@ export const GAUSHALA_SEWAS: CatalogItem[] = [
     description: 'Roof sheets after the monsoon, floor levelling and fencing. Unglamorous, and always needed.',
     price: null, presets: [5100, 15_100, 30_100], fundId: 'fund-gau-infra', active: true,
   },
-
-  /* ---- General ---- */
   {
-    id: 'gau-general', sectorId: 'sevalaya', category: 'hundi', gaushala: true, gaushalaCategory: 'general',
-    name: 'General Donation', tamil: 'பொது நன்கொடை',
-    description: 'Used where the need is greatest that week. Most weeks that is fodder.',
-    price: null, presets: [2100, 5100, 10_100, 25_100], prices: { INR: 500_00 },
-    fundId: 'fund-gau-gen', active: true, popular: true,
-  },
-  {
-    id: 'gau-grass-daily', sectorId: 'sevalaya', category: 'membership', gaushala: true, gaushalaCategory: 'general',
+    id: 'gau-grass-daily', sectorId: 'sevalaya', category: 'membership', gaushala: true, gaushalaCategory: 'fodder',
     name: 'Gau Grass — a dollar a day', tamil: 'கோ கிராஸ்', unit: 'a month, renewing',
     description: 'Thirty dollars a month, renewing. It buys the green fodder for one cow, every single day.',
     price: 3000, recurring: 'monthly', prices: { INR: 250_000 },
     fundId: 'fund-gau-fodder', active: true, popular: true,
   },
   {
-    id: 'gau-grass-yearly', sectorId: 'sevalaya', category: 'membership', gaushala: true, gaushalaCategory: 'general',
+    id: 'gau-grass-yearly', sectorId: 'sevalaya', category: 'membership', gaushala: true, gaushalaCategory: 'fodder',
     name: 'Gau Grass — yearly', unit: 'a year, renewing',
     description: 'The same sewa taken for a full year, and the shelter can plan its fodder buying against it.',
     price: 33_000, recurring: 'annual', fundId: 'fund-gau-fodder', active: true,
-  },
-
-  /* ---- Occasion ---- */
-  {
-    id: 'gau-birthday', sectorId: 'sevalaya', category: 'pooja', gaushala: true, gaushalaCategory: 'occasion',
-    name: 'Birthday Sewa', tamil: 'பிறந்தநாள் சேவை',
-    description: 'Gud and green fodder for the whole herd on a birthday, with the name read out at the morning feed.',
-    price: 7500, needsDedication: true, needsDate: true, fundId: 'fund-gau-fodder', active: true, popular: true,
-  },
-  {
-    id: 'gau-anniversary', sectorId: 'sevalaya', category: 'pooja', gaushala: true, gaushalaCategory: 'occasion',
-    name: 'Anniversary Sewa',
-    description: 'A full day of feed in both names, and a photograph of the morning sent to you afterwards.',
-    price: 15_100, needsDedication: true, needsDate: true, fundId: 'fund-gau-fodder', active: true,
-  },
-  {
-    id: 'gau-shraddha', sectorId: 'sevalaya', category: 'pooja', gaushala: true, gaushalaCategory: 'occasion',
-    name: 'Remembrance Day Sewa', tamil: 'நினைவு நாள் சேவை',
-    description: 'Gau seva on a death anniversary, with sankalpa in the name and gotra of the one remembered.',
-    price: 11_100, needsDedication: true, needsDate: true, fundId: 'fund-gau-fodder', active: true,
-  },
-  {
-    id: 'gau-pitru-paksha', sectorId: 'sevalaya', category: 'pooja', gaushala: true, gaushalaCategory: 'occasion',
-    name: 'Pitru Paksha Feeding', tamil: 'பித்ரு பக்ஷம்',
-    description: 'Feeding through the fortnight of the ancestors, performed on your behalf if you cannot be here.',
-    price: 25_100, needsDedication: true, needsDate: true, fundId: 'fund-gau-fodder', active: true,
-  },
-  {
-    id: 'gau-festival', sectorId: 'sevalaya', category: 'pooja', gaushala: true, gaushalaCategory: 'occasion',
-    name: 'Festival Sewa — Gopashtami',
-    description: 'Garlands, a full pooja and a festival feed for every cow on Gopashtami morning.',
-    price: 18_100, needsDedication: true, needsDate: true, fundId: 'fund-gau-fodder', active: true,
   },
 ]
 
@@ -564,16 +511,14 @@ export function makeGaushalaSeed(now: Date, donors: Donor[], startSequence: numb
 
   // What people actually give a cow shelter: fodder most days, then care.
   const SEWA_WEIGHT: [GaushalaSewaCategory, number][] = [
-    ['fodder', 38],
-    ['general', 24],
-    ['cow_care', 16],
-    ['medical', 11],
-    ['occasion', 8],
-    ['infrastructure', 3],
+    ['fodder', 55],
+    ['cow_care', 26],
+    ['medical', 15],
+    ['infrastructure', 4],
   ]
 
   /** Only these are things a caretaker physically carries out. */
-  const FULFILLABLE: GaushalaSewaCategory[] = ['fodder', 'cow_care', 'medical', 'occasion']
+  const FULFILLABLE: GaushalaSewaCategory[] = ['fodder', 'cow_care', 'medical']
 
   const liveSewas = GAUSHALA_SEWAS.filter((item) => item.active)
   const donations: Donation[] = []
@@ -712,9 +657,9 @@ export function makeGaushalaSeed(now: Date, donors: Donor[], startSequence: numb
           name: line.dedication?.name ?? (donor.anonymous ? 'Anonymous devotee' : donor.name),
           gotra: line.dedication?.gothram,
           nakshatra: line.dedication?.nakshatra,
-          occasion: sewa.gaushalaCategory === 'occasion' ? rng.pick(OCCASIONS) : undefined,
+          occasion: line.dedication ? rng.pick(OCCASIONS) : undefined,
           dedication:
-            sewa.gaushalaCategory === 'occasion' && rng.chance(0.4)
+            line.dedication && rng.chance(0.4)
               ? `In loving memory of ${rng.pick(DONOR_LAST)} ji`
               : undefined,
           donorCountry,
@@ -811,7 +756,7 @@ export function makeGaushalaSeed(now: Date, donors: Donor[], startSequence: numb
           name: donor.anonymous ? 'Anonymous devotee' : donor.name,
           nakshatra: sewa.needsDedication ? rng.pick(NAKSHATRAS) : undefined,
           gotra: sewa.needsDedication ? rng.pick(GOTRAS) : undefined,
-          occasion: sewa.gaushalaCategory === 'occasion' ? rng.pick(OCCASIONS) : undefined,
+          occasion: sewa.needsDedication ? rng.pick(OCCASIONS) : undefined,
           donorCountry,
         },
         assignedTo: orderStatus === 'paid' ? undefined : caretakerId,

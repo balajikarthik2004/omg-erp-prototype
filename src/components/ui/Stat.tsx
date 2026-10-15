@@ -53,10 +53,10 @@ export function Stat({
               className={cn(
                 'inline-flex items-center gap-0.5 rounded-lg px-2 py-0.5 font-mono text-[11px] font-bold tabular-nums border shadow-2xs',
                 deltaMeaning === 'neutral'
-                  ? 'bg-navy-50 text-navy-800 border-navy-200'
+                  ? 'border-sandal-200 bg-sandal-100 text-stone-700'
                   : up
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                    : 'bg-rose-50 text-rose-800 border-rose-200',
+                    ? 'border-tulsi-500/25 bg-tulsi-50 text-tulsi-700'
+                    : 'border-danger-600/25 bg-danger-50 text-danger-600',
               )}
             >
               {up ? (

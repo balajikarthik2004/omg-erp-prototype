@@ -1,6 +1,8 @@
-import { Link } from 'react-router-dom'
+import { Fragment } from 'react'
+import { ArrowRight } from 'lucide-react'
 
 import { cn } from '@/lib/cn'
+import { toast } from '@/lib/toast'
 import {
   ReceiptTrustIcon,
   SignatureTrustIcon,
@@ -10,9 +12,31 @@ import {
 import { useReveal } from './useReveal'
 
 /**
- * Full-width Editorial Trust Strip: "Why a devotee can trust where it goes"
- * Matches the reference composition: Left seamless lamp, story intro, and 3-step process flow with arrows.
+ * The three controls that stand between an offering and a misuse of it.
+ *
+ * These are not marketing claims — each one is a rule the prototype actually
+ * enforces in `store/db.ts`, so the copy names the rule rather than the
+ * virtue. The numbered sequence matters: a gift is receipted, then released
+ * only on a second signature, and never leaves the fund it was given to.
  */
+const STEPS = [
+  {
+    icon: ReceiptTrustIcon,
+    title: 'Receipted at once',
+    body: 'Your receipt number is issued the moment the payment clears, naming the fund it was credited to.',
+  },
+  {
+    icon: SignatureTrustIcon,
+    title: 'Two signatures, always',
+    body: 'Whoever prepares a payment can never approve it. Every release is signed by a second person.',
+  },
+  {
+    icon: ShieldTrustIcon,
+    title: 'Restricted stays restricted',
+    body: 'A gift to annadhanam cannot be spent on a project. The software refuses the transfer.',
+  },
+]
+
 export function TrustSection() {
   const { ref, seen } = useReveal<HTMLElement>()
 
@@ -20,19 +44,15 @@ export function TrustSection() {
     <section
       ref={ref}
       id="our-promise"
-      className="relative w-full overflow-hidden bg-linear-to-r from-[#06081E] via-[#0D123C] to-[#141A4C] py-8 sm:py-10 lg:py-12 text-white border-y border-navy-700/60 shadow-2xl"
+      className="surface-sanctum relative w-full overflow-hidden border-y border-navy-800 py-10 text-white sm:py-12 lg:py-14"
     >
-      {/* Warm Ambient Golden Flame Glow behind the Lamp */}
+      {/* Warm glow behind the lamp, so the brass reads as lit. */}
       <div
-        className="pointer-events-none absolute -left-10 top-1/2 -translate-y-1/2 size-110 rounded-full bg-amber-400/30 blur-3xl"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute left-28 top-1/3 size-72 rounded-full bg-turmeric-400/20 blur-2xl"
+        className="pointer-events-none absolute -left-10 top-1/2 size-110 -translate-y-1/2 rounded-full bg-turmeric-400/25 blur-3xl"
         aria-hidden
       />
 
-      {/* Left authentic devotional lamp visual with original vibrant colors */}
+      {/* The kuthu vilakku, dissolving into the field on its right edge. */}
       <div
         className="pointer-events-none absolute inset-y-0 left-0 z-0 hidden w-75 lg:block xl:w-95 2xl:w-115"
         style={{
@@ -43,15 +63,11 @@ export function TrustSection() {
       >
         <img
           src="/images/kuthu-vilakku-trust.png"
-          alt="Traditional lit brass Kuthu Vilakku lamp"
-          className="h-full w-full object-cover object-left"
-          style={{ filter: 'brightness(1.22) saturate(1.18) contrast(1.08)' }}
+          alt=""
+          className="h-full w-full object-cover object-left brightness-[1.2] saturate-[1.15]"
         />
-        {/* Soft edge blending to dissolve seamlessly into background without dimming the lamp */}
-        <div className="absolute inset-0 bg-linear-to-t from-[#06081E]/30 via-transparent to-[#06081E]/25 pointer-events-none" />
       </div>
 
-      {/* Main Content Strip */}
       <div
         className={cn(
           'relative z-10 mx-auto w-full max-w-360 px-4 sm:px-6 xl:px-10',
@@ -59,148 +75,92 @@ export function TrustSection() {
           seen && 'is-visible',
         )}
       >
-        <div className="grid items-center gap-6 xl:gap-8 lg:grid-cols-[18%_30%_1fr] xl:grid-cols-[22%_28%_1fr] 2xl:grid-cols-[22%_28%_1fr]">
-          
-          {/* Column 1: Mobile image fallback / Desktop background spacer */}
+        <div className="grid items-center gap-7 lg:grid-cols-[18%_30%_1fr] xl:grid-cols-[22%_28%_1fr] xl:gap-8">
+          {/* The lamp again, as a card, where the backdrop is hidden. */}
           <div className="flex justify-center lg:hidden">
-            <div className="relative h-60 w-full max-w-85 overflow-hidden rounded-2xl bg-black/20 p-2 shadow-2xl">
+            <div className="relative h-56 w-full max-w-85 overflow-hidden rounded-card border border-white/10">
               <img
                 src="/images/kuthu-vilakku-trust.png"
-                alt="Traditional lit brass Kuthu Vilakku lamp"
-                className="h-full w-full object-cover object-left rounded-xl"
-                style={{ filter: 'brightness(1.22) saturate(1.18) contrast(1.08)' }}
+                alt=""
+                className="h-full w-full object-cover object-left brightness-[1.2] saturate-[1.15]"
               />
-              <div className="absolute inset-0 rounded-2xl bg-linear-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
             </div>
           </div>
           <div className="hidden h-full lg:block" aria-hidden />
 
-          {/* Column 2: Introduction & Main Message */}
+          {/* The claim ------------------------------------------------ */}
           <div className="flex flex-col justify-start pr-2">
-            <div className="inline-flex items-center gap-2.5 rounded-full bg-linear-to-r from-turmeric-500/20 via-amber-500/15 to-white/5 px-3.5 py-1.5 w-fit mb-3.5 backdrop-blur-md shadow-xs">
-              <span className="size-2 rounded-full bg-turmeric-400 shadow-[0_0_8px_#FFC107] animate-pulse" />
-              <p className="text-[11px] font-bold tracking-[0.2em] text-turmeric-300 uppercase">
-                Honest Devotional Governance
-              </p>
-            </div>
-            
-            <h2 className="font-heritage text-[28px] sm:text-[38px] font-bold leading-[1.12] text-white tracking-tight">
-              Your offering creates<br />
-              <span className="text-kumkum-500 font-extrabold drop-shadow-[0_2px_14px_rgba(226,46,38,0.5)]">
-                real change
+            <p className="mb-3.5 inline-flex w-fit items-center gap-2 rounded-full border border-turmeric-400/25 bg-turmeric-400/10 px-3.5 py-1.5">
+              <span className="size-1.5 rounded-full bg-turmeric-400" aria-hidden />
+              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-turmeric-100">
+                How your offering is protected
               </span>
+            </p>
+
+            <h2 className="font-display text-[26px] font-semibold leading-[1.14] tracking-tight text-white sm:text-[34px]">
+              Where it goes, and
+              <span className="block text-turmeric-400">who signed for it.</span>
             </h2>
-            
-            <p className="mt-3.5 max-w-sm text-[14.5px] sm:text-[15px] leading-[1.7] text-white/85 font-normal">
-              Transparency, accountability and devotion are at the heart of everything we do. Every rupee is protected by double-signed CA approvals.
+
+            <p className="mt-3.5 max-w-sm text-[15px] leading-relaxed text-white/80">
+              Three controls sit between your offering and the money leaving the account. None of them
+              can be skipped, and every one of them is written into the ledger.
             </p>
           </div>
 
-          {/* Column 3: The 3 Process Steps & Bottom Action */}
-          <div className="flex flex-col justify-center gap-5 sm:gap-6">
-            {/* The 3 steps in horizontal row */}
+          {/* The three controls --------------------------------------- */}
+          <div className="flex flex-col justify-center gap-6">
             <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-[1fr_auto_1fr_auto_1fr] sm:gap-2.5">
-              
-              {/* Step 01 */}
-              <div className="group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-linear-to-b from-white/12 to-white/4 p-5 sm:p-5.5 backdrop-blur-xl shadow-xl shadow-black/25 hover:border-turmeric-400/40 hover:bg-white/16 hover:-translate-y-1 transition-all duration-300">
-                <div className="absolute inset-x-0 top-0 h-0.5 rounded-t-2xl bg-linear-to-r from-transparent via-white/25 to-transparent group-hover:via-turmeric-400 transition-all duration-300" />
-                <div>
-                  <span className="flex size-11.5 items-center justify-center rounded-xl bg-linear-to-br from-amber-400 via-amber-500 to-turmeric-500 text-navy-950 font-black shadow-lg shadow-amber-500/25">
-                    <ReceiptTrustIcon size={22} />
-                  </span>
-                  <span className="mt-3.5 inline-flex items-center rounded-md bg-turmeric-400/15 px-2 py-0.5 text-[11px] font-bold tracking-widest text-turmeric-300 uppercase">
-                    Step 01
-                  </span>
-                  <h3 className="mt-1.5 font-heritage text-[17px] font-bold leading-snug text-white">
-                    Received at once
-                  </h3>
-                </div>
-                <p className="mt-3 text-[12.5px] leading-[1.65] text-white/80">
-                  Your official receipt number is issued instantly, with the restricted fund clearly named.
-                </p>
-              </div>
+              {STEPS.map(({ icon: Icon, title, body }, i) => (
+                <Fragment key={title}>
+                  {i > 0 ? (
+                    <span className="hidden select-none items-center justify-center px-1 sm:flex" aria-hidden>
+                      <ArrowRight className="size-4 text-turmeric-400/60" />
+                    </span>
+                  ) : null}
 
-              {/* Arrow 1 */}
-              <div
-                className="hidden select-none px-1 sm:flex sm:items-center sm:justify-center"
-                aria-hidden
-              >
-                <div className="flex items-center gap-1 text-turmeric-400/70">
-                  <span className="h-px w-3 bg-linear-to-r from-transparent to-turmeric-400/60" />
-                  <span className="size-1 rounded-full bg-turmeric-400 shadow-[0_0_6px_#FFC107]" />
-                  <span className="text-[16px] font-bold text-turmeric-400">→</span>
-                </div>
-              </div>
-
-              {/* Step 02 */}
-              <div className="group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-linear-to-b from-white/12 to-white/4 p-5 sm:p-5.5 backdrop-blur-xl shadow-xl shadow-black/25 hover:border-turmeric-400/40 hover:bg-white/16 hover:-translate-y-1 transition-all duration-300">
-                <div className="absolute inset-x-0 top-0 h-0.5 rounded-t-2xl bg-linear-to-r from-transparent via-white/25 to-transparent group-hover:via-turmeric-400 transition-all duration-300" />
-                <div>
-                  <span className="flex size-11.5 items-center justify-center rounded-xl bg-linear-to-br from-amber-400 via-amber-500 to-turmeric-500 text-navy-950 font-black shadow-lg shadow-amber-500/25">
-                    <SignatureTrustIcon size={22} />
-                  </span>
-                  <span className="mt-3.5 inline-flex items-center rounded-md bg-turmeric-400/15 px-2 py-0.5 text-[11px] font-bold tracking-widest text-turmeric-300 uppercase">
-                    Step 02
-                  </span>
-                  <h3 className="mt-1.5 font-heritage text-[17px] font-bold leading-snug text-white">
-                    Two signatures
-                  </h3>
-                </div>
-                <p className="mt-3 text-[12.5px] leading-[1.65] text-white/80">
-                  Whoever prepares a disbursement can never approve it. Every release requires a CA co-signature.
-                </p>
-              </div>
-
-              {/* Arrow 2 */}
-              <div
-                className="hidden select-none px-1 sm:flex sm:items-center sm:justify-center"
-                aria-hidden
-              >
-                <div className="flex items-center gap-1 text-turmeric-400/70">
-                  <span className="h-px w-3 bg-linear-to-r from-transparent to-turmeric-400/60" />
-                  <span className="size-1 rounded-full bg-turmeric-400 shadow-[0_0_6px_#FFC107]" />
-                  <span className="text-[16px] font-bold text-turmeric-400">→</span>
-                </div>
-              </div>
-
-              {/* Step 03 */}
-              <div className="group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-linear-to-b from-white/12 to-white/4 p-5 sm:p-5.5 backdrop-blur-xl shadow-xl shadow-black/25 hover:border-turmeric-400/40 hover:bg-white/16 hover:-translate-y-1 transition-all duration-300">
-                <div className="absolute inset-x-0 top-0 h-0.5 rounded-t-2xl bg-linear-to-r from-transparent via-white/25 to-transparent group-hover:via-turmeric-400 transition-all duration-300" />
-                <div>
-                  <span className="flex size-11.5 items-center justify-center rounded-xl bg-linear-to-br from-amber-300 via-amber-400 to-turmeric-500 text-navy-950 font-black shadow-lg shadow-amber-400/25">
-                    <ShieldTrustIcon size={22} />
-                  </span>
-                  <span className="mt-3.5 inline-flex items-center rounded-md bg-turmeric-400/15 px-2 py-0.5 text-[11px] font-bold tracking-widest text-turmeric-300 uppercase">
-                    Step 03
-                  </span>
-                  <h3 className="mt-1.5 font-heritage text-[17px] font-bold leading-snug text-white">
-                    Restricted stays
-                  </h3>
-                </div>
-                <p className="mt-3 text-[12.5px] leading-[1.65] text-white/80">
-                  A gift to annadhanam cannot be diverted to projects. Segregated by software policy.
-                </p>
-              </div>
+                  <div className="flex flex-col justify-between rounded-card border border-white/12 bg-white/8 p-5 transition-colors duration-200 hover:border-turmeric-400/35 hover:bg-white/12">
+                    <div>
+                      <span className="flex size-11 items-center justify-center rounded-lg bg-turmeric-400 text-navy-950">
+                        <Icon size={22} />
+                      </span>
+                      <p className="mt-3.5 font-mono text-[11px] font-bold tabular-nums tracking-widest text-turmeric-400">
+                        STEP {String(i + 1).padStart(2, '0')}
+                      </p>
+                      <h3 className="mt-1 font-display text-[16.5px] font-semibold leading-snug text-white">
+                        {title}
+                      </h3>
+                    </div>
+                    <p className="mt-2.5 text-[13px] leading-relaxed text-white/75">{body}</p>
+                  </div>
+                </Fragment>
+              ))}
             </div>
 
-            {/* Bottom Action Strip */}
-            <div className="flex flex-wrap items-center gap-6 pt-2">
-              <Link
-                to="/about#governance"
-                className="group inline-flex h-11 items-center gap-2.5 rounded-xl bg-linear-to-r from-kumkum-500 via-kumkum-600 to-kumkum-700 hover:from-kumkum-600 hover:to-kumkum-800 active:scale-[0.98] text-white px-6 text-xs sm:text-[13px] font-extrabold uppercase tracking-wider shadow-lg shadow-kumkum-600/35 hover:shadow-kumkum-600/50 transition-all"
+            <div className="flex flex-wrap items-center gap-6">
+              {/* No public governance page exists yet, so this says so rather
+                  than linking to a route that would 404. */}
+              <button
+                type="button"
+                onClick={() =>
+                  toast.info('Coming in the next build', 'The public governance page is not written yet.')
+                }
+                className="group inline-flex h-11 items-center gap-2.5 rounded-xl bg-kumkum-600 px-6 text-[13px] font-bold uppercase tracking-wider text-white transition-colors duration-150 hover:bg-kumkum-700 active:bg-kumkum-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:ring-offset-2 focus-visible:ring-offset-navy-900"
               >
-                <span>Learn more about governance process</span>
-                <span className="text-[14px] transition-transform duration-200 group-hover:translate-x-1">→</span>
-              </Link>
+                <span>How governance works</span>
+                <ArrowRight
+                  className="size-4 transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+                  aria-hidden
+                />
+              </button>
 
-              <div className="hidden items-center gap-3 text-white/50 sm:flex" aria-hidden>
-                <span className="h-px w-16 bg-linear-to-r from-white/30 to-transparent" />
-                <HeritageKolamStar size={15} className="text-turmeric-400 drop-shadow-[0_0_8px_rgba(255,193,7,0.5)]" />
-                <span className="h-px w-16 bg-linear-to-l from-white/30 to-transparent" />
-              </div>
+              <span className="hidden items-center gap-3 text-white/40 sm:flex" aria-hidden>
+                <span className="h-px w-14 bg-white/20" />
+                <HeritageKolamStar size={15} className="text-turmeric-400" />
+                <span className="h-px w-14 bg-white/20" />
+              </span>
             </div>
           </div>
-
         </div>
       </div>
     </section>

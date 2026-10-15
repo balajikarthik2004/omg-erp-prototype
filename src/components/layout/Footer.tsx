@@ -93,7 +93,7 @@ export function Footer() {
               ))}
               <li>
                 <Link to="/events" className="text-white/80 hover:text-white transition-colors">
-                  Maha Yaagam &amp; Festivals (நிகழ்வுகள்)
+                  Maha Yaagam &amp; Festivals
                 </Link>
               </li>
             </ul>

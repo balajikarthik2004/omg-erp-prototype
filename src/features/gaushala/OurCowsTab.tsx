@@ -16,14 +16,13 @@ import { NoMatches } from './NoMatches'
 /** Fixed at load, so a re-render never shifts what counts as "this year". */
 const LOADED_AT = Date.now()
 
-type Filter = 'all' | 'milk' | 'calf' | 'bull' | 'sick'
+type Filter = 'all' | 'milk' | 'calf' | 'bull'
 
 const FILTERS: { id: Filter; label: string }[] = [
   { id: 'all', label: 'Everyone' },
   { id: 'milk', label: 'Milk cows' },
   { id: 'calf', label: 'Calves' },
   { id: 'bull', label: 'Bulls & oxen' },
-  { id: 'sick', label: 'Under care' },
 ]
 
 function matchesFilter(cow: Cow, filter: Filter, _now: number): boolean {
@@ -34,8 +33,6 @@ function matchesFilter(cow: Cow, filter: Filter, _now: number): boolean {
       return cow.kind === 'calf'
     case 'bull':
       return cow.kind === 'bull' || cow.kind === 'ox'
-    case 'sick':
-      return cow.status === 'sick' || cow.status === 'recovering'
     default:
       return true
   }

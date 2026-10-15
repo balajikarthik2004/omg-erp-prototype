@@ -73,15 +73,27 @@ export interface NavGroup {
   phase: Phase
   label: string
   items: NavItem[]
+  /**
+   * A "flow" group is one of the four money-flow phases and carries a step
+   * number, so the sidebar reads as the sequence a gift actually travels.
+   * A "module" group is an optional vertical and sits after the flow;
+   * "system" sits above it.
+   */
+  kind: 'system' | 'overview' | 'flow' | 'module'
+  step?: 1 | 2 | 3 | 4
+  /** One line under the group label, so a new admin knows what lives here. */
+  hint?: string
 }
 
 export const NAV_GROUPS: NavGroup[] = [
   {
+    kind: 'system',
     phase: 'onboard',
     label: 'Platform',
     items: [{ to: '/console/onboarding', label: 'Customers', icon: Building2, phase: 'onboard', roles: ['super_admin', 'trustee'] }],
   },
   {
+    kind: 'overview',
     phase: 'report',
     label: 'Overview',
     items: [
@@ -90,49 +102,11 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    phase: 'collect',
-    label: 'Events',
-    items: [
-      { to: '/console/events/overview', label: 'Overview', icon: LayoutDashboard, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events' },
-      { to: '/console/events', label: 'All events', icon: CalendarDays, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events', end: true },
-      { to: '/console/events/budgets', label: 'Budgets & approvals', icon: Wallet, phase: 'control', roles: ADMIN_CA, module: 'events' },
-      { to: '/console/events/approvals', label: 'Approval center', icon: ClipboardCheck, phase: 'control', roles: ADMIN_CA, module: 'events', badge: 'eventApprovals' },
-      { to: '/console/events/studio', label: 'Poster studio', icon: Palette, phase: 'collect', roles: ADMIN_CA, module: 'events' },
-      { to: '/console/events/registrations', label: 'Registrations & QR', icon: QrCode, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events' },
-      { to: '/console/events/purchases', label: 'Purchases & orders', icon: ShoppingCart, phase: 'spend', roles: ADMIN_CA, module: 'events' },
-      { to: '/console/events/reports', label: 'Financial reports', icon: BarChart3, phase: 'report', roles: ADMIN_CA, module: 'events' },
-    ],
-  },
-  {
-    phase: 'collect',
-    label: 'Gaushala',
-    items: [
-      { to: '/console/gaushala', label: 'Dashboard', icon: Gauge, phase: 'report', roles: GAU_ALL, end: true },
-      { to: '/console/gaushala/cows', label: 'Cow management', icon: HeartPulse, phase: 'collect', roles: GAU_HERD },
-      { to: '/console/gaushala/sewas', label: 'Sewa catalogue', icon: Sprout, phase: 'collect', roles: GAU_MANAGE },
-      { to: '/console/gaushala/donations', label: 'Donations', icon: HandCoins, phase: 'collect', roles: GAU_MONEY },
-      { to: '/console/gaushala/adoptions', label: 'Adoptions', icon: HeartPulse, phase: 'collect', roles: GAU_MONEY },
-      { to: '/console/gaushala/bookings', label: 'Visits & bookings', icon: ScanLine, phase: 'collect', roles: GAU_HERD },
-      { to: '/console/gaushala/events', label: 'Festivals', icon: CalendarHeart, phase: 'collect', roles: GAU_MANAGE },
-      { to: '/console/gaushala/volunteers', label: 'Volunteers', icon: HandHeart, phase: 'collect', roles: GAU_MANAGE },
-      { to: '/console/gaushala/transparency', label: 'Transparency', icon: ShieldCheck, phase: 'report', roles: GAU_ALL },
-    ],
-  },
-  {
-    phase: 'collect',
-    label: 'CSR',
-    items: [
-      { to: '/console/csr', label: 'CSR Overview', icon: LayoutDashboard, phase: 'collect', roles: ADMIN_CA, module: 'csr', end: true },
-      { to: '/console/csr/compliance', label: 'Compliance Vault', icon: ShieldCheck, phase: 'control', roles: ADMIN_CA, module: 'csr' },
-      { to: '/console/csr/projects', label: 'CSR Projects', icon: ScrollText, phase: 'control', roles: ADMIN_CA, module: 'csr' },
-      { to: '/console/csr/pipeline', label: 'Corporate Pipeline', icon: Building2, phase: 'collect', roles: ADMIN_CA, module: 'csr' },
-      { to: '/console/csr/deals', label: 'MoUs & Tranches', icon: Handshake, phase: 'control', roles: ADMIN_CA, module: 'csr' },
-      { to: '/console/csr/reports', label: 'UCs & Reports', icon: FileCheck2, phase: 'report', roles: ADMIN_CA, module: 'csr' },
-    ],
-  },
-  {
+    kind: 'flow',
+    step: 1,
     phase: 'collect',
     label: 'Collect',
+    hint: 'Money coming in',
     items: [
       { to: '/console/donations', label: 'Donations', icon: HandCoins, phase: 'collect', roles: ADMIN_CA, module: 'donations' },
       { to: '/console/cash-counts', label: 'Counter cash', icon: Coins, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'donations' },
@@ -140,8 +114,11 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    kind: 'flow',
+    step: 2,
     phase: 'control',
     label: 'Control',
+    hint: 'Where the money sits',
     items: [
       { to: '/console/reconciliation', label: 'Reconciliation', icon: Receipt, phase: 'control', roles: ADMIN_CA, module: 'reconciliation' },
       { to: '/console/ledger', label: 'Ledger', icon: BookLock, phase: 'control', roles: ADMIN_CA },
@@ -151,36 +128,105 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    kind: 'flow',
+    step: 3,
     phase: 'spend',
     label: 'Spend',
+    hint: 'Money going out',
     items: [
       { to: '/console/inventory', label: 'Inventory', icon: Boxes, phase: 'spend', roles: SPEND, module: 'inventory' },
       { to: '/console/suppliers', label: 'Suppliers', icon: Truck, phase: 'spend', roles: SPEND, module: 'inventory' },
-      { to: '/console/procurement', label: 'New purchase order', icon: FilePlus, phase: 'spend', roles: ['procurement_officer', 'sector_admin', 'ca_partner'], module: 'procurement' },
       { to: '/console/purchase-orders', label: 'Purchase orders', icon: ShoppingCart, phase: 'spend', roles: SPEND.concat('trustee'), module: 'procurement' },
+      { to: '/console/procurement', label: 'New purchase order', icon: FilePlus, phase: 'spend', roles: ['procurement_officer', 'sector_admin', 'ca_partner'], module: 'procurement' },
       { to: '/console/payments', label: 'Payments', icon: PackageSearch, phase: 'spend', roles: CA.concat('procurement_officer'), module: 'payments' },
     ],
   },
   {
+    kind: 'flow',
+    step: 4,
     phase: 'report',
     label: 'Report',
+    hint: 'What it all adds up to',
     items: [
       { to: '/console/reports', label: 'Reports', icon: FileSpreadsheet, phase: 'report', roles: WITH_PLATFORM, module: 'reports' },
       { to: '/console/audit', label: 'Audit log', icon: History, phase: 'report', roles: ['super_admin', ...ADMIN_CA], module: 'reports' },
+    ],
+  },
+
+  /* Optional verticals. Each runs the same four phases inside itself. */
+  {
+    kind: 'module',
+    phase: 'collect',
+    label: 'Events',
+    items: [
+      { to: '/console/events/overview', label: 'Overview', icon: LayoutDashboard, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events' },
+      { to: '/console/events', label: 'All events', icon: CalendarDays, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events', end: true },
+      { to: '/console/events/registrations', label: 'Registrations and QR', icon: QrCode, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events' },
+      { to: '/console/events/studio', label: 'Poster studio', icon: Palette, phase: 'collect', roles: ADMIN_CA, module: 'events' },
+      { to: '/console/events/budgets', label: 'Budgets and planning', icon: Wallet, phase: 'control', roles: ADMIN_CA, module: 'events' },
+      { to: '/console/events/approvals', label: 'Approval center', icon: ClipboardCheck, phase: 'control', roles: ADMIN_CA, module: 'events', badge: 'eventApprovals' },
+      { to: '/console/events/purchases', label: 'Purchases and orders', icon: ShoppingCart, phase: 'spend', roles: ADMIN_CA, module: 'events' },
+      { to: '/console/events/reports', label: 'Financial reports', icon: BarChart3, phase: 'report', roles: ADMIN_CA, module: 'events' },
+    ],
+  },
+  {
+    kind: 'module',
+    phase: 'collect',
+    label: 'Gaushala',
+    items: [
+      { to: '/console/gaushala', label: 'Overview', icon: Gauge, phase: 'report', roles: GAU_ALL, end: true },
+      { to: '/console/gaushala/cows', label: 'Cow management', icon: HeartPulse, phase: 'collect', roles: GAU_HERD },
+      { to: '/console/gaushala/sewas', label: 'Sewa catalogue', icon: Sprout, phase: 'collect', roles: GAU_MANAGE },
+      { to: '/console/gaushala/donations', label: 'Donations', icon: HandCoins, phase: 'collect', roles: GAU_MONEY },
+      { to: '/console/gaushala/adoptions', label: 'Adoptions', icon: HeartPulse, phase: 'collect', roles: GAU_MONEY },
+      { to: '/console/gaushala/bookings', label: 'Visits and bookings', icon: ScanLine, phase: 'collect', roles: GAU_HERD },
+      { to: '/console/gaushala/events', label: 'Festivals', icon: CalendarHeart, phase: 'collect', roles: GAU_MANAGE },
+      { to: '/console/gaushala/volunteers', label: 'Volunteers', icon: HandHeart, phase: 'collect', roles: GAU_MANAGE },
+      { to: '/console/gaushala/transparency', label: 'Transparency', icon: ShieldCheck, phase: 'report', roles: GAU_ALL },
+    ],
+  },
+  {
+    kind: 'module',
+    phase: 'control',
+    label: 'CSR',
+    items: [
+      { to: '/console/csr', label: 'Overview', icon: LayoutDashboard, phase: 'collect', roles: ADMIN_CA, module: 'csr', end: true },
+      { to: '/console/csr/pipeline', label: 'Corporate pipeline', icon: Building2, phase: 'collect', roles: ADMIN_CA, module: 'csr' },
+      { to: '/console/csr/deals', label: 'MoUs and tranches', icon: Handshake, phase: 'control', roles: ADMIN_CA, module: 'csr' },
+      { to: '/console/csr/projects', label: 'CSR projects', icon: ScrollText, phase: 'control', roles: ADMIN_CA, module: 'csr' },
+      { to: '/console/csr/compliance', label: 'Compliance vault', icon: ShieldCheck, phase: 'control', roles: ADMIN_CA, module: 'csr' },
+      { to: '/console/csr/reports', label: 'UCs and reports', icon: FileCheck2, phase: 'report', roles: ADMIN_CA, module: 'csr' },
     ],
   },
 ]
 
 export const ALL_NAV_ITEMS: NavItem[] = NAV_GROUPS.flatMap((g) => g.items)
 
+/** The deepest nav item matching a path, with the group it sits in. */
+export function locate(pathname: string): { group: NavGroup; item: NavItem } | undefined {
+  let best: { group: NavGroup; item: NavItem } | undefined
+  for (const group of NAV_GROUPS) {
+    for (const item of group.items) {
+      const hit = item.end ? pathname === item.to : pathname.startsWith(item.to)
+      if (hit && (!best || item.to.length > best.item.to.length)) best = { group, item }
+    }
+  }
+  return best
+}
+
 export function visibleGroups(role: Role, modules?: ModuleKey[]): NavGroup[] {
   const enabled = (item: NavItem) => !item.module || !modules || modules.includes(item.module)
-  return NAV_GROUPS.map((group) => ({
+  const groups = NAV_GROUPS.map((group) => ({
     ...group,
     items: group.items.filter((i) => i.roles.includes(role) && enabled(i)),
-  })).filter(
-    (group) => group.items.length > 0,
-  )
+  })).filter((group) => group.items.length > 0)
+
+  // A step number only means something as part of a sequence. A role that can
+  // reach just one phase — a super admin sees only Report — would otherwise
+  // get a lone "4", which reads as a bug rather than as a position in a flow.
+  const flowCount = groups.filter((g) => g.kind === 'flow').length
+  if (flowCount < 2) return groups.map((g) => (g.kind === 'flow' ? { ...g, step: undefined } : g))
+  return groups
 }
 
 export { ScrollText }
