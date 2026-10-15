@@ -249,13 +249,14 @@ export interface ProgramsSeed {
   transparencyDocs: TransparencyDoc[]
 }
 
-const FESTIVALS: { name: string; tamil?: string; monthDay: [number, number]; rituals: string[]; summary: string }[] = [
+const FESTIVALS: { name: string; tamil?: string; monthDay: [number, number]; rituals: string[]; summary: string; image?: string }[] = [
   {
     name: 'Gopashtami',
     tamil: 'கோபாஷ்டமி',
     monthDay: [10, 8],
     rituals: ['Go pooja at first light', 'Horns painted and garlanded', 'Festival feed of gud and green fodder', 'Annadhanam for visitors'],
     summary: 'The day the herd is honoured. Every animal is washed, garlanded and fed by hand before the sun is properly up.',
+    image: '/images/gopashtami.png',
   },
   {
     name: 'Govardhan Puja',
@@ -269,6 +270,7 @@ const FESTIVALS: { name: string; tamil?: string; monthDay: [number, number]; rit
     monthDay: [0, 15],
     rituals: ['Horns painted and belled', 'Pongal cooked and offered', 'Procession through the village'],
     summary: 'Mattu Pongal. Bells, painted horns and not one animal willing to stand still for a photograph.',
+    image: '/images/makar-sankranti.png',
   },
   {
     name: 'Mahashivratri Night Vigil',
@@ -281,6 +283,7 @@ const FESTIVALS: { name: string; tamil?: string; monthDay: [number, number]; rit
     monthDay: [5, 12],
     rituals: ['Evening lamp round', 'Feeding in the name of each sankalpa received'],
     summary: 'Held every Pradosham evening: a lamp round, then feeding in the name of everyone who asked for it.',
+    image: '/images/pradosham.png',
   },
   {
     name: 'Pitru Paksha Fortnight',
@@ -465,6 +468,7 @@ export function makeProgramsSeed(now: Date, cows: Cow[], donors: Donor[]): Progr
       registered,
       livestreamUrl: i % 2 === 0 ? `https://live.omg.org/gaushala/${fest.name.toLowerCase().replace(/[^a-z]+/g, '-')}` : undefined,
       galleryArt: upcoming ? [] : [i % 6, (i + 2) % 6, (i + 4) % 6],
+      image: fest.image,
     }
     gaushalaEvents.push(event)
 
