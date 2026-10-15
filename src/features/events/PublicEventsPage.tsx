@@ -91,16 +91,28 @@ export function PublicEventsPage() {
             const left = e.capacity ? e.capacity - seatsTaken(db, e.id) : null
             return (
               <li key={e.id}>
-                <Link to={`/register/${e.id}`} className="group flex h-full flex-col rounded-card border border-sandal-200 bg-sandal-50 p-6 shadow-card transition-all duration-200 hover:-translate-y-1 hover:shadow-lift focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:outline-none">
-                  <SectorChip sectorId={e.sectorId} />
-                  <h2 className="mt-3 font-heritage text-[28px] leading-tight font-semibold text-stone-900">{e.name}</h2>
-                  <p className="mt-3 flex items-start gap-2 text-[14px] text-stone-700"><CalendarDays className="mt-0.5 size-4 shrink-0 text-turmeric-700" aria-hidden />{formatDateTime(e.startAt)}</p>
-                  <p className="mt-1.5 flex items-start gap-2 text-[14px] text-stone-700"><MapPin className="mt-0.5 size-4 shrink-0 text-turmeric-700" aria-hidden />{e.venue}</p>
-                  <p className="mt-1.5 flex items-start gap-2 text-[14px] text-stone-700"><Ticket className="mt-0.5 size-4 shrink-0 text-turmeric-700" aria-hidden />{e.isPaid ? `${formatMoney(e.ticketPrice ?? 0)} per ticket` : 'Free entry'}{left !== null ? ` · ${Math.max(0, left)} seats left` : ''}</p>
-                  <span className="mt-5 inline-flex items-center gap-1.5 border-t border-sandal-200 pt-4 text-[15px] font-semibold text-kumkum-700">
-                    {left === 0 ? 'Full' : 'Register'}
-                    <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
-                  </span>
+                <Link to={`/register/${e.id}`} className="group flex h-full flex-col overflow-hidden rounded-card border border-sandal-200 bg-sandal-50 shadow-card transition-all duration-200 hover:-translate-y-1 hover:shadow-lift focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:outline-none">
+                  {e.image ? (
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-100">
+                      <img
+                        src={e.image}
+                        alt={e.name}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : null}
+                  <div className="flex flex-1 flex-col p-6">
+                    <SectorChip sectorId={e.sectorId} />
+                    <h2 className="mt-3 font-heritage text-[28px] leading-tight font-semibold text-stone-900">{e.name}</h2>
+                    <p className="mt-3 flex items-start gap-2 text-[14px] text-stone-700"><CalendarDays className="mt-0.5 size-4 shrink-0 text-turmeric-700" aria-hidden />{formatDateTime(e.startAt)}</p>
+                    <p className="mt-1.5 flex items-start gap-2 text-[14px] text-stone-700"><MapPin className="mt-0.5 size-4 shrink-0 text-turmeric-700" aria-hidden />{e.venue}</p>
+                    <p className="mt-1.5 flex items-start gap-2 text-[14px] text-stone-700"><Ticket className="mt-0.5 size-4 shrink-0 text-turmeric-700" aria-hidden />{e.isPaid ? `${formatMoney(e.ticketPrice ?? 0)} per ticket` : 'Free entry'}{left !== null ? ` · ${Math.max(0, left)} seats left` : ''}</p>
+                    <span className="mt-5 inline-flex items-center gap-1.5 border-t border-sandal-200 pt-4 text-[15px] font-semibold text-kumkum-700">
+                      {left === 0 ? 'Full' : 'Register'}
+                      <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+                    </span>
+                  </div>
                 </Link>
               </li>
             )
