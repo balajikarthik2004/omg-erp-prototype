@@ -105,7 +105,6 @@ export function ItemDetailPage() {
           {item.tamil ? <span className="text-[18px] text-stone-500">{item.tamil}</span> : null}
         </div>
         <p className="mt-1 max-w-2xl text-[15px] leading-relaxed text-stone-700">{item.description}</p>
-        <div className="gold-rule mt-4" />
       </header>
 
       <div className="grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-start">

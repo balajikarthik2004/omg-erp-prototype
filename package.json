@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "verify:flow": "node scripts/verify-flow.mjs",
-    "verify:gaushala": "node scripts/verify-gaushala.mjs"
+    "verify:gaushala": "node scripts/verify-gaushala.mjs",
+    "verify:csr": "node scripts/verify-csr.mjs"
   },
   "dependencies": {
     "@fontsource/hind-madurai": "^5.3.0",

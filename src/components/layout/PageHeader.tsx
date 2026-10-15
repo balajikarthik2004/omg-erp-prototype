@@ -33,7 +33,6 @@ export function PageHeader({
         </div>
         {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
       </div>
-      <div className="gold-rule mt-5" />
       {children ? <div className="mt-5">{children}</div> : null}
     </header>
   )

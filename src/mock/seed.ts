@@ -18,7 +18,7 @@ export const USERS: User[] = [
   { id: 'u-store', name: 'Vasanthi Murugan', role: 'store_keeper', email: 'vasanthi@omg.org', sectorIds: ['temple', 'sevalaya'] },
   { id: 'u-proc', name: 'Dinesh Kumar', role: 'procurement_officer', email: 'dinesh@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-cas', name: 'Anitha Rajan', role: 'ca_staff', email: 'anitha@caoffice.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
-  { id: 'u-cap', name: 'R. Balasubramanian', role: 'ca_partner', email: 'bala@caoffice.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
+  { id: 'u-cap', name: 'R. Perumal', role: 'ca_partner', email: 'bala@caoffice.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-tru', name: 'Meenakshi Sundaram', role: 'trustee', email: 'meenakshi@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   // Gaushala. Scoped to Sevalaya, and only ever to the cow shelter inside it.
   { id: 'u-gau-adm', name: 'Thirumalai Raghavan', role: 'gaushala_admin', email: 'thirumalai@omg.org', sectorIds: ['sevalaya'] },
@@ -94,6 +94,11 @@ export const FUNDS: Fund[] = [
   { id: 'fund-gau-care', sectorId: 'sevalaya', name: 'Cow Care & Adoption Fund', type: 'restricted', balance: 0 },
   { id: 'fund-gau-med', sectorId: 'sevalaya', name: 'Veterinary & Rescue Fund', type: 'restricted', balance: 0 },
   { id: 'fund-gau-infra', sectorId: 'sevalaya', name: 'Gaushala Infrastructure Fund', type: 'restricted', balance: 0 },
+
+  // CSR Dedicated Funds. Mandatory dedicated bank account & restricted fund
+  // per MCA Schedule VII guidelines.
+  { id: 'fund-csr-tvs-anna', sectorId: 'sevalaya', name: 'TVS CSR Annadhanam Dedicated Fund', type: 'restricted', csrProjectId: 'csr-prj-anna', balance: 0 },
+  { id: 'fund-csr-heritage', sectorId: 'temple', name: 'Murugappa Heritage Restoration Fund', type: 'restricted', csrProjectId: 'csr-prj-heritage', balance: 0 },
 ]
 
 /** The fund ids the Gaushala spends out of. Used by its console pages. */

@@ -49,7 +49,6 @@ export function RegisterPage() {
     <div className="mx-auto max-w-3xl px-5 py-12 sm:px-8">
       <SectorChip sectorId={event.sectorId} withTamil />
       <h1 className="mt-3 font-heritage text-[40px] leading-[1.05] font-semibold text-stone-900 sm:text-[52px]">{event.name}</h1>
-      <div className="gold-rule mt-5" />
       <ul className="mt-5 flex flex-col gap-2 text-[15px] text-stone-700">
         <li className="flex items-start gap-2.5"><CalendarDays className="mt-0.5 size-[18px] shrink-0 text-turmeric-700" aria-hidden />{formatDateTime(event.startAt)}</li>
         <li className="flex items-start gap-2.5"><MapPin className="mt-0.5 size-[18px] shrink-0 text-turmeric-700" aria-hidden />{event.venue}</li>
