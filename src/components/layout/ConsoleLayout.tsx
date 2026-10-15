@@ -22,7 +22,7 @@ export function ConsoleLayout() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <main className="flex-1 px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-5">
           <Outlet />
         </main>
       </div>

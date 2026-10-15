@@ -20,20 +20,20 @@ export function PageHeader({
   className?: string
 }) {
   return (
-    <header className={cn('mb-7', className)}>
-      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+    <header className={cn('mb-5 sm:mb-6', className)}>
+      <div className="flex flex-wrap items-start justify-between gap-x-5 gap-y-3">
         <div className="min-w-0">
           <PhaseChip phase={phase} />
-          <h1 className="mt-2.5 font-heritage text-[24px] font-bold tracking-tight text-navy-950 sm:text-[32px]">
+          <h1 className="mt-2 font-heritage text-[20px] font-bold tracking-tight text-navy-950 sm:text-[24px] lg:text-[26px]">
             {title}
           </h1>
           {description ? (
-            <p className="mt-2 max-w-2xl text-[14px] sm:text-[15px] leading-relaxed text-navy-700/80">{description}</p>
+            <p className="mt-1.5 max-w-2xl text-[13px] sm:text-[13.5px] leading-relaxed text-navy-700/85">{description}</p>
           ) : null}
         </div>
         {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
       </div>
-      {children ? <div className="mt-5">{children}</div> : null}
+      {children ? <div className="mt-3.5 sm:mt-4">{children}</div> : null}
     </header>
   )
 }
