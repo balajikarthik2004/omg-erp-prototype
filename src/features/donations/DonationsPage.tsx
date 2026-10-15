@@ -77,9 +77,10 @@ export function DonationsPage() {
     {
       key: 'date',
       header: 'Date',
+      sortValue: (d) => d.createdAt,
       cell: (d) => <span className="font-mono text-[13px] tabular-nums">{formatDate(d.createdAt)}</span>,
     },
-    { key: 'donor', header: 'Donor', cell: (d) => donorName(db, d.donorId) },
+    { key: 'donor', header: 'Donor', sortValue: (d) => donorName(db, d.donorId), cell: (d) => donorName(db, d.donorId) },
     {
       key: 'item',
       header: 'Offering',
@@ -88,8 +89,15 @@ export function DonationsPage() {
     },
     { key: 'sector', header: 'Sector', cell: (d) => <SectorChip sectorId={d.sectorId} /> },
     { key: 'method', header: 'Method', cell: (d) => <span className="text-[14px]">{titleCase(d.method)}</span> },
-    { key: 'status', header: 'Status', cell: (d) => <StatusBadge status={statusKey(d)} /> },
-    { key: 'amount', header: 'Amount', align: 'right', primary: true, cell: (d) => <Money value={d.gross} /> },
+    { key: 'status', header: 'Status', sortValue: (d) => statusKey(d), cell: (d) => <StatusBadge status={statusKey(d)} /> },
+    {
+      key: 'amount',
+      header: 'Amount',
+      align: 'right',
+      primary: true,
+      sortValue: (d) => d.gross,
+      cell: (d) => <Money value={d.gross} />,
+    },
   ]
 
   return (

@@ -447,7 +447,7 @@ export function ComplianceVaultPage() {
               </div>
             </div>
 
-            <div className="rounded-lg border-2 border-dashed border-sandalwood-300 p-4 text-center">
+            <div className="rounded-lg border border-dashed border-sandalwood-300 p-4 text-center">
               <UploadCloud className="mx-auto size-8 text-sandalwood-400" />
               <p className="mt-1 text-xs font-medium text-sandalwood-800">
                 Click or drag PDF file to upload

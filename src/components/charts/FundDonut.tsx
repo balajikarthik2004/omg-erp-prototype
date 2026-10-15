@@ -98,7 +98,7 @@ export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; heigh
           <span className="truncate max-w-32.5 text-[11px] font-bold tracking-widest text-navy-600 uppercase">
             {activeSector ? activeSector.label : 'Held'}
           </span>
-          <span className="font-heritage text-[22px] font-bold text-navy-950 leading-tight mt-0.5">
+          <span className="font-display text-[22px] font-bold text-navy-950 leading-tight mt-0.5">
             {formatMoney(activeSector ? activeSector.value : total)}
           </span>
           {percent !== null ? (
@@ -109,7 +109,7 @@ export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; heigh
         </div>
       </div>
 
-      <ul className="w-full divide-y divide-navy-100">
+      <ul className="w-full divide-y divide-sandal-200">
         {slices.slice(0, 6).map((slice) => {
           const isSectorActive = activeSector?.key === slice.sectorId
           return (
