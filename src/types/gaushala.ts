@@ -315,6 +315,7 @@ export interface GaushalaEvent {
   /** Pictures from the last time it was held. */
   galleryArt: number[]
   tenantId?: string
+  image?: string
 }
 
 export interface GaushalaEventRsvp {

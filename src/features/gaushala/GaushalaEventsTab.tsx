@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { CalendarDays, Clock, Globe, Link2, MapPin, Radio, Users } from 'lucide-react'
 
 import { Badge } from '@/components/ui/Badge'
+import { cn } from '@/lib/cn'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
 import { Input } from '@/components/ui/Input'
@@ -88,6 +89,15 @@ export function GaushalaEventsTab({ currency }: { currency: Currency }) {
   )
 }
 
+export function getEventImage(event: { name: string; image?: string }): string | undefined {
+  if (event.image) return event.image
+  const n = event.name.toLowerCase()
+  if (n.includes('pradosham')) return '/images/pradosham.png'
+  if (n.includes('gopashtami') || n.includes('gopastami')) return '/images/gopashtami.png'
+  if (n.includes('sankranti') || n.includes('makar')) return '/images/makar-sankranti.png'
+  return undefined
+}
+
 function EventCard({
   event,
   currency,
@@ -100,10 +110,18 @@ function EventCard({
   const full = event.capacity !== undefined && event.registered >= event.capacity
   const left = event.capacity !== undefined ? event.capacity - event.registered : undefined
   const sameDay = sameViewerDay(event.startAt, event.endAt)
+  const eventImg = getEventImage(event)
 
   return (
-    <article className="overflow-hidden rounded-card border border-sandal-200 bg-sandal-50 shadow-card">
-      <div className="grid gap-0 md:grid-cols-[200px_1fr]">
+    <article className="group overflow-hidden rounded-card border border-sandal-200 bg-sandal-50 shadow-card transition-all duration-300 hover:border-navy-200 hover:shadow-lift">
+      <div
+        className={cn(
+          'grid gap-0',
+          eventImg
+            ? 'md:grid-cols-[180px_1fr_240px] lg:grid-cols-[200px_1fr_280px]'
+            : 'md:grid-cols-[200px_1fr]',
+        )}
+      >
         <div className="flex flex-col items-center justify-center gap-1 border-b border-sandal-200 bg-white px-5 py-6 text-center md:border-r md:border-b-0">
           <CalendarDays className="size-5 text-kumkum-600" aria-hidden />
           <p className="mt-1 font-display text-[18px] leading-tight text-stone-900">
@@ -117,48 +135,50 @@ function EventCard({
           <p className="mt-1.5 text-[12.5px] font-semibold text-kumkum-700">{relativeToNow(event.startAt)}</p>
         </div>
 
-        <div className="p-5 sm:p-6">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h4 className="font-display text-[21px] leading-snug text-stone-900">{event.name}</h4>
-              {event.tamil ? <p className="mt-0.5 text-[14px] text-stone-500">{event.tamil}</p> : null}
+        <div className="flex flex-col justify-between p-5 sm:p-6">
+          <div>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h4 className="font-display text-[21px] leading-snug text-stone-900">{event.name}</h4>
+                {event.tamil ? <p className="mt-0.5 text-[14px] text-stone-500">{event.tamil}</p> : null}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {event.isPaid ? (
+                  <Badge>{displayPrice(event.ticketPrice ?? 0, currency)} per head</Badge>
+                ) : (
+                  <Badge className="border-tulsi-50 bg-tulsi-50 text-tulsi-700">Free</Badge>
+                )}
+                {event.livestreamUrl ? (
+                  <Badge icon={<Radio className="size-3.5" aria-hidden />}>Live stream</Badge>
+                ) : null}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {event.isPaid ? (
-                <Badge>{displayPrice(event.ticketPrice ?? 0, currency)} per head</Badge>
-              ) : (
-                <Badge className="border-tulsi-50 bg-tulsi-50 text-tulsi-700">Free</Badge>
-              )}
-              {event.livestreamUrl ? (
-                <Badge icon={<Radio className="size-3.5" aria-hidden />}>Live stream</Badge>
-              ) : null}
-            </div>
+
+            <p className="mt-2.5 text-[14px] leading-relaxed text-stone-700">{event.summary}</p>
+
+            <p className="mt-3 flex items-center gap-1.5 text-[13px] text-stone-500">
+              <MapPin className="size-3.5 shrink-0" aria-hidden />
+              {event.venue}
+            </p>
+
+            {event.rituals.length > 0 ? (
+              <div className="mt-3.5">
+                <p className="text-[11.5px] font-extrabold tracking-[0.12em] text-stone-500 uppercase">
+                  What happens
+                </p>
+                <ul className="mt-1.5 flex flex-wrap gap-1.5">
+                  {event.rituals.map((ritual) => (
+                    <li
+                      key={ritual}
+                      className="rounded-full border border-sandal-200 bg-white px-2.5 py-1 text-[12.5px] text-stone-700"
+                    >
+                      {ritual}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
-
-          <p className="mt-2.5 text-[14px] leading-relaxed text-stone-700">{event.summary}</p>
-
-          <p className="mt-3 flex items-center gap-1.5 text-[13px] text-stone-500">
-            <MapPin className="size-3.5 shrink-0" aria-hidden />
-            {event.venue}
-          </p>
-
-          {event.rituals.length > 0 ? (
-            <div className="mt-3.5">
-              <p className="text-[11.5px] font-extrabold tracking-[0.12em] text-stone-500 uppercase">
-                What happens
-              </p>
-              <ul className="mt-1.5 flex flex-wrap gap-1.5">
-                {event.rituals.map((ritual) => (
-                  <li
-                    key={ritual}
-                    className="rounded-full border border-sandal-200 bg-white px-2.5 py-1 text-[12.5px] text-stone-700"
-                  >
-                    {ritual}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-sandal-200 pt-4">
             <p className="flex items-center gap-1.5 text-[13px] text-stone-500">
@@ -195,15 +215,35 @@ function EventCard({
             </div>
           </div>
         </div>
+
+        {eventImg ? (
+          <div className="relative aspect-[16/10] md:aspect-auto overflow-hidden border-t md:border-t-0 md:border-l border-sandal-200 bg-navy-950">
+            <img
+              src={eventImg}
+              alt={event.name}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+        ) : null}
       </div>
     </article>
   )
 }
 
 function PastEventCard({ event }: { event: GaushalaEvent }) {
+  const eventImg = getEventImage(event)
+
   return (
-    <article className="h-full overflow-hidden rounded-card border border-sandal-200 bg-white shadow-card">
-      {event.galleryArt.length > 0 ? (
+    <article className="group h-full overflow-hidden rounded-card border border-sandal-200 bg-white shadow-card transition-all duration-300 hover:border-navy-200 hover:shadow-lift">
+      {eventImg ? (
+        <div className="relative aspect-[16/9] overflow-hidden bg-navy-950">
+          <img
+            src={eventImg}
+            alt={event.name}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
+      ) : event.galleryArt.length > 0 ? (
         <ul className="grid grid-cols-3 gap-px bg-sandal-200">
           {event.galleryArt.map((art, i) => (
             <li key={i} className="aspect-4/3 bg-white">
@@ -258,6 +298,7 @@ function RsvpDrawer({
   }
 
   const total = (event.ticketPrice ?? 0) * people
+  const eventImg = getEventImage(event)
 
   return (
     <Drawer
@@ -295,6 +336,11 @@ function RsvpDrawer({
           </div>
         ) : (
           <>
+            {eventImg ? (
+              <div className="relative aspect-[16/9] overflow-hidden rounded-xl border border-sandal-200 bg-navy-950 shadow-xs">
+                <img src={eventImg} alt={event.name} className="h-full w-full object-cover" />
+              </div>
+            ) : null}
             <p className="text-[13.5px] leading-relaxed text-navy-700">{event.summary}</p>
             <p className="flex items-center gap-1.5 text-[13px] text-navy-600">
               <Globe className="size-3.5" aria-hidden />
