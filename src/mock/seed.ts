@@ -206,51 +206,48 @@ export const CATALOG: CatalogItem[] = [
   { id: 'cat-tmp-concert', sectorId: 'temple', category: 'event', name: 'Navaratri Music Evenings', description: 'Nine evenings of carnatic music in the mandapam. One ticket per evening.', price: 1500, ticketed: true, fundId: 'fund-tmp-fest', active: true, image: '/images/catalogue/Navaratri.png' },
 
   /* Temple — Projects */
-  { id: 'cat-tmp-raja', sectorId: 'temple', category: 'project', name: 'Rajagopuram Renovation', description: 'Help restore the main tower, stone by stone.', price: null, presets: [10100, 25100, 50100, 100100, 111600], projectId: 'prj-rajagopuram', fundId: 'fund-tmp-raja', active: true, popular: true },
-  { id: 'cat-tmp-corpus', sectorId: 'temple', category: 'project', name: 'Temple Corpus Endowment', description: 'A permanent fund. Only the income from it is ever spent.', price: null, presets: [100100, 250100, 500100], fundId: 'fund-tmp-corpus', active: true },
+  { id: 'cat-tmp-raja', sectorId: 'temple', category: 'project', name: 'Rajagopuram Renovation', description: 'Help restore the main tower, stone by stone.', price: null, presets: [10100, 25100, 50100, 100100, 111600], projectId: 'prj-rajagopuram', fundId: 'fund-tmp-raja', active: true, popular: true, image: '/images/catalogue/Temple Tower Restoration.png' },
+  { id: 'cat-tmp-corpus', sectorId: 'temple', category: 'project', name: 'Temple Corpus Endowment', description: 'A permanent fund. Only the income from it is ever spent.', price: null, presets: [100100, 250100, 500100], fundId: 'fund-tmp-corpus', active: true, image: '/images/catalogue/Temple Endowment Ceremony.png' },
 
   /* Sevalaya — Hundi */
-  { id: 'cat-sev-meal', sectorId: 'sevalaya', category: 'hundi', name: 'Sponsor One Meal', description: 'A full meal for one person: rice, sambar, poriyal and curd.', price: 1100, fundId: 'fund-sev-anna', active: true, popular: true },
+  { id: 'cat-sev-meal', sectorId: 'sevalaya', category: 'hundi', name: 'Sponsor One Meal', description: 'A full meal for one person: rice, sambar, poriyal and curd.', price: 1100, fundId: 'fund-sev-anna', active: true, popular: true, image: '/images/catalogue/Sponsor One Meal.png' },
 
   /* Sevalaya — Pooja (dedicated days) */
-  { id: 'cat-sev-annadhanam', sectorId: 'sevalaya', category: 'pooja', name: 'Annadhanam for a Day', tamil: 'அன்னதானம்', description: 'Feed everyone who comes, for one full day, in your family name.', price: 50100, needsDedication: true, needsDate: true, fundId: 'fund-sev-anna', active: true, popular: true },
-  { id: 'cat-sev-birthday', sectorId: 'sevalaya', category: 'pooja', name: 'Birthday Annadhanam', description: 'Mark a birthday or a memorial day by feeding 100 people.', price: 25100, needsDedication: true, needsDate: true, fundId: 'fund-sev-anna', active: true },
+  { id: 'cat-sev-annadhanam', sectorId: 'sevalaya', category: 'pooja', name: 'Annadhanam for a Day', tamil: 'அன்னதானம்', description: 'Feed everyone who comes, for one full day, in your family name.', price: 50100, needsDedication: true, needsDate: true, fundId: 'fund-sev-anna', active: true, popular: true, image: '/images/catalogue/Annadhanam for a day.png' },
+  { id: 'cat-sev-birthday', sectorId: 'sevalaya', category: 'pooja', name: 'Birthday Annadhanam', description: 'Mark a birthday or a memorial day by feeding 100 people.', price: 25100, needsDedication: true, needsDate: true, fundId: 'fund-sev-anna', active: true, image: '/images/catalogue/Birthday Annadhanam.png' },
 
   /* Sevalaya — Activities */
-  { id: 'cat-sev-school', sectorId: 'sevalaya', category: 'activity', name: 'School Kit for a Child', description: 'Books, uniform, shoes and a year of fees for one child.', price: 15100, fundId: 'fund-sev-edu', active: true },
-  { id: 'cat-sev-tuition', sectorId: 'sevalaya', category: 'activity', name: 'Evening Tuition Centre', description: 'One month of after-school teaching for 40 children.', price: 20100, fundId: 'fund-sev-edu', active: true },
-  { id: 'cat-sev-medical', sectorId: 'sevalaya', category: 'activity', name: 'Medical Camp', description: 'A free health camp in a nearby village.', price: 50100, fundId: 'fund-sev-gen', active: true },
+  { id: 'cat-sev-school', sectorId: 'sevalaya', category: 'activity', name: 'School Kit for a Child', description: 'Books, uniform, shoes and a year of fees for one child.', price: 15100, fundId: 'fund-sev-edu', active: true, image: '/images/catalogue/School Kit for a Child.png' },
+  { id: 'cat-sev-tuition', sectorId: 'sevalaya', category: 'activity', name: 'Evening Tuition Centre', description: 'One month of after-school teaching for 40 children.', price: 20100, fundId: 'fund-sev-edu', active: true, image: '/images/catalogue/Evening Tuition Centre.png' },
+  { id: 'cat-sev-medical', sectorId: 'sevalaya', category: 'activity', name: 'Medical Camp', description: 'A free health camp in a nearby village.', price: 50100, fundId: 'fund-sev-gen', active: true, image: '/images/catalogue/Medical Camp.png' },
 
   /* Sevalaya — Events (ticketed) */
-  { id: 'cat-sev-gala', sectorId: 'sevalaya', category: 'event', name: 'Annual Charity Dinner', description: 'A fundraising dinner for supporters. One ticket per guest.', price: 7500, ticketed: true, fundId: 'fund-sev-gen', active: true },
+  { id: 'cat-sev-gala', sectorId: 'sevalaya', category: 'event', name: 'Annual Charity Dinner', description: 'A fundraising dinner for supporters. One ticket per guest.', price: 7500, ticketed: true, fundId: 'fund-sev-gen', active: true, image: '/images/catalogue/Annual Charity Dinner.png' },
 
   /* Sevalaya — Projects */
-  { id: 'cat-sev-kitchen', sectorId: 'sevalaya', category: 'project', name: 'Annadhanam Kitchen Upgrade', description: 'Steam cooking, cold storage and a cleaner kitchen floor.', price: null, presets: [10100, 25100, 50100, 100100], projectId: 'prj-kitchen', fundId: 'fund-sev-kitchen', active: true, popular: true },
+  { id: 'cat-sev-kitchen', sectorId: 'sevalaya', category: 'project', name: 'Annadhanam Kitchen Upgrade', description: 'Steam cooking, cold storage and a cleaner kitchen floor.', price: null, presets: [10100, 25100, 50100, 100100], projectId: 'prj-kitchen', fundId: 'fund-sev-kitchen', active: true, popular: true, image: '/images/catalogue/Annadhanam Kitchen Upgrade.png' },
 
-  /* Sangam — Membership */
-  { id: 'cat-sgm-membership', sectorId: 'sangam', category: 'membership', name: 'Annual Membership', description: 'One year of membership for a family, including all events. Renews every year unless you stop it.', price: 10100, recurring: 'annual', fundId: 'fund-sgm-gen', active: true, popular: true },
-  { id: 'cat-sgm-monthly', sectorId: 'sangam', category: 'membership', name: 'Monthly Supporter', description: 'A small monthly membership for students and young families.', price: 1100, recurring: 'monthly', fundId: 'fund-sgm-gen', active: true },
-  { id: 'cat-sgm-life', sectorId: 'sangam', category: 'membership', name: 'Life Membership', description: 'Lifetime membership and a seat on the general body. Paid once.', price: 100100, fundId: 'fund-sgm-gen', active: true },
+  /* Sangam — Hundi */
+  { id: 'cat-sgm-membership', sectorId: 'sangam', category: 'membership', name: 'Annual Membership', description: 'One year of membership for a family, including all events. Renews every year unless you stop it.', price: 10100, recurring: 'annual', fundId: 'fund-sgm-gen', active: true, popular: true, image: '/images/catalogue/Annual Membership.png' },
+  { id: 'cat-sgm-monthly', sectorId: 'sangam', category: 'membership', name: 'Monthly Supporter', description: 'A small monthly membership for students and young families.', price: 1100, recurring: 'monthly', fundId: 'fund-sgm-gen', active: true, image: '/images/catalogue/Monthly Supporter.png' },
+  { id: 'cat-sgm-life', sectorId: 'sangam', category: 'membership', name: 'Life Membership', description: 'Lifetime membership and a seat on the general body. Paid once.', price: 100100, fundId: 'fund-sgm-gen', active: true, image: '/images/catalogue/Life Membership.png' },
+  { id: 'cat-sgm-support', sectorId: 'sangam', category: 'hundi', name: 'Support the Sangam', description: 'Any amount towards running the sangam through the year.', price: null, presets: [2100, 5100, 10100, 25100], fundId: 'fund-sgm-gen', active: true, image: '/images/catalogue/Support the sangam.png' },
 
-  /* Sangam — Support / Sponsorships (Hundi category: money request activities & sponsorships) */
-  { id: 'cat-sgm-support', sectorId: 'sangam', category: 'hundi', name: 'Support the Sangam', description: 'Any amount towards running the sangam through the year.', price: null, presets: [2100, 5100, 10100, 25100], fundId: 'fund-sgm-gen', active: true },
-  { id: 'cat-sgm-pongal', sectorId: 'sangam', category: 'hundi', name: 'Pongal Vizha Sponsorship', description: 'The January harvest festival: music, the pongal pot and games.', price: 50100, presets: [10100, 25100, 50100], fundId: 'fund-sgm-events', active: true, popular: true },
-  { id: 'cat-sgm-class', sectorId: 'sangam', category: 'hundi', name: 'Tamil Class Sponsorship', description: 'A term of weekend Tamil classes for 25 children.', price: 20100, presets: [5100, 10100, 20100], fundId: 'fund-sgm-events', active: true },
+  /* Sangam — Dedications */
+  { id: 'cat-sgm-dedication', sectorId: 'sangam', category: 'pooja', name: 'Event Dedication', description: 'Dedicate an evening of the festival to your family.', price: 25100, needsDedication: true, needsDate: true, fundId: 'fund-sgm-events', active: true, image: '/images/catalogue/Event Dedication.png' },
 
-  /* Sangam — Events (ticketed cultural programmes & celebrations) */
-  { id: 'cat-sgm-newyear', sectorId: 'sangam', category: 'event', name: 'Tamil New Year Celebration', tamil: 'தமிழ்ப் புத்தாண்டு', description: 'Chithirai 1: cultural programme, traditional feast, and community celebration.', price: 2500, ticketed: true, fundId: 'fund-sgm-events', active: true, popular: true },
-  { id: 'cat-sgm-kavi', sectorId: 'sangam', category: 'event', name: 'Kavi Arangam Evening', tamil: 'கவியரங்கம்', description: 'An evening of Tamil poetry and music. One ticket admits one person.', price: 2100, ticketed: true, fundId: 'fund-sgm-events', active: true },
-  { id: 'cat-sgm-natakam', sectorId: 'sangam', category: 'event', name: 'Annual Day Natakam', description: 'The community drama on annual day. Family tickets, seating is limited.', price: 3100, ticketed: true, fundId: 'fund-sgm-events', active: true },
-  { id: 'cat-sgm-workshop', sectorId: 'sangam', category: 'event', name: 'Kolam & Folk Art Workshop', description: 'A Saturday workshop for children and parents. One ticket per participant.', price: 1500, ticketed: true, fundId: 'fund-sgm-events', active: true },
+  /* Sangam — Events (ticketed) */
+  { id: 'cat-sgm-kavi', sectorId: 'sangam', category: 'event', name: 'Kavi Arangam Evening', tamil: 'கவியரங்கம்', description: 'An evening of Tamil poetry and music. One ticket admits one person.', price: 2100, ticketed: true, fundId: 'fund-sgm-events', active: true, popular: true, image: '/images/catalogue/Kavi Arangam.png' },
+  { id: 'cat-sgm-natakam', sectorId: 'sangam', category: 'event', name: 'Annual Day Natakam', description: 'The community drama on annual day. Family tickets, seating is limited.', price: 3100, ticketed: true, fundId: 'fund-sgm-events', active: true, image: '/images/catalogue/Annual Day Natakam.png' },
+  { id: 'cat-sgm-workshop', sectorId: 'sangam', category: 'event', name: 'Kolam & Folk Art Workshop', description: 'A Saturday workshop for children and parents. One ticket per participant.', price: 1500, ticketed: true, fundId: 'fund-sgm-events', active: true, image: '/images/catalogue/Kolam and Folk Art Workshop.png' },
 
-  /* Sangam — Activities (Verified Cultural & Language Learning Classes) */
-  { id: 'cat-sgm-act-tamil', sectorId: 'sangam', category: 'activity', name: 'Tamil Learning Class', tamil: 'தமிழ் மொழி வகுப்பு', description: 'Structured weekend Tamil classes for reading, writing, and conversational fluency across all grade levels.', price: 15000, recurring: 'annual', fundId: 'fund-sgm-events', active: true, popular: true },
-  { id: 'cat-sgm-act-music', sectorId: 'sangam', category: 'activity', name: 'Carnatic Music Class', tamil: 'கர்நாடக சங்கீதம்', description: 'Traditional vocal training, swara exercises, geethams, and classical krithis under trained music teachers.', price: 6000, recurring: 'monthly', fundId: 'fund-sgm-events', active: true },
-  { id: 'cat-sgm-act-dance', sectorId: 'sangam', category: 'activity', name: 'Bharatanatyam Classical Dance', tamil: 'பரதநாட்டியப் பயிற்சி', description: 'Classical Indian dance lessons covering adavus, mudras, thalams, and abhinaya for all skill levels.', price: 7500, recurring: 'monthly', fundId: 'fund-sgm-events', active: true },
-  { id: 'cat-sgm-act-mridangam', sectorId: 'sangam', category: 'activity', name: 'Mridangam Percussion Class', tamil: 'மிருதங்கப் பயிற்சி', description: 'Traditional South Indian classical rhythm, thaalam calculations, and sollukattu training.', price: 6000, recurring: 'monthly', fundId: 'fund-sgm-events', active: true },
+  /* Sangam — Activities */
+  { id: 'cat-sgm-pongal', sectorId: 'sangam', category: 'activity', name: 'Pongal Vizha Sponsorship', description: 'The January harvest festival: music, the pongal pot and games.', price: 50100, fundId: 'fund-sgm-events', active: true, popular: true, image: '/images/catalogue/Pongal Vizha Sponsorship.png' },
+  { id: 'cat-sgm-class', sectorId: 'sangam', category: 'activity', name: 'Tamil Class Sponsorship', description: 'A term of weekend Tamil classes for 25 children.', price: 20100, fundId: 'fund-sgm-events', active: true, image: '/images/catalogue/Tamil Class Sponsorship.png' },
+  { id: 'cat-sgm-newyear', sectorId: 'sangam', category: 'activity', name: 'Tamil New Year Celebration', description: 'Chithirai 1: a cultural programme and a community lunch.', price: 25100, fundId: 'fund-sgm-events', active: true, image: '/images/catalogue/Tamil New Year Celebration.png' },
 
   /* Sangam — Projects */
-  { id: 'cat-sgm-library', sectorId: 'sangam', category: 'project', name: 'Tamil School Library', description: 'Two thousand Tamil books and a quiet place to read them.', price: null, presets: [5100, 10100, 25100, 50100], projectId: 'prj-library', fundId: 'fund-sgm-lib', active: true },
+  { id: 'cat-sgm-library', sectorId: 'sangam', category: 'project', name: 'Tamil School Library', description: 'Two thousand Tamil books and a quiet place to read them.', price: null, presets: [5100, 10100, 25100, 50100], projectId: 'prj-library', fundId: 'fund-sgm-lib', active: true, image: '/images/catalogue/Tamil School Library.png' },
 ]
 
 /* -------------------------------------------------------------- inventory */
