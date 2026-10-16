@@ -34,6 +34,22 @@ export const USERS: User[] = [
   { id: 'u-gau-edt', name: 'Nithya Sundar', role: 'gaushala_content_editor', email: 'nithya@omg.org', sectorIds: ['sevalaya'] },
 ]
 
+export interface DemoPersona {
+  id: string
+  stage: 'Platform' | 'Give' | 'Prepare' | 'Approve'
+  does: string
+}
+
+export const DEMO_PERSONAS: DemoPersona[] = [
+  { id: 'u-sup', stage: 'Platform', does: 'Platform owner · controls verticals & modules' },
+  { id: 'u-dev', stage: 'Give', does: 'Devotee · donor portal and pooja bookings' },
+  { id: 'u-adm', stage: 'Prepare', does: 'Sector Admin · raises purchase orders & allotments' },
+  { id: 'u-proc', stage: 'Prepare', does: 'Procurement Officer · manages vendor quotes & stock' },
+  { id: 'u-cas', stage: 'Approve', does: 'CA Staff · signs vouchers & disbursements up to ₹1L' },
+  { id: 'u-cap', stage: 'Approve', does: 'CA Partner · signs disbursements up to ₹10L & audit close' },
+  { id: 'u-tru', stage: 'Approve', does: 'Trustee · co-signs disbursements above ₹10L' },
+]
+
 /**
  * The personas the demo switcher offers, in the order the money moves: the
  * owner, the admin who prepares, then the two CA signatures that check the
