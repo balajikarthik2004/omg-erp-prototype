@@ -20,6 +20,38 @@ export interface SupplierScore {
   recencyScore: number
   /** One line, built from whichever factors are actually strongest. */
   why: string
+  /** How many quotes the expected price was averaged over. */
+  sampleSize: number
+  /** Days since this supplier last quoted for the item. */
+  daysSinceQuote: number
+  /**
+   * How much weight to put on this row. A ranking drawn from two stale
+   * quotes is a guess, and saying so is the difference between a
+   * recommendation someone can use and a number they have to trust blindly.
+   */
+  confidence: 'high' | 'medium' | 'low'
+  /** Expected price against the median of everyone who carries the item. */
+  vsMedianPct: number
+}
+
+/** The weights, exposed so the panel can state its own method. */
+export const SCORE_WEIGHTS: { key: keyof typeof WEIGHTS; label: string; weight: number }[] = [
+  { key: 'price', label: 'Price', weight: 0.35 },
+  { key: 'quality', label: 'Quality', weight: 0.3 },
+  { key: 'onTime', label: 'Delivery', weight: 0.2 },
+  { key: 'trend', label: 'Price trend', weight: 0.1 },
+  { key: 'recency', label: 'Quote freshness', weight: 0.05 },
+]
+
+/**
+ * Confidence in a row, from how much evidence stands behind it: how many
+ * quotes went into the average, how stale the newest one is, and how much
+ * trading history the supplier has at all.
+ */
+function confidenceOf(sampleSize: number, daysSinceQuote: number, orderCount: number): 'high' | 'medium' | 'low' {
+  if (sampleSize >= 5 && daysSinceQuote <= 90 && orderCount >= 12) return 'high'
+  if (sampleSize >= 3 && daysSinceQuote <= 180) return 'medium'
+  return 'low'
 }
 
 const WEIGHTS = {
@@ -120,6 +152,8 @@ export function scoreSuppliers(
       WEIGHTS.trend * trendScore +
       WEIGHTS.recency * recencyScore
 
+    const sampleSize = row.trendPoints.length
+
     return {
       supplier: row.supplier,
       rank: 0,
@@ -133,6 +167,10 @@ export function scoreSuppliers(
       onTimeScore,
       trendScore,
       recencyScore,
+      sampleSize,
+      daysSinceQuote: row.daysSinceQuote,
+      confidence: confidenceOf(sampleSize, row.daysSinceQuote, row.supplier.orderCount),
+      vsMedianPct: marketMedian > 0 ? ((row.expectedPrice - marketMedian) / marketMedian) * 100 : 0,
       why: explain(row.supplier, row.expectedPrice, marketMedian, priceScore, qualityScore, onTimeScore, row.trendPct),
     }
   })

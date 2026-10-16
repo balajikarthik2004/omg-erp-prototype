@@ -112,6 +112,7 @@ export function ProcurementPage() {
     <div>
       <PageHeader
         title="New purchase order"
+        description="Turn an approved stock request into an order. The suggestion ranks the suppliers who carry the item on their own price and delivery history — picking any other one is allowed, it just has to be explained on the record."
       />
 
       <Card className="mb-6">
@@ -161,7 +162,7 @@ export function ProcurementPage() {
             <Card>
               <CardHeader
                 title={`Who should supply ${item.name}?`}
-                description={`${qtyNum} ${item.unit} needed. Ranked on price, quality, delivery, price trend and how fresh the quote is.`}
+                description={`${qtyNum} ${item.unit} needed, for ${request ? formatDate(request.neededBy) : 'the requested date'}.`}
               />
               <SupplierSuggestions
                 scores={scores}

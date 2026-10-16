@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ArrowRight, PackagePlus, Search, TriangleAlert } from 'lucide-react'
+import { ArrowRight, Boxes, PackagePlus, Search, TriangleAlert } from 'lucide-react'
 
-import { formatAge, formatDate } from '@/lib/format'
+import { formatAge, formatDate, formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
 import { Drawer } from '@/components/ui/Drawer'
@@ -23,6 +23,7 @@ import { inventoryApprovalBlock } from '@/store/rules'
 import { currentUser, useSession } from '@/store/session'
 import { inSector, lowStock } from '@/store/selectors'
 import { userName } from '@/mock/seed'
+import { StockLevel } from './StockLevel'
 import type { InventoryItem, InventoryRequest } from '@/types'
 
 /** Computed once, so a re-render never shifts the earliest selectable date. */
@@ -39,16 +40,25 @@ export function InventoryPage() {
   const [tab, setTab] = useState('stock')
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('all')
+  const [lowOnly, setLowOnly] = useState(false)
   const [requesting, setRequesting] = useState<InventoryItem | null>(null)
+
+  // Everything this sector tracks, before the search box narrows it. The
+  // counts above the table read off this, so filtering never makes the store
+  // look emptier than it is.
+  const allItems = useMemo(() => inSector(db.inventory, filter), [db.inventory, filter])
 
   const items = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return inSector(db.inventory, filter).filter(
+    return allItems.filter(
       (i) =>
         (category === 'all' || i.category === category) &&
+        (!lowOnly || i.stock <= i.reorderLevel) &&
         (q === '' || i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q)),
     )
-  }, [db.inventory, filter, query, category])
+  }, [allItems, query, category, lowOnly])
+
+  const stockValue = allItems.reduce((sum, i) => sum + i.stock * i.lastUnitPrice, 0)
 
   const requests = useMemo(() => inSector(db.inventoryRequests, filter), [db.inventoryRequests, filter])
   const pendingRequests = requests.filter((r) => r.status === 'pending' || r.status === 'escalated')
@@ -61,30 +71,58 @@ export function InventoryPage() {
   const reqBlock = focusedRequest ? inventoryApprovalBlock(user, focusedRequest) : null
 
   const itemColumns: Column<InventoryItem>[] = [
-    { key: 'name', header: 'Item', primary: true, cell: (i) => <span className="text-stone-900">{i.name}</span> },
-    { key: 'category', header: 'Category', hideOnMobile: true, cell: (i) => i.category },
-    { key: 'sector', header: 'Sector', cell: (i) => <SectorChip sectorId={i.sectorId} /> },
     {
-      key: 'stock',
-      header: 'In stock',
-      align: 'right',
+      key: 'name',
+      header: 'Item',
+      primary: true,
+      sortValue: (i) => i.name,
       cell: (i) => (
-        <span className="font-mono tabular-nums">
-          {i.stock} <span className="text-stone-500">{i.unit}</span>
+        <span className="block min-w-0">
+          <span className="block truncate text-stone-900">{i.name}</span>
+          <span className="block truncate text-[12.5px] text-stone-500">{i.category}</span>
         </span>
       ),
     },
     {
-      key: 'reorder',
-      header: 'Reorder at',
+      key: 'sector',
+      header: 'Sector',
+      hideOnMobile: true,
+      sortValue: (i) => i.sectorId,
+      cell: (i) => <SectorChip sectorId={i.sectorId} />,
+    },
+    {
+      key: 'stock',
+      header: 'On the shelf',
+      // Sorted by how close to running out, not by raw quantity: 4 coconuts
+      // and 4 kilos of rice are not the same kind of low.
+      sortValue: (i) => (i.reorderLevel > 0 ? i.stock / i.reorderLevel : i.stock),
+      cell: (i) => <StockLevel item={i} />,
+    },
+    {
+      key: 'price',
+      header: 'Last price paid',
       align: 'right',
       hideOnMobile: true,
-      cell: (i) => <span className="font-mono text-stone-500 tabular-nums">{i.reorderLevel}</span>,
+      sortValue: (i) => i.lastUnitPrice,
+      cell: (i) => (
+        <span className="whitespace-nowrap">
+          <Money value={i.lastUnitPrice} />
+          <span className="text-[12px] text-stone-500"> / {i.unit}</span>
+        </span>
+      ),
     },
-    { key: 'price', header: 'Last price', align: 'right', cell: (i) => <Money value={i.lastUnitPrice} /> },
+    {
+      key: 'value',
+      header: 'Stock value',
+      align: 'right',
+      hideOnMobile: true,
+      sortValue: (i) => i.stock * i.lastUnitPrice,
+      cell: (i) => <Money value={i.stock * i.lastUnitPrice} tone="muted" />,
+    },
     {
       key: 'status',
       header: 'Status',
+      sortValue: (i) => (i.stock <= i.reorderLevel ? 0 : 1),
       cell: (i) => <StatusBadge status={i.stock <= i.reorderLevel ? 'low_stock' : 'in_stock'} />,
     },
     {
@@ -100,7 +138,7 @@ export function InventoryPage() {
             setRequesting(i)
           }}
         >
-          Request
+          Request stock
         </Button>
       ),
     },
@@ -149,6 +187,7 @@ export function InventoryPage() {
     <div>
       <PageHeader
         title="Inventory"
+        description="What the store holds, and the level each item must not fall below. When something runs low, raise a request — once a Sector Admin approves it, procurement turns it into a purchase order."
       >
         <div className="flex flex-col gap-3">
           <Tabs
@@ -160,7 +199,7 @@ export function InventoryPage() {
             ]}
           />
           {tab === 'stock' ? (
-            <div className="grid gap-3 sm:grid-cols-[1fr_240px]">
+            <div className="grid gap-3 sm:grid-cols-[1fr_200px_auto]">
               <Input
                 aria-label="Search inventory"
                 placeholder="Search item or category"
@@ -174,6 +213,14 @@ export function InventoryPage() {
                 onChange={(e) => setCategory(e.target.value)}
                 options={[{ value: 'all', label: 'All categories' }, ...categories.map((c) => ({ value: c, label: c }))]}
               />
+              <Button
+                variant={lowOnly ? undefined : 'secondary'}
+                icon={<TriangleAlert className="size-4" aria-hidden />}
+                aria-pressed={lowOnly}
+                onClick={() => setLowOnly((v) => !v)}
+              >
+                Low stock only
+              </Button>
             </div>
           ) : null}
         </div>
@@ -191,12 +238,19 @@ export function InventoryPage() {
               accentClass={low.length > 0 ? 'bg-danger-600' : 'bg-tulsi-500'}
               icon={<TriangleAlert className="size-4" aria-hidden />}
             />
-            <Stat label="Items tracked" value={items.length} accentClass="bg-tulsi-500" />
+            <Stat
+              label="Items tracked"
+              value={allItems.length}
+              sub={`${formatMoneyShort(stockValue)} of stock on hand`}
+              accentClass="bg-tulsi-500"
+              icon={<Boxes className="size-4" aria-hidden />}
+            />
             <Stat
               label="Requests waiting"
               value={pendingRequests.length}
-              sub="awaiting approval"
+              sub="with a Sector Admin to approve"
               accentClass="bg-marigold-500"
+              icon={<PackagePlus className="size-4" aria-hidden />}
             />
           </div>
 
@@ -220,13 +274,21 @@ export function InventoryPage() {
                 title="No items match"
                 message="Try a different category, or clear the search box."
                 action={
-                  <Button variant="secondary" onClick={() => { setQuery(''); setCategory('all') }}>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setQuery('')
+                      setCategory('all')
+                      setLowOnly(false)
+                    }}
+                  >
                     Clear filters
                   </Button>
                 }
               />
             ) : (
               <Table
+                label="Stock on hand"
                 columns={itemColumns}
                 rows={items}
                 rowKey={(i) => i.id}
@@ -240,12 +302,20 @@ export function InventoryPage() {
               message="When the store asks for stock it will appear here for approval."
             />
           ) : (
-            <Table
-              columns={requestColumns}
-              rows={requests}
-              rowKey={(r) => r.id}
-              onRowClick={(r) => setParams({ focus: r.id })}
-            />
+            <>
+              <p className="-mb-2 text-[13.5px] text-stone-500">
+                Stock the store has asked for. A Sector Admin approves it — never the person who raised it — and an
+                approved request is what procurement builds a purchase order from. Open a row to decide it.
+              </p>
+              <Table
+                label="Stock requests"
+                columns={requestColumns}
+                rows={requests}
+                rowKey={(r) => r.id}
+                onRowClick={(r) => setParams({ focus: r.id })}
+                rowClassName={(r) => (r.status === 'escalated' ? 'bg-marigold-50' : undefined)}
+              />
+            </>
           )}
         </div>
       )}
