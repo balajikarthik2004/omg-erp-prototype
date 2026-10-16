@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react'
 import {
   AlertCircle,
   ArrowDownLeft,
+  ArrowRightLeft,
   ArrowUpRight,
-  Calendar,
   CheckCircle2,
   ChevronRight,
   Download,
@@ -14,7 +14,7 @@ import {
   Undo2,
 } from 'lucide-react'
 
-import { formatDate, formatDateTime, formatMoneyShort } from '@/lib/format'
+import { formatDate, formatDateTime, formatMoney, formatMoneyShort } from '@/lib/format'
 import { toast } from '@/lib/toast'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -59,6 +59,124 @@ function getTransactionType(entry: JournalEntry): TransactionType {
     return 'csr'
   }
   return 'all'
+}
+
+/**
+ * What an entry did, in the terms a non-accountant reads by.
+ *
+ * Double-entry says every movement touches two accounts, but it does not say
+ * which direction the organisation's money went — that is what people
+ * actually want to know. The bank line answers it: bank debited means money
+ * arrived, bank credited means money left, and an entry with no bank line at
+ * all moved money between the charity's own funds without any of it leaving.
+ */
+type Flow = 'in' | 'out' | 'internal' | 'opening'
+
+function entryFlow(entry: JournalEntry): Flow {
+  // An opening balance debits the bank like a receipt does, but no money
+  // arrived — it is the position carried forward. Counting it as income
+  // would overstate every total on the page.
+  if (getTransactionType(entry) === 'opening') return 'opening'
+  const bank = entry.lines.filter((l) => /bank|cash/i.test(l.account))
+  if (bank.length === 0) return 'internal'
+  const inflow = bank.reduce((t, l) => t + l.debit, 0)
+  const outflow = bank.reduce((t, l) => t + l.credit, 0)
+  if (inflow > outflow) return 'in'
+  if (outflow > inflow) return 'out'
+  return 'internal'
+}
+
+const FLOW_COPY: Record<Flow, { label: string; chip: string; amount: string; sign: string }> = {
+  in: {
+    label: 'Money in',
+    chip: 'border-tulsi-500/30 bg-tulsi-50 text-tulsi-700',
+    amount: 'text-tulsi-700',
+    sign: '+',
+  },
+  out: {
+    label: 'Money out',
+    chip: 'border-kumkum-500/30 bg-kumkum-50 text-kumkum-700',
+    amount: 'text-kumkum-700',
+    sign: '−',
+  },
+  internal: {
+    label: 'Moved between funds',
+    chip: 'border-navy-200 bg-navy-50 text-navy-700',
+    amount: 'text-navy-800',
+    sign: '',
+  },
+  opening: {
+    label: 'Opening balance',
+    chip: 'border-sandal-300 bg-sandal-100 text-stone-700',
+    amount: 'text-stone-700',
+    sign: '',
+  },
+}
+
+/**
+ * The whole entry in one sentence. Two account lines and a pair of columns
+ * is the accountant's view; this is the same fact for everyone else.
+ */
+function entrySentence(
+  entry: JournalEntry,
+  flow: Flow,
+  amount: string,
+  label: (id: string) => string,
+): string {
+  const other = entry.lines.find((l) => !/bank|cash/i.test(l.account))
+  const against = other ? label(other.fundId) : ''
+
+  if (flow === 'opening') {
+    return `${label(entry.lines[0]?.fundId ?? '')} started the year holding ${amount}.`
+  }
+  if (flow === 'internal') {
+    const from = entry.lines.find((l) => l.debit > 0)
+    const to = entry.lines.find((l) => l.credit > 0)
+    if (from && to && from.fundId !== to.fundId) {
+      return `${amount} moved out of ${label(from.fundId)} and into ${label(to.fundId)}. None of it left the charity.`
+    }
+    return `${amount} was set aside inside ${label(from?.fundId ?? '')}. None of it left the charity.`
+  }
+  if (flow === 'in') {
+    return `${amount} arrived in the bank and was recorded as income for ${against}.`
+  }
+  return `${amount} left the bank and was recorded as a cost against ${against}.`
+}
+
+/**
+ * The source reference says what kind of document an entry came from, but
+ * only to someone who knows the prefixes. Spell it out.
+ */
+function sourceLabel(sourceRef: string): string {
+  const ref = sourceRef
+  if (/^OPENING\//i.test(ref)) return 'Opening balance'
+  const named: [RegExp, string][] = [
+    [/^inv-/i, 'Supplier invoice'],
+    [/^po-/i, 'Purchase order'],
+    [/^(dn|don)-/i, 'Donation'],
+    [/^alt-/i, 'Fund allotment'],
+    [/^cc-/i, 'Cash count'],
+    [/^uc-/i, 'CSR utilisation certificate'],
+    [/^trn-/i, 'CSR tranche'],
+    [/^(ev|evt)-/i, 'Event'],
+  ]
+  for (const [pattern, label] of named) {
+    if (pattern.test(ref)) return `${label} ${ref.replace(pattern, '')}`
+  }
+  return ref
+}
+
+/** The same translation, one account line at a time. */
+function plainLine(account: string, debit: number): string {
+  const a = account.toLowerCase()
+  if (/bank|cash/.test(a)) return debit > 0 ? 'Money arrived in the bank' : 'Money left the bank'
+  if (/income|grant/.test(a)) return debit > 0 ? 'Income reversed' : 'Recorded as income'
+  if (/fee/.test(a)) return 'Processing fee the charity absorbed'
+  if (/expenditure|expense/.test(a)) return debit > 0 ? 'Recorded as a cost' : 'Cost reversed'
+  if (/allot|allocation|balance/.test(a)) {
+    return debit > 0 ? 'Taken out of this fund' : 'Added to this fund'
+  }
+  return debit > 0 ? 'Increased' : 'Decreased'
 }
 
 export function LedgerPage() {
@@ -181,6 +299,12 @@ export function LedgerPage() {
     let totalDebits = 0
     let totalCredits = 0
     let balancedCount = 0
+    // Money in and money out, rather than debits and credits. In a sound set
+    // of books those two are always the same number, so showing both told a
+    // reader nothing at all.
+    let moneyIn = 0
+    let moneyOut = 0
+    let internalCount = 0
 
     for (const entry of sortedEntries) {
       const d = entry.lines.reduce((s, l) => s + l.debit, 0)
@@ -188,6 +312,12 @@ export function LedgerPage() {
       totalDebits += d
       totalCredits += c
       if (d === c && d > 0) balancedCount++
+
+      const bank = entry.lines.filter((l) => /bank|cash/i.test(l.account))
+      const flow = entryFlow(entry)
+      if (flow === 'in') moneyIn += bank.reduce((t, l) => t + l.debit, 0)
+      else if (flow === 'out') moneyOut += bank.reduce((t, l) => t + l.credit, 0)
+      else if (flow === 'internal') internalCount++
     }
 
     const latestDate = sortedEntries[0]?.date ? formatDate(sortedEntries[0].date) : '—'
@@ -196,6 +326,9 @@ export function LedgerPage() {
       totalDebits,
       totalCredits,
       balancedCount,
+      moneyIn,
+      moneyOut,
+      internalCount,
       totalCount: sortedEntries.length,
       latestDate,
     }
@@ -304,6 +437,7 @@ export function LedgerPage() {
     <div className="space-y-5">
       <PageHeader
         title="Ledger"
+        description="Every movement of money, newest first — what happened, which fund it touched, and whether money came in, went out, or just moved between the charity's own funds. Open a row to see the two sides of the entry and the document it came from."
         actions={
           <div className="flex items-center gap-2">
             <span
@@ -325,36 +459,38 @@ export function LedgerPage() {
         }
       />
 
-      {/* A. FINANCIAL SUMMARY OVERVIEW — the shared Stat card, so the ledger
-          reads like the rest of the console rather than four bespoke boxes. */}
+      {/* A. WHAT THE FILTERED ENTRIES ADD UP TO, in money terms. */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat
-          label="Total debits"
-          value={formatMoneyShort(summary.totalDebits)}
-          sub="selected period and filters"
-          accentClass="bg-navy-600"
+          label="Money in"
+          value={formatMoneyShort(summary.moneyIn)}
+          sub="received into the bank"
+          accentClass="bg-tulsi-500"
           icon={<ArrowDownLeft className="size-4" aria-hidden />}
         />
         <Stat
-          label="Total credits"
-          value={formatMoneyShort(summary.totalCredits)}
-          sub="selected period and filters"
-          accentClass="bg-navy-600"
+          label="Money out"
+          value={formatMoneyShort(summary.moneyOut)}
+          sub="paid out of the bank"
+          accentClass="bg-kumkum-600"
           icon={<ArrowUpRight className="size-4" aria-hidden />}
         />
         <Stat
-          label="Balanced entries"
+          label="Moved between funds"
+          value={summary.internalCount}
+          sub="no money left the charity"
+          accentClass="bg-navy-600"
+          icon={<ArrowRightLeft className="size-4" aria-hidden />}
+        />
+        <Stat
+          label="Entries that tie"
           value={
             <>
               {summary.balancedCount}
               <span className="text-[15px] font-semibold text-stone-500"> / {summary.totalCount}</span>
             </>
           }
-          sub={
-            allBalanced
-              ? 'every entry ties'
-              : `${summary.totalCount - summary.balancedCount} out of balance`
-          }
+          sub={allBalanced ? 'every entry adds up' : `${summary.totalCount - summary.balancedCount} need review`}
           accentClass={allBalanced ? 'bg-tulsi-500' : 'bg-marigold-500'}
           icon={
             allBalanced ? (
@@ -363,13 +499,6 @@ export function LedgerPage() {
               <AlertCircle className="size-4" aria-hidden />
             )
           }
-        />
-        <Stat
-          label="Latest entry"
-          value={summary.latestDate}
-          sub="newest first"
-          accentClass="bg-navy-600"
-          icon={<Calendar className="size-4" aria-hidden />}
         />
       </div>
 
@@ -555,6 +684,8 @@ export function LedgerPage() {
               const isExpanded = expandedIds.has(entry.id)
               const primaryFundId = entry.lines[0]?.fundId ?? ''
               const fundLabel = getFundLabel(primaryFundId)
+              const flow = entryFlow(entry)
+              const copy = FLOW_COPY[flow]
 
               return (
                 <li
@@ -602,6 +733,20 @@ export function LedgerPage() {
                               Out of balance
                             </span>
                           ) : null}
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-bold ${copy.chip}`}
+                          >
+                            {flow === 'in' ? (
+                              <ArrowDownLeft className="size-2.5" aria-hidden />
+                            ) : flow === 'out' ? (
+                              <ArrowUpRight className="size-2.5" aria-hidden />
+                            ) : flow === 'internal' ? (
+                              <ArrowRightLeft className="size-2.5" aria-hidden />
+                            ) : (
+                              <Lock className="size-2.5" aria-hidden />
+                            )}
+                            {copy.label}
+                          </span>
                         </div>
                         <span className="mt-1 block font-mono text-[11.5px] tabular-nums text-stone-500 sm:hidden">
                           {formatDate(entry.date)}
@@ -620,10 +765,12 @@ export function LedgerPage() {
                         </span>
                       </div>
 
-                      <Money
-                        value={primaryAmount}
-                        className="min-w-[96px] text-right font-heritage text-[17px] font-bold text-navy-950 tabular-nums"
-                      />
+                      <span className="min-w-[110px] text-right font-heritage text-[17px] font-bold tabular-nums">
+                        <span className={copy.amount}>
+                          {copy.sign}
+                          <Money value={primaryAmount} className="font-heritage text-[17px] font-bold" />
+                        </span>
+                      </span>
                     </div>
                   </div>
 
@@ -632,11 +779,14 @@ export function LedgerPage() {
                   {/* The references, where someone chasing a figure can find
                       them: the entry's own number, the document it came from,
                       and the exact moment it was posted. */}
-                  <dl className="grid gap-x-6 gap-y-3 border-t border-sandal-200 bg-sandal-100 px-4 py-3 sm:grid-cols-3">
+                  <p className="border-t border-sandal-200 bg-sandal-100 px-4 py-3 text-[14px] leading-relaxed text-stone-900">
+                    {entrySentence(entry, flow, formatMoney(primaryAmount), getFundLabel)}
+                  </p>
+                  <dl className="grid gap-x-6 gap-y-3 border-t border-sandal-200 bg-sandal-100 px-4 pb-3 sm:grid-cols-3">
                     {[
-                      { label: 'Entry no.', value: entry.id },
-                      { label: 'Source document', value: entry.sourceRef },
+                      { label: 'Source document', value: sourceLabel(entry.sourceRef) },
                       { label: 'Posted', value: formatDateTime(entry.date) },
+                      { label: 'Ledger reference', value: entry.id },
                     ].map((ref) => (
                       <div key={ref.label}>
                         <dt className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-stone-500">
@@ -646,11 +796,15 @@ export function LedgerPage() {
                       </div>
                     ))}
                   </dl>
-                  <div className="scrollbar-thin overflow-x-auto border-t border-sandal-200">
+                  <p className="border-t border-sandal-200 px-4 pt-3 text-[12.5px] text-stone-500">
+                    Every entry has two sides, and they must add up to the same total. Debit is where the value
+                    went; credit is where it came from.
+                  </p>
+                  <div className="scrollbar-thin overflow-x-auto">
                     <table className="w-full border-collapse text-[14px]">
                       <thead>
                         <tr>
-                          {['Account', 'Fund', 'Debit', 'Credit'].map((h, i) => (
+                          {['Account', 'Fund or budget', 'Debit', 'Credit'].map((h, i) => (
                             <th
                               key={h}
                               className={`px-4 py-2 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase ${i > 1 ? 'text-right' : 'text-left'}`}
@@ -663,10 +817,13 @@ export function LedgerPage() {
                       <tbody>
                         {entry.lines.map((line, i) => (
                           <tr key={i} className="border-t border-sandal-200">
-                            <td className="px-4 py-2 text-stone-900">{line.account}</td>
-                            <td className="px-4 py-2 text-stone-500">
-                              {FUNDS.find((f) => f.id === line.fundId)?.name ?? line.fundId}
+                            <td className="px-4 py-2">
+                              <span className="block text-stone-900">{line.account}</span>
+                              <span className="block text-[12px] text-stone-500">
+                                {plainLine(line.account, line.debit)}
+                              </span>
                             </td>
+                            <td className="px-4 py-2 text-stone-500">{getFundLabel(line.fundId)}</td>
                             <td className="px-4 py-2 text-right">
                               {line.debit > 0 ? <Money value={line.debit} /> : <span className="text-stone-500">—</span>}
                             </td>
