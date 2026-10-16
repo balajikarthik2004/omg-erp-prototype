@@ -119,9 +119,7 @@ export function ComplianceVaultPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        phase="control"
         title="Compliance Vault"
-        description="Statutory non-profit registry, Form CSR-1 credentials, Income-tax Act 2025 approvals (Sec 332 & 354), and 3-year track record audit verification."
         actions={
           <Button
             variant="primary"
@@ -479,7 +477,7 @@ export function ComplianceVaultPage() {
               </div>
             </div>
 
-            <div className="rounded-lg border-2 border-dashed border-sandalwood-300 p-4 text-center">
+            <div className="rounded-lg border border-dashed border-sandalwood-300 p-4 text-center">
               <UploadCloud className="mx-auto size-8 text-sandalwood-400" />
               <p className="mt-1 text-xs font-medium text-sandalwood-800">
                 Click or drag PDF file to upload

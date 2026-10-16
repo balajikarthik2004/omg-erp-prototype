@@ -159,9 +159,7 @@ export function CsrProjectsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        phase="control"
         title="CSR Project Builder & Schedule VII"
-        description="MCA Schedule VII item mapping, 5% administrative overhead cap validation, pooja expense firewall, and Trustee sanction."
         actions={
           <Button
             variant="primary"

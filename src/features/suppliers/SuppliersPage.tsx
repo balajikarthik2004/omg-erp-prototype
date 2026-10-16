@@ -40,9 +40,7 @@ export function SuppliersPage() {
   return (
     <div>
       <PageHeader
-        phase="spend"
         title="Suppliers"
-        description="Who we buy from, how they have actually performed, and what they have charged."
       >
         <div className="grid gap-3 sm:grid-cols-[1fr_220px]">
           <Input

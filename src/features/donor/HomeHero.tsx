@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, CalendarDays, ChevronRight, CreditCard, ShieldCheck, Star } from 'lucide-react'
+import { ArrowRight, CreditCard, ShieldCheck, Star } from 'lucide-react'
 
 import { Etching } from '@/components/ui/Ornament'
 import { TempleTowerIcon } from './HeritageArt'
@@ -245,29 +245,28 @@ export function HomeHero() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-              </svg>
 
-              {/* Booking shortcut, overlapping the left edge of the arch */}
-              <Link
-                to="/donate/temple"
-                className="group/card absolute -left-5 top-[48%] z-25 flex -translate-y-1/2 items-center gap-3.5 rounded-xl border border-sandal-200 bg-sandal-50 p-3 shadow-lift transition-shadow duration-200 hover:shadow-sheet focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 sm:-left-8 sm:px-4 sm:py-3.5 lg:-left-12"
-              >
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-navy-50 text-navy-600 sm:size-11">
-                  <CalendarDays className="size-5" aria-hidden />
-                </span>
-                <span className="pr-1 text-left">
-                  <span className="block text-[13px] font-bold leading-tight text-stone-900 sm:text-[14px]">
-                    Book a pooja
-                  </span>
-                  <span className="mt-0.5 block text-[11px] leading-tight text-stone-500 sm:text-[12px]">
-                    Choose temple, date and seva
-                  </span>
-                </span>
-                <ChevronRight
-                  className="size-4 shrink-0 text-navy-600 transition-transform duration-200 group-hover/card:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover/card:translate-x-0"
-                  aria-hidden
+                {/* A second, finer line set just inside the band. Temple arch
+                    mouldings are cut this way — a heavy course with a thin
+                    one shadowing it — and it is what stops the rim reading
+                    as a single drawn outline. */}
+                <path
+                  d={ARCH_STROKE_PATH}
+                  transform="translate(300 350) scale(0.955) translate(-300 -350)"
+                  stroke="url(#goldArchRim)"
+                  strokeWidth="1.1"
+                  opacity="0.55"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
-              </Link>
+
+                {/* The kalasam that finishes every gopuram, at the apex. */}
+                <g opacity="0.95">
+                  <path d="M300 2 L303.4 13 L300 24 L296.6 13 Z" fill="url(#goldArchRim)" />
+                  <circle cx="300" cy="13" r="4.6" fill="url(#goldArchRim)" />
+                  <circle cx="300" cy="13" r="4.6" fill="none" stroke="#FFF9DB" strokeWidth="0.8" opacity="0.7" />
+                </g>
+              </svg>
 
               <p className="absolute -top-3 left-8 z-20 flex items-center gap-2 rounded-full border border-sandal-200 bg-sandal-50 px-3 py-1 shadow-flat sm:left-14">
                 <span className="flex items-center gap-1 text-turmeric-500">

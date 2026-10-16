@@ -97,36 +97,22 @@ export function FundDonut({ slices, height = 230 }: { slices: FundSlice[]; heigh
             </Pie>
           </PieChart>
         </ResponsiveContainer>
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center select-none transition-all duration-150">
-          <div className="flex flex-col items-center justify-center max-w-[62%] px-1">
-            <span className="truncate max-w-full text-[10.5px] font-bold tracking-wider text-navy-600 uppercase">
-              {activeSector ? activeSector.label : 'Held'}
-            </span>
-            <span
-              className={cn(
-                'font-heritage font-bold text-navy-950 leading-tight mt-0.5 tracking-tight tabular-nums select-none max-w-full truncate',
-                amountLen > 13
-                  ? 'text-[15px]'
-                  : amountLen > 10
-                    ? 'text-[17px]'
-                    : amountLen > 8
-                      ? 'text-[19px]'
-                      : 'text-[22px]',
-              )}
-              title={formattedAmount}
-            >
-              {formattedAmount}
-            </span>
-            {percent !== null ? (
-              <span className="font-mono text-[10.5px] font-semibold text-navy-600 mt-0.5">{percent}% of total</span>
-            ) : (
-              <span className="text-[10.5px] font-medium text-navy-400 mt-0.5">Total held</span>
-            )}
-          </div>
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-3 transition-all duration-150">
+          <span className="truncate max-w-32.5 text-[11px] font-bold tracking-widest text-navy-600 uppercase">
+            {activeSector ? activeSector.label : 'Held'}
+          </span>
+          <span className="font-display text-[22px] font-bold text-navy-950 leading-tight mt-0.5">
+            {formatMoney(activeSector ? activeSector.value : total)}
+          </span>
+          {percent !== null ? (
+            <span className="font-mono text-[11px] font-semibold text-navy-600">{percent}% of total</span>
+          ) : (
+            <span className="text-[11px] font-medium text-navy-400">Total held</span>
+          )}
         </div>
       </div>
 
-      <ul className="w-full divide-y divide-navy-100">
+      <ul className="w-full divide-y divide-sandal-200">
         {slices.slice(0, 6).map((slice) => {
           const isSectorActive = activeSector?.key === slice.sectorId
           return (

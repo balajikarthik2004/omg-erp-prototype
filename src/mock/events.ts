@@ -219,7 +219,7 @@ export function makeEventsSeed(now: Date): EventsSeed {
   funds.push({ id: navOld.fundId, sectorId: 'temple', name: `${navOld.name} Fund`, type: 'restricted', eventId: navOld.id, balance: 0 })
 
   /* 2. This year's Navaratri: live, with the whole flow behind it. Suggested $7,810, trustees approved $7,680. */
-  const nav = base({ id: 'evt-navaratri-2026', sectorId: 'temple', eventType: 'NAVARATRI', name: 'Navaratri Mahotsavam 2026', startAt: at(-2, 18), endAt: at(6, 21), venue: 'Main Mandapam', chiefGuest: 'Sri Ramanathan Iyer', status: 'live', posterStatus: 'published', capacity: 1200, createdAt: at(-50), lastPreparerId: 'u-adm' })
+  const nav = base({ id: 'evt-navaratri-2026', sectorId: 'temple', eventType: 'NAVARATRI', name: 'Navaratri Mahotsavam 2026', startAt: at(-2, 18), endAt: at(6, 21), venue: 'Main Mandapam', chiefGuest: 'Sri Ramanathan Iyer', status: 'live', posterStatus: 'published', capacity: 1200, createdAt: at(-50), lastPreparerId: 'u-adm', image: '/images/catalogue/Navaratri.png' })
   events.push(nav)
   const approvedNav = [330_000, 172_000, 77_000, 97_000, 66_000, 26_000]
   addLines(nav.id, 'NAVARATRI', ACTUALS.filter((a) => a.eventType === 'NAVARATRI').map((a) => ({ category: a.category }))).forEach((l, i) => (l.approvedAmount = approvedNav[i]))
@@ -254,8 +254,19 @@ export function makeEventsSeed(now: Date): EventsSeed {
   order(isai, 0, { vendorName: 'Sangam Hall Trust', itemDescription: 'Hall booking deposit', amount: 60_000, status: 'paid', decidedBy: 'u-cas', paidBy: 'u-cap', paidAt: at(-8) })
   fund(isai, at(-34))
 
+  /* 3b. Thirukalyanam Utsavam: published and selling tickets. */
+  const kalyanam = base({ id: 'evt-kalyanam-2026', sectorId: 'temple', eventType: 'FESTIVAL', name: 'Thirukalyanam Utsavam 2026', startAt: at(14, 9), endAt: at(14, 14), venue: 'Main Temple Sanctum', chiefGuest: 'Thirukoil Sivachariyar', status: 'published', posterStatus: 'published', isPaid: true, ticketPrice: 2_500, capacity: 500, contactName: 'Temple Office', createdAt: at(-40), lastPreparerId: 'u-adm', image: '/images/catalogue/Thirukalyanam.png' })
+  events.push(kalyanam)
+  addLines(kalyanam.id, 'FESTIVAL', ['Prasadam & Annadhanam', 'Decoration & Stage', 'Flowers & Garlands'].map((category) => ({ category }))).forEach((l) => (l.approvedAmount = l.requestedAmount))
+  approve(kalyanam.id, 1, 'u-cas', 'u-adm', 'Within the budget trend.', at(-35))
+  approve(kalyanam.id, 2, 'u-tru', 'u-adm', 'Approved.', at(-34))
+  makePosters(kalyanam, true)
+  approvals.push({ id: 'appr-kalyanam-poster', entityType: 'event_poster', entityId: kalyanam.id, step: 1, requiredRole: 'sector_admin', preparedBy: 'u-adm', decidedBy: 'u-adm2', decision: 'approved', createdAt: at(-18), decidedAt: at(-17) })
+  register(kalyanam, 45, 0)
+  fund(kalyanam, at(-33))
+
   /* 4. Deepavali: confirmed, no history yet for this kind of event. */
-  const diwali = base({ id: 'evt-deepavali-2026', sectorId: 'temple', eventType: 'DIWALI', name: 'Deepavali Celebration', startAt: at(26, 17), endAt: at(26, 21), venue: 'Temple Courtyard', chiefGuest: 'Sri Venkatesan', status: 'confirmed', capacity: 800, createdAt: at(-35), lastPreparerId: 'u-adm' })
+  const diwali = base({ id: 'evt-deepavali-2026', sectorId: 'temple', eventType: 'DIWALI', name: 'Deepavali Celebration', startAt: at(26, 17), endAt: at(26, 21), venue: 'Temple Courtyard', chiefGuest: 'Sri Venkatesan', status: 'confirmed', capacity: 800, createdAt: at(-35), lastPreparerId: 'u-adm', image: '/images/catalogue/Deepavali Annadhanam.png' })
   events.push(diwali)
   addLines(diwali.id, 'DIWALI', [{ category: 'Lamps, oil & ghee', requested: 240_000, approved: 240_000 }, { category: 'Decoration & Stage', requested: 90_000, approved: 85_000 }, { category: 'Prasadam & Annadhanam', requested: 150_000, approved: 150_000 }, { category: 'Fireworks & safety', requested: 40_000, approved: 40_000 }])
   approve(diwali.id, 1, 'u-cap', 'u-adm', 'First Deepavali on the platform, so no history. Reviewed against quotes.', at(-28))

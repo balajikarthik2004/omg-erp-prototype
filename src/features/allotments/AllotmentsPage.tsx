@@ -83,9 +83,7 @@ export function AllotmentsPage() {
   return (
     <div>
       <PageHeader
-        phase="control"
         title="Fund allotments"
-        description="Moving money from a fund into a budget head. One person prepares it, another approves it."
         actions={
           <Button icon={<Plus className="size-4" aria-hidden />} onClick={() => setComposing(true)}>
             New allotment

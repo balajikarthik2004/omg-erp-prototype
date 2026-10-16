@@ -142,8 +142,6 @@ export function SewaCataloguePage() {
     <div>
       <PageHeader
         title="Sewa catalogue"
-        description="What the Gaushala page offers, what it is priced at, and which fund each sewa credits."
-        phase="collect"
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="sm:w-72">

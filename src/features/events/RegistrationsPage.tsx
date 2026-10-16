@@ -21,7 +21,7 @@ export function RegistrationsPage() {
 
   return (
     <div>
-      <PageHeader phase="collect" title="Registrations and QR" description="Who has tickets, the signed QR on each ticket, and the check-in desk for event day. Registration opens once the poster is approved.">
+      <PageHeader title="Registrations and QR">
         {picker}
       </PageHeader>
 

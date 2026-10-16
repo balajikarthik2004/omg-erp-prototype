@@ -87,7 +87,7 @@ export const CATEGORY_DEFAULT_IMAGES: Record<string, SewaImageInfo> = {
     badgeColor: 'bg-emerald-600/90 text-white',
   },
   medical: {
-    src: '/images/sewa-medical.webp',
+    src: '/images/care/medicines.png',
     alt: 'Veterinarian treating cows and providing medicine in gaushala',
     badge: 'Medical',
     badgeColor: 'bg-rose-700/90 text-white',
@@ -166,10 +166,45 @@ export const INFRASTRUCTURE_IMAGES: Record<string, SewaImageInfo> = {
   },
 }
 
+/**
+ * Direct mapping for the Medical sewas to the user's specific photos in public/images/care/
+ * 1. surgical.png    -> gau-surgery     (Surgery)
+ * 2. Tonic.png       -> gau-tonic       (Health Tonic)
+ * 3. vaccination.png -> gau-vaccination (Vaccination)
+ * 4. medicines.png   -> gau-medicines   (Medicines)
+ */
+export const MEDICAL_IMAGES: Record<string, SewaImageInfo> = {
+  'gau-medicines': {
+    src: '/images/care/medicines.png',
+    alt: 'Shelter pharmacy: antibiotics, wound dressing and daily medicines for cows',
+    badge: 'Medicines',
+    badgeColor: 'bg-rose-700/90 text-white',
+  },
+  'gau-vaccination': {
+    src: '/images/care/vaccination.png',
+    alt: 'Foot-and-mouth and haemorrhagic septicaemia vaccination cover for cattle',
+    badge: 'Vaccination',
+    badgeColor: 'bg-teal-700/90 text-white',
+  },
+  'gau-surgery': {
+    src: '/images/care/surgical.png',
+    alt: 'Veterinary surgery removing swallowed plastic and wire from injured cattle',
+    badge: 'Surgery',
+    badgeColor: 'bg-red-700/90 text-white',
+  },
+  'gau-tonic': {
+    src: '/images/care/Tonic.png',
+    alt: 'Nutritional mineral mixture and health tonic for recovering cows',
+    badge: 'Health Tonic',
+    badgeColor: 'bg-amber-700/90 text-white',
+  },
+}
+
 export const ITEM_SPECIFIC_IMAGES: Record<string, SewaImageInfo> = {
   ...FODDER_IMAGES,
   ...MONTHLY_CARE_IMAGES,
   ...INFRASTRUCTURE_IMAGES,
+  ...MEDICAL_IMAGES,
 }
 
 export function getSewaImage(sewa: { id: string; gaushalaCategory?: string }): SewaImageInfo {
@@ -181,3 +216,4 @@ export function getSewaImage(sewa: { id: string; gaushalaCategory?: string }): S
   }
   return CATEGORY_DEFAULT_IMAGES.fodder
 }
+

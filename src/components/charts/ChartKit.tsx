@@ -12,7 +12,7 @@ export function ChartTooltip({
   rows: { key: string; label: string; value: number; color: string }[]
 }) {
   return (
-    <div className="rounded-xl border border-navy-200/90 bg-white/95 px-3.5 py-2.5 shadow-xl backdrop-blur-md">
+    <div className="rounded-xl border border-sandal-200 bg-white/95 px-3.5 py-2.5 shadow-xl backdrop-blur-md">
       <p className="mb-1.5 text-[11px] font-bold tracking-[0.12em] text-navy-600 uppercase">{label}</p>
       <ul className="flex flex-col gap-1">
         {rows.map((row) => (

@@ -112,7 +112,7 @@ function RescueCard({ rescue }: { rescue: Rescue }) {
               </p>
             ) : (
               <Link
-                to="/sevalaya/gaushala/gau-treatment"
+                to="/sevalaya/gaushala/gau-medicines"
                 className="group mt-3.5 inline-flex items-center gap-1.5 text-[14px] font-semibold text-kumkum-700"
               >
                 Sponsor this cow&rsquo;s treatment

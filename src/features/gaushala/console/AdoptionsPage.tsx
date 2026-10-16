@@ -100,8 +100,6 @@ export function AdoptionsPage() {
     <div>
       <PageHeader
         title="Adoptions"
-        description="Who is sponsoring which cow, what it is worth, and which renewals need chasing."
-        phase="collect"
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="sm:w-72">

@@ -134,7 +134,7 @@ export function CheckoutPage() {
                     ) : null}
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
-                    <Money value={line.amount} className="text-[15px]" />
+                    <Money exact value={line.amount} className="text-[15px]" />
                     <button
                       type="button"
                       onClick={() => removeFromCart(line.key)}
@@ -154,19 +154,19 @@ export function CheckoutPage() {
               <div className="flex justify-between">
                 <dt className="text-stone-700">Offering total</dt>
                 <dd>
-                  <Money value={gross} />
+                  <Money exact value={gross} />
                 </dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-stone-500">Processing fee (borne by the temple)</dt>
                 <dd>
-                  <Money value={fee} tone="muted" />
+                  <Money exact value={fee} tone="muted" />
                 </dd>
               </div>
               <div className="flex justify-between border-t border-sandal-200 pt-2">
                 <dt className="font-medium text-stone-900">You pay</dt>
                 <dd>
-                  <Money value={gross} className="text-[18px] font-medium" />
+                  <Money exact value={gross} className="text-[18px] font-medium" />
                 </dd>
               </div>
             </dl>

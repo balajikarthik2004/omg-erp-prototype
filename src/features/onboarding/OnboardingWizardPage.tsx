@@ -77,9 +77,7 @@ export function OnboardingWizardPage() {
   return (
     <div>
       <PageHeader
-        phase="onboard"
         title="Onboard a customer"
-        description="One platform, configured per customer. No code changes: name, brand, verticals, catalog, Square, approval limits and users."
         actions={
           <Link to="/console/onboarding">
             <Button variant="ghost" icon={<ArrowLeft className="size-4" aria-hidden />}>
@@ -90,7 +88,7 @@ export function OnboardingWizardPage() {
       />
 
       <div className="flex flex-col gap-6">
-        <FlowStepper steps={WIZARD_STEPS} current={step} phase="onboard" onStepClick={setStep} />
+        <FlowStepper steps={WIZARD_STEPS} current={step} onStepClick={setStep} />
 
         <Card>
           <h2 className="mb-5 font-display text-[22px] text-stone-900">{WIZARD_STEPS[step]!.label}</h2>

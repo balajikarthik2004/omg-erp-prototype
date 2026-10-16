@@ -329,53 +329,72 @@ function OfferingCard({ item, sectorId }: { item: CatalogItem; sectorId: SectorI
     <Link
       to={`/donate/${sectorId}/${item.id}`}
       className={cn(
-        'group flex h-full flex-col rounded-card border border-sandal-200 bg-sandal-50 p-5',
+        'group flex h-full flex-col overflow-hidden rounded-card border border-sandal-200 bg-sandal-50',
         'shadow-card transition-all duration-200',
         'hover:-translate-y-0.5 hover:border-navy-200 hover:shadow-lift',
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h2 className="font-display text-[19px] leading-snug text-stone-900">{item.name}</h2>
+      {item.image ? (
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-100">
+          <img
+            src={item.image}
+            alt={item.name}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+          {item.popular ? (
+            <span className="absolute top-3 right-3 rounded-full border border-navy-200/40 bg-navy-950/80 backdrop-blur-xs px-2.5 py-0.5 text-[11px] font-semibold tracking-[0.08em] text-amber-200 shadow-sm uppercase">
+              Popular
+            </span>
+          ) : null}
         </div>
-        {item.popular ? (
-          <span className="shrink-0 rounded-full border border-navy-200/40 bg-navy-50 px-2 py-0.5 text-[11px] font-semibold tracking-[0.08em] text-navy-600 uppercase">
-            Popular
-          </span>
-        ) : null}
-      </div>
-
-      <p className="mt-3 flex-1 text-[14px] leading-relaxed text-stone-700">{item.description}</p>
-
-      {item.needsDedication || item.needsDate ? (
-        <p className="mt-3 text-[12px] text-stone-500">
-          {[item.needsDedication && 'Name, nakshatra and gothram', item.needsDate && 'Choose a date']
-            .filter(Boolean)
-            .join(' · ')}
-        </p>
       ) : null}
 
-      <div className="mt-5 flex items-end justify-between border-t border-sandal-200 pt-4">
-        {item.price === null ? (
-          <span className="font-display text-[20px] leading-none text-stone-700">Any amount</span>
-        ) : (
-          <span className="font-mono text-[20px] leading-none text-stone-900 tabular-nums">
-            {formatMoney(item.price)}
-            {item.ticketed ? <span className="ml-1.5 font-sans text-[12px] text-stone-500">per ticket</span> : null}
-            {item.recurring ? (
-              <span className="ml-1.5 font-sans text-[12px] text-stone-500">
-                {item.recurring === 'annual' ? 'a year' : 'a month'}
-              </span>
-            ) : null}
+      <div className="flex flex-1 flex-col p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="font-display text-[19px] leading-snug text-stone-900">{item.name}</h2>
+            {item.tamil ? <p className="mt-0.5 font-serif text-[13px] text-stone-500">{item.tamil}</p> : null}
+          </div>
+          {!item.image && item.popular ? (
+            <span className="shrink-0 rounded-full border border-navy-200/40 bg-navy-50 px-2 py-0.5 text-[11px] font-semibold tracking-[0.08em] text-navy-600 uppercase">
+              Popular
+            </span>
+          ) : null}
+        </div>
+
+        <p className="mt-3 flex-1 text-[14px] leading-relaxed text-stone-700">{item.description}</p>
+
+        {item.needsDedication || item.needsDate ? (
+          <p className="mt-3 text-[12px] text-stone-500">
+            {[item.needsDedication && 'Name, nakshatra and gothram', item.needsDate && 'Choose a date']
+              .filter(Boolean)
+              .join(' · ')}
+          </p>
+        ) : null}
+
+        <div className="mt-5 flex items-end justify-between border-t border-sandal-200 pt-4">
+          {item.price === null ? (
+            <span className="font-display text-[20px] leading-none text-stone-700">Any amount</span>
+          ) : (
+            <span className="font-mono text-[20px] leading-none text-stone-900 tabular-nums">
+              {formatMoney(item.price)}
+              {item.ticketed ? <span className="ml-1.5 font-sans text-[12px] text-stone-500">per ticket</span> : null}
+              {item.recurring ? (
+                <span className="ml-1.5 font-sans text-[12px] text-stone-500">
+                  {item.recurring === 'annual' ? 'a year' : 'a month'}
+                </span>
+              ) : null}
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1 text-[14px] font-medium text-kumkum-700">
+            Choose
+            <ArrowRight
+              className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+              aria-hidden
+            />
           </span>
-        )}
-        <span className="inline-flex items-center gap-1 text-[14px] font-medium text-kumkum-700">
-          Choose
-          <ArrowRight
-            className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
-            aria-hidden
-          />
-        </span>
+        </div>
       </div>
     </Link>
   )

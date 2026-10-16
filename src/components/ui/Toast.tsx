@@ -24,21 +24,21 @@ function ToastCard({ item }: { item: ToastItem }) {
   return (
     <div
       role="status"
-      className="pointer-events-auto flex w-full overflow-hidden rounded-2xl border border-navy-200/90 bg-white shadow-xl"
+      className="pointer-events-auto flex w-full overflow-hidden rounded-card border border-sandal-200 bg-sandal-50 shadow-xl"
       style={{ animation: 'omg-fade-in 180ms ease-out' }}
     >
       <div className={cn('w-1.5 shrink-0', style.bar)} aria-hidden />
       <div className="flex flex-1 items-start gap-3 p-3.5">
         <Icon className={cn('mt-0.5 size-4.5 shrink-0', style.iconClass)} aria-hidden />
         <div className="min-w-0 flex-1">
-          <p className="text-[14px] font-bold text-navy-950">{item.title}</p>
-          {item.detail ? <p className="mt-0.5 text-[13px] text-navy-600/80">{item.detail}</p> : null}
+          <p className="text-[14px] font-bold text-stone-900">{item.title}</p>
+          {item.detail ? <p className="mt-0.5 text-[13px] text-stone-500">{item.detail}</p> : null}
         </div>
         <button
           type="button"
           onClick={() => dismiss(item.id)}
           aria-label="Dismiss notification"
-          className="rounded-lg p-1 text-navy-500 transition-colors duration-150 hover:bg-navy-50 hover:text-navy-950"
+          className="rounded-lg p-1 text-stone-500 transition-colors duration-150 hover:bg-sandal-100 hover:text-stone-900"
         >
           <X className="size-4" aria-hidden />
         </button>

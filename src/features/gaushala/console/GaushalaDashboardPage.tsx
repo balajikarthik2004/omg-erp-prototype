@@ -113,7 +113,7 @@ export function GaushalaDashboardPage() {
   if (!db.ready) {
     return (
       <div>
-        <PageHeader title="Gaushala" description="Loading the shelter's books." phase="report" />
+        <PageHeader title="Gaushala" />
       </div>
     )
   }
@@ -122,8 +122,6 @@ export function GaushalaDashboardPage() {
     <div>
       <PageHeader
         title="Gaushala"
-        description="The cow shelter at a glance: what came in, what is waiting to be carried out, and who needs a vet."
-        phase="report"
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

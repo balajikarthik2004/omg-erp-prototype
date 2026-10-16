@@ -18,16 +18,16 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-navy-200/80',
-        'bg-white/80 px-6 py-14 text-center',
+        'flex flex-col items-center justify-center rounded-card border border-dashed border-sandal-200',
+        'bg-sandal-50 px-6 py-14 text-center',
         className,
       )}
     >
-      <div className="mb-4 flex size-14 items-center justify-center rounded-2xl border border-navy-150 bg-navy-50 text-navy-600 shadow-2xs">
+      <div className="mb-4 flex size-14 items-center justify-center rounded-card border border-sandal-200 bg-sandal-100 text-stone-500 shadow-2xs">
         {icon ?? <Inbox className="size-6" aria-hidden />}
       </div>
-      <h3 className="font-heritage text-[19px] font-bold text-navy-950">{title}</h3>
-      <p className="mt-1.5 max-w-sm text-[14px] leading-relaxed text-navy-600/80 font-normal">{message}</p>
+      <h3 className="font-display text-[19px] font-bold text-stone-900">{title}</h3>
+      <p className="mt-1.5 max-w-sm text-[14px] leading-relaxed text-stone-500 font-normal">{message}</p>
       {action ? <div className="mt-5">{action}</div> : null}
     </div>
   )

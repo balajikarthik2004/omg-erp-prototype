@@ -110,8 +110,6 @@ export function GaushalaEventsConsolePage() {
     <div>
       <PageHeader
         title="Gaushala festivals"
-        description="The cow-shelter calendar: Gopashtami, Govardhan Puja, Mattu Pongal and the rest, with their registrations."
-        phase="collect"
         actions={
           <Button icon={<CalendarPlus className="size-4" aria-hidden />} onClick={() => setEditing('new')}>
             Add a festival

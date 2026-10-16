@@ -68,9 +68,7 @@ export function PeriodClosePage() {
   return (
     <div>
       <PageHeader
-        phase="control"
         title="Period close"
-        description="Each month is closed in order. The CA team prepares the close, the CA Partner locks it, and nothing can be posted to a locked month."
       />
 
       {!db.ready ? (

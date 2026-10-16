@@ -136,9 +136,7 @@ export function CsrReportsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        phase="report"
         title="Utilisation Certificates & Impact Reports"
-        description="ICAI statutory Utilisation Certificates with 18-digit UDIN, sequential tranche clearance, and geotagged beneficiary evidence."
         actions={
           <div className="flex items-center gap-2">
             <Button

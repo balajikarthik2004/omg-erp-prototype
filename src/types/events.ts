@@ -58,6 +58,7 @@ export interface EventRecord {
   cancelReason?: string
   closurePnl?: ClosurePnl
   tenantId?: string
+  image?: string
 }
 
 export interface HistoryPoint {
