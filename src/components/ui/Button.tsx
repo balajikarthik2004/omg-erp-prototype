@@ -1,6 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { Tooltip, type TooltipProps } from './Tooltip'
 
 type Variant = 'primary' | 'secondary' | 'navy' | 'ghost' | 'danger' | 'success' | 'accent'
 type Size = 'sm' | 'md' | 'lg'
@@ -37,13 +38,33 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode
   rightIcon?: ReactNode
   fullWidth?: boolean
+  tooltip?: ReactNode
+  tooltipPosition?: TooltipProps['position']
+  tooltipAlign?: TooltipProps['align']
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant = 'primary', size = 'md', loading, icon, rightIcon, fullWidth, className, children, disabled, ...rest },
+  {
+    variant = 'primary',
+    size = 'md',
+    loading,
+    icon,
+    rightIcon,
+    fullWidth,
+    className,
+    children,
+    disabled,
+    tooltip,
+    tooltipPosition = 'bottom',
+    tooltipAlign = 'end',
+    title,
+    ...rest
+  },
   ref,
 ) {
-  return (
+  const tooltipContent = tooltip || title
+
+  const buttonElement = (
     <button
       ref={ref}
       disabled={disabled || loading}
@@ -64,4 +85,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       {rightIcon}
     </button>
   )
+
+  if (tooltipContent) {
+    return (
+      <Tooltip
+        content={tooltipContent}
+        position={tooltipPosition}
+        align={tooltipAlign}
+        className={fullWidth ? 'w-full' : undefined}
+      >
+        {buttonElement}
+      </Tooltip>
+    )
+  }
+
+  return buttonElement
 })
+

@@ -96,36 +96,38 @@ export function CatalogManagerPage() {
 
   return (
     <div>
-      <PageHeader
-        title="Catalog manager"
-        actions={
-          <Button icon={<Plus className="size-4" aria-hidden />} onClick={toast.soon}>
-            New item
-          </Button>
-        }
-      >
-        <div className="grid gap-3 sm:grid-cols-[1fr_220px]">
-          <Input
-            aria-label="Search the catalog"
-            placeholder="Search item name or description"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            leading={<Search className="size-4" aria-hidden />}
-          />
-          <Select
-            aria-label="Filter by category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            options={[
-              { value: 'all', label: 'All categories' },
-              { value: 'hundi', label: 'Hundi' },
-              { value: 'pooja', label: 'Pooja' },
-              { value: 'event', label: 'Events' },
-              { value: 'membership', label: 'Membership' },
-              { value: 'activity', label: 'Activities' },
-              { value: 'project', label: 'Projects' },
-            ]}
-          />
+      <PageHeader title="Catalog manager">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="w-full sm:w-80">
+            <Input
+              aria-label="Search the catalog"
+              placeholder="Search item name or description"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              leading={<Search className="size-4" aria-hidden />}
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="w-full sm:w-56">
+              <Select
+                aria-label="Filter by category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                options={[
+                  { value: 'all', label: 'All categories' },
+                  { value: 'hundi', label: 'Hundi' },
+                  { value: 'pooja', label: 'Pooja' },
+                  { value: 'event', label: 'Events' },
+                  { value: 'membership', label: 'Membership' },
+                  { value: 'activity', label: 'Activities' },
+                  { value: 'project', label: 'Projects' },
+                ]}
+              />
+            </div>
+            <Button icon={<Plus className="size-4" aria-hidden />} onClick={toast.soon}>
+              New item
+            </Button>
+          </div>
         </div>
       </PageHeader>
 

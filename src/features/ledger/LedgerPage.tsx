@@ -23,6 +23,7 @@ import { Money } from '@/components/ui/Money'
 import { Select } from '@/components/ui/Select'
 import { Stat } from '@/components/ui/Stat'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { Tooltip } from '@/components/ui/Tooltip'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { SectorChip } from '@/components/layout/PhaseChip'
 import { SECTOR_IDS, SECTORS } from '@/config'
@@ -440,13 +441,12 @@ export function LedgerPage() {
         description="Every movement of money, newest first — what happened, which fund it touched, and whether money came in, went out, or just moved between the charity's own funds. Open a row to see the two sides of the entry and the document it came from."
         actions={
           <div className="flex items-center gap-2">
-            <span
-              title="Immutable record: once committed, entries cannot be modified or deleted."
-              className="inline-flex items-center gap-1.5 rounded-full border border-navy-200/90 bg-white px-3 py-1 text-[12px] font-semibold text-navy-800 shadow-2xs"
-            >
-              <Lock className="size-3 text-navy-500" aria-hidden />
-              Append-only
-            </span>
+            <Tooltip content="Immutable record: once committed, entries cannot be modified or deleted." position="bottom" align="end">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-navy-200/90 bg-white px-3 py-1 text-[12px] font-semibold text-navy-800 shadow-2xs cursor-default">
+                <Lock className="size-3 text-navy-500" aria-hidden />
+                Append-only
+              </span>
+            </Tooltip>
             <Button
               variant="secondary"
               size="sm"
