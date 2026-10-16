@@ -110,11 +110,11 @@ const TAB_BY_SECTOR: Partial<
   sangam: {
     hundi: {
       label: 'Support',
-      blurb: 'Any amount towards the year of classes, festivals and cultural evenings.',
+      blurb: 'Sponsorships and contributions towards Tamil language, arts and community programs.',
     },
-    pooja: {
-      label: 'Dedications',
-      blurb: 'Dedicate an evening of the festival in your family name.',
+    activity: {
+      label: 'Activities',
+      blurb: 'Tamil language school, Carnatic music, and classical dance classes.',
     },
   },
 }
