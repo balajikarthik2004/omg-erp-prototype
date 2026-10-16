@@ -52,10 +52,10 @@ export function SewasTab({
               count: live.filter((s) => s.gaushalaCategory === c.id).length,
             }))}
           />
-          <p className="mt-4 max-w-2xl text-[14px] text-stone-500">{meta.blurb}</p>
+          <p className="mt-4 max-w-2xl text-[14px] text-stone-600 font-normal leading-relaxed">{meta.blurb}</p>
         </>
       ) : (
-        <p className="text-[14px] text-stone-500">
+        <p className="text-[14px] text-stone-600 font-normal">
           {visible.length} {visible.length === 1 ? 'sewa' : 'sewas'} matching &ldquo;{query.trim()}&rdquo;, across every
           category.
         </p>

@@ -5,6 +5,7 @@ import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Tabs } from '@/components/ui/Tabs'
+import { ModuleBodyBackground } from '@/components/layout/ModuleBodyBackground'
 import { CURRENCIES, type Currency } from '@/lib/currency'
 import { GAUSHALA_SEWAS } from '@/mock/gaushala'
 import { useDb } from '@/store/db'
@@ -94,9 +95,12 @@ export function GaushalaPage() {
   const priced = tab === 'sewas' || tab === 'adopt' || tab === 'visit' || tab === 'events'
 
   return (
-    <>
+    <ModuleBodyBackground
+      gradient="bg-gradient-to-b from-[#FFFDF9] via-[#FAF6EC] to-[#EFF5EA]"
+      glow="rgba(16, 185, 129, 0.12)"
+    >
       <div className="mx-auto max-w-8xl px-5 pt-4 sm:px-8 sm:pt-6">
-        <header className="relative isolate overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl bg-gradient-to-br from-[#0B0D28] via-[#121642] to-[#181335] border border-navy-800/50 p-5 sm:p-6 lg:px-8 lg:py-6">
+        <header className="relative isolate overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl bg-gradient-to-br from-[#0B0D28] via-[#121642] to-[#181335] border border-navy-800/60 p-5 sm:p-6 lg:px-8 lg:py-6">
           {/* Subtle background mandala / etching watermark */}
           <div
             className="pointer-events-none absolute -right-10 -bottom-10 h-64 w-64 opacity-[0.07]"
@@ -192,8 +196,8 @@ export function GaushalaPage() {
                     }
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    leading={<Search className="size-5 text-navy-400" aria-hidden />}
-                    className="h-12 sm:h-13 pl-11 pr-10 text-[15px] sm:text-[16px] rounded-2xl border-navy-200/90 shadow-sm focus:border-navy-500 focus:ring-4 focus:ring-navy-500/10 placeholder:text-stone-400"
+                    leading={<Search className="size-5 text-stone-400" aria-hidden />}
+                    className="h-12 sm:h-13 pl-11 pr-10 text-[15px] sm:text-[16px] rounded-2xl border-stone-200/90 bg-white/90 text-stone-900 placeholder:text-stone-400 shadow-xs focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10 backdrop-blur-xs"
                   />
                   {query ? (
                     <button
@@ -235,7 +239,7 @@ export function GaushalaPage() {
           )}
         </div>
       </div>
-    </>
+    </ModuleBodyBackground>
   )
 }
 
@@ -246,8 +250,8 @@ export function GaushalaPage() {
  */
 function CurrencySwitcher({ value, onChange }: { value: Currency; onChange: (c: Currency) => void }) {
   return (
-    <div className="flex items-center gap-2 text-[13px] text-stone-500">
-      <span className="shrink-0">Show prices in</span>
+    <div className="flex items-center gap-2 text-[13px] text-stone-600">
+      <span className="shrink-0 font-medium">Show prices in</span>
       <div className="w-44">
         <Select
           size="sm"
@@ -257,6 +261,7 @@ function CurrencySwitcher({ value, onChange }: { value: Currency; onChange: (c: 
             value: c.code,
             label: `${c.code} — ${c.label}`,
           }))}
+          className="bg-white/90 border-stone-200 text-stone-900 shadow-2xs focus:border-emerald-600"
         />
       </div>
     </div>

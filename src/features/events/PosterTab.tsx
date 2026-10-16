@@ -11,8 +11,10 @@ import { currentUser, useSession } from '@/store/session'
 import type { PosterDesign } from '@/types'
 import { canGeneratePoster, isAdmin } from './logic/stateMachine'
 import { renderPosterSvg, VARIANTS } from './logic/poster'
+import { selectPosterTheme } from './logic/posterThemes'
 import { PosterDecisionPanel } from './PosterDecisionPanel'
 import { PosterPreview } from './PosterPreview'
+import { AUTO_POSTER_STYLE, PosterStyleControls, type PosterStyle } from './PosterStyleControls'
 import { downloadSvg, openSvg, posterIsStale } from './posterTools'
 import { registrationUrl, type EventView } from './useEvent'
 
@@ -28,7 +30,10 @@ export function PosterTab({ view }: { view: EventView }) {
   const [error, setError] = useState<string>()
   const [svg, setSvg] = useState('')
   const [downloadingId, setDownloadingId] = useState<string>()
+  /** Overrides applied to the chosen poster only. The three cards always show their own theme. */
+  const [style, setStyle] = useState<PosterStyle>(AUTO_POSTER_STYLE)
 
+  const auto = selectPosterTheme(event)
   const guard = canGeneratePoster(event)
   const batches = [...new Set(designs.map((d) => d.batchNo))].sort((a, b) => b - a)
   const latest = designs.filter((d) => d.batchNo === batches[0])
@@ -38,19 +43,29 @@ export function PosterTab({ view }: { view: EventView }) {
 
   const run = (r: { ok: boolean; error?: string }) => setError(r.ok ? undefined : r.error)
 
-  const handleDownload = async (design: PosterDesign) => {
+  /** `styled` applies the admin's overrides; the per-card buttons export the card's own theme. */
+  const renderArgs = (design: PosterDesign, styled: boolean) => ({
+    event,
+    design,
+    organisation,
+    registrationUrl: registrationUrl(event.id),
+    themeId: styled && style.themeId !== 'auto' ? style.themeId : undefined,
+    photoSrc: styled ? style.photoSrc : undefined,
+    useEventImage: styled ? style.useEventImage : false,
+  })
+
+  const handleDownload = async (design: PosterDesign, styled = false) => {
     setDownloadingId(design.id)
     try {
-      const rendered = await renderPosterSvg({ event, design, organisation, registrationUrl: registrationUrl(event.id) })
+      const rendered = await renderPosterSvg(renderArgs(design, styled))
       downloadSvg(rendered, `${slug}-${design.variant}-poster.svg`)
     } finally {
       setDownloadingId(undefined)
     }
   }
 
-  const handlePrint = async (design: PosterDesign) => {
-    const rendered = await renderPosterSvg({ event, design, organisation, registrationUrl: registrationUrl(event.id) })
-    openSvg(rendered)
+  const handlePrint = async (design: PosterDesign, styled = false) => {
+    openSvg(await renderPosterSvg(renderArgs(design, styled)))
   }
 
   if (!guard.allowed && !selected && designs.length === 0) {
@@ -76,7 +91,15 @@ export function PosterTab({ view }: { view: EventView }) {
 
       {inApprovalOrPublished && selected ? (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,380px)_1fr] lg:items-start">
-          <PosterPreview event={event} design={selected} organisation={organisation} onSvg={setSvg} />
+          <PosterPreview
+            event={event}
+            design={selected}
+            organisation={organisation}
+            themeId={style.themeId === 'auto' ? undefined : style.themeId}
+            photoSrc={style.photoSrc}
+            useEventImage={style.useEventImage}
+            onSvg={setSvg}
+          />
           <div className="flex flex-col gap-6">
             <Card accentClass={event.status === 'poster_pending' ? 'bg-marigold-500' : 'bg-tulsi-500'}>
               <CardHeader title={event.status === 'poster_pending' ? 'Waiting for approval' : 'Poster is public'} description={`${label(selected.variant)} design, chosen by ${userName(event.lastPreparerId ?? selected.createdBy)}`} />
@@ -86,6 +109,11 @@ export function PosterTab({ view }: { view: EventView }) {
               </div>
 
               {event.status === 'poster_pending' ? <div className="mt-4"><PosterDecisionPanel view={view} /></div> : null}
+            </Card>
+
+            <Card>
+              <CardHeader title="Theme and photograph" description="The theme follows the event type. Override it here when this particular event calls for a different look." />
+              <PosterStyleControls className="mt-4" event={event} value={style} onChange={setStyle} disabled={!isAdmin(user)} />
             </Card>
 
             <Card>
@@ -120,10 +148,10 @@ export function PosterTab({ view }: { view: EventView }) {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <Button size="sm" variant="secondary" icon={<Download className="size-4" aria-hidden />} onClick={() => handleDownload(selected)}>
+              <Button size="sm" variant="secondary" icon={<Download className="size-4" aria-hidden />} onClick={() => handleDownload(selected, true)}>
                 Download SVG
               </Button>
-              <Button size="sm" variant="secondary" icon={<ExternalLink className="size-4" aria-hidden />} onClick={() => handlePrint(selected)}>
+              <Button size="sm" variant="secondary" icon={<ExternalLink className="size-4" aria-hidden />} onClick={() => handlePrint(selected, true)}>
                 Open to print
               </Button>
               {event.status === 'confirmed' && (
@@ -133,6 +161,7 @@ export function PosterTab({ view }: { view: EventView }) {
               )}
             </div>
           </div>
+          <PosterStyleControls className="mt-5 border-t border-sandal-200 pt-5" event={event} value={style} onChange={setStyle} disabled={!isAdmin(user)} />
         </Card>
       ) : null}
 
@@ -142,7 +171,10 @@ export function PosterTab({ view }: { view: EventView }) {
           <div>
             <h2 className="font-display text-[18px] text-stone-900">{designs.length === 0 ? 'Make the poster' : 'Poster studio designs'}</h2>
             <p className="mt-1 max-w-2xl text-[13px] text-stone-500">
-              Posters can be generated anytime, without waiting for budget approval. Three background designs are rendered with the exact event typography, logo and registration QR code. You can download or print any design immediately.
+              Posters can be generated anytime, without waiting for budget approval. One design per theme is rendered over a real photograph, with the exact event typography, logo and registration QR code drawn on top. You can download or print any design immediately.
+            </p>
+            <p className="mt-2 text-[13px] text-stone-600">
+              <span className="font-medium text-stone-700">{auto.theme.label}</span> suits this event. {auto.reason}
             </p>
           </div>
           <Button icon={<Palette className="size-4" aria-hidden />} disabled={!isAdmin(user) || !guard.allowed} title={isAdmin(user) ? guard.reason : 'Only a Sector Admin makes a poster.'} onClick={() => run(generatePosters(event.id, user))}>
@@ -167,11 +199,13 @@ export function PosterTab({ view }: { view: EventView }) {
                       <span className="inline-flex items-center gap-1 rounded bg-tulsi-50 px-2 py-0.5 text-[11px] font-medium text-tulsi-700">
                         <Check className="size-3" aria-hidden /> Selected
                       </span>
+                    ) : d.variant === auto.theme.id ? (
+                      <span className="rounded bg-turmeric-100 px-2 py-0.5 text-[11px] font-medium text-turmeric-700">Recommended</span>
                     ) : null}
                   </div>
-                  <p className="text-[12px] text-stone-500">Offline template art · set {d.batchNo}</p>
+                  <p className="text-[12px] text-stone-500">Photographic · set {d.batchNo}</p>
                   <details className="mt-2 text-[12px] text-stone-500">
-                    <summary className="cursor-pointer text-kumkum-700">The prompt for the art</summary>
+                    <summary className="cursor-pointer text-kumkum-700">The photo brief</summary>
                     <p className="mt-1 leading-relaxed">{d.prompt}</p>
                   </details>
                 </div>

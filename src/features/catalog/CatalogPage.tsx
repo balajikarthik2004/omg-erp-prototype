@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Input } from '@/components/ui/Input'
 import { Etching } from '@/components/ui/Ornament'
 import { Tabs } from '@/components/ui/Tabs'
+import { ModuleBodyBackground } from '@/components/layout/ModuleBodyBackground'
 import { PHOTOS, type PhotoKey } from '@/lib/photos'
 import { CATALOG } from '@/mock/seed'
 import { useDb } from '@/store/db'
@@ -30,6 +31,9 @@ const SECTOR_HERO: Record<
     borderColor: string
     /** A token name, read as a CSS variable for the corner glow. */
     glow: string
+    /** Light background gradient for the scrolling cards body */
+    bodyGradient: string
+    bodyGlow: string
     photoPosition: string
     badges: { label: string; dotClass: string }[]
   }
@@ -44,6 +48,8 @@ const SECTOR_HERO: Record<
     cardBg: 'bg-linear-to-br from-navy-950 via-navy-900 to-kumkum-900',
     borderColor: 'border-kumkum-800',
     glow: '--color-kumkum-500',
+    bodyGradient: 'bg-gradient-to-b from-[#FFFDF9] via-[#FDF5EB] to-[#FAEDE6]',
+    bodyGlow: 'rgba(226, 46, 38, 0.12)',
     photoPosition: 'object-center',
     badges: [
       { label: 'Sacred kovil rituals', dotClass: 'bg-kumkum-400' },
@@ -56,6 +62,8 @@ const SECTOR_HERO: Record<
     cardBg: 'bg-linear-to-br from-navy-950 via-navy-900 to-tulsi-700',
     borderColor: 'border-tulsi-700',
     glow: '--color-tulsi-500',
+    bodyGradient: 'bg-gradient-to-b from-[#FFFDF9] via-[#F5F9F4] to-[#E9F3ED]',
+    bodyGlow: 'rgba(41, 163, 106, 0.12)',
     photoPosition: 'object-center sm:object-[50%_55%]',
     badges: [
       { label: 'Daily annadhanam', dotClass: 'bg-tulsi-500' },
@@ -68,6 +76,8 @@ const SECTOR_HERO: Record<
     cardBg: 'bg-linear-to-br from-navy-950 via-navy-900 to-navy-700',
     borderColor: 'border-navy-700',
     glow: '--color-peacock-500',
+    bodyGradient: 'bg-gradient-to-b from-[#FFFDF9] via-[#F3F6FB] to-[#E7F0FA]',
+    bodyGlow: 'rgba(79, 88, 202, 0.12)',
     photoPosition: 'object-center sm:object-[50%_48%]',
     badges: [
       { label: 'Tamil heritage and arts', dotClass: 'bg-peacock-500' },
@@ -163,7 +173,7 @@ export function CatalogPage({ sectorId: pinned }: { sectorId?: SectorId } = {}) 
   const hero = SECTOR_HERO[sectorId]
 
   return (
-    <>
+    <ModuleBodyBackground gradient={hero.bodyGradient} glow={hero.bodyGlow}>
       <div className="mx-auto max-w-8xl px-5 pt-4 sm:px-8 sm:pt-6">
         <header
           className={cn(
@@ -273,8 +283,8 @@ export function CatalogPage({ sectorId: pinned }: { sectorId?: SectorId } = {}) 
                 placeholder="Search offerings by name or keyword..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                leading={<Search className="size-5 text-navy-400" aria-hidden />}
-                className="h-12 pl-11 pr-10 text-[15px] rounded-2xl border-navy-200/90 shadow-sm focus:border-navy-500 focus:ring-4 focus:ring-navy-500/10 placeholder:text-stone-400"
+                leading={<Search className="size-5 text-stone-400" aria-hidden />}
+                className="h-12 pl-11 pr-10 text-[15px] rounded-2xl border-stone-200/90 bg-white/90 text-stone-900 placeholder:text-stone-400 shadow-xs focus:border-kumkum-500 focus:ring-4 focus:ring-kumkum-500/10 backdrop-blur-xs"
               />
               {query ? (
                 <button
@@ -290,7 +300,7 @@ export function CatalogPage({ sectorId: pinned }: { sectorId?: SectorId } = {}) 
           </div>
         </div>
 
-        <p className="mt-4 max-w-2xl text-[14px] text-stone-500">{activeTab.blurb}</p>
+        <p className="mt-4 max-w-2xl text-[14px] text-stone-600 font-normal leading-relaxed">{activeTab.blurb}</p>
 
         <div className="mt-7 min-h-80">
           {visible.length === 0 ? (
@@ -320,7 +330,7 @@ export function CatalogPage({ sectorId: pinned }: { sectorId?: SectorId } = {}) 
           )}
         </div>
       </div>
-    </>
+    </ModuleBodyBackground>
   )
 }
 
