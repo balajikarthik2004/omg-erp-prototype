@@ -82,22 +82,20 @@ export function AllotmentsPage() {
 
   return (
     <div>
-      <PageHeader
-        title="Fund allotments"
-        actions={
+      <PageHeader title="Fund allotments">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Tabs
+            value={tab}
+            onChange={setTab}
+            items={[
+              { id: 'pending', label: 'Awaiting approval', count: pending.length },
+              { id: 'decided', label: 'Decided', count: decided.length },
+            ]}
+          />
           <Button icon={<Plus className="size-4" aria-hidden />} onClick={() => setComposing(true)}>
             New allotment
           </Button>
-        }
-      >
-        <Tabs
-          value={tab}
-          onChange={setTab}
-          items={[
-            { id: 'pending', label: 'Awaiting approval', count: pending.length },
-            { id: 'decided', label: 'Decided', count: decided.length },
-          ]}
-        />
+        </div>
       </PageHeader>
 
       {!db.ready ? (

@@ -104,17 +104,29 @@ export function EventsPage() {
 
   return (
     <div>
-      <PageHeader
-        title="Events"
-        actions={
-          <Button icon={<Plus className="size-4" aria-hidden />} onClick={() => setCreating(true)}>
-            New event
-          </Button>
-        }
-      >
-        <div className="flex flex-col gap-3">
-          <Tabs value={tab} onChange={setTab} items={GROUPS.map((g) => ({ id: g.id, label: g.label, count: g.statuses ? all.filter((e) => g.statuses!.includes(e.status)).length : all.length }))} />
-          <Input aria-label="Search events" placeholder="Search by name or venue" value={query} onChange={(e) => setQuery(e.target.value)} leading={<Search className="size-4" aria-hidden />} />
+      <PageHeader title="Events">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <Tabs
+              value={tab}
+              onChange={setTab}
+              items={GROUPS.map((g) => ({
+                id: g.id,
+                label: g.label,
+                count: g.statuses ? all.filter((e) => g.statuses!.includes(e.status)).length : all.length,
+              }))}
+            />
+            <Button icon={<Plus className="size-4" aria-hidden />} onClick={() => setCreating(true)}>
+              New event
+            </Button>
+          </div>
+          <Input
+            aria-label="Search events"
+            placeholder="Search by name or venue"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            leading={<Search className="size-4" aria-hidden />}
+          />
         </div>
       </PageHeader>
 

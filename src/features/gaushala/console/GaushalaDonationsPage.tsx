@@ -152,50 +152,50 @@ export function GaushalaDonationsPage() {
 
   return (
     <div>
-      <PageHeader
-        title="Gaushala donations"
-        actions={
-          <Button
-            variant="secondary"
-            icon={<Download className="size-4" aria-hidden />}
-            onClick={exportCsv}
-            disabled={rows.length === 0}
-          >
-            Export CSV
-          </Button>
-        }
-      >
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <div className="sm:w-72">
-            <Input
-              aria-label="Search donations"
-              placeholder="Donation id, receipt no or donor"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              leading={<Search className="size-4" aria-hidden />}
-            />
+      <PageHeader title="Gaushala donations">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="w-full sm:w-72">
+              <Input
+                aria-label="Search donations"
+                placeholder="Donation id, receipt no or donor"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                leading={<Search className="size-4" aria-hidden />}
+              />
+            </div>
+            <div className="w-full sm:w-52">
+              <Select
+                aria-label="Filter by status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                options={[
+                  { value: 'all', label: 'Every status' },
+                  ...STATUSES.map((s) => ({ value: s, label: titleCase(s) })),
+                ]}
+              />
+            </div>
+            <div className="w-full sm:w-64">
+              <Select
+                aria-label="Filter by fund"
+                value={fundId}
+                onChange={(e) => setFundId(e.target.value)}
+                options={[
+                  { value: 'all', label: 'Every Gaushala fund' },
+                  ...gaushalaFunds.map((f) => ({ value: f.id, label: f.name })),
+                ]}
+              />
+            </div>
           </div>
-          <div className="sm:w-52">
-            <Select
-              aria-label="Filter by status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              options={[
-                { value: 'all', label: 'Every status' },
-                ...STATUSES.map((s) => ({ value: s, label: titleCase(s) })),
-              ]}
-            />
-          </div>
-          <div className="sm:w-64">
-            <Select
-              aria-label="Filter by fund"
-              value={fundId}
-              onChange={(e) => setFundId(e.target.value)}
-              options={[
-                { value: 'all', label: 'Every Gaushala fund' },
-                ...gaushalaFunds.map((f) => ({ value: f.id, label: f.name })),
-              ]}
-            />
+          <div className="shrink-0">
+            <Button
+              variant="secondary"
+              icon={<Download className="size-4" aria-hidden />}
+              onClick={exportCsv}
+              disabled={rows.length === 0}
+            >
+              Export CSV
+            </Button>
           </div>
         </div>
       </PageHeader>

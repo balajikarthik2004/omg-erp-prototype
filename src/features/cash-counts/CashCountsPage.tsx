@@ -134,6 +134,7 @@ export function CashCountsPage() {
             icon={<Plus className="size-4" aria-hidden />}
             disabled={Boolean(countBlock)}
             title={countBlock ?? undefined}
+            tooltipAlign="end"
             onClick={() => setRecording(true)}
           >
             Record a count

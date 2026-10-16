@@ -99,34 +99,34 @@ export function CowManagementPage() {
 
   return (
     <div>
-      <PageHeader
-        title="Cow management"
-        actions={
-          <Button icon={<Plus className="size-4" aria-hidden />} onClick={() => setCreating(true)}>
-            Add a cow
-          </Button>
-        }
-      >
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <div className="sm:w-72">
-            <Input
-              aria-label="Search the herd"
-              placeholder="Search by name or breed"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              leading={<Search className="size-4" aria-hidden />}
-            />
+      <PageHeader title="Cow management">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="w-full sm:w-72">
+              <Input
+                aria-label="Search the herd"
+                placeholder="Search by name or breed"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                leading={<Search className="size-4" aria-hidden />}
+              />
+            </div>
+            <div className="w-full sm:w-56">
+              <Select
+                aria-label="Filter by status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                options={[
+                  { value: 'all', label: 'Every status' },
+                  ...STATUSES.map((s) => ({ value: s, label: titleCase(s) })),
+                ]}
+              />
+            </div>
           </div>
-          <div className="sm:w-56">
-            <Select
-              aria-label="Filter by status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              options={[
-                { value: 'all', label: 'Every status' },
-                ...STATUSES.map((s) => ({ value: s, label: titleCase(s) })),
-              ]}
-            />
+          <div className="shrink-0">
+            <Button icon={<Plus className="size-4" aria-hidden />} onClick={() => setCreating(true)}>
+              Add a cow
+            </Button>
           </div>
         </div>
       </PageHeader>

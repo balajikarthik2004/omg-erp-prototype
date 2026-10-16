@@ -135,56 +135,69 @@ export function CsrReportsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Utilisation Certificates & Impact Reports"
-        actions={
+      <PageHeader title="Utilisation Certificates & Impact Reports">
+        <div className="flex items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setActiveTab('ucs')}
+              className={`flex h-9 items-center gap-1.5 rounded-lg px-3 text-[13px] font-semibold whitespace-nowrap transition sm:px-3.5 sm:text-sm ${
+                activeTab === 'ucs'
+                  ? 'bg-turmeric-600 text-white shadow-xs'
+                  : 'bg-white text-sandalwood-700 hover:bg-sandalwood-100 border border-sandalwood-200'
+              }`}
+            >
+              <Award className="size-4 shrink-0" />
+              <span>
+                <span className="hidden xl:inline">Statutory </span>
+                Utilisation Certificates ({ucs.length})
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('progress')}
+              className={`flex h-9 items-center gap-1.5 rounded-lg px-3 text-[13px] font-semibold whitespace-nowrap transition sm:px-3.5 sm:text-sm ${
+                activeTab === 'progress'
+                  ? 'bg-turmeric-600 text-white shadow-xs'
+                  : 'bg-white text-sandalwood-700 hover:bg-sandalwood-100 border border-sandalwood-200'
+              }`}
+            >
+              <Image className="size-4 shrink-0" />
+              <span>
+                <span className="hidden xl:inline">Field Photo Evidence & </span>
+                <span className="xl:hidden">Field </span>
+                Milestones ({progressUpdates.length})
+              </span>
+            </button>
+          </div>
+
           <div className="flex items-center gap-2">
             <Button
               variant="secondary"
-              icon={<Plus className="size-4" />}
+              icon={<Plus className="size-4 shrink-0" />}
               onClick={() => setAddProgressModal(true)}
+              className="h-9 px-3 text-[13px] sm:px-3.5 sm:text-sm whitespace-nowrap"
             >
-              Log Field Milestone
+              <span>
+                Log <span className="hidden xl:inline">Field </span>Milestone
+              </span>
             </Button>
             <Button
               variant="primary"
-              icon={<FileCheck2 className="size-4" />}
+              icon={<FileCheck2 className="size-4 shrink-0" />}
               disabled={ucDeals.length === 0}
               title={ucDeals.length === 0 ? 'Every received tranche already has a certificate.' : 'Draft a certificate for a received tranche'}
               onClick={() => setDraftUcModal(true)}
+              className="h-9 px-3 text-[13px] sm:px-3.5 sm:text-sm whitespace-nowrap"
             >
-              Draft Utilisation Certificate
+              <span>
+                Draft <span className="hidden xl:inline">Utilisation </span>Certificate
+              </span>
             </Button>
           </div>
-        }
-      />
-
-      {/* Tab Switcher */}
-      <div className="flex items-center gap-3 pb-1">
-        <button
-          onClick={() => setActiveTab('ucs')}
-          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
-            activeTab === 'ucs'
-              ? 'bg-turmeric-600 text-white shadow-xs'
-              : 'bg-white text-sandalwood-700 hover:bg-sandalwood-100 border border-sandalwood-200'
-          }`}
-        >
-          <Award className="size-4" />
-          <span>Statutory Utilisation Certificates ({ucs.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('progress')}
-          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
-            activeTab === 'progress'
-              ? 'bg-turmeric-600 text-white shadow-xs'
-              : 'bg-white text-sandalwood-700 hover:bg-sandalwood-100 border border-sandalwood-200'
-          }`}
-        >
-          <Image className="size-4" />
-          <span>Field Photo Evidence & Milestones ({progressUpdates.length})</span>
-        </button>
-      </div>
+        </div>
+      </PageHeader>
 
       {activeTab === 'ucs' ? (
         <div className="grid gap-6">
