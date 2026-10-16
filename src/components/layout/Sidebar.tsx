@@ -207,7 +207,7 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
   return (
     <div
       data-brand={tenant?.brand ?? 'kumkum'}
-      className="surface-sanctum flex h-full flex-col border-r border-navy-700/60 text-white"
+      className="surface-sanctum relative z-40 flex h-full flex-col border-r border-navy-700/60 text-white"
     >
       {/* Header / Brand block: when collapsed, hovering the logo reveals the toggle button with a tooltip */}
       {collapsed ? (
@@ -405,8 +405,8 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className={cn('no-print hidden shrink-0 lg:block', collapsed ? RAIL : FULL)}>
-        <div className={cn('fixed inset-y-0 left-0', collapsed ? RAIL : FULL)}>
+      <aside className={cn('no-print hidden shrink-0 lg:block relative z-40', collapsed ? RAIL : FULL)}>
+        <div className={cn('fixed inset-y-0 left-0 z-40', collapsed ? RAIL : FULL)}>
           <SidebarContent collapsed={collapsed} />
         </div>
       </aside>
