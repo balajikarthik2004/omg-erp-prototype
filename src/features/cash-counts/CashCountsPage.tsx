@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Coins, HandCoins } from 'lucide-react'
+import { CheckCheck, Coins, HandCoins, Plus } from 'lucide-react'
 
 import { SECTORS, SECTOR_IDS, type SectorId } from '@/config'
 import { formatDateTime } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
-import { Card, CardHeader } from '@/components/ui/Card'
 import { Drawer } from '@/components/ui/Drawer'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Input, Textarea } from '@/components/ui/Input'
@@ -40,6 +39,7 @@ export function CashCountsPage() {
   const sectors = tenant?.verticals ?? SECTOR_IDS
 
   const [tab, setTab] = useState('pending')
+  const [recording, setRecording] = useState(false)
   const [sectorId, setSectorId] = useState<SectorId>('temple')
   const [itemId, setItemId] = useState('')
   const [amount, setAmount] = useState('')
@@ -116,13 +116,29 @@ export function CashCountsPage() {
     setDonorName('')
     setNote('')
     setTab('pending')
+    setRecording(false)
+  }
+
+  function closeRecord() {
+    setRecording(false)
+    setError(undefined)
   }
 
   return (
     <div>
       <PageHeader
         title="Counter cash"
-        description="Cash taken at the counter or out of a hundi box is counted by one person and confirmed by a second. Nothing reaches the ledger until that second count agrees — the column below is where each count has got to."
+        description="Cash taken at the counter or out of a hundi box is counted by one person and confirmed by a second. Nothing reaches the ledger until that second count agrees."
+        actions={
+          <Button
+            icon={<Plus className="size-4" aria-hidden />}
+            disabled={Boolean(countBlock)}
+            title={countBlock ?? undefined}
+            onClick={() => setRecording(true)}
+          >
+            Record a count
+          </Button>
+        }
       >
         <Tabs
           value={tab}
@@ -137,74 +153,119 @@ export function CashCountsPage() {
       {!db.ready ? (
         <TableSkeleton rows={6} cols={6} />
       ) : (
-        <div className="grid gap-6 xl:grid-cols-[1fr_340px] xl:items-start">
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Stat label="Waiting to be confirmed" value={pending.length} accentClass="bg-marigold-500" icon={<Coins className="size-4" aria-hidden />} />
-              <Stat
-                label="Cash not yet posted"
-                value={<Money value={pending.reduce((s, c) => s + c.amount, 0)} />}
-                sub="held until confirmed"
-                accentClass="bg-turmeric-500"
-              />
-            </div>
-
-            {rows.length === 0 ? (
-              <EmptyState
-                icon={<HandCoins className="size-6" aria-hidden />}
-                title={tab === 'pending' ? 'No cash is waiting' : 'No history yet'}
-                message={
-                  tab === 'pending'
-                    ? 'Record a count on the right. A second person then confirms it from here or from the approvals inbox.'
-                    : 'Confirmed and rejected counts will be listed here.'
-                }
-              />
-            ) : (
-              <Table columns={columns} rows={rows} rowKey={(c) => c.id} onRowClick={(c) => setParams({ focus: c.id })} />
-            )}
+        <div className="flex flex-col gap-6">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Stat
+              label="Waiting to be confirmed"
+              value={pending.length}
+              sub={pending.length === 1 ? 'one count needs a second person' : 'counts need a second person'}
+              accentClass="bg-marigold-500"
+              icon={<Coins className="size-4" aria-hidden />}
+            />
+            <Stat
+              label="Cash not yet posted"
+              value={<Money value={pending.reduce((s, c) => s + c.amount, 0)} />}
+              sub="held until confirmed"
+              accentClass="bg-turmeric-500"
+              icon={<HandCoins className="size-4" aria-hidden />}
+            />
+            <Stat
+              label="Posted to the ledger"
+              value={<Money value={history.filter((c) => c.status === 'confirmed').reduce((s, c) => s + c.amount, 0)} />}
+              sub={`${history.filter((c) => c.status === 'confirmed').length} confirmed counts`}
+              accentClass="bg-tulsi-500"
+              icon={<CheckCheck className="size-4" aria-hidden />}
+            />
           </div>
 
-          <Card accentClass="bg-turmeric-500">
-            <CardHeader title="Record a count" description="You are the first counter. Someone else confirms." />
-            <div className="mt-4 flex flex-col gap-4">
-              <Select
-                label="Sector"
-                value={activeSector}
-                onChange={(e) => setSectorId(e.target.value as SectorId)}
-                options={sectors.map((id) => ({ value: id, label: SECTORS[id].name }))}
-              />
-              <Select
-                label="Offering"
-                value={activeItem}
-                onChange={(e) => setItemId(e.target.value)}
-                options={items.map((i) => ({ value: i.id, label: i.name }))}
-              />
-              <Input
-                label="Amount counted"
-                inputMode="decimal"
-                placeholder="0.00"
-                leading={<span className="text-[15px]">$</span>}
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="font-mono tabular-nums"
-              />
-              <Input
-                label="Donor name (optional)"
-                placeholder="e.g. Srinivasan Family"
-                hint="Leave blank for hundi-box cash, which is receipted as anonymous."
-                value={donorName}
-                onChange={(e) => setDonorName(e.target.value)}
-              />
-              <Textarea label="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Which box, which day" />
-              {countBlock ? <p className="text-[13px] text-marigold-500">{countBlock}</p> : null}
-              {error ? <p className="text-[13px] text-danger-600">{error}</p> : null}
-              <Button onClick={record} disabled={Boolean(countBlock)} title={countBlock ?? undefined}>
-                Record count
-              </Button>
-            </div>
-          </Card>
+          {rows.length === 0 ? (
+            <EmptyState
+              icon={<HandCoins className="size-6" aria-hidden />}
+              title={tab === 'pending' ? 'No cash is waiting' : 'No history yet'}
+              message={
+                tab === 'pending'
+                  ? 'Record a count to start one. A second person then confirms it from here or from the approvals inbox.'
+                  : 'Confirmed and rejected counts will be listed here.'
+              }
+              action={
+                tab === 'pending' ? (
+                  <Button
+                    icon={<Plus className="size-4" aria-hidden />}
+                    disabled={Boolean(countBlock)}
+                    title={countBlock ?? undefined}
+                    onClick={() => setRecording(true)}
+                  >
+                    Record a count
+                  </Button>
+                ) : undefined
+              }
+            />
+          ) : (
+            <Table columns={columns} rows={rows} rowKey={(c) => c.id} onRowClick={(c) => setParams({ focus: c.id })} />
+          )}
         </div>
       )}
+
+      {/* Recording a count is an occasional act, not something you read, so
+          it lives behind the header action rather than holding a column of
+          the page open all day. */}
+      <Drawer
+        open={recording}
+        onClose={closeRecord}
+        title="Record a count"
+        subtitle="You are the first counter. A second person confirms before it posts."
+        footer={
+          <div className="flex flex-col gap-3">
+            {countBlock ? <p className="text-[13px] text-marigold-500">{countBlock}</p> : null}
+            {error ? <p className="text-[13px] text-danger-600">{error}</p> : null}
+            <div className="flex gap-2">
+              <Button fullWidth onClick={record} disabled={Boolean(countBlock)} title={countBlock ?? undefined}>
+                Record count
+              </Button>
+              <Button fullWidth variant="secondary" onClick={closeRecord}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        }
+      >
+        <div className="flex flex-col gap-4">
+          <Select
+            label="Sector"
+            value={activeSector}
+            onChange={(e) => setSectorId(e.target.value as SectorId)}
+            options={sectors.map((id) => ({ value: id, label: SECTORS[id].name }))}
+          />
+          <Select
+            label="Offering"
+            value={activeItem}
+            onChange={(e) => setItemId(e.target.value)}
+            options={items.map((i) => ({ value: i.id, label: i.name }))}
+          />
+          <Input
+            label="Amount counted"
+            inputMode="decimal"
+            placeholder="0.00"
+            leading={<span className="text-[15px]">$</span>}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="font-mono tabular-nums"
+          />
+          <Input
+            label="Donor name (optional)"
+            placeholder="e.g. Srinivasan Family"
+            hint="Leave blank for hundi-box cash, which is receipted as anonymous."
+            value={donorName}
+            onChange={(e) => setDonorName(e.target.value)}
+          />
+          <Textarea
+            label="Note (optional)"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Which box, which day"
+          />
+        </div>
+      </Drawer>
 
       <Drawer
         open={Boolean(focused)}

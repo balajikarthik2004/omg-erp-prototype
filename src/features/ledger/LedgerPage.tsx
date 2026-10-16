@@ -4,7 +4,6 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Calendar,
-  Check,
   CheckCircle2,
   ChevronRight,
   Download,
@@ -15,13 +14,14 @@ import {
   Undo2,
 } from 'lucide-react'
 
-import { formatDate, formatMoneyShort } from '@/lib/format'
+import { formatDate, formatDateTime, formatMoneyShort } from '@/lib/format'
 import { toast } from '@/lib/toast'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Input } from '@/components/ui/Input'
 import { Money } from '@/components/ui/Money'
 import { Select } from '@/components/ui/Select'
+import { Stat } from '@/components/ui/Stat'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { SectorChip } from '@/components/layout/PhaseChip'
@@ -298,6 +298,8 @@ export function LedgerPage() {
     toast.success('Ledger exported', `Successfully exported ${sortedEntries.length} entries to CSV.`)
   }
 
+  const allBalanced = summary.totalCount > 0 && summary.balancedCount === summary.totalCount
+
   return (
     <div className="space-y-5">
       <PageHeader
@@ -323,80 +325,52 @@ export function LedgerPage() {
         }
       />
 
-      {/* A. FINANCIAL SUMMARY OVERVIEW */}
+      {/* A. FINANCIAL SUMMARY OVERVIEW — the shared Stat card, so the ledger
+          reads like the rest of the console rather than four bespoke boxes. */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {/* Total Debits */}
-        <div className="relative overflow-hidden rounded-xl border border-navy-100/90 bg-white p-3.5 sm:p-4 shadow-card">
-          <div className="absolute inset-x-0 top-0 h-1 bg-navy-600" aria-hidden />
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-navy-600">Total Debits</p>
-            <span className="flex size-6 items-center justify-center rounded-md bg-navy-50 text-navy-600 border border-navy-100">
-              <ArrowDownLeft className="size-3.5 stroke-2" aria-hidden />
-            </span>
-          </div>
-          <p className="mt-2 font-heritage text-[20px] sm:text-[23px] font-bold text-navy-950 tracking-tight leading-tight">
-            {formatMoneyShort(summary.totalDebits)}
-          </p>
-          <p className="mt-1 text-[11.5px] text-navy-500 font-medium">Selected period & filters</p>
-        </div>
-
-        {/* Total Credits */}
-        <div className="relative overflow-hidden rounded-xl border border-navy-100/90 bg-white p-3.5 sm:p-4 shadow-card">
-          <div className="absolute inset-x-0 top-0 h-1 bg-navy-600" aria-hidden />
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-navy-600">Total Credits</p>
-            <span className="flex size-6 items-center justify-center rounded-md bg-navy-50 text-navy-600 border border-navy-100">
-              <ArrowUpRight className="size-3.5 stroke-2" aria-hidden />
-            </span>
-          </div>
-          <p className="mt-2 font-heritage text-[20px] sm:text-[23px] font-bold text-navy-950 tracking-tight leading-tight">
-            {formatMoneyShort(summary.totalCredits)}
-          </p>
-          <p className="mt-1 text-[11.5px] text-navy-500 font-medium">Selected period & filters</p>
-        </div>
-
-        {/* Balanced Entries */}
-        <div className="relative overflow-hidden rounded-xl border border-navy-100/90 bg-white p-3.5 sm:p-4 shadow-card">
-          <div
-            className={`absolute inset-x-0 top-0 h-1 ${summary.balancedCount === summary.totalCount && summary.totalCount > 0 ? 'bg-emerald-500' : 'bg-amber-500'}`}
-            aria-hidden
-          />
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-navy-600">Balanced Entries</p>
-            <span
-              className={`flex size-6 items-center justify-center rounded-md border ${
-                summary.balancedCount === summary.totalCount && summary.totalCount > 0
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                  : 'bg-amber-50 text-amber-700 border-amber-200'
-              }`}
-            >
-              <CheckCircle2 className="size-3.5 stroke-2" aria-hidden />
-            </span>
-          </div>
-          <p className="mt-2 font-heritage text-[20px] sm:text-[23px] font-bold text-navy-950 tracking-tight leading-tight">
-            {summary.balancedCount} <span className="text-[15px] font-semibold text-navy-400">/ {summary.totalCount}</span>
-          </p>
-          <p className="mt-1 text-[11.5px] font-medium text-emerald-700">
-            {summary.balancedCount === summary.totalCount && summary.totalCount > 0
-              ? 'All debits = credits (100%)'
-              : `${summary.totalCount - summary.balancedCount} unbalanced`}
-          </p>
-        </div>
-
-        {/* Latest Entry */}
-        <div className="relative overflow-hidden rounded-xl border border-navy-100/90 bg-white p-3.5 sm:p-4 shadow-card">
-          <div className="absolute inset-x-0 top-0 h-1 bg-navy-600" aria-hidden />
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-navy-600">Latest Entry</p>
-            <span className="flex size-6 items-center justify-center rounded-md bg-navy-50 text-navy-600 border border-navy-100">
-              <Calendar className="size-3.5" aria-hidden />
-            </span>
-          </div>
-          <p className="mt-2 font-heritage text-[18px] sm:text-[21px] font-bold text-navy-950 tracking-tight leading-tight truncate">
-            {summary.latestDate}
-          </p>
-          <p className="mt-1 text-[11.5px] text-navy-500 font-medium">Chronological order</p>
-        </div>
+        <Stat
+          label="Total debits"
+          value={formatMoneyShort(summary.totalDebits)}
+          sub="selected period and filters"
+          accentClass="bg-navy-600"
+          icon={<ArrowDownLeft className="size-4" aria-hidden />}
+        />
+        <Stat
+          label="Total credits"
+          value={formatMoneyShort(summary.totalCredits)}
+          sub="selected period and filters"
+          accentClass="bg-navy-600"
+          icon={<ArrowUpRight className="size-4" aria-hidden />}
+        />
+        <Stat
+          label="Balanced entries"
+          value={
+            <>
+              {summary.balancedCount}
+              <span className="text-[15px] font-semibold text-stone-500"> / {summary.totalCount}</span>
+            </>
+          }
+          sub={
+            allBalanced
+              ? 'every entry ties'
+              : `${summary.totalCount - summary.balancedCount} out of balance`
+          }
+          accentClass={allBalanced ? 'bg-tulsi-500' : 'bg-marigold-500'}
+          icon={
+            allBalanced ? (
+              <CheckCircle2 className="size-4" aria-hidden />
+            ) : (
+              <AlertCircle className="size-4" aria-hidden />
+            )
+          }
+        />
+        <Stat
+          label="Latest entry"
+          value={summary.latestDate}
+          sub="newest first"
+          accentClass="bg-navy-600"
+          icon={<Calendar className="size-4" aria-hidden />}
+        />
       </div>
 
       {/* B. SEARCH & FILTER TOOLBAR */}
@@ -587,17 +561,19 @@ export function LedgerPage() {
                   key={entry.id}
                   className="overflow-hidden rounded-xl border border-navy-100/90 bg-white shadow-2xs hover:border-navy-200 transition-all duration-150"
                 >
-                  {/* Summary Header Row (Compact & Scannable) */}
+                  {/* The summary line carries what a reader scans a ledger
+                      by: when, what it was for, whose money, how much. The
+                      entry number and the source document are identifiers you
+                      look up, not read, so they live in the detail below. */}
                   <div
                     onClick={() => toggleExpand(entry.id)}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 cursor-pointer hover:bg-navy-50/30 transition-colors select-none"
+                    className="flex cursor-pointer select-none flex-col justify-between gap-3 p-3.5 transition-colors hover:bg-navy-50/40 sm:flex-row sm:items-center sm:p-4"
                   >
-                    {/* Left: Indicator, Title & References */}
-                    <div className="flex items-start gap-3 min-w-0 flex-1">
+                    <div className="flex min-w-0 flex-1 items-start gap-3">
                       <button
                         type="button"
                         aria-label={isExpanded ? 'Collapse transaction details' : 'Expand transaction details'}
-                        className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-md border border-navy-200 bg-white text-navy-600 transition-transform duration-150"
+                        className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-md border border-navy-200 bg-white text-navy-600"
                       >
                         <ChevronRight
                           className={`size-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
@@ -605,67 +581,71 @@ export function LedgerPage() {
                         />
                       </button>
 
+                      <span className="hidden w-[88px] shrink-0 pt-0.5 font-mono text-[12.5px] tabular-nums text-stone-500 sm:block">
+                        {formatDate(entry.date)}
+                      </span>
+
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h4 className="font-semibold text-[14.5px] text-navy-950 tracking-tight leading-snug">
+                          <h4 className="text-[14.5px] font-semibold leading-snug tracking-tight text-navy-950">
                             {entry.memo}
                           </h4>
                           {entry.reversalOf ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-danger-50 border border-danger-200/80 px-2 py-0.5 text-[11px] font-bold text-danger-700">
+                            <span className="inline-flex items-center gap-1 rounded-full border border-danger-600/25 bg-danger-50 px-2 py-0.5 text-[11px] font-bold text-danger-600">
                               <Undo2 className="size-2.5" aria-hidden />
                               Reversal
                             </span>
                           ) : null}
+                          {!isBalanced ? (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-marigold-500/30 bg-marigold-50 px-2 py-0.5 text-[11px] font-bold text-marigold-500">
+                              <AlertCircle className="size-2.5" aria-hidden />
+                              Out of balance
+                            </span>
+                          ) : null}
                         </div>
-
-                        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11.5px] text-navy-600">
-                          <span className="font-semibold text-navy-800">{entry.id}</span>
-                          <span className="text-navy-300">·</span>
-                          <span>source {entry.sourceRef}</span>
-                          <span className="text-navy-300">·</span>
-                          <span className="text-navy-500">{formatDate(entry.date)}</span>
-                        </div>
+                        <span className="mt-1 block font-mono text-[11.5px] tabular-nums text-stone-500 sm:hidden">
+                          {formatDate(entry.date)}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Right: Sector, Fund, Amount & Status */}
-                    <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-navy-100">
+                    <div className="flex shrink-0 items-center justify-between gap-3 border-t border-navy-100 pt-2 sm:justify-end sm:gap-4 sm:border-t-0 sm:pt-0">
                       <div className="flex items-center gap-2">
                         <SectorChip sectorId={entry.sectorId} />
                         <span
                           title={fundLabel}
-                          className="hidden md:inline-block max-w-[140px] truncate rounded-md bg-navy-50 px-2 py-0.5 text-[11.5px] font-medium text-navy-700 border border-navy-100"
+                          className="hidden max-w-[160px] truncate rounded-md border border-navy-100 bg-navy-50 px-2 py-0.5 text-[11.5px] font-medium text-navy-700 md:inline-block"
                         >
                           {fundLabel}
                         </span>
                       </div>
 
-                      {/* Prominent Amount */}
-                      <div className="text-right min-w-[100px]">
-                        <Money
-                          value={primaryAmount}
-                          className="font-heritage text-[17px] font-bold text-navy-950 tabular-nums"
-                        />
-                      </div>
-
-                      {/* Balanced Badge */}
-                      <div className="shrink-0 min-w-[110px] text-right">
-                        {isBalanced ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200/80 px-2.5 py-0.5 text-[11.5px] font-bold text-emerald-800">
-                            <Check className="size-3 stroke-[2.5]" aria-hidden />
-                            Debits = Credits
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-[11.5px] font-bold text-amber-800">
-                            <AlertCircle className="size-3" aria-hidden />
-                            Unbalanced
-                          </span>
-                        )}
-                      </div>
+                      <Money
+                        value={primaryAmount}
+                        className="min-w-[96px] text-right font-heritage text-[17px] font-bold text-navy-950 tabular-nums"
+                      />
                     </div>
                   </div>
 
                   {isExpanded ? (
+                  <>
+                  {/* The references, where someone chasing a figure can find
+                      them: the entry's own number, the document it came from,
+                      and the exact moment it was posted. */}
+                  <dl className="grid gap-x-6 gap-y-3 border-t border-sandal-200 bg-sandal-100 px-4 py-3 sm:grid-cols-3">
+                    {[
+                      { label: 'Entry no.', value: entry.id },
+                      { label: 'Source document', value: entry.sourceRef },
+                      { label: 'Posted', value: formatDateTime(entry.date) },
+                    ].map((ref) => (
+                      <div key={ref.label}>
+                        <dt className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-stone-500">
+                          {ref.label}
+                        </dt>
+                        <dd className="mt-0.5 font-mono text-[12.5px] tabular-nums text-stone-900">{ref.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
                   <div className="scrollbar-thin overflow-x-auto border-t border-sandal-200">
                     <table className="w-full border-collapse text-[14px]">
                       <thead>
@@ -709,6 +689,7 @@ export function LedgerPage() {
                       </tbody>
                     </table>
                   </div>
+                  </>
                   ) : null}
                 </li>
               )
