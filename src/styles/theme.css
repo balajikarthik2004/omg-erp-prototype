@@ -289,6 +289,18 @@ svg *:focus-visible,
     --sanctum-end: var(--color-turmeric-600);
   }
 
+  /* Softens the cut where a scrolling column meets its own edge. The fade is
+     shorter than the column's padding, so nothing is dimmed at rest. */
+  .scroll-fade-y {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black 14px,
+      black calc(100% - 14px),
+      transparent 100%
+    );
+  }
+
   /* A panel header sits a shade below its own card, the way the reference
      separates a section head from the rows under it. */
   .panel-header {

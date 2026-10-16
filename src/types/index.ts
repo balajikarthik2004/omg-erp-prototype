@@ -428,6 +428,12 @@ export interface CashCount {
   sectorId: SectorId
   itemId: string
   amount: Money
+  /**
+   * The person who handed the cash over, when there was one. Hundi-box cash
+   * is anonymous by nature and leaves this blank; cash given across the
+   * counter usually has a name, and that name belongs on the receipt.
+   */
+  donorName?: string
   note?: string
   countedBy: string
   countedAt: string

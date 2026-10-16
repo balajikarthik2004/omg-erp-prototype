@@ -26,12 +26,12 @@ const RAIL = 'w-[68px]'
 const FULL = 'w-[252px]'
 
 /**
- * The group heading. A flow group shows its step number, so the four phases
- * read as a sequence rather than four unrelated folders; a module group shows
- * only its name, because it is a vertical and not a step in the flow.
+ * The group heading. Every group carries a dot in its phase colour, so the
+ * sidebar still reads as Collect, Control, Spend, Report without numbering
+ * the steps.
  *
- * Collapsed to the rail there is no room for a label, so the step marker
- * stands alone and carries the group name as its title.
+ * Collapsed to the rail there is no room for a label, so the dot stands alone
+ * and carries the group name as its title.
  */
 function GroupHeading({
   group,
@@ -44,19 +44,15 @@ function GroupHeading({
   open: boolean
   onToggle: () => void
 }) {
-  const flow = group.kind === 'flow'
-  const marker = flow ? (
+  const marker = (
     <span
       className={cn(
-        'flex size-4 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-bold text-white',
+        'size-1.5 shrink-0 rounded-full transition-transform duration-150 ease-out-soft',
+        'motion-safe:group-hover/head:scale-150',
         PHASES[group.phase].markerClass,
       )}
       aria-hidden
-    >
-      {group.step}
-    </span>
-  ) : (
-    <span className={cn('size-1.5 shrink-0 rounded-full', PHASES[group.phase].markerClass)} aria-hidden />
+    />
   )
 
   if (collapsed) {
@@ -74,18 +70,18 @@ function GroupHeading({
       aria-expanded={open}
       title={group.hint}
       className={cn(
-        'mb-1.5 flex w-full items-center gap-2 rounded-md px-3 py-1 text-left',
-        'transition-colors duration-150 hover:bg-white/5',
+        'group/head mb-1.5 flex w-full items-center gap-2 rounded-md px-3 py-1 text-left',
+        'transition-colors duration-150 ease-out-soft hover:bg-white/5',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
       )}
     >
       {marker}
-      <span className="flex-1 truncate text-[11px] font-bold uppercase tracking-[0.14em] text-white/75">
+      <span className="flex-1 truncate text-[11px] font-bold uppercase tracking-[0.14em] text-white/75 transition-colors duration-150 group-hover/head:text-white">
         {group.label}
       </span>
       <ChevronDown
         className={cn(
-          'size-3.5 shrink-0 text-white/55 transition-transform duration-150',
+          'size-3.5 shrink-0 text-white/55 transition-all duration-150 ease-out-soft group-hover/head:text-white/85',
           open ? 'rotate-0' : '-rotate-90',
         )}
         aria-hidden
@@ -114,31 +110,41 @@ function NavRow({
       title={collapsed ? item.label : undefined}
       className={({ isActive }) =>
         cn(
-          'group relative flex items-center rounded-lg py-2 text-[13.5px]',
-          'transition-colors duration-150',
+          'group relative flex items-center overflow-hidden rounded-lg py-2 text-[13.5px]',
+          'transition-[background-color,color,transform,box-shadow] duration-150 ease-out-soft',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
           collapsed ? 'justify-center px-0' : 'gap-2.5 pl-3 pr-2.5',
           isActive
-            ? 'bg-white/10 font-semibold text-white'
-            : 'font-medium text-white/80 hover:bg-white/5 hover:text-white',
+            ? // A lit shelf rather than a flat tint: a hairline along the top
+              // edge and a wash that fades to the right, so the active row
+              // reads as raised instead of merely darker.
+              'bg-white/12 font-semibold text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.14)]'
+            : cn(
+                'font-medium text-white/80 hover:bg-white/8 hover:text-white',
+                // On the rail the row is centred, so a sideways nudge would
+                // read as a wobble rather than as a lean toward the label.
+                !collapsed && 'motion-safe:hover:translate-x-0.5',
+              ),
         )
       }
     >
       {({ isActive }) => (
         <>
+          {/* The active marker. On hover it appears as a short stub, so the
+              row shows where it is about to land before you commit. */}
           <span
             className={cn(
-              'absolute left-0 top-1/2 h-4.5 w-[3px] -translate-y-1/2 rounded-r-full bg-kumkum-200',
-              'transition-opacity duration-150',
-              isActive ? 'opacity-100' : 'opacity-0',
+              'absolute left-0 top-1/2 w-[3px] -translate-y-1/2 rounded-r-full bg-kumkum-200',
+              'transition-all duration-150 ease-out-soft',
+              isActive ? 'h-4.5 opacity-100' : 'h-2 opacity-0 group-hover:h-3 group-hover:opacity-70',
             )}
             aria-hidden
           />
           <span className="relative shrink-0">
             <Icon
               className={cn(
-                'size-4 transition-colors duration-150',
-                isActive ? 'text-kumkum-200' : 'text-white/65 group-hover:text-white',
+                'size-4 transition-colors duration-150 ease-out-soft',
+                isActive ? 'text-kumkum-200' : 'text-white/65 group-hover:text-kumkum-200',
               )}
               aria-hidden
             />
@@ -203,19 +209,23 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
       data-brand={tenant?.brand ?? 'kumkum'}
       className="surface-sanctum flex h-full flex-col border-r border-navy-700/60 text-white"
     >
+      {/* On the rail there is no room beside the mark, so the toggle sits
+          under it and the block stacks instead of running across. */}
       <div
         className={cn(
-          'flex shrink-0 items-center gap-2 border-b border-white/10 py-4',
-          collapsed ? 'justify-center px-0' : 'justify-between px-4',
+          'flex shrink-0 border-b border-white/10 py-4',
+          collapsed ? 'flex-col items-center gap-3 px-0' : 'items-center justify-between gap-2 px-4',
         )}
       >
         <NavLink
           to="/console"
-          className="flex min-w-0 items-center gap-2.5"
+          className="group/brand flex min-w-0 items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
           onClick={onNavigate}
           title={collapsed ? (tenant?.name ?? 'OMG') : undefined}
         >
-          <OmgMark size={collapsed ? 30 : 32} onDark />
+          <span className="shrink-0 transition-transform duration-200 ease-out-soft motion-safe:group-hover/brand:scale-105">
+            <OmgMark size={collapsed ? 30 : 32} onDark />
+          </span>
           {collapsed ? null : (
             <span className="min-w-0 leading-none">
               <span className="block truncate font-display text-[15px] font-semibold tracking-tight text-white">
@@ -238,13 +248,36 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
             <X className="size-5" aria-hidden />
           </button>
         ) : null}
+
+        {/* The rail toggle, with the chrome it controls. Desktop only: the
+            drawer closes rather than collapses. */}
+        <button
+          type="button"
+          onClick={toggleCollapsed}
+          aria-label={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
+          title={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
+          className={cn(
+            'hidden shrink-0 rounded-lg border border-white/10 p-1.5 text-white/70 lg:flex',
+            'transition-colors duration-150 ease-out-soft hover:border-white/20 hover:bg-white/10 hover:text-white',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
+          )}
+        >
+          {collapsed ? (
+            <PanelLeftOpen className="size-4" aria-hidden />
+          ) : (
+            <PanelLeftClose className="size-4" aria-hidden />
+          )}
+        </button>
       </div>
 
       {/* A group holding the page you are on is always open, whatever was
           stored — otherwise the active row could be hidden from view. */}
       <nav
         aria-label="Console"
-        className={cn('scrollbar-thin min-h-0 flex-1 overflow-y-auto py-4', collapsed ? 'px-3' : 'px-2.5')}
+        className={cn(
+          'scrollbar-thin scroll-fade-y min-h-0 flex-1 overflow-y-auto py-4',
+          collapsed ? 'px-3' : 'px-2.5',
+        )}
       >
         {groups.map((group, i) => {
           const startsVerticals = group.kind === 'module' && groups[i - 1]?.kind !== 'module'
@@ -281,46 +314,29 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
       </nav>
 
       <div className={cn('shrink-0 border-t border-white/10 bg-navy-950/30 py-3', collapsed ? 'px-3' : 'px-4')}>
-        {/* The rail toggle lives with the chrome it controls, desktop only. */}
-        <button
-          type="button"
-          onClick={toggleCollapsed}
-          aria-label={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
-          title={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
-          className={cn(
-            'hidden w-full items-center gap-2 rounded-lg py-2 text-[12.5px] font-semibold text-white/75',
-            'transition-colors duration-150 hover:bg-white/5 hover:text-white lg:flex',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
-            collapsed ? 'justify-center px-0' : 'px-2',
-          )}
-        >
-          {collapsed ? (
-            <PanelLeftOpen className="size-4 shrink-0" aria-hidden />
-          ) : (
-            <>
-              <PanelLeftClose className="size-4 shrink-0" aria-hidden />
-              <span>Collapse</span>
-            </>
-          )}
-        </button>
-
-        {collapsed ? null : (
-          <>
+        {collapsed ? (
+          <NavLink
+            to="/"
+            onClick={onNavigate}
+            aria-label="Open the donor site"
+            title="Open the donor site"
+            className="flex items-center justify-center rounded-lg py-2 text-white/70 transition-colors duration-150 ease-out-soft hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          >
+            <ExternalLink className="size-4" aria-hidden />
+          </NavLink>
+        ) : (
+          <div className="flex items-end justify-between gap-2">
             <NavLink
               to="/"
               onClick={onNavigate}
-              className="mt-1 inline-flex items-center gap-1.5 px-2 text-[12.5px] font-semibold text-white/85 transition-colors duration-150 hover:text-white"
+              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[12.5px] font-semibold text-white/85 transition-colors duration-150 ease-out-soft hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
             >
               <ExternalLink className="size-3.5" aria-hidden />
               <span>Open the donor site</span>
             </NavLink>
-            <div className="mt-2.5 flex items-end justify-between gap-2">
-              <p className="px-2 text-[11px] leading-relaxed text-white/70">
-                Every entry is signed by two people.
-              </p>
-              <Kolam className="-mb-1 -mr-1 shrink-0 text-white/10" size={44} />
-            </div>
-          </>
+            {/* The one ornament in the console chrome. */}
+            <Kolam className="-mb-1 -mr-1 shrink-0 text-white/10" size={44} aria-hidden />
+          </div>
         )}
       </div>
     </div>

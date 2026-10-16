@@ -1273,6 +1273,8 @@ function makeCashCounts(now: Date): CashCount[] {
     { id: 'cc-seed-1', sectorId: 'temple', itemId: 'cat-tmp-hundi', amount: 184_200, note: 'Sunday hundi, main sanctum. Notes and coins counted together.', countedBy: 'u-store', countedAt: at(20), status: 'pending' },
     { id: 'cc-seed-2', sectorId: 'temple', itemId: 'cat-tmp-hundi', amount: 61_500, note: 'Annadhanam hall box.', countedBy: 'u-adm', countedAt: at(44), status: 'pending' },
     { id: 'cc-seed-3', sectorId: 'sangam', itemId: 'cat-sgm-support', amount: 38_000, note: 'Cash collected at the Sunday class counter.', countedBy: 'u-store', countedAt: at(70), status: 'pending' },
+    // Counter cash with a name on it: receipted to the donor, not to the box.
+    { id: 'cc-seed-4', sectorId: 'temple', itemId: 'cat-tmp-hundi', amount: 100_100, donorName: 'Srinivasan Family', note: 'Handed in at the counter after the evening deepam.', countedBy: 'u-store', countedAt: at(28), status: 'pending' },
   ]
 }
 

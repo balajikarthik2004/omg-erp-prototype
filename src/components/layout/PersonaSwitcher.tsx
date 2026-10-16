@@ -3,24 +3,11 @@ import { Check, ChevronDown } from 'lucide-react'
 
 import { cn } from '@/lib/cn'
 import { initials } from '@/lib/format'
-import { DEMO_PERSONAS, ROLE_LABEL, userById, type DemoPersona } from '@/mock/seed'
+import { DEMO_PERSONA_IDS, ROLE_LABEL, userById } from '@/mock/seed'
 import { useSession, useCurrentUser } from '@/store/session'
 
-/** The switcher is ordered by the flow, not alphabetically. */
-const STAGES: DemoPersona['stage'][] = ['Platform', 'Give', 'Prepare', 'Approve']
-
-const STAGE_HINT: Record<DemoPersona['stage'], string> = {
-  Platform: 'Platform',
-  Give: 'Give · the donor side',
-  Prepare: 'Prepare · raises the paperwork',
-  Approve: 'Approve · signs by value',
-}
-
-function byStage(stage: DemoPersona['stage']) {
-  return DEMO_PERSONAS.filter((p) => p.stage === stage)
-    .map((persona) => ({ persona, u: userById(persona.id)! }))
-    .filter((row) => Boolean(row.u))
-}
+/** Resolved once: the switcher is a fixed list, in flow order. */
+const PERSONAS = DEMO_PERSONA_IDS.map((id) => userById(id)).filter((u) => u !== undefined)
 
 /** Demo control. Changes the visible menu and which approve buttons are live. */
 export function PersonaSwitcher() {
@@ -77,50 +64,36 @@ export function PersonaSwitcher() {
           <p className="border-b border-sandal-200 bg-sandal-100 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-stone-500">
             Demo control · view as
           </p>
-          <ul className="max-h-[26rem] overflow-y-auto py-1">
-            {STAGES.map((stage) => (
-              <li key={stage}>
-                <p className="px-3 pb-1 pt-2 text-[10.5px] font-bold uppercase tracking-[0.12em] text-stone-500">
-                  {STAGE_HINT[stage]}
-                </p>
-                <ul>
-                  {byStage(stage).map(({ persona, u }) => {
-                    const active = u.id === user.id
-                    return (
-                      <li key={u.id}>
-                        <button
-                          type="button"
-                          role="option"
-                          aria-selected={active}
-                          onClick={() => {
-                            setPersona(u.id)
-                            setOpen(false)
-                          }}
-                          className={cn(
-                            'flex w-full items-start gap-3 px-3 py-2 text-left transition-colors duration-150',
-                            active ? 'bg-sandal-100' : 'hover:bg-sandal-100',
-                          )}
-                        >
-                          <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md bg-sandal-200 font-mono text-[12px] font-bold text-stone-700">
-                            {initials(u.name)}
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="flex items-baseline gap-1.5">
-                              <span className="truncate text-[14px] font-semibold text-stone-900">{u.name}</span>
-                              <span className="shrink-0 text-[11.5px] text-stone-500">{ROLE_LABEL[u.role]}</span>
-                            </span>
-                            <span className="mt-0.5 block text-[12px] leading-snug text-stone-500">
-                              {persona.does}
-                            </span>
-                          </span>
-                          {active ? <Check className="mt-1 size-4 shrink-0 text-tulsi-700" aria-hidden /> : null}
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </li>
-            ))}
+          <ul className="py-1">
+            {PERSONAS.map((u) => {
+              const active = u.id === user.id
+              return (
+                <li key={u.id}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={active}
+                    onClick={() => {
+                      setPersona(u.id)
+                      setOpen(false)
+                    }}
+                    className={cn(
+                      'flex w-full items-center gap-3 px-3 py-2 text-left transition-colors duration-150',
+                      active ? 'bg-sandal-100' : 'hover:bg-sandal-100',
+                    )}
+                  >
+                    <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-sandal-200 font-mono text-[12px] font-bold text-stone-700">
+                      {initials(u.name)}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[14px] font-semibold text-stone-900">{u.name}</span>
+                      <span className="block text-[12px] text-stone-500">{ROLE_LABEL[u.role]}</span>
+                    </span>
+                    {active ? <Check className="size-4 shrink-0 text-tulsi-700" aria-hidden /> : null}
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         </div>
       ) : null}
