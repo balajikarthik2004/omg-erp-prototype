@@ -8,7 +8,7 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 
-import { formatMoney } from '@/lib/format'
+import { formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Dialog } from '@/components/ui/Dialog'
@@ -105,16 +105,16 @@ export function CsrDealsPage() {
                     </div>
 
                     <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-sandalwood-600">
-                      <span>Total Sanctioned Grant: <strong className="font-mono text-sandalwood-900">{formatMoney(deal.committedAmount)}</strong></span>
+                      <span>Total Sanctioned Grant: <strong className="font-mono text-sandalwood-900">{formatMoneyShort(deal.committedAmount)}</strong></span>
                       <span>Admin Overhead: <strong className="font-mono text-tulsi-700">{deal.adminCapPct}%</strong> (Max 5.0% cap)</span>
                       <span>Dedicated Restricted Fund: <strong className="font-mono text-sandalwood-800">{dedicatedFund?.name ?? deal.fundId ?? 'Pending creation'}</strong></span>
                       {deal.mouSignedOn && <span>Executed On: <strong>{deal.mouSignedOn}</strong></span>}
-                      {dedicatedFund && <span>Unallotted in fund: <strong className="font-mono text-stone-900">{formatMoney(dedicatedFund.balance)}</strong></span>}
+                      {dedicatedFund && <span>Unallotted in fund: <strong className="font-mono text-stone-900">{formatMoneyShort(dedicatedFund.balance)}</strong></span>}
                       {csrHead && (
                         <span>
-                          Project budget: <strong className="font-mono text-stone-900">{formatMoney(csrHead.allocated)}</strong> allotted ·{' '}
-                          <strong className="font-mono text-stone-900">{formatMoney(csrHead.spent)}</strong> spent ·{' '}
-                          <strong className="font-mono text-tulsi-700">{formatMoney(available(csrHead))}</strong> available
+                          Project budget: <strong className="font-mono text-stone-900">{formatMoneyShort(csrHead.allocated)}</strong> allotted ·{' '}
+                          <strong className="font-mono text-stone-900">{formatMoneyShort(csrHead.spent)}</strong> spent ·{' '}
+                          <strong className="font-mono text-tulsi-700">{formatMoneyShort(available(csrHead))}</strong> available
                         </span>
                       )}
                     </div>
@@ -171,7 +171,7 @@ export function CsrDealsPage() {
                   </div>
 
                   <div className="ml-auto text-xs font-mono font-medium text-sandalwood-700">
-                    Disbursed: <strong className="text-tulsi-700">{formatMoney(receivedTotal)}</strong> / {formatMoney(deal.committedAmount)}
+                    Disbursed: <strong className="text-tulsi-700">{formatMoneyShort(receivedTotal)}</strong> / {formatMoneyShort(deal.committedAmount)}
                   </div>
                 </div>
               </div>
@@ -207,7 +207,7 @@ export function CsrDealsPage() {
                               #{t.seqNo}
                             </td>
                             <td className="px-3 py-3 font-mono font-bold text-sandalwood-900">
-                              {formatMoney(t.amount)}
+                              {formatMoneyShort(t.amount)}
                             </td>
                             <td className="px-3 py-3 text-sandalwood-600">
                               {t.dueDate}
@@ -283,7 +283,7 @@ export function CsrDealsPage() {
               <p>
                 <strong>Disbursement Amount:</strong>{' '}
                 <span className="font-mono text-sm font-bold">
-                  {formatMoney(receiveTrancheModal.tranche.amount)}
+                  {formatMoneyShort(receiveTrancheModal.tranche.amount)}
                 </span>
               </p>
               <p>

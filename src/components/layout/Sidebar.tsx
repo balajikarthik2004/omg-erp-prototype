@@ -80,12 +80,12 @@ function GroupHeading({
       )}
     >
       {marker}
-      <span className="flex-1 truncate text-[11px] font-bold uppercase tracking-[0.14em] text-white/55">
+      <span className="flex-1 truncate text-[11px] font-bold uppercase tracking-[0.14em] text-white/75">
         {group.label}
       </span>
       <ChevronDown
         className={cn(
-          'size-3.5 shrink-0 text-white/35 transition-transform duration-150',
+          'size-3.5 shrink-0 text-white/55 transition-transform duration-150',
           open ? 'rotate-0' : '-rotate-90',
         )}
         aria-hidden
@@ -120,7 +120,7 @@ function NavRow({
           collapsed ? 'justify-center px-0' : 'gap-2.5 pl-3 pr-2.5',
           isActive
             ? 'bg-white/10 font-semibold text-white'
-            : 'font-medium text-white/70 hover:bg-white/5 hover:text-white',
+            : 'font-medium text-white/80 hover:bg-white/5 hover:text-white',
         )
       }
     >
@@ -128,7 +128,7 @@ function NavRow({
         <>
           <span
             className={cn(
-              'absolute left-0 top-1/2 h-4.5 w-[3px] -translate-y-1/2 rounded-r-full bg-kumkum-500',
+              'absolute left-0 top-1/2 h-4.5 w-[3px] -translate-y-1/2 rounded-r-full bg-kumkum-200',
               'transition-opacity duration-150',
               isActive ? 'opacity-100' : 'opacity-0',
             )}
@@ -138,14 +138,14 @@ function NavRow({
             <Icon
               className={cn(
                 'size-4 transition-colors duration-150',
-                isActive ? 'text-kumkum-400' : 'text-white/50 group-hover:text-white/80',
+                isActive ? 'text-kumkum-200' : 'text-white/65 group-hover:text-white',
               )}
               aria-hidden
             />
             {/* On the rail the count has nowhere to sit, so it becomes a dot. */}
             {collapsed && count > 0 ? (
               <span
-                className="absolute -right-1 -top-1 size-2 rounded-full bg-kumkum-500 ring-2 ring-navy-900"
+                className="absolute -right-1 -top-1 size-2 rounded-full bg-kumkum-200 ring-2 ring-white/25"
                 aria-hidden
               />
             ) : null}
@@ -161,7 +161,7 @@ function NavRow({
               <span className="flex-1 truncate">{item.label}</span>
               {count > 0 ? (
                 <span
-                  className="rounded-full bg-kumkum-600 px-1.5 py-0.5 font-mono text-[10.5px] font-bold tabular-nums text-white"
+                  className="rounded-full bg-kumkum-200 px-1.5 py-0.5 font-mono text-[10.5px] font-bold tabular-nums text-navy-800"
                   aria-label={`${count} waiting`}
                 >
                   {count}
@@ -201,7 +201,7 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
   return (
     <div
       data-brand={tenant?.brand ?? 'kumkum'}
-      className="surface-sanctum flex h-full flex-col border-r border-navy-950/60 text-white"
+      className="surface-sanctum flex h-full flex-col border-r border-navy-700/60 text-white"
     >
       <div
         className={cn(
@@ -221,7 +221,7 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
               <span className="block truncate font-display text-[15px] font-semibold tracking-tight text-white">
                 {tenant?.name ?? 'OMG'}
               </span>
-              <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.16em] text-white/45">
+              <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.16em] text-white/65">
                 Admin console
               </span>
             </span>
@@ -280,7 +280,7 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
         })}
       </nav>
 
-      <div className={cn('shrink-0 border-t border-white/10 py-3', collapsed ? 'px-3' : 'px-4')}>
+      <div className={cn('shrink-0 border-t border-white/10 bg-navy-950/30 py-3', collapsed ? 'px-3' : 'px-4')}>
         {/* The rail toggle lives with the chrome it controls, desktop only. */}
         <button
           type="button"
@@ -288,7 +288,7 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
           aria-label={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
           title={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
           className={cn(
-            'hidden w-full items-center gap-2 rounded-lg py-2 text-[12.5px] font-semibold text-white/60',
+            'hidden w-full items-center gap-2 rounded-lg py-2 text-[12.5px] font-semibold text-white/75',
             'transition-colors duration-150 hover:bg-white/5 hover:text-white lg:flex',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
             collapsed ? 'justify-center px-0' : 'px-2',
@@ -309,13 +309,13 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
             <NavLink
               to="/"
               onClick={onNavigate}
-              className="mt-1 inline-flex items-center gap-1.5 px-2 text-[12.5px] font-semibold text-white/70 transition-colors duration-150 hover:text-white"
+              className="mt-1 inline-flex items-center gap-1.5 px-2 text-[12.5px] font-semibold text-white/85 transition-colors duration-150 hover:text-white"
             >
               <ExternalLink className="size-3.5" aria-hidden />
               <span>Open the donor site</span>
             </NavLink>
             <div className="mt-2.5 flex items-end justify-between gap-2">
-              <p className="px-2 text-[11px] leading-relaxed text-white/35">
+              <p className="px-2 text-[11px] leading-relaxed text-white/70">
                 Every entry is signed by two people.
               </p>
               <Kolam className="-mb-1 -mr-1 shrink-0 text-white/10" size={44} />

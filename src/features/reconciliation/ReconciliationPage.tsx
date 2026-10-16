@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { AlertTriangle, Link2 } from 'lucide-react'
 
-import { formatDate, formatMoney } from '@/lib/format'
+import { formatDate, formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Drawer } from '@/components/ui/Drawer'
@@ -87,7 +87,7 @@ export function ReconciliationPage() {
             <Stat
               label="Payouts to resolve"
               value={unmatched.length}
-              sub={`${formatMoney(unmatchedValue)} unconfirmed`}
+              sub={`${formatMoneyShort(unmatchedValue)} unconfirmed`}
               accentClass="bg-marigold-500"
               icon={<AlertTriangle className="size-4" aria-hidden />}
             />

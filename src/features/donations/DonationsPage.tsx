@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Download, ReceiptText, RefreshCw, Search } from 'lucide-react'
 
-import { formatDate, formatDateTime, formatMoney, titleCase } from '@/lib/format'
+import { formatDate, formatDateTime, formatMoneyShort, titleCase } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -104,7 +104,7 @@ export function DonationsPage() {
     <div>
       <PageHeader
         title="Donations"
-        description={`${rows.length.toLocaleString()} donations · ${formatMoney(total)} received`}
+        description={`${rows.length.toLocaleString()} donations · ${formatMoneyShort(total)} received`}
         actions={
           <Button
             variant="secondary"

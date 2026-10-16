@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   ChevronRight,
   Download,
-  Info,
   Lock,
   RotateCcw,
   Search,
@@ -16,7 +15,7 @@ import {
   Undo2,
 } from 'lucide-react'
 
-import { formatDate, formatMoney } from '@/lib/format'
+import { formatDate, formatMoneyShort } from '@/lib/format'
 import { toast } from '@/lib/toast'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -60,26 +59,6 @@ function getTransactionType(entry: JournalEntry): TransactionType {
     return 'csr'
   }
   return 'all'
-}
-
-function getAccountImpact(account: string, debit: number, credit: number): string {
-  const acc = account.toLowerCase()
-  if (acc.includes('bank') || acc.includes('cash')) {
-    return debit > 0 ? 'Cash inflow to bank account' : 'Cash outflow from bank account'
-  }
-  if (acc.includes('donation') || acc.includes('income') || acc.includes('grant') || acc.includes('revenue')) {
-    return credit > 0 ? 'Revenue / donor gift credited' : 'Income reversed'
-  }
-  if (acc.includes('expenditure') || acc.includes('expense') || acc.includes('fee')) {
-    return debit > 0 ? 'Operational expense debited' : 'Expense reversal'
-  }
-  if (acc.includes('fund') || acc.includes('corpus') || acc.includes('balance') || acc.includes('allotted')) {
-    return debit > 0 ? 'Fund appropriation / draw' : 'Fund corpus addition'
-  }
-  if (acc.includes('budget')) {
-    return credit > 0 ? 'Budget head credited with allocation' : 'Budget reduction'
-  }
-  return debit > 0 ? 'Debit balance increase' : 'Credit balance increase'
 }
 
 export function LedgerPage() {
@@ -356,7 +335,7 @@ export function LedgerPage() {
             </span>
           </div>
           <p className="mt-2 font-heritage text-[20px] sm:text-[23px] font-bold text-navy-950 tracking-tight leading-tight">
-            {formatMoney(summary.totalDebits)}
+            {formatMoneyShort(summary.totalDebits)}
           </p>
           <p className="mt-1 text-[11.5px] text-navy-500 font-medium">Selected period & filters</p>
         </div>
@@ -371,7 +350,7 @@ export function LedgerPage() {
             </span>
           </div>
           <p className="mt-2 font-heritage text-[20px] sm:text-[23px] font-bold text-navy-950 tracking-tight leading-tight">
-            {formatMoney(summary.totalCredits)}
+            {formatMoneyShort(summary.totalCredits)}
           </p>
           <p className="mt-1 text-[11.5px] text-navy-500 font-medium">Selected period & filters</p>
         </div>
@@ -686,7 +665,8 @@ export function LedgerPage() {
                     </div>
                   </div>
 
-                  <div className="scrollbar-thin overflow-x-auto">
+                  {isExpanded ? (
+                  <div className="scrollbar-thin overflow-x-auto border-t border-sandal-200">
                     <table className="w-full border-collapse text-[14px]">
                       <thead>
                         <tr>
@@ -708,27 +688,28 @@ export function LedgerPage() {
                               {FUNDS.find((f) => f.id === line.fundId)?.name ?? line.fundId}
                             </td>
                             <td className="px-4 py-2 text-right">
-                              {line.debit > 0 ? <Money exact value={line.debit} /> : <span className="text-stone-500">—</span>}
+                              {line.debit > 0 ? <Money value={line.debit} /> : <span className="text-stone-500">—</span>}
                             </td>
                             <td className="px-4 py-2 text-right">
-                              {line.credit > 0 ? <Money exact value={line.credit} /> : <span className="text-stone-500">—</span>}
+                              {line.credit > 0 ? <Money value={line.credit} /> : <span className="text-stone-500">—</span>}
                             </td>
                           </tr>
                         ))}
                         <tr className="border-t border-sandal-200 bg-sandal-100">
                           <td className="px-4 py-2 text-[13px] text-stone-500" colSpan={2}>
-                            {balanced ? 'Balanced' : 'Out of balance — needs review'}
+                            {isBalanced ? 'Balanced' : 'Out of balance — needs review'}
                           </td>
                           <td className="px-4 py-2 text-right">
-                            <Money exact value={debit} className="font-medium" />
+                            <Money value={debitTotal} className="font-medium" />
                           </td>
                           <td className="px-4 py-2 text-right">
-                            <Money exact value={credit} className="font-medium" />
+                            <Money value={creditTotal} className="font-medium" />
                           </td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
+                  ) : null}
                 </li>
               )
             })}
@@ -746,7 +727,7 @@ export function LedgerPage() {
               </span>{' '}
               of <span className="font-semibold text-navy-950">{sortedEntries.length.toLocaleString()}</span> entries
               {' · '}
-              <span className="font-semibold text-navy-950">{formatMoney(summary.totalDebits)}</span> total debited in view
+              <span className="font-semibold text-navy-950">{formatMoneyShort(summary.totalDebits)}</span> total debited in view
             </p>
 
             <div className="flex items-center gap-2">

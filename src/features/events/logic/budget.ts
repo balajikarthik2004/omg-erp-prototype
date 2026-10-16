@@ -1,4 +1,4 @@
-import { formatMoney } from '@/lib/format'
+import { formatMoneyShort } from '@/lib/format'
 import type { HistoryPoint, Money } from '@/types'
 
 /**
@@ -74,8 +74,8 @@ export function suggestForCategory(
   const pct = (growth * 100).toFixed(1).replace(/\.0$/, '')
   const note =
     history.length === 1
-      ? `${formatMoney(last.actual)} spent in ${last.year}, plus the standard ${pct}% growth.`
-      : `${history.length} years of actuals, ${formatMoney(last.actual)} in ${last.year}, with ${pct}% average yearly growth.`
+      ? `${formatMoneyShort(last.actual)} spent in ${last.year}, plus the standard ${pct}% growth.`
+      : `${history.length} years of actuals, ${formatMoneyShort(last.actual)} in ${last.year}, with ${pct}% average yearly growth.`
   return { category, history, suggested, growth, note }
 }
 

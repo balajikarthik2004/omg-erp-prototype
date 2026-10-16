@@ -42,6 +42,23 @@ export function formatMoneyCompact(cents: number): string {
   return compactFmt.format(cents / 100)
 }
 
+/**
+ * The point at which a figure is shortened: $1,000. Below it, compact notation
+ * has nothing to shorten ("$999" either way) and would round cents away
+ * ("$2.76" -> "$2.8"), so the threshold is where K actually starts.
+ */
+export const COMPACT_FROM = 100_000 // cents
+
+/**
+ * The console default: "$940" and "$2.76" in full, "$12.5K" and "$1.2M" once
+ * a figure gets long. The string twin of `<Money>`, for the places that need
+ * text rather than an element — chart labels, select options, aria text.
+ * Where the exact digits are what someone acts on, use formatMoney.
+ */
+export function formatMoneyShort(cents: number): string {
+  return Math.abs(cents) >= COMPACT_FROM ? formatMoneyCompact(cents) : formatMoney(cents)
+}
+
 export function formatNumber(value: number, digits = 0): string {
   return new Intl.NumberFormat(APP.locale, {
     minimumFractionDigits: digits,

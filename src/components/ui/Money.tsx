@@ -1,8 +1,5 @@
-import { formatMoney, formatMoneyCompact } from '@/lib/format'
+import { COMPACT_FROM, formatMoney, formatMoneyCompact } from '@/lib/format'
 import { cn } from '@/lib/cn'
-
-/** Four figures and up are shortened: $12,450 reads as $12.5K, $1,000,000 as $1M. */
-const COMPACT_FROM = 100_000 // cents, i.e. $1,000
 
 export function Money({
   value,

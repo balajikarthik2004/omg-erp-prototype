@@ -1,5 +1,5 @@
 import { cn } from '@/lib/cn'
-import { formatMoney } from '@/lib/format'
+import { formatMoney, formatMoneyShort } from '@/lib/format'
 import { available, utilisation } from '@/store/db'
 import type { BudgetHead } from '@/types'
 
@@ -62,7 +62,7 @@ function Legend({
       <span className={cn('size-2 rounded-full', swatch)} aria-hidden />
       <span className="text-stone-500">{label}</span>
       <span className={cn('font-mono tabular-nums', tone === 'danger' ? 'text-danger-600' : 'text-stone-700')}>
-        {formatMoney(value)}
+        {formatMoneyShort(value)}
       </span>
     </span>
   )

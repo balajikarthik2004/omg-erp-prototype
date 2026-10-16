@@ -9,7 +9,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 
-import { formatMoney } from '@/lib/format'
+import { formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Dialog } from '@/components/ui/Dialog'
@@ -112,7 +112,7 @@ Statutory Framework: Companies Act 2013, Section 135 & Schedule VII Clause (${pr
 1. PROJECT OVERVIEW: "${proj.title}"
 Target Geography: ${proj.district}, ${proj.state}
 Target Beneficiaries: ${proj.beneficiaryTarget.toLocaleString()} ${proj.beneficiaryType}
-Total Project Budget: ${formatMoney(proj.totalBudget)}
+Total Project Budget: ${formatMoneyShort(proj.totalBudget)}
 Statutory Category: Schedule VII Clause (${proj.scheduleViiCode})
 
 2. STRATEGIC FIT WITH ${comp.name.toUpperCase()} CSR MANDATE
@@ -272,7 +272,7 @@ Submitted with board resolution authorization.`
               {/* Action Strip */}
               <div className="border-t border-sandalwood-200 bg-sandalwood-50/50 p-3 flex items-center justify-between">
                 <span className="text-xs text-sandalwood-500">
-                  {activeDeal ? `${formatMoney(activeDeal.committedAmount)} grant` : 'No active MoU'}
+                  {activeDeal ? `${formatMoneyShort(activeDeal.committedAmount)} grant` : 'No active MoU'}
                 </span>
                 <Button
                   size="sm"
@@ -310,7 +310,7 @@ Submitted with board resolution authorization.`
                   }}
                   options={projects.map((p) => ({
                     value: p.id,
-                    label: `${p.title} (${formatMoney(p.totalBudget)})`,
+                    label: `${p.title} (${formatMoneyShort(p.totalBudget)})`,
                   }))}
                   hint="Only Trustee-approved projects of a CSR-ready entity are listed."
                 />

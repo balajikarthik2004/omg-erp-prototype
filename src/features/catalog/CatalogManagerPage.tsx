@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Pencil, Plus, Search } from 'lucide-react'
 
 import { SECTORS } from '@/config'
-import { formatMoney, titleCase } from '@/lib/format'
+import { formatMoneyShort, titleCase } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Input } from '@/components/ui/Input'
@@ -143,7 +143,7 @@ export function CatalogManagerPage() {
         <>
           <Table columns={columns} rows={rows} rowKey={(item) => item.id} />
           <p className="mt-4 text-[13px] text-stone-500">
-            {rows.length} items · fixed prices total {formatMoney(totalValue)} ·{' '}
+            {rows.length} items · fixed prices total {formatMoneyShort(totalValue)} ·{' '}
             {rows.filter((i) => i.price === null).length} accept any amount ·{' '}
             {filter === 'all' ? 'all sectors' : SECTORS[filter].name}
           </p>

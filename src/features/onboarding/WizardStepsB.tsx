@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { CheckCircle2, Circle, Plus, Trash2 } from 'lucide-react'
 
 import { SECTORS } from '@/config'
-import { formatMoney } from '@/lib/format'
+import { formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
@@ -73,17 +73,17 @@ export function ThresholdsStep({ draft, set }: StepProps) {
       </div>
       <ul className="max-w-lg divide-y divide-sandal-200 rounded-card border border-sandal-200 text-[14px]">
         <li className="flex justify-between px-4 py-2.5">
-          <span className="text-stone-700">Up to {formatMoney(staff || 0)}</span>
+          <span className="text-stone-700">Up to {formatMoneyShort(staff || 0)}</span>
           <span className="text-stone-900">CA Staff</span>
         </li>
         <li className="flex justify-between px-4 py-2.5">
           <span className="text-stone-700">
-            {formatMoney(staff || 0)} to {formatMoney(partner || 0)}
+            {formatMoneyShort(staff || 0)} to {formatMoneyShort(partner || 0)}
           </span>
           <span className="text-stone-900">CA Partner</span>
         </li>
         <li className="flex justify-between px-4 py-2.5">
-          <span className="text-stone-700">Above {formatMoney(partner || 0)}</span>
+          <span className="text-stone-700">Above {formatMoneyShort(partner || 0)}</span>
           <span className="text-stone-900">CA Partner + Trustee</span>
         </li>
       </ul>
@@ -175,7 +175,7 @@ export function ReviewStep({ draft }: StepProps) {
     ['Modules', draft.modules.map((m) => MODULE_LABELS[m].label).join(', ')],
     ['Template', `${t.catalog.length} catalog items, ${t.funds} funds, ${t.budgets} budget heads, ${t.inventory} stock items`],
     ['Square', `${draft.squareLocationId} (verified)`],
-    ['Approvals', `Staff to ${formatMoney(toCents(draft.staffMax))}, Partner to ${formatMoney(toCents(draft.partnerMax))}, then Partner + Trustee`],
+    ['Approvals', `Staff to ${formatMoneyShort(toCents(draft.staffMax))}, Partner to ${formatMoneyShort(toCents(draft.partnerMax))}, then Partner + Trustee`],
     ['Users', `${draft.users.length} users across ${new Set(draft.users.map((u) => u.role)).size} roles`],
   ]
   return (

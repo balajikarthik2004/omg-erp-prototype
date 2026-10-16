@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ShoppingCart } from 'lucide-react'
 
-import { formatMoney } from '@/lib/format'
+import { formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Dialog } from '@/components/ui/Dialog'
@@ -89,7 +89,7 @@ export function OrdersPanel({ view }: { view: EventView }) {
             return (
               <li key={l.id} className="flex items-center justify-between gap-3 py-2.5 text-[14px] sm:border-b sm:border-sandal-200">
                 <span className="text-stone-900">{l.category}</span>
-                <span className="font-mono text-[13px] tabular-nums text-stone-700">{formatMoney(remaining)} left of {formatMoney(lineLimit(l))}</span>
+                <span className="font-mono text-[13px] tabular-nums text-stone-700">{formatMoneyShort(remaining)} left of {formatMoneyShort(lineLimit(l))}</span>
               </li>
             )
           })}
@@ -106,7 +106,7 @@ export function OrdersPanel({ view }: { view: EventView }) {
       <Card>
         <CardHeader title="Raise an order" description="Goes to the CA for approval. It cannot exceed what is left on the line." />
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Select label="Budget line" value={lineId} onChange={(e) => setF({ ...f, lineId: e.target.value })} options={lines.map((l) => ({ value: l.id, label: `${l.category} (${formatMoney(left(l.id))} left)` }))} />
+          <Select label="Budget line" value={lineId} onChange={(e) => setF({ ...f, lineId: e.target.value })} options={lines.map((l) => ({ value: l.id, label: `${l.category} (${formatMoneyShort(left(l.id))} left)` }))} />
           <Input label="Vendor" value={f.vendor} onChange={(e) => setF({ ...f, vendor: e.target.value })} />
           <Input label="What for" value={f.item} onChange={(e) => setF({ ...f, item: e.target.value })} />
           <Input label="Amount" inputMode="decimal" leading={<span>$</span>} value={f.amount} onChange={(e) => { setF({ ...f, amount: e.target.value }); setError(undefined) }} className="font-mono tabular-nums" />
@@ -120,7 +120,7 @@ export function OrdersPanel({ view }: { view: EventView }) {
         }}>Raise order</Button>
       </Card>
 
-      <Dialog open={Boolean(rejecting)} onClose={() => setRejecting(undefined)} title="Reject this order" description={rejecting ? `${rejecting.vendorName}, ${formatMoney(rejecting.amount)}` : undefined}
+      <Dialog open={Boolean(rejecting)} onClose={() => setRejecting(undefined)} title="Reject this order" description={rejecting ? `${rejecting.vendorName}, ${formatMoneyShort(rejecting.amount)}` : undefined}
         footer={<div className="flex justify-end gap-2"><Button variant="ghost" onClick={() => setRejecting(undefined)}>Cancel</Button><Button variant="danger" disabled={reason.trim().length < 5} onClick={() => { const r = decideOrder(event.id, rejecting!.id, 'rejected', user, reason); setRowError(r.ok ? undefined : r.error); setRejecting(undefined) }}>Reject order</Button></div>}>
         <Textarea label="Why" value={reason} onChange={(e) => setReason(e.target.value)} />
       </Dialog>

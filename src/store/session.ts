@@ -64,7 +64,7 @@ interface SessionState {
 export const useSession = create<SessionState>()(
   persist(
     (set) => ({
-      personaId: 'u-cap',
+      personaId: 'u-sup',
       sectorFilter: 'all',
       signedIn: false,
       cart: [],
@@ -126,7 +126,7 @@ export const useSession = create<SessionState>()(
 )
 
 export function currentUser(personaId: string) {
-  return USERS.find((u) => u.id === personaId) ?? USERS[5]!
+  return USERS.find((u) => u.id === personaId) ?? USERS[0]!
 }
 
 export function useCurrentUser() {

@@ -60,7 +60,10 @@ export function ApprovalsPage() {
   const filter = useSession((s) => s.sectorFilter)
   const personaId = useSession((s) => s.personaId)
   const user = currentUser(personaId)
-  const [tab, setTab] = useState('mine')
+  // A persona that holds no approval authority — the owner, a devotee — would
+  // land on an empty "Waiting on me". Open them on the full queue instead.
+  const signs = user.role !== 'super_admin' && user.role !== 'devotee'
+  const [tab, setTab] = useState(signs ? 'mine' : 'all')
   const escalateTask = useDb((s) => s.escalateTask)
 
   const tasks = useMemo(() => (db.ready ? approvalTasks(db, filter) : []), [db, filter])

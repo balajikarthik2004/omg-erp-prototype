@@ -3,7 +3,7 @@ import { ArrowRightLeft, Building2, Plus } from 'lucide-react'
 
 import { SECTORS } from '@/config'
 import { cn } from '@/lib/cn'
-import { formatDate, formatMoney } from '@/lib/format'
+import { formatDate, formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Table, type Column } from '@/components/ui/Table'
@@ -50,7 +50,7 @@ export function OnboardingPage() {
       hideOnMobile: true,
       cell: (t) => (
         <span className="font-mono text-[13px] tabular-nums">
-          {formatMoney(t.thresholds.staffMax)} / {formatMoney(t.thresholds.partnerMax)}
+          {formatMoneyShort(t.thresholds.staffMax)} / {formatMoneyShort(t.thresholds.partnerMax)}
         </span>
       ),
     },

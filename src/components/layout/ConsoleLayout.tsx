@@ -18,7 +18,7 @@ export function ConsoleLayout() {
   }, [pathname])
 
   return (
-    <div className="flex min-h-screen bg-navy-50">
+    <div className="surface-console flex min-h-screen">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />

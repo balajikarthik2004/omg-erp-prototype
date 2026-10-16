@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 
 import { cn } from '@/lib/cn'
-import { formatMoney, formatPct } from '@/lib/format'
+import { formatMoneyShort, formatPct } from '@/lib/format'
 import { available, utilisation } from '@/store/db'
 import type { BudgetHead } from '@/types'
 
@@ -59,10 +59,10 @@ export function UtilisationBars({
             </div>
             <p className="mt-1 text-[12px] text-stone-500">
               {over ? (
-                <span className="text-danger-600 font-semibold">{formatMoney(Math.abs(free))} over the allocation</span>
+                <span className="text-danger-600 font-semibold">{formatMoneyShort(Math.abs(free))} over the allocation</span>
               ) : (
                 <>
-                  {formatMoney(free)} available of {formatMoney(head.allocated)}
+                  {formatMoneyShort(free)} available of {formatMoneyShort(head.allocated)}
                 </>
               )}
             </p>

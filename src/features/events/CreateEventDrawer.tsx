@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Plus, SlidersHorizontal, Trash2 } from 'lucide-react'
 
 import { SECTORS, SECTOR_IDS, type SectorId } from '@/config'
-import { formatMoney, formatPct } from '@/lib/format'
+import { formatMoneyShort, formatPct } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
 import { Input } from '@/components/ui/Input'
@@ -172,7 +172,7 @@ export function CreateEventDrawer({ open, onClose }: { open: boolean; onClose: (
               <li key={l.key} className="grid grid-cols-[1fr_130px_52px_32px] items-start gap-3 px-5 py-3">
                 <div>
                   <input aria-label="Cost line" value={l.category} onChange={(e) => patch(l.key, { category: e.target.value })} className="w-full rounded-md border border-sandal-300 bg-sandal-50 px-2 py-1.5 text-[14px] text-stone-900 focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:outline-none" />
-                  <p className="mt-1 text-[12px] text-stone-500">{s.suggested !== null ? `Suggested ${formatMoney(s.suggested)}` : 'No past events of this kind'}</p>
+                  <p className="mt-1 text-[12px] text-stone-500">{s.suggested !== null ? `Suggested ${formatMoneyShort(s.suggested)}` : 'No past events of this kind'}</p>
                 </div>
                 <Input aria-label={`Amount for ${l.category}`} inputMode="decimal" leading={<span>$</span>} value={l.amount} onChange={(e) => patch(l.key, { amount: e.target.value })} className="text-right font-mono tabular-nums" />
                 <span className="pt-2 text-right font-mono text-[12px] text-stone-500 tabular-nums">{formatPct(share, 0)}</span>
