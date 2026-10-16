@@ -147,9 +147,9 @@ export function FeaturedProjectSection() {
             {/* Bottom Finial */}
             <Finial className="absolute bottom-0.5 left-1/2 z-0 -translate-x-1/2 rotate-180 text-turmeric-400 drop-shadow-[0_2px_8px_rgba(255,193,7,0.3)]" />
 
-            {/* Overlapping Raised Stats Card - Shifted Upwards */}
+            {/* Overlapping Raised Stats Card - Solid Opaque */}
             <div
-              className="relative z-20 -mt-28 sm:-mt-32 mx-3 sm:mx-4 overflow-hidden rounded-[18px] bg-linear-to-br from-white via-amber-50/90 to-amber-100/60 p-6 shadow-2xl shadow-stone-950/15 sm:p-7 border border-amber-200/40"
+              className="relative z-20 -mt-28 sm:-mt-32 mx-3 sm:mx-4 overflow-hidden rounded-[18px] bg-white bg-linear-to-br from-white via-amber-50 to-amber-100 p-6 shadow-2xl shadow-stone-950/15 sm:p-7 border border-amber-200"
             >
               {/* Corner Filigree Ornaments */}
               <VintageCornerFiligree position="tl" className="top-1 left-1" />
