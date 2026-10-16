@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { userById } from '@/mock/seed'
@@ -299,27 +300,20 @@ Submitted with board resolution authorization.`
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex-1">
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
-                  Target CSR Project
-                </label>
-                <select
-                  className="w-full rounded-lg border border-sandalwood-300 bg-white py-2 px-3 text-xs text-sandalwood-900 focus:outline-hidden"
+                <Select
+                  label="Target CSR Project"
                   value={selectedProjectId}
                   onChange={(e) => {
                     setSelectedProjectId(e.target.value)
                     const p = projects.find((x) => x.id === e.target.value)
                     if (p) triggerAiSynthesis(aiProposalModal.company, p)
                   }}
-                >
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.title} ({formatMoney(p.totalBudget)})
-                    </option>
-                  ))}
-                </select>
-                <p className="mt-1 text-[12px] text-stone-500">
-                  Only Trustee-approved projects of a CSR-ready entity are listed.
-                </p>
+                  options={projects.map((p) => ({
+                    value: p.id,
+                    label: `${p.title} (${formatMoney(p.totalBudget)})`,
+                  }))}
+                  hint="Only Trustee-approved projects of a CSR-ready entity are listed."
+                />
               </div>
             </div>
 

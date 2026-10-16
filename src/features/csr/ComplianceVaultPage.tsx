@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { userById } from '@/mock/seed'
@@ -162,89 +163,120 @@ export function ComplianceVaultPage() {
       </div>
 
       {/* Entity Profile & Statutory Gate Banner */}
-      <Card className="border border-sandalwood-300/80 bg-white shadow-xs">
-        <div className="p-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
+      <Card className="border border-navy-100 bg-white shadow-card">
+        <div className="p-4 sm:p-5">
+          {/* Top Row: Entity Identity & Status */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="font-serif text-lg font-bold text-sandalwood-900">
+                <h2 className="font-heritage text-base sm:text-lg font-bold text-navy-950">
                   {activeEntity.legalName}
                 </h2>
-                <span className="rounded bg-sandalwood-100 px-2 py-0.5 font-mono text-xs uppercase text-sandalwood-700">
+                <span className="rounded bg-navy-50 border border-navy-200/80 px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-navy-700">
                   {activeEntity.entityType}
                 </span>
                 <span
                   className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                     activeEntity.readinessStatus === 'CSR_READY'
-                      ? 'bg-tulsi-100 text-tulsi-800 border border-tulsi-300'
-                      : 'bg-turmeric-100 text-turmeric-800 border border-turmeric-300'
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                      : 'bg-amber-50 text-amber-800 border border-amber-200'
                   }`}
                 >
                   {activeEntity.readinessStatus === 'CSR_READY' ? (
-                    <CheckCircle2 className="size-3.5" />
+                    <CheckCircle2 className="size-3.5 text-emerald-600" />
                   ) : (
-                    <Clock className="size-3.5" />
+                    <Clock className="size-3.5 text-amber-600" />
                   )}
                   {activeEntity.readinessStatus === 'CSR_READY' ? 'CSR READY (MCA Section 135 Compliant)' : 'IN PROGRESS'}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-sandalwood-600">
+              <p className="mt-1 text-xs text-stone-600 leading-relaxed max-w-3xl">
                 {activeEntity.notes}
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 border-t border-sandalwood-200 pt-3 sm:grid-cols-4 lg:border-t-0 lg:pt-0">
-              <div className="rounded border border-sandalwood-200 bg-sandalwood-50/70 p-2 text-center">
-                <span className="block text-[10px] uppercase tracking-wider text-sandalwood-500">PAN</span>
-                <span className="font-mono text-xs font-bold text-sandalwood-900">{activeEntity.pan}</span>
-              </div>
-              <div className="rounded border border-sandalwood-200 bg-sandalwood-50/70 p-2 text-center">
-                <span className="block text-[10px] uppercase tracking-wider text-sandalwood-500">CSR-1 Number</span>
-                <span className="font-mono text-xs font-bold text-tulsi-700">
-                  {activeEntity.csr1RegNo ?? 'Pending'}
-                </span>
-              </div>
-              <div className="rounded border border-sandalwood-200 bg-sandalwood-50/70 p-2 text-center">
-                <span className="block text-[10px] uppercase tracking-wider text-sandalwood-500">NGO Darpan ID</span>
-                <span className="font-mono text-xs font-bold text-sandalwood-900">
-                  {activeEntity.darpanId ?? 'N/A'}
-                </span>
-              </div>
-              <div className="rounded border border-sandalwood-200 bg-sandalwood-50/70 p-2 text-center">
-                <span className="block text-[10px] uppercase tracking-wider text-sandalwood-500">Registered On</span>
-                <span className="font-mono text-xs font-bold text-sandalwood-900">
-                  {activeEntity.registrationDate}
-                </span>
-              </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs text-stone-500 font-medium">
+                Pillars Verified: <strong className="text-stone-900 font-mono">{checkItems.filter((i) => i.found).length} / 5</strong>
+              </span>
+            </div>
+          </div>
+
+          {/* Key Entity Credentials Strip (Full Width - No cramped overlap) */}
+          <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4 border-t border-sandal-200/80 pt-3.5">
+            <div className="rounded-lg border border-sandal-200 bg-sandal-100/70 px-3.5 py-2.5">
+              <span className="block text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                PAN
+              </span>
+              <span className="mt-0.5 block font-mono text-xs sm:text-[13px] font-bold text-stone-900">
+                {activeEntity.pan}
+              </span>
+            </div>
+            <div className="rounded-lg border border-sandal-200 bg-sandal-100/70 px-3.5 py-2.5">
+              <span className="block text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                MCA Form CSR-1
+              </span>
+              <span className="mt-0.5 block font-mono text-xs sm:text-[13px] font-bold text-tulsi-700">
+                {activeEntity.csr1RegNo ?? 'Pending Filing'}
+              </span>
+            </div>
+            <div className="rounded-lg border border-sandal-200 bg-sandal-100/70 px-3.5 py-2.5">
+              <span className="block text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                NGO Darpan ID
+              </span>
+              <span className="mt-0.5 block font-mono text-xs sm:text-[13px] font-bold text-stone-900 truncate" title={activeEntity.darpanId}>
+                {activeEntity.darpanId ?? 'N/A'}
+              </span>
+            </div>
+            <div className="rounded-lg border border-sandal-200 bg-sandal-100/70 px-3.5 py-2.5">
+              <span className="block text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                Registered On
+              </span>
+              <span className="mt-0.5 block font-mono text-xs sm:text-[13px] font-bold text-stone-900">
+                {activeEntity.registrationDate}
+              </span>
             </div>
           </div>
 
           {/* 5 Statutory Pillars Checklist */}
-          <div className="mt-5 border-t border-sandalwood-200 pt-4">
-            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-sandalwood-600">
-              MCA Mandatory Implementing Agency Checklist
-            </h3>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-4 border-t border-sandal-200/80 pt-3.5">
+            <div className="mb-2.5 flex items-center justify-between">
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-stone-700">
+                MCA Mandatory Implementing Agency Checklist
+              </h3>
+              <span className="text-[11px] font-medium text-stone-500">
+                All 5 statutory criteria required for Section 135 eligibility
+              </span>
+            </div>
+            <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
               {checkItems.map((item) => (
                 <div
                   key={item.key}
-                  className={`flex items-start gap-2.5 rounded-lg border p-3 transition ${
+                  className={`flex flex-col justify-between rounded-xl border p-3 transition ${
                     item.found
-                      ? 'border-tulsi-200 bg-tulsi-50/50'
-                      : 'border-sandalwood-200 bg-sandalwood-50/40'
+                      ? 'border-emerald-200 bg-emerald-50/40'
+                      : 'border-amber-200 bg-amber-50/40'
                   }`}
                 >
-                  {item.found ? (
-                    <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-tulsi-600" />
-                  ) : (
-                    <AlertCircle className="mt-0.5 size-4 shrink-0 text-turmeric-600" />
-                  )}
                   <div>
-                    <h4 className="font-serif text-xs font-bold text-sandalwood-900">{item.title}</h4>
-                    <p className="mt-0.5 text-[11px] leading-tight text-sandalwood-600">{item.desc}</p>
+                    <div className="flex items-start gap-2">
+                      {item.found ? (
+                        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+                      ) : (
+                        <AlertCircle className="mt-0.5 size-4 shrink-0 text-amber-600" />
+                      )}
+                      <h4 className="font-heritage text-xs font-bold text-navy-950 leading-snug">
+                        {item.title}
+                      </h4>
+                    </div>
+                    <p className="mt-1 text-[11px] leading-relaxed text-stone-600 pl-6">
+                      {item.desc}
+                    </p>
+                  </div>
+                  <div className="mt-2.5 pt-2 border-t border-black/5 flex items-center justify-end">
                     <span
-                      className={`mt-1.5 inline-block font-mono text-[10px] font-semibold ${
-                        item.found ? 'text-tulsi-700' : 'text-turmeric-700'
+                      className={`inline-block font-mono text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded ${
+                        item.found ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
                       }`}
                     >
                       {item.found ? 'VERIFIED' : 'PENDING'}
@@ -382,24 +414,22 @@ export function ComplianceVaultPage() {
             </p>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
-                Document Classification
-              </label>
-              <select
-                className="w-full rounded-lg border border-sandalwood-300 bg-white py-2 px-3 text-xs text-sandalwood-900 focus:outline-hidden"
+              <Select
+                label="Document Classification"
                 value={newDocType}
                 onChange={(e) => setNewDocType(e.target.value as CsrDocType)}
-              >
-                <option value="REG_CERT">Trust Deed / Registration Certificate</option>
-                <option value="RNPO_332">RNPO Registration (Income-tax Act 2025 Sec 332 / 12A)</option>
-                <option value="APPROVAL_354">Tax Approval (Income-tax Act 2025 Sec 354 / 80G)</option>
-                <option value="CSR1">MCA Form CSR-1 Registration</option>
-                <option value="AUDITED_ACCOUNTS">Audited Balance Sheet & P&L (3 Years)</option>
-                <option value="ITR">Income Tax Return (ITR-7)</option>
-                <option value="BOARD_RESOLUTION">Board Resolution for CSR Execution</option>
-                <option value="DARPAN">NITI Aayog NGO Darpan Certificate</option>
-                <option value="BANK_PROOF">Dedicated CSR Bank Account Proof</option>
-              </select>
+                options={[
+                  { value: 'REG_CERT', label: 'Trust Deed / Registration Certificate' },
+                  { value: 'RNPO_332', label: 'RNPO Registration (Income-tax Act 2025 Sec 332 / 12A)' },
+                  { value: 'APPROVAL_354', label: 'Tax Approval (Income-tax Act 2025 Sec 354 / 80G)' },
+                  { value: 'CSR1', label: 'MCA Form CSR-1 Registration' },
+                  { value: 'AUDITED_ACCOUNTS', label: 'Audited Balance Sheet & P&L (3 Years)' },
+                  { value: 'ITR', label: 'Income Tax Return (ITR-7)' },
+                  { value: 'BOARD_RESOLUTION', label: 'Board Resolution for CSR Execution' },
+                  { value: 'DARPAN', label: 'NITI Aayog NGO Darpan Certificate' },
+                  { value: 'BANK_PROOF', label: 'Dedicated CSR Bank Account Proof' },
+                ]}
+              />
             </div>
 
             <div>

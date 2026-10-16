@@ -11,14 +11,13 @@ export function Card({ accentClass, padded = true, className, children, ...rest 
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-card border border-sandal-200 bg-sandal-50 shadow-card',
-        'transition-shadow duration-200 hover:shadow-lift',
+        'relative overflow-hidden rounded-xl border border-navy-100/90 bg-white shadow-card hover:shadow-lift transition-shadow duration-200',
         className,
       )}
       {...rest}
     >
       {accentClass ? <div className={cn('h-1 w-full', accentClass)} /> : null}
-      <div className={cn(padded && 'p-5 sm:p-6')}>{children}</div>
+      <div className={cn(padded && 'p-4 sm:p-5')}>{children}</div>
     </div>
   )
 }
@@ -35,10 +34,10 @@ export function CardHeader({
   className?: string
 }) {
   return (
-    <div className={cn('mb-5 flex items-start justify-between gap-4', className)}>
+    <div className={cn('mb-3.5 sm:mb-4 flex items-start justify-between gap-3', className)}>
       <div className="min-w-0">
-        <h3 className="font-display text-[18px] font-semibold leading-tight tracking-tight text-stone-900">{title}</h3>
-        {description ? <p className="mt-1 text-[13px] leading-relaxed text-stone-500">{description}</p> : null}
+        <h3 className="font-heritage text-[16px] sm:text-[17px] font-bold text-navy-950 tracking-tight leading-snug">{title}</h3>
+        {description ? <p className="mt-0.5 text-[12.5px] leading-relaxed text-navy-600/80">{description}</p> : null}
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}
     </div>

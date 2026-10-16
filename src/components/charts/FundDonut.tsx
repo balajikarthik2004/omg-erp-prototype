@@ -10,7 +10,7 @@ import type { FundSlice } from '@/store/selectors'
  * Balances rolled up to sector, not one hue per fund — a dozen generated hues
  * would be unreadable. The list beside it carries every fund by name.
  */
-export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; height?: number }) {
+export function FundDonut({ slices, height = 230 }: { slices: FundSlice[]; height?: number }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
   const bySector = new Map<SectorId, number>()
@@ -35,6 +35,9 @@ export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; heigh
 
   const activeSector = activeIndex !== null ? data[activeIndex] : null
   const percent = activeSector && total > 0 ? Math.round((activeSector.value / total) * 100) : null
+  const currentVal = activeSector ? activeSector.value : total
+  const formattedAmount = formatMoney(currentVal)
+  const amountLen = formattedAmount.length
 
   return (
     <div className="flex flex-col items-center gap-6" onMouseLeave={() => setActiveIndex(null)}>
@@ -64,8 +67,8 @@ export function FundDonut({ slices, height = 220 }: { slices: FundSlice[]; heigh
               data={data}
               dataKey="value"
               nameKey="label"
-              innerRadius="64%"
-              outerRadius="100%"
+              innerRadius="68%"
+              outerRadius="98%"
               paddingAngle={2.5}
               stroke="#FFFFFF"
               strokeWidth={2.5}

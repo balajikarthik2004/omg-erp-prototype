@@ -55,7 +55,7 @@ export function CsrOverviewPage() {
   if (!stats) return <Skeleton className="h-96 w-full" />
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-5">
       <PageHeader
         title="Corporate Social Responsibility (CSR)"
         actions={
@@ -75,7 +75,7 @@ export function CsrOverviewPage() {
       />
 
       {/* Top Level Metric Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Stat
           label="Grants Committed"
           value={formatMoney(stats.totalCommitted)}
@@ -223,7 +223,7 @@ export function CsrOverviewPage() {
       </Card>
 
       {/* Main Grid: Compliance Status & Active MoUs */}
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         {/* Implementing Entities Readiness */}
         <Card>
           <CardHeader
@@ -234,14 +234,14 @@ export function CsrOverviewPage() {
               </Link>
             }
           />
-          <div className="divide-y divide-sandalwood-200/70 p-2">
+          <div className="divide-y divide-sandalwood-200/70 p-1 sm:p-2">
             {stats.entities.map((entity) => {
               const isReady = entity.readinessStatus === 'CSR_READY'
               const docs = stats.ucs ? db.csrDocuments.filter((d) => d.entityId === entity.id) : []
               const verifiedDocs = docs.filter((d) => d.status === 'verified').length
 
               return (
-                <div key={entity.id} className="p-4 transition hover:bg-sandalwood-50/50">
+                <div key={entity.id} className="p-3 sm:p-3.5 transition hover:bg-sandalwood-50/50">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">
@@ -310,7 +310,7 @@ export function CsrOverviewPage() {
               const pctReceived = Math.round((totalReceived / deal.committedAmount) * 100)
 
               return (
-                <div key={deal.id} className="p-4 transition hover:bg-sandalwood-50/50">
+                <div key={deal.id} className="p-3 sm:p-3.5 transition hover:bg-sandalwood-50/50">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">
@@ -334,7 +334,7 @@ export function CsrOverviewPage() {
                   </div>
 
                   {/* Tranche progress bar */}
-                  <div className="mt-3">
+                  <div className="mt-2.5">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-sandalwood-600">
                         Disbursed: <strong className="text-sandalwood-900">{formatMoney(totalReceived)}</strong> ({pctReceived}%)
