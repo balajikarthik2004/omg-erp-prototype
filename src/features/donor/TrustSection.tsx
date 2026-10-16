@@ -75,7 +75,7 @@ export function TrustSection() {
           seen && 'is-visible',
         )}
       >
-        <div className="grid items-center gap-6 lg:grid-cols-[20%_30%_1fr] xl:grid-cols-[22%_29%_1fr] xl:gap-7 2xl:grid-cols-[23%_28%_1fr]">
+        <div className="grid items-center gap-5 lg:grid-cols-[18%_25%_1fr] lg:gap-5 xl:grid-cols-[19%_24%_1fr] xl:gap-6 2xl:grid-cols-[20%_23%_1fr]">
           {/* The lamp again, as a card, where the backdrop is hidden. */}
           <div className="flex justify-center lg:hidden">
             <div className="relative h-56 w-full max-w-85 overflow-hidden rounded-card border border-white/10">
@@ -89,7 +89,7 @@ export function TrustSection() {
           <div className="hidden h-full lg:block" aria-hidden />
 
           {/* The claim ------------------------------------------------ */}
-          <div className="flex flex-col justify-start lg:pl-3 xl:pl-5 pr-1">
+          <div className="flex flex-col justify-start lg:pl-1 xl:pl-2">
             <p className="mb-2.5 inline-flex w-fit items-center gap-1.5 rounded-full border border-turmeric-400/25 bg-turmeric-400/10 px-3 py-1 whitespace-nowrap">
               <span className="size-1.5 rounded-full bg-turmeric-400" aria-hidden />
               <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-turmeric-100 whitespace-nowrap sm:text-[10.5px]">
@@ -127,7 +127,7 @@ export function TrustSection() {
                       <p className="mt-2 font-mono text-[10px] font-bold tabular-nums tracking-widest text-turmeric-400 sm:text-[10.5px]">
                         STEP {String(i + 1).padStart(2, '0')}
                       </p>
-                      <h3 className="mt-0.5 font-display text-[14.5px] font-semibold leading-snug text-white sm:text-[15px]">
+                      <h3 className="mt-0.5 min-h-[2.4rem] font-display text-[14.5px] font-semibold leading-snug text-white sm:min-h-[2.6rem] sm:text-[15px]">
                         {title}
                       </h3>
                     </div>
