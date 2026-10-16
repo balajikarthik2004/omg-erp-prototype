@@ -198,14 +198,15 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           aria-expanded={isOpen}
           aria-label={rest['aria-label'] || (typeof label === 'string' ? label : undefined)}
           className={cn(
-            'w-full appearance-none rounded-xl border border-sandal-200 bg-sandal-50 py-2.5 pr-9 pl-3.5',
-            'text-[15px] text-stone-900 font-medium transition-all duration-150 shadow-2xs',
+            'flex w-full appearance-none items-center justify-between gap-2',
+            'rounded-xl border border-sandal-200 bg-sandal-50 py-2.5 pr-3 pl-3.5',
+            'text-left text-[15px] text-stone-900 font-medium transition-all duration-150 shadow-2xs',
             'focus:border-kumkum-500 focus:ring-3 focus:ring-kumkum-500/15 focus:outline-none',
             'disabled:bg-sandal-100 disabled:border-sandal-200 disabled:text-stone-500',
             className,
           )}
         >
-          <span className="truncate pr-2">{currentOption?.label ?? 'Select...'}</span>
+          <span className="truncate">{currentOption?.label ?? 'Select...'}</span>
           <ChevronDown
             className={cn(
               'size-4 shrink-0 text-navy-500 transition-transform duration-200',
@@ -286,10 +287,6 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
             </option>
           ))}
         </select>
-        <ChevronDown
-          className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-stone-500"
-          aria-hidden
-        />
       </div>
 
       {hint ? <p className="mt-1 text-[13px] text-stone-500">{hint}</p> : null}

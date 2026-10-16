@@ -74,24 +74,20 @@ export interface NavGroup {
   label: string
   items: NavItem[]
   /**
-   * A "flow" group is one of the four money-flow phases and carries a step
-   * number, so the sidebar reads as the sequence a gift actually travels.
-   * A "module" group is an optional vertical and sits after the flow;
-   * "system" sits above it.
+   * A "flow" group is one of the four money-flow phases, in the order a gift
+   * actually travels. A "module" group is an optional vertical and sits after
+   * the flow; "system" sits above it.
    */
   kind: 'system' | 'overview' | 'flow' | 'module'
-  step?: 1 | 2 | 3 | 4
   /** One line under the group label, so a new admin knows what lives here. */
   hint?: string
 }
 
 export const NAV_GROUPS: NavGroup[] = [
-  {
-    kind: 'system',
-    phase: 'onboard',
-    label: 'Platform',
-    items: [{ to: '/console/onboarding', label: 'Customers', icon: Building2, phase: 'onboard', roles: ['super_admin', 'trustee'] }],
-  },
+  /* The Platform group — the multi-tenant customer list at
+     /console/onboarding — is out of the sidebar for now. One tenant ships
+     with the demo, so it listed a single row. The routes are still wired;
+     put the group back here to surface it again. */
   {
     kind: 'overview',
     phase: 'report',
@@ -103,7 +99,6 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     kind: 'flow',
-    step: 1,
     phase: 'collect',
     label: 'Collect',
     hint: 'Money coming in',
@@ -115,7 +110,6 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     kind: 'flow',
-    step: 2,
     phase: 'control',
     label: 'Control',
     hint: 'Where the money sits',
@@ -129,7 +123,6 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     kind: 'flow',
-    step: 3,
     phase: 'spend',
     label: 'Spend',
     hint: 'Money going out',
@@ -143,7 +136,6 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     kind: 'flow',
-    step: 4,
     phase: 'report',
     label: 'Report',
     hint: 'What it all adds up to',
@@ -225,11 +217,6 @@ export function visibleGroups(role: Role, modules?: ModuleKey[]): NavGroup[] {
     items: group.items.filter((i) => permitted(i) && enabled(i)),
   })).filter((group) => group.items.length > 0)
 
-  // A step number only means something as part of a sequence. A role that can
-  // reach just one phase would otherwise get a lone "4", which reads as a bug
-  // rather than as a position in a flow.
-  const flowCount = groups.filter((g) => g.kind === 'flow').length
-  if (flowCount < 2) return groups.map((g) => (g.kind === 'flow' ? { ...g, step: undefined } : g))
   return groups
 }
 

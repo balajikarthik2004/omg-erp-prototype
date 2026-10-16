@@ -97,6 +97,7 @@ export interface DbState extends Database, EventActions, GaushalaActions, CsrAct
     sectorId: SectorId
     itemId: string
     amount: number
+    donorName?: string
     note?: string
     actor: User
   }) => { ok: boolean; error?: string }
@@ -550,7 +551,7 @@ export const useDb = create<DbState>((set, get) => ({
     }))
   },
 
-  createCashCount: ({ sectorId, itemId, amount, note, actor }) => {
+  createCashCount: ({ sectorId, itemId, amount, donorName, note, actor }) => {
     const block = cashCountBlock(actor)
     if (block) return { ok: false, error: block }
     const item = CATALOG.find((c) => c.id === itemId)
@@ -562,6 +563,7 @@ export const useDb = create<DbState>((set, get) => ({
       sectorId,
       itemId,
       amount,
+      donorName: donorName?.trim() || undefined,
       note: note?.trim() || undefined,
       countedBy: actor.id,
       countedAt: new Date().toISOString(),
@@ -593,17 +595,23 @@ export const useDb = create<DbState>((set, get) => ({
         return
       }
       const item = CATALOG.find((c) => c.id === count.itemId)
+      // A named depositor is receipted under their own name; hundi-box cash
+      // posts to the single anonymous counter donor.
+      const named = count.donorName?.trim()
+      const donorId = named ? `dnr-cash-${id}` : 'dnr-counter'
       const base = buildDonation(state.donations, {
         sectorId: count.sectorId,
         fundId: item?.fundId ?? 'fund-tmp-gen',
         method: 'cash',
-        donorId: 'dnr-counter',
+        donorId,
         status: 'receipted',
         lines: [{ itemId: count.itemId, category: item?.category ?? 'hundi', amount: count.amount }],
       })
       const donation: Donation = { ...base, receiptNo: nextReceiptNo(state.donations, count.sectorId), cashCountId: id }
       set((s) => ({
-        donors: ensureDonor(s.donors, 'dnr-counter', 'Counter cash', true),
+        donors: named
+          ? ensureDonor(s.donors, donorId, named, false)
+          : ensureDonor(s.donors, 'dnr-counter', 'Counter cash', true),
         donations: [donation, ...s.donations],
         cashCounts: s.cashCounts.map((c) =>
           c.id === id ? { ...c, status: 'confirmed', confirmedBy: actor.id, confirmedAt: at, donationId: donation.id } : c,

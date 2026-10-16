@@ -43,6 +43,7 @@ export function CashCountsPage() {
   const [sectorId, setSectorId] = useState<SectorId>('temple')
   const [itemId, setItemId] = useState('')
   const [amount, setAmount] = useState('')
+  const [donorName, setDonorName] = useState('')
   const [note, setNote] = useState('')
   const [comment, setComment] = useState('')
   const [error, setError] = useState<string>()
@@ -67,22 +68,52 @@ export function CashCountsPage() {
       primary: true,
       cell: (c) => <span className="font-mono text-[13px] tabular-nums">{formatDateTime(c.countedAt)}</span>,
     },
+    {
+      key: 'donor',
+      header: 'Donor',
+      sortValue: (c) => c.donorName ?? '',
+      cell: (c) =>
+        c.donorName ? (
+          <span className="text-stone-900">{c.donorName}</span>
+        ) : (
+          <span className="text-stone-500">Hundi box · anonymous</span>
+        ),
+    },
     { key: 'item', header: 'Offering', cell: (c) => catalogName(c.itemId) },
-    { key: 'sector', header: 'Sector', cell: (c) => <SectorChip sectorId={c.sectorId} /> },
-    { key: 'by', header: 'Counted by', hideOnMobile: true, cell: (c) => userName(c.countedBy) },
-    { key: 'status', header: 'Status', cell: (c) => <StatusBadge status={c.status} /> },
+    { key: 'sector', header: 'Sector', hideOnMobile: true, cell: (c) => <SectorChip sectorId={c.sectorId} /> },
+    { key: 'by', header: 'First counter', hideOnMobile: true, cell: (c) => userName(c.countedBy) },
+    {
+      key: 'second',
+      header: 'Second counter',
+      hideOnMobile: true,
+      cell: (c) =>
+        c.confirmedBy ? (
+          <span className="text-stone-900">{userName(c.confirmedBy)}</span>
+        ) : (
+          <span className="text-stone-500">Not yet</span>
+        ),
+    },
+    { key: 'status', header: 'Second count', cell: (c) => <StatusBadge status={c.status} /> },
     { key: 'amount', header: 'Amount', align: 'right', primary: true, cell: (c) => <Money value={c.amount} /> },
   ]
 
   function record() {
     const cents = Math.round(Number(amount.replace(/[^0-9.]/g, '')) * 100)
-    const result = createCashCount({ sectorId: activeSector, itemId: activeItem, amount: cents, note, actor: user })
+    const result = createCashCount({
+      sectorId: activeSector,
+      itemId: activeItem,
+      amount: cents,
+      donorName,
+      note,
+      actor: user,
+    })
     if (!result.ok) {
       setError(result.error)
       return
     }
     setError(undefined)
     setAmount('')
+    setDonorName('')
     setNote('')
     setTab('pending')
   }
@@ -91,6 +122,7 @@ export function CashCountsPage() {
     <div>
       <PageHeader
         title="Counter cash"
+        description="Cash taken at the counter or out of a hundi box is counted by one person and confirmed by a second. Nothing reaches the ledger until that second count agrees — the column below is where each count has got to."
       >
         <Tabs
           value={tab}
@@ -155,6 +187,13 @@ export function CashCountsPage() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className="font-mono tabular-nums"
+              />
+              <Input
+                label="Donor name (optional)"
+                placeholder="e.g. Srinivasan Family"
+                hint="Leave blank for hundi-box cash, which is receipted as anonymous."
+                value={donorName}
+                onChange={(e) => setDonorName(e.target.value)}
               />
               <Textarea label="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Which box, which day" />
               {countBlock ? <p className="text-[13px] text-marigold-500">{countBlock}</p> : null}
@@ -227,6 +266,14 @@ export function CashCountsPage() {
               <Money value={focused.amount} className="mt-1 font-display text-[22px] sm:text-[30px] text-stone-900" />
             </div>
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-[14px]">
+              <div className="col-span-2">
+                <dt className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Donor</dt>
+                <dd className="mt-0.5 text-stone-900">
+                  {focused.donorName ?? (
+                    <span className="text-stone-500">Hundi box · receipted as an anonymous gift</span>
+                  )}
+                </dd>
+              </div>
               <div>
                 <dt className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">First counter</dt>
                 <dd className="mt-0.5 text-stone-900">{userName(focused.countedBy)}</dd>

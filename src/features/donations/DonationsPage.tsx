@@ -69,18 +69,18 @@ export function DonationsPage() {
 
   const columns: Column<Donation>[] = [
     {
-      key: 'receipt',
-      header: 'Receipt',
-      primary: true,
-      cell: (d) => <span className="font-mono text-[13px] text-stone-900 tabular-nums">{d.receiptNo}</span>,
-    },
-    {
       key: 'date',
       header: 'Date',
       sortValue: (d) => d.createdAt,
       cell: (d) => <span className="font-mono text-[13px] tabular-nums">{formatDate(d.createdAt)}</span>,
     },
-    { key: 'donor', header: 'Donor', sortValue: (d) => donorName(db, d.donorId), cell: (d) => donorName(db, d.donorId) },
+    {
+      key: 'donor',
+      header: 'Donor',
+      primary: true,
+      sortValue: (d) => donorName(db, d.donorId),
+      cell: (d) => donorName(db, d.donorId),
+    },
     {
       key: 'item',
       header: 'Offering',
@@ -104,7 +104,24 @@ export function DonationsPage() {
     <div>
       <PageHeader
         title="Donations"
-        description={`${rows.length.toLocaleString()} donations · ${formatMoneyShort(total)} received`}
+        description={
+          // The two figures are what the filters are actually moving, so they
+          // read as values with labels rather than as a sentence.
+          <span className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-baseline gap-1.5 rounded-lg border border-sandal-200 bg-sandal-50 px-2.5 py-1 shadow-2xs">
+              <span className="font-mono text-[15px] font-bold tabular-nums text-stone-900">
+                {rows.length.toLocaleString()}
+              </span>
+              <span className="text-[13px] font-medium text-stone-500">donations</span>
+            </span>
+            <span className="inline-flex items-baseline gap-1.5 rounded-lg border border-tulsi-500/25 bg-tulsi-50 px-2.5 py-1 shadow-2xs">
+              <span className="font-mono text-[15px] font-bold tabular-nums text-tulsi-700">
+                {formatMoneyShort(total)}
+              </span>
+              <span className="text-[13px] font-medium text-tulsi-700">received</span>
+            </span>
+          </span>
+        }
         actions={
           <Button
             variant="secondary"
@@ -265,6 +282,10 @@ export function DonationsPage() {
             ) : null}
 
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-[14px]">
+              <Field
+                label="Receipt no."
+                value={<span className="font-mono tabular-nums">{focused.receiptNo}</span>}
+              />
               <Field label="Donation ref." value={<span className="font-mono tabular-nums">{focused.id}</span>} />
               <Field label="Donor" value={donorName(db, focused.donorId)} />
               <Field label="Method" value={titleCase(focused.method)} />
