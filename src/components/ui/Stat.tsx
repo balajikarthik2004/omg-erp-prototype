@@ -51,7 +51,7 @@ export function Stat({
         ) : null}
       </div>
 
-      <p className="mt-2.5 font-heritage text-[22px] sm:text-[26px] lg:text-[28px] leading-none font-bold tracking-tight text-navy-950">
+      <p className="mt-2.5 font-display text-[22px] sm:text-[26px] lg:text-[28px] leading-none font-semibold tracking-tight text-navy-950 [&_.font-mono]:font-display">
         {value}
       </p>
 

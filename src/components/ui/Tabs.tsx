@@ -21,7 +21,10 @@ export function Tabs({
   return (
     <div
       role="tablist"
-      className={cn('scrollbar-thin flex gap-1 overflow-x-auto overflow-y-hidden', className)}
+      className={cn(
+        'flex gap-1 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+        className,
+      )}
     >
       {items.map((item) => {
         const active = item.id === value
@@ -33,7 +36,7 @@ export function Tabs({
             aria-selected={active}
             onClick={() => onChange(item.id)}
             className={cn(
-              'relative shrink-0 px-3.5 py-2.5 text-[14px] whitespace-nowrap transition-colors duration-150',
+              'relative shrink-0 px-3 py-2 text-[13.5px] sm:px-3.5 sm:py-2.5 sm:text-[14px] whitespace-nowrap transition-colors duration-150',
               active ? 'font-bold text-stone-900' : 'text-stone-500 hover:text-stone-900 font-medium',
             )}
           >

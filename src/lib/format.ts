@@ -31,15 +31,21 @@ const compactFmt = new Intl.NumberFormat(APP.locale, {
   maximumFractionDigits: 1,
 })
 
-/** cents -> "$12,450" / "$12,450.75" */
-export function formatMoney(cents: number): string {
-  const whole = Math.round(cents)
-  return (whole % 100 === 0 ? moneyWhole : moneyFmt).format(whole / 100)
+/** Inserts a little space between currency symbol ($ € £ ₹) and the number */
+export function addCurrencySpace(formatted: string): string {
+  return formatted.replace(/([$€£₹])\s*([-\u2212\u2013]?\d)/g, '$1 $2')
 }
 
-/** cents -> "$12.5K", for chart axes and tight KPI space. */
+/** cents -> "$ 12,450" / "$ 12,450.75" */
+export function formatMoney(cents: number): string {
+  const whole = Math.round(cents)
+  const formatted = (whole % 100 === 0 ? moneyWhole : moneyFmt).format(whole / 100)
+  return addCurrencySpace(formatted)
+}
+
+/** cents -> "$ 12.5K", for chart axes and tight KPI space. */
 export function formatMoneyCompact(cents: number): string {
-  return compactFmt.format(cents / 100)
+  return addCurrencySpace(compactFmt.format(cents / 100))
 }
 
 /**

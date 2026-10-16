@@ -90,10 +90,17 @@ export function ApprovalsPage() {
 
   return (
     <div>
-      <PageHeader
-        title="Approvals"
-        actions={
-          canEscalate && escalatable.length > 0 ? (
+      <PageHeader title="Approvals">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Tabs
+            value={tab}
+            onChange={setTab}
+            items={[
+              { id: 'mine', label: 'Waiting on me', count: mine.length },
+              { id: 'all', label: 'Everything pending', count: withBlock.length },
+            ]}
+          />
+          {canEscalate && escalatable.length > 0 ? (
             <Button
               variant="secondary"
               icon={<ArrowUpCircle className="size-4" aria-hidden />}
@@ -101,17 +108,8 @@ export function ApprovalsPage() {
             >
               Escalate {escalatable.length} overdue to the Trustee
             </Button>
-          ) : undefined
-        }
-      >
-        <Tabs
-          value={tab}
-          onChange={setTab}
-          items={[
-            { id: 'mine', label: 'Waiting on me', count: mine.length },
-            { id: 'all', label: 'Everything pending', count: withBlock.length },
-          ]}
-        />
+          ) : null}
+        </div>
       </PageHeader>
 
       {!db.ready ? (
@@ -200,7 +198,6 @@ function TaskRow({
   const due = formatDue(task.dueAt)
   return (
     <Card
-      accentClass={due.overdue ? 'bg-danger-600' : block ? 'bg-sandal-300' : 'bg-turmeric-500'}
       className={cn(due.overdue && 'border-danger-50')}
     >
       <div className="flex flex-wrap items-start justify-between gap-4">

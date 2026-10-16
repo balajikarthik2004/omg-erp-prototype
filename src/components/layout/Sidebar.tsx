@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { ChevronDown, ExternalLink, PanelLeft, PanelLeftClose, X } from 'lucide-react'
+import { ChevronDown, ExternalLink, PanelLeftOpen, PanelLeftClose, X } from 'lucide-react'
 
 import { PHASES } from '@/config'
 import { cn } from '@/lib/cn'
@@ -181,6 +182,100 @@ function NavRow({
   )
 }
 
+function CollapsedLogoToggle({ onToggle }: { onToggle: () => void }) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <div className="relative flex shrink-0 items-center justify-center border-b border-white/10 py-4">
+      <button
+        type="button"
+        onClick={onToggle}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onFocus={() => setHovered(true)}
+        onBlur={() => setHovered(false)}
+        aria-label="Toggle sidebar"
+        className={cn(
+          'relative flex size-10 items-center justify-center rounded-xl cursor-pointer',
+          'transition-all duration-200 ease-out-soft',
+          hovered ? 'bg-white/15 ring-1 ring-white/20' : 'hover:bg-white/15',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
+        )}
+      >
+        {/* Default State: OMG Logo */}
+        <span
+          className={cn(
+            'flex items-center justify-center transition-all duration-200 ease-out-soft',
+            hovered ? 'opacity-0 scale-75 pointer-events-none' : 'opacity-100 scale-100',
+          )}
+        >
+          <OmgMark size={32} onDark />
+        </span>
+
+        {/* Hover State: Sidebar Toggle Icon */}
+        <span
+          className={cn(
+            'absolute inset-0 flex items-center justify-center text-white transition-all duration-200 ease-out-soft',
+            hovered ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none',
+          )}
+          aria-hidden
+        >
+          <PanelLeftOpen className="size-5" />
+        </span>
+
+        {/* Tooltip on Hover */}
+        <div
+          role="tooltip"
+          className={cn(
+            'pointer-events-none absolute left-full top-1/2 ml-3 -translate-y-1/2 z-50 transition-all duration-150 ease-out-soft',
+            hovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1.5 pointer-events-none',
+          )}
+        >
+          <div className="flex items-center rounded-lg bg-navy-950/95 px-3 py-1.5 text-[12px] font-medium text-white shadow-xl ring-1 ring-white/15 backdrop-blur-md whitespace-nowrap">
+            Toggle sidebar
+          </div>
+        </div>
+      </button>
+    </div>
+  )
+}
+
+function ExpandedRailToggle({ onToggle }: { onToggle: () => void }) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <div className="relative hidden lg:block">
+      <button
+        type="button"
+        onClick={onToggle}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onFocus={() => setHovered(true)}
+        onBlur={() => setHovered(false)}
+        aria-label="Toggle sidebar"
+        className={cn(
+          'shrink-0 rounded-lg border border-white/10 p-1.5 text-white/70 cursor-pointer',
+          'transition-colors duration-150 ease-out-soft hover:border-white/20 hover:bg-white/10 hover:text-white',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
+        )}
+      >
+        <PanelLeftClose className="size-4" aria-hidden />
+      </button>
+      <div
+        role="tooltip"
+        className={cn(
+          'pointer-events-none absolute right-0 top-full mt-2 z-50 transition-all duration-150 ease-out-soft',
+          hovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-0.5 pointer-events-none',
+        )}
+      >
+        <div className="rounded-lg bg-navy-950/95 px-2.5 py-1 text-[11px] font-medium text-white shadow-xl ring-1 ring-white/15 backdrop-blur-md whitespace-nowrap">
+          Toggle sidebar
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => void; collapsed?: boolean }) {
   const user = useCurrentUser()
   const sectorFilter = useSession((s) => s.sectorFilter)
@@ -211,58 +306,7 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
     >
       {/* Header / Brand block: when collapsed, hovering the logo reveals the toggle button with a tooltip */}
       {collapsed ? (
-        <div className="relative flex shrink-0 items-center justify-center border-b border-white/10 py-4">
-          <button
-            type="button"
-            onClick={toggleCollapsed}
-            aria-label="Toggle sidebar"
-            className={cn(
-              'group/logo-toggle relative flex size-10 items-center justify-center rounded-xl',
-              'transition-all duration-200 ease-out-soft',
-              'hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
-              'cursor-pointer',
-            )}
-          >
-            {/* Default State: OMG Logo */}
-            <span
-              className={cn(
-                'flex items-center justify-center transition-all duration-200 ease-out-soft',
-                'group-hover/logo-toggle:opacity-0 group-hover/logo-toggle:scale-75',
-                'group-focus-visible/logo-toggle:opacity-0 group-focus-visible/logo-toggle:scale-75',
-              )}
-            >
-              <OmgMark size={32} onDark />
-            </span>
-
-            {/* Hover State: Sidebar Toggle Icon */}
-            <span
-              className={cn(
-                'absolute inset-0 flex items-center justify-center text-white',
-                'opacity-0 scale-75 transition-all duration-200 ease-out-soft',
-                'group-hover/logo-toggle:opacity-100 group-hover/logo-toggle:scale-100',
-                'group-focus-visible/logo-toggle:opacity-100 group-focus-visible/logo-toggle:scale-100',
-              )}
-              aria-hidden
-            >
-              <PanelLeft className="size-5" />
-            </span>
-
-            {/* Tooltip on Hover */}
-            <div
-              role="tooltip"
-              className={cn(
-                'pointer-events-none absolute left-full top-1/2 ml-3 -translate-y-1/2 z-50',
-                'opacity-0 -translate-x-1.5 transition-all duration-150 ease-out-soft',
-                'group-hover/logo-toggle:opacity-100 group-hover/logo-toggle:translate-x-0',
-                'group-focus-visible/logo-toggle:opacity-100 group-focus-visible/logo-toggle:translate-x-0',
-              )}
-            >
-              <div className="flex items-center rounded-lg bg-navy-950/95 px-3 py-1.5 text-[12px] font-medium text-white shadow-xl ring-1 ring-white/15 backdrop-blur-md whitespace-nowrap">
-                Toggle sidebar
-              </div>
-            </div>
-          </button>
-        </div>
+        <CollapsedLogoToggle onToggle={toggleCollapsed} />
       ) : (
         <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/10 px-4 py-4">
           <NavLink
@@ -295,33 +339,7 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
           ) : null}
 
           {/* Desktop rail toggle */}
-          <div className="relative group/toggle-tip hidden lg:block">
-            <button
-              type="button"
-              onClick={toggleCollapsed}
-              aria-label="Toggle sidebar"
-              className={cn(
-                'shrink-0 rounded-lg border border-white/10 p-1.5 text-white/70',
-                'transition-colors duration-150 ease-out-soft hover:border-white/20 hover:bg-white/10 hover:text-white',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
-              )}
-            >
-              <PanelLeftClose className="size-4" aria-hidden />
-            </button>
-            <div
-              role="tooltip"
-              className={cn(
-                'pointer-events-none absolute right-0 top-full mt-2 z-50',
-                'opacity-0 translate-y-0.5 transition-all duration-150 ease-out-soft',
-                'group-hover/toggle-tip:opacity-100 group-hover/toggle-tip:translate-y-0',
-                'group-focus-visible/toggle-tip:opacity-100 group-focus-visible/toggle-tip:translate-y-0',
-              )}
-            >
-              <div className="rounded-lg bg-navy-950/95 px-2.5 py-1 text-[11px] font-medium text-white shadow-xl ring-1 ring-white/15 backdrop-blur-md whitespace-nowrap">
-                Toggle sidebar
-              </div>
-            </div>
-          </div>
+          <ExpandedRailToggle onToggle={toggleCollapsed} />
         </div>
       )}
 
