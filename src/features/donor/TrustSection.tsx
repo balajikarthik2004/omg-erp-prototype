@@ -48,16 +48,16 @@ export function TrustSection() {
     >
       {/* Warm glow behind the lamp, so the brass reads as lit. */}
       <div
-        className="pointer-events-none absolute -left-20 top-1/2 size-110 -translate-y-1/2 rounded-full bg-turmeric-400/25 blur-3xl lg:-left-24 xl:-left-28"
+        className="pointer-events-none absolute -left-10 top-1/2 size-110 -translate-y-1/2 rounded-full bg-turmeric-400/25 blur-3xl lg:-left-12 xl:-left-14"
         aria-hidden
       />
 
       {/* The kuthu vilakku, dissolving into the field on its right edge. */}
       <div
-        className="pointer-events-none absolute inset-y-0 -left-16 z-0 hidden w-96 lg:block lg:-left-20 lg:w-[30rem] xl:-left-24 xl:w-[34rem] 2xl:-left-28 2xl:w-[38rem]"
+        className="pointer-events-none absolute inset-y-0 -left-4 z-0 hidden w-96 lg:block lg:-left-6 lg:w-[30rem] xl:-left-8 xl:w-[34rem] 2xl:-left-10 2xl:w-[38rem]"
         style={{
-          maskImage: 'linear-gradient(to right, black 0%, black 46%, transparent 84%)',
-          WebkitMaskImage: 'linear-gradient(to right, black 0%, black 46%, transparent 84%)',
+          maskImage: 'linear-gradient(to right, black 0%, black 48%, transparent 86%)',
+          WebkitMaskImage: 'linear-gradient(to right, black 0%, black 48%, transparent 86%)',
         }}
         aria-hidden
       >
@@ -75,7 +75,7 @@ export function TrustSection() {
           seen && 'is-visible',
         )}
       >
-        <div className="grid items-center gap-6 lg:grid-cols-[16%_32%_1fr] xl:grid-cols-[18%_31%_1fr] xl:gap-7 2xl:grid-cols-[19%_30%_1fr]">
+        <div className="grid items-center gap-6 lg:grid-cols-[20%_31%_1fr] xl:grid-cols-[22%_30%_1fr] xl:gap-8 2xl:grid-cols-[23%_29%_1fr]">
           {/* The lamp again, as a card, where the backdrop is hidden. */}
           <div className="flex justify-center lg:hidden">
             <div className="relative h-56 w-full max-w-85 overflow-hidden rounded-card border border-white/10">
@@ -89,7 +89,7 @@ export function TrustSection() {
           <div className="hidden h-full lg:block" aria-hidden />
 
           {/* The claim ------------------------------------------------ */}
-          <div className="flex flex-col justify-start pr-2">
+          <div className="flex flex-col justify-start pl-2 pr-2 lg:pl-5 xl:pl-7">
             <p className="mb-2.5 inline-flex w-fit items-center gap-1.5 rounded-full border border-turmeric-400/25 bg-turmeric-400/10 px-3 py-1 whitespace-nowrap">
               <span className="size-1.5 rounded-full bg-turmeric-400" aria-hidden />
               <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-turmeric-100 whitespace-nowrap sm:text-[10.5px]">
