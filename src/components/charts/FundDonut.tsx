@@ -3,7 +3,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 
 import { SECTORS, type SectorId } from '@/config'
 import { cn } from '@/lib/cn'
-import { formatMoney } from '@/lib/format'
+import { formatMoneyShort } from '@/lib/format'
 import type { FundSlice } from '@/store/selectors'
 
 /**
@@ -36,8 +36,7 @@ export function FundDonut({ slices, height = 230 }: { slices: FundSlice[]; heigh
   const activeSector = activeIndex !== null ? data[activeIndex] : null
   const percent = activeSector && total > 0 ? Math.round((activeSector.value / total) * 100) : null
   const currentVal = activeSector ? activeSector.value : total
-  const formattedAmount = formatMoney(currentVal)
-  const amountLen = formattedAmount.length
+  const formattedAmount = formatMoneyShort(currentVal)
 
   return (
     <div className="flex flex-col items-center gap-6" onMouseLeave={() => setActiveIndex(null)}>
@@ -102,7 +101,7 @@ export function FundDonut({ slices, height = 230 }: { slices: FundSlice[]; heigh
             {activeSector ? activeSector.label : 'Held'}
           </span>
           <span className="font-display text-[22px] font-bold text-navy-950 leading-tight mt-0.5">
-            {formatMoney(activeSector ? activeSector.value : total)}
+            {formattedAmount}
           </span>
           {percent !== null ? (
             <span className="font-mono text-[11px] font-semibold text-navy-600">{percent}% of total</span>
@@ -132,7 +131,7 @@ export function FundDonut({ slices, height = 230 }: { slices: FundSlice[]; heigh
                 <span className="truncate text-[14px] text-navy-800 font-medium">{slice.name}</span>
               </span>
               <span className="shrink-0 font-mono text-[14px] font-bold text-navy-950 tabular-nums">
-                {formatMoney(slice.balance)}
+                {formatMoneyShort(slice.balance)}
               </span>
             </li>
           )

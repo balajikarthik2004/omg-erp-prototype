@@ -175,8 +175,8 @@ export const CHART = {
   income: '#293088',
   outgo: '#E22E26',
   accent: '#FFC107',
-  grid: '#E3E5F5',
-  axis: '#5F6490',
+  grid: '#D7DAF0',
+  axis: '#5E6378',
   surface: '#FFFFFF',
 } as const
 

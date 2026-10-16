@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 
 import { approvalTierLabel } from '@/config'
-import { formatAge, formatDate, formatMoney } from '@/lib/format'
+import { formatAge, formatDate, formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
 import { Drawer } from '@/components/ui/Drawer'
@@ -191,7 +191,7 @@ export function AllotmentsPage() {
                 <dd className="mt-0.5 text-stone-900">
                   {db.funds.find((f) => f.id === focused.fromFundId)?.name}
                   <span className="block text-[13px] text-stone-500">
-                    Balance {formatMoney(db.funds.find((f) => f.id === focused.fromFundId)?.balance ?? 0)}
+                    Balance {formatMoneyShort(db.funds.find((f) => f.id === focused.fromFundId)?.balance ?? 0)}
                   </span>
                 </dd>
               </div>
@@ -212,9 +212,9 @@ export function AllotmentsPage() {
                 </h3>
                 <BudgetBar head={focusHead} />
                 <p className="mt-2 text-[13px] text-stone-500">
-                  Available now {formatMoney(available(focusHead))} ·{' '}
+                  Available now {formatMoneyShort(available(focusHead))} ·{' '}
                   <span className="text-tulsi-700">
-                    {formatMoney(available(focusHead) + focused.amount)} if approved
+                    {formatMoneyShort(available(focusHead) + focused.amount)} if approved
                   </span>
                 </p>
               </section>
@@ -290,7 +290,7 @@ function NewAllotmentDialog({ open, onClose }: { open: boolean; onClose: () => v
           onChange={(e) => setFromFundId(e.target.value)}
           options={[
             { value: '', label: 'Choose a fund' },
-            ...db.funds.map((f) => ({ value: f.id, label: `${f.name} — ${formatMoney(f.balance)}` })),
+            ...db.funds.map((f) => ({ value: f.id, label: `${f.name} — ${formatMoneyShort(f.balance)}` })),
           ]}
         />
         <Select

@@ -9,7 +9,7 @@ import { Stat } from '@/components/ui/Stat'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Table, type Column } from '@/components/ui/Table'
 import { cn } from '@/lib/cn'
-import { formatDate, formatMoney, formatNumber, formatPct, titleCase } from '@/lib/format'
+import { formatDate, formatMoney, formatMoneyShort, formatNumber, formatPct, titleCase } from '@/lib/format'
 import { GAUSHALA_FUND_IDS } from '@/mock/seed'
 import { useDb } from '@/store/db'
 import type { TransparencyDoc } from '@/types'
@@ -122,7 +122,7 @@ export function TransparencyConsolePage() {
                   <div className="mb-1.5 flex items-baseline justify-between gap-3">
                     <span className="truncate text-[14px] font-medium text-navy-950">{row.category}</span>
                     <span className="shrink-0 font-mono text-[13.5px] font-bold text-navy-950 tabular-nums">
-                      {formatMoney(row.amount)}
+                      {formatMoneyShort(row.amount)}
                       <span className="ml-2 font-sans text-[12px] font-normal text-navy-600">
                         {formatPct(share, 0)}
                       </span>
@@ -143,7 +143,7 @@ export function TransparencyConsolePage() {
             })}
             <li className="mt-1 flex items-baseline justify-between border-t border-navy-100 pt-3">
               <span className="text-[14px] font-semibold text-navy-950">Total</span>
-              <span className="font-mono text-[15px] font-bold text-navy-950 tabular-nums">{formatMoney(spent)}</span>
+              <span className="font-mono text-[15px] font-bold text-navy-950 tabular-nums">{formatMoneyShort(spent)}</span>
             </li>
           </ul>
         </Card>

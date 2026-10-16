@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ArrowRight, CircleCheck, CircleX, Pencil } from 'lucide-react'
 
-import { formatDateTime, formatMoney } from '@/lib/format'
+import { formatDateTime, formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
@@ -75,8 +75,8 @@ export function OverviewTab({ view, goTo }: { view: EventView; goTo: (tab: strin
       next = (
         <>
           <p className="text-[14px] text-stone-700">
-            The budget is approved. Confirming fixes the date, venue and chief guest, and sets {formatMoney(view.approvedTotal)} aside from {general?.name ?? 'the general fund'}
-            {general ? ` (holding ${formatMoney(general.balance)})` : ''}.
+            The budget is approved. Confirming fixes the date, venue and chief guest, and sets {formatMoneyShort(view.approvedTotal)} aside from {general?.name ?? 'the general fund'}
+            {general ? ` (holding ${formatMoneyShort(general.balance)})` : ''}.
           </p>
           {!event.chiefGuest ? (
             <div className="mt-3 max-w-sm">

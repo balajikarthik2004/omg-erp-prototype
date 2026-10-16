@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Money } from '@/components/ui/Money'
 import { Stat } from '@/components/ui/Stat'
 import { StatusBadge } from '@/components/ui/StatusBadge'
-import { formatAge, formatMoney, formatNumber } from '@/lib/format'
+import { formatAge, formatMoneyShort, formatNumber } from '@/lib/format'
 import { relativeToNow } from '@/lib/zone'
 import { cn } from '@/lib/cn'
 import { gaushalaSewaById } from '@/mock/gaushala'
@@ -247,7 +247,7 @@ export function GaushalaDashboardPage() {
                     </p>
                   </div>
                   <span className="shrink-0 font-mono text-[14px] text-navy-900 tabular-nums">
-                    {formatMoney(order.amount)}
+                    {formatMoneyShort(order.amount)}
                   </span>
                 </li>
               ))}

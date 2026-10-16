@@ -6,7 +6,7 @@ import {
   Trash2,
 } from 'lucide-react'
 
-import { formatMoney } from '@/lib/format'
+import { formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Dialog } from '@/components/ui/Dialog'
@@ -263,11 +263,11 @@ export function CsrProjectsPage() {
                 <div className="mt-4 rounded-lg bg-sandalwood-50 p-3">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-sandalwood-600">Budget:</span>
-                    <strong className="font-mono text-sandalwood-900">{formatMoney(prj.totalBudget)}</strong>
+                    <strong className="font-mono text-sandalwood-900">{formatMoneyShort(prj.totalBudget)}</strong>
                   </div>
                   <div className="mt-1 flex items-center justify-between text-xs">
                     <span className="text-sandalwood-600">Committed Grant:</span>
-                    <strong className="font-mono text-tulsi-700">{formatMoney(totalCommitted)}</strong>
+                    <strong className="font-mono text-tulsi-700">{formatMoneyShort(totalCommitted)}</strong>
                   </div>
                   <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-sandalwood-200">
                     <div
@@ -329,7 +329,7 @@ export function CsrProjectsPage() {
               <p><strong>Schedule VII Item:</strong> ({selectedProject.scheduleViiCode}) {CSR_SCHEDULE_VII_ITEMS.find((s) => s.code === selectedProject.scheduleViiCode)?.title}</p>
               <p><strong>District & State:</strong> {selectedProject.district}, {selectedProject.state}</p>
               <p><strong>Timeline:</strong> {selectedProject.startDate} to {selectedProject.endDate}</p>
-              <p><strong>Total Approved Budget:</strong> <span className="font-mono font-bold text-sandalwood-900">{formatMoney(selectedProject.totalBudget)}</span></p>
+              <p><strong>Total Approved Budget:</strong> <span className="font-mono font-bold text-sandalwood-900">{formatMoneyShort(selectedProject.totalBudget)}</span></p>
             </div>
 
             <div>
@@ -358,7 +358,7 @@ export function CsrProjectsPage() {
                       <p className="mt-1 font-medium text-sandalwood-900">{line.description}</p>
                     </div>
                     <span className="font-mono font-bold text-sandalwood-900">
-                      {formatMoney(line.amount)}
+                      {formatMoneyShort(line.amount)}
                     </span>
                   </div>
                 ))}
@@ -559,7 +559,7 @@ export function CsrProjectsPage() {
                 <div>
                   <span className="text-sandalwood-600">Total Project Outlay:</span>
                   <strong className="ml-2 font-mono text-sm font-bold text-sandalwood-900">
-                    {formatMoney(totalBudget)}
+                    {formatMoneyShort(totalBudget)}
                   </strong>
                 </div>
                 <div>

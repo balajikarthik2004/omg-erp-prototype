@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Lock, TrendingDown, TrendingUp } from 'lucide-react'
 
 import { cn } from '@/lib/cn'
-import { formatMoney } from '@/lib/format'
+import { formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Dialog } from '@/components/ui/Dialog'
@@ -119,7 +119,7 @@ export function CloseTab({ view }: { view: EventView }) {
         </Card>
       </div>
 
-      <Dialog open={confirming} onClose={() => setConfirming(false)} title="Close this event?" description={`${event.name} will be locked. ${net >= 0 ? 'Profit' : 'Loss'} of ${formatMoney(Math.abs(net))}. Any money still in the event fund goes back to the sector.`}
+      <Dialog open={confirming} onClose={() => setConfirming(false)} title="Close this event?" description={`${event.name} will be locked. ${net >= 0 ? 'Profit' : 'Loss'} of ${formatMoneyShort(Math.abs(net))}. Any money still in the event fund goes back to the sector.`}
         footer={<div className="flex justify-end gap-2"><Button variant="ghost" onClick={() => setConfirming(false)}>Not yet</Button><Button onClick={() => { const r = closeEvent(event.id, user); setConfirming(false); setError(r.ok ? undefined : r.error) }}>Close and lock</Button></div>} />
     </div>
   )

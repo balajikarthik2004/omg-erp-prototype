@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
 import { cn } from '@/lib/cn'
-import { formatMoney } from '@/lib/format'
+import { formatMoneyShort } from '@/lib/format'
 
 /** Shared tooltip shell: one surface, values in mono, identity by swatch. */
 export function ChartTooltip({
@@ -21,7 +21,7 @@ export function ChartTooltip({
               <span className="size-2 rounded-full" style={{ backgroundColor: row.color }} aria-hidden />
               {row.label}
             </span>
-            <span className="font-mono text-navy-950 font-bold tabular-nums">{formatMoney(row.value)}</span>
+            <span className="font-mono text-navy-950 font-bold tabular-nums">{formatMoneyShort(row.value)}</span>
           </li>
         ))}
       </ul>
@@ -44,7 +44,7 @@ export function ChartLegend({
           <span className="size-2.5 rounded-sm" style={{ backgroundColor: item.color }} aria-hidden />
           <span className="text-navy-800 font-medium">{item.label}</span>
           {typeof item.value === 'number' ? (
-            <span className="font-mono text-navy-950 font-bold tabular-nums">{formatMoney(item.value)}</span>
+            <span className="font-mono text-navy-950 font-bold tabular-nums">{formatMoneyShort(item.value)}</span>
           ) : null}
         </li>
       ))}

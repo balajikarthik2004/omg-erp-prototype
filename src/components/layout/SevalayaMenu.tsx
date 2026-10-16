@@ -54,17 +54,17 @@ export function SevalayaMenu() {
         onClick={() => setOpen((v) => !v)}
         className={cn(
           'group relative flex items-center gap-1 rounded-lg px-3 py-2 text-[13px] font-bold tracking-wide transition-colors duration-150',
-          active ? 'text-navy-950' : 'text-stone-700 hover:text-[#E22E26]',
+          active ? 'text-navy-950' : 'text-stone-700 hover:text-kumkum-500',
         )}
       >
         <span>Sevalaya</span>
         <ChevronDown
-          className={cn('size-3.5 text-stone-400 group-hover:text-[#E22E26] transition-transform duration-150', open && 'rotate-180')}
+          className={cn('size-3.5 text-stone-400 group-hover:text-kumkum-500 transition-transform duration-150', open && 'rotate-180')}
           aria-hidden
         />
         <span
           className={cn(
-            'absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-[#E22E26] transition-opacity duration-150',
+            'absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-kumkum-500 transition-opacity duration-150',
             active ? 'opacity-100' : 'opacity-0',
           )}
           aria-hidden

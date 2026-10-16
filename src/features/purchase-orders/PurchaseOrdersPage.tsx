@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Search } from 'lucide-react'
 
-import { formatDate, formatMoney } from '@/lib/format'
+import { formatDate, formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Input } from '@/components/ui/Input'
@@ -90,7 +90,7 @@ export function PurchaseOrdersPage() {
     <div>
       <PageHeader
         title="Purchase orders"
-        description={`${rows.length} orders · ${formatMoney(openValue)} committed but not yet paid`}
+        description={`${rows.length} orders · ${formatMoneyShort(openValue)} committed but not yet paid`}
         actions={
           <Button icon={<Plus className="size-4" aria-hidden />} onClick={() => navigate('/console/procurement')}>
             New order

@@ -39,7 +39,7 @@ export function DonorLayout() {
   ]
 
   return (
-    <div className="flex min-h-screen flex-col bg-navy-50">
+    <div className="surface-console flex min-h-screen flex-col">
       <header className="no-print sticky top-0 z-30 border-b border-stone-200/80 bg-white/95 backdrop-blur-md shadow-xs">
         <div className="flex h-16 sm:h-17.5 w-full items-center justify-between px-4 sm:px-6 lg:px-8 xl:px-10">
           <Link to="/" className="flex items-center gap-3 group shrink-0" aria-label="OMG Platform, home">
@@ -48,7 +48,7 @@ export function DonorLayout() {
               <span className="block font-heritage text-[21px] sm:text-[23px] font-black tracking-tight text-navy-950">
                 {tenant?.name ?? 'OMG'}
               </span>
-              <span className="block text-[9.5px] sm:text-[10px] font-extrabold tracking-[0.2em] text-[#E22E26] uppercase">
+              <span className="block text-[9.5px] sm:text-[10px] font-extrabold tracking-[0.2em] text-kumkum-500 uppercase">
                 Devotee Portal
               </span>
             </div>
@@ -64,8 +64,8 @@ export function DonorLayout() {
                 cn(
                   'group relative px-3 py-2 text-[13px] font-bold tracking-wide transition-colors',
                   isActive
-                    ? 'text-[#E22E26] border-b-2 border-[#E22E26]'
-                    : 'text-stone-700 hover:text-[#E22E26]',
+                    ? 'text-kumkum-500 border-b-2 border-kumkum-500'
+                    : 'text-stone-700 hover:text-kumkum-500',
                 )
               }
             >
@@ -81,7 +81,7 @@ export function DonorLayout() {
                   className={({ isActive }) =>
                     cn(
                       'group relative flex items-center gap-1 rounded-lg px-3 py-2 text-[13px] font-bold tracking-wide transition-colors duration-150',
-                      isActive ? 'text-navy-950' : 'text-stone-700 hover:text-[#E22E26]',
+                      isActive ? 'text-navy-950' : 'text-stone-700 hover:text-kumkum-500',
                     )
                   }
                 >
@@ -90,7 +90,7 @@ export function DonorLayout() {
                       <span>{link.label}</span>
                       <span
                         className={cn(
-                          'absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-[#E22E26] transition-opacity duration-150',
+                          'absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-kumkum-500 transition-opacity duration-150',
                           isActive ? 'opacity-100' : 'opacity-0',
                         )}
                         aria-hidden
@@ -106,7 +106,7 @@ export function DonorLayout() {
           <div className="ml-auto flex items-center gap-2 sm:gap-2.5">
             <Link
               to="/console"
-              className="hidden sm:inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#E22E26] hover:bg-[#C0211A] text-white font-extrabold text-[11.5px] uppercase tracking-wider rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"
+              className="hidden sm:inline-flex items-center justify-center gap-2 px-4 py-2 bg-kumkum-500 hover:bg-kumkum-600 text-white font-extrabold text-[11.5px] uppercase tracking-wider rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"
             >
               <CalendarDays className="size-4" aria-hidden />
               <span>Temple Console</span>
@@ -114,7 +114,7 @@ export function DonorLayout() {
 
             <Link
               to={signedIn ? '/my/donations' : '/login'}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#1A1F58] hover:bg-[#121640] text-white font-extrabold text-[11.5px] uppercase tracking-wider rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-navy-800 hover:bg-navy-900 text-white font-extrabold text-[11.5px] uppercase tracking-wider rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"
             >
               {signedIn ? <UserRound className="size-4" aria-hidden /> : <LogIn className="size-4" aria-hidden />}
               <span className="whitespace-nowrap">{signedIn ? 'My Donations' : 'Devotee Sign In'}</span>

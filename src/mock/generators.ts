@@ -905,14 +905,11 @@ function makeAudit(
   now: Date,
 ): AuditEvent[] {
   const events: AuditEvent[] = []
-  const actors = [
-    { id: 'u-cas', name: 'Anitha Rajan', role: 'ca_staff' as const },
-    { id: 'u-cap', name: 'R. Perumal', role: 'ca_partner' as const },
-    { id: 'u-proc', name: 'Dinesh Kumar', role: 'procurement_officer' as const },
-    { id: 'u-store', name: 'Vasanthi Murugan', role: 'store_keeper' as const },
-    { id: 'u-adm', name: 'Saravanan Pillai', role: 'sector_admin' as const },
-    { id: 'u-tru', name: 'Meenakshi Sundaram', role: 'trustee' as const },
-  ]
+  // Read off the directory rather than restating it: a name typed twice is a
+  // name that goes stale the first time somebody's role changes.
+  const actors = ['u-cas', 'u-cap', 'u-proc', 'u-store', 'u-adm', 'u-tru']
+    .map((id) => USERS.find((u) => u.id === id))
+    .filter((u): u is (typeof USERS)[number] => Boolean(u))
 
   for (let i = 0; i < 280; i++) {
     const at = subDays(now, Math.round(Math.pow(rng.next(), 1.6) * 300))

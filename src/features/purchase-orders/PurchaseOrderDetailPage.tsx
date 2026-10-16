@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Award, PackageCheck, Send, TriangleAlert, XCircle } from 'lucide-react'
 
 import { approvalTierLabel } from '@/config'
-import { formatDate, formatDateTime, formatMoney } from '@/lib/format'
+import { formatDate, formatDateTime, formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Dialog } from '@/components/ui/Dialog'
@@ -466,7 +466,7 @@ export function PurchaseOrderDetailPage() {
           />
           <p className="rounded-lg bg-sandal-100 px-3 py-2.5 text-[13px] text-stone-700">
             The invoice is recorded at the ordered quantities and prices, totalling{' '}
-            <span className="font-mono tabular-nums">{formatMoney(po.total)}</span>. Any difference the supplier
+            <span className="font-mono tabular-nums">{formatMoneyShort(po.total)}</span>. Any difference the supplier
             actually bills would show up in the 3-way match on the payments page.
           </p>
         </div>

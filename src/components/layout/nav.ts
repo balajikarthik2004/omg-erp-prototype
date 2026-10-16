@@ -216,14 +216,18 @@ export function locate(pathname: string): { group: NavGroup; item: NavItem } | u
 
 export function visibleGroups(role: Role, modules?: ModuleKey[]): NavGroup[] {
   const enabled = (item: NavItem) => !item.module || !modules || modules.includes(item.module)
+  // The super admin is the account owner and reads the whole console. It buys
+  // no authority: every approve button is still gated by the matrix, so the
+  // owner sees each pending step and the role it is waiting on.
+  const permitted = (item: NavItem) => role === 'super_admin' || item.roles.includes(role)
   const groups = NAV_GROUPS.map((group) => ({
     ...group,
-    items: group.items.filter((i) => i.roles.includes(role) && enabled(i)),
+    items: group.items.filter((i) => permitted(i) && enabled(i)),
   })).filter((group) => group.items.length > 0)
 
   // A step number only means something as part of a sequence. A role that can
-  // reach just one phase — a super admin sees only Report — would otherwise
-  // get a lone "4", which reads as a bug rather than as a position in a flow.
+  // reach just one phase would otherwise get a lone "4", which reads as a bug
+  // rather than as a position in a flow.
   const flowCount = groups.filter((g) => g.kind === 'flow').length
   if (flowCount < 2) return groups.map((g) => (g.kind === 'flow' ? { ...g, step: undefined } : g))
   return groups

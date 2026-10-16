@@ -11,7 +11,7 @@ export function Card({ accentClass, padded = true, className, children, ...rest 
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-xl border border-navy-100/90 bg-white shadow-card hover:shadow-lift transition-shadow duration-200',
+        'relative overflow-hidden rounded-xl border border-navy-200/70 bg-white shadow-card hover:shadow-lift transition-shadow duration-200',
         className,
       )}
       {...rest}

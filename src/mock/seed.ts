@@ -10,15 +10,21 @@ import type {
 
 /* ------------------------------------------------------------------ users */
 
+/**
+ * The directory. Every id here is referenced by seeded history — an approval
+ * signature, a prepared-by, a timeline entry — so names resolve on records
+ * going back twelve months. It is not the list the demo switcher offers;
+ * that is DEMO_PERSONAS below.
+ */
 export const USERS: User[] = [
-  { id: 'u-sup', name: 'Kavitha Ramesh', role: 'super_admin', email: 'kavitha@omgplatform.io', sectorIds: ['temple', 'sevalaya', 'sangam'] },
+  { id: 'u-sup', name: 'R. Perumal', role: 'super_admin', email: 'perumal@omgplatform.io', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-dev', name: 'Lakshmi Narayanan', role: 'devotee', email: 'lakshmi.n@example.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-adm', name: 'Saravanan Pillai', role: 'sector_admin', email: 'saravanan@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-adm2', name: 'Lakshmi Priya', role: 'sector_admin', email: 'lakshmi.priya@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-store', name: 'Vasanthi Murugan', role: 'store_keeper', email: 'vasanthi@omg.org', sectorIds: ['temple', 'sevalaya'] },
   { id: 'u-proc', name: 'Dinesh Kumar', role: 'procurement_officer', email: 'dinesh@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-cas', name: 'Anitha Rajan', role: 'ca_staff', email: 'anitha@caoffice.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
-  { id: 'u-cap', name: 'R. Perumal', role: 'ca_partner', email: 'bala@caoffice.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
+  { id: 'u-cap', name: 'Kavitha Ramesh', role: 'ca_partner', email: 'kavitha@caoffice.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-tru', name: 'Meenakshi Sundaram', role: 'trustee', email: 'meenakshi@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   // Gaushala. Scoped to Sevalaya, and only ever to the cow shelter inside it.
   { id: 'u-gau-adm', name: 'Thirumalai Raghavan', role: 'gaushala_admin', email: 'thirumalai@omg.org', sectorIds: ['sevalaya'] },
@@ -27,6 +33,14 @@ export const USERS: User[] = [
   { id: 'u-gau-care2', name: 'Esakki Muthu', role: 'gaushala_caretaker', email: 'esakki@omg.org', sectorIds: ['sevalaya'] },
   { id: 'u-gau-edt', name: 'Nithya Sundar', role: 'gaushala_content_editor', email: 'nithya@omg.org', sectorIds: ['sevalaya'] },
 ]
+
+/**
+ * The personas the demo switcher offers, in the order the money moves: the
+ * owner, the admin who prepares, then the two CA signatures that check the
+ * work by value. The rest of the directory above stays for name resolution
+ * on seeded history — it is not offered as a persona.
+ */
+export const DEMO_PERSONA_IDS = ['u-sup', 'u-adm', 'u-cas', 'u-cap'] as const
 
 /** The system actor behind webhook-driven changes in the audit trail. */
 export const SQUARE_WEBHOOK: User = {

@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { AlertTriangle } from 'lucide-react'
 
-import { formatDate, formatMoney, formatPct } from '@/lib/format'
+import { formatDate, formatMoneyShort, formatPct } from '@/lib/format'
 import { Card } from '@/components/ui/Card'
 import { Drawer } from '@/components/ui/Drawer'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -148,7 +148,7 @@ export function BudgetsPage() {
               <div className="flex items-start gap-2.5 rounded-lg border border-danger-50 bg-danger-50 px-3 py-2.5 text-[13px] text-danger-600">
                 <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
                 <p>
-                  This head is {formatMoney(Math.abs(available(focused)))} over its allocation. No new order can be
+                  This head is {formatMoneyShort(Math.abs(available(focused)))} over its allocation. No new order can be
                   submitted against it until a re-allotment is approved.
                 </p>
               </div>

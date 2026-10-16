@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { Banknote, MessageSquarePlus, Search, TriangleAlert } from 'lucide-react'
 
 import { approvalTierLabel } from '@/config'
-import { formatDate, formatDue, formatMoney } from '@/lib/format'
+import { formatDate, formatDue, formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -99,7 +99,7 @@ export function PaymentsPage() {
       },
     },
     { key: 'status', header: 'Status', cell: (i) => <StatusBadge status={i.status === 'approved' ? 'awaiting_release' : i.status} /> },
-    { key: 'total', header: 'Total', align: 'right', primary: true, cell: (i) => <Money exact value={i.total} /> },
+    { key: 'total', header: 'Total', align: 'right', primary: true, cell: (i) => <Money value={i.total} /> },
   ]
 
   const openValue = open.reduce((s, i) => s + i.total, 0)
@@ -134,7 +134,7 @@ export function PaymentsPage() {
       ) : (
         <div className="flex flex-col gap-6">
           <div className="grid gap-4 sm:grid-cols-3">
-            <Stat label="Open invoices" value={open.length} sub={formatMoney(openValue)} accentClass="bg-marigold-500" />
+            <Stat label="Open invoices" value={open.length} sub={formatMoneyShort(openValue)} accentClass="bg-marigold-500" />
             <Stat
               label="Price mismatches"
               value={variances}
@@ -266,11 +266,11 @@ export function PaymentsPage() {
               <div className="flex items-end justify-between gap-3">
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Invoice total</p>
-                  <Money exact value={focused.total} className="mt-1 font-display text-[22px] sm:text-[30px] text-stone-900" />
+                  <Money value={focused.total} className="mt-1 font-display text-[22px] sm:text-[30px] text-stone-900" />
                 </div>
                 <div className="text-right">
                   <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Ordered</p>
-                  <Money exact value={focusPo.total} className="mt-1 text-[18px]" />
+                  <Money value={focusPo.total} className="mt-1 text-[18px]" />
                 </div>
               </div>
               <p className="mt-2 text-[13px] text-stone-500">Requires {approvalTierLabel(focused.total)}</p>

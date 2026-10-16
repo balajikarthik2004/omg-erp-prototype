@@ -24,28 +24,33 @@
   --color-navy-900: #121640;   /* sidebar, footer, deep chrome */
   --color-navy-950: #0B0D28;
 
-  /* Kumkum — the OMG primary red, same lightness steps as the navy ramp. */
-  --color-kumkum-50:  #FDEEED;
-  --color-kumkum-100: #F9D2D0;
-  --color-kumkum-200: #F4AEAB;
-  --color-kumkum-300: #EF8884;
-  --color-kumkum-400: #E95F59;
+  /* Kumkum — the OMG primary red. Steps 100–600 are the reference ramp
+     (omg-harmony), which publishes the red row the design sheet mislabelled.
+     700–900 continue it for hover and pressed states. */
+  --color-kumkum-50:  #FDEDEC;
+  --color-kumkum-100: #F9D6D4;
+  --color-kumkum-200: #F3ADA8;
+  --color-kumkum-300: #EC857D;
+  --color-kumkum-400: #E55C52;
   --color-kumkum-500: #E22E26;   /* brand red — primary */
-  --color-kumkum-600: #C0211A;   /* primary button */
-  --color-kumkum-700: #9C1813;   /* hover */
-  --color-kumkum-800: #7A110D;   /* pressed */
-  --color-kumkum-900: #5A0C09;
+  --color-kumkum-600: #C5221D;   /* primary button */
+  --color-kumkum-700: #9F1B17;   /* hover */
+  --color-kumkum-800: #7C1512;   /* pressed */
+  --color-kumkum-900: #5A0F0D;
 
-  /* Surfaces: white cards on a navy-tinted canvas. */
-  --color-sandal-50:  #FFFFFF;   /* cards, sheets, topbar */
-  --color-sandal-100: #F5F6FC;   /* table headers, row hovers, subtle fills */
-  --color-sandal-200: #E3E5F5;   /* borders, dividers */
-  --color-sandal-300: #C4C7ED;   /* strong borders, disabled (= navy-100) */
+  /* Surfaces: white cards on a near-white canvas. The canvas lightened to
+     match the reference, so the border carries the card edge that the old
+     navy-50 tint used to carry — it is a step darker to compensate. */
+  --color-sandal-50:  #FFFFFF;   /* cards, sheets, topbar  (--card) */
+  --color-sandal-100: #EEEFF7;   /* table headers, row hovers  (--muted) */
+  --color-sandal-200: #D8DBE8;   /* borders, dividers  (--border) */
+  --color-sandal-300: #C3C9E9;   /* strong borders, disabled */
 
-  /* Ink: navy-tinted neutrals. All three pass AA on white and on navy-50. */
-  --color-stone-900: #1B1F4A;    /* headings, primary text */
-  --color-stone-700: #434974;    /* body text */
-  --color-stone-500: #5F6490;    /* muted text, captions */
+  /* Ink: the reference foreground ramp — a cooler, less saturated navy-grey
+     than before. All three clear AA on white, on the canvas and on muted. */
+  --color-stone-900: #21263B;    /* headings, primary text  (--foreground) */
+  --color-stone-700: #434A66;    /* body text */
+  --color-stone-500: #5E6378;    /* muted text  (--muted-foreground) */
 
   /* Turmeric / brass: the site's --accent #FFC107. Collect phase, brass. */
   --color-turmeric-50:  #FFF8E1;
@@ -53,13 +58,15 @@
   --color-turmeric-200: #FFE082;
   --color-turmeric-300: #FFD54F;
   --color-turmeric-400: #FFC107;   /* --accent, straight from the site */
-  --color-turmeric-500: #E5A800;   /* Collect phase fills */
+  --color-turmeric-500: #F59F0A;   /* Collect phase fills  (--warning) */
   --color-turmeric-600: #B38600;
   --color-turmeric-700: #8A6700;   /* accent text on light — AA on white */
 
-  /* Tulsi: success, money received, approved, Spend phase */
-  --color-tulsi-50:  #E6F6EF;
-  --color-tulsi-500: #11865A;
+  /* Tulsi: success, money received, approved, Spend phase.
+     500 is the reference --success and is a FILL — it clears only 3.1:1 on
+     white, so text stays on 700. */
+  --color-tulsi-50:  #E8F7EF;
+  --color-tulsi-500: #29A36A;
   --color-tulsi-700: #0C6342;
 
   /* Peacock: info, Report phase, Tamil Sangam — the navy family */
@@ -69,7 +76,7 @@
 
   /* Semantic: warning and danger */
   --color-marigold-50:  #FFF4E5;
-  --color-marigold-500: #A85A06;  /* pending, awaiting approval */
+  --color-marigold-500: #9A5305;  /* pending — AA on sandal-100 */
   /* Destructive sits a cooler, deeper crimson than the vermillion primary,
      so a Reject button is never mistaken for the main action. Separation is
      by hue, not lightness, so it still reads as an alarm. */
@@ -77,16 +84,20 @@
   --color-danger-600:   #A3122B;  /* rejected, overdue, over budget */
   --color-danger-700:   #7F0C20;
 
-  /* Typography — OMG DESIGN SYSTEM: Montserrat & Roboto */
+  /* Typography — the reference pairs a Montserrat display with a Roboto
+     body (--font-display / --font-body). Hind Madurai stays last in every
+     stack: neither face carries Tamil glyphs. */
   --font-display: "Montserrat", "Roboto", "Hind Madurai", system-ui, sans-serif;
   --font-heritage: "Montserrat", "Roboto", "Hind Madurai", system-ui, sans-serif;
   --font-heading: "Montserrat", "Roboto", system-ui, sans-serif;
   --font-roboto: "Roboto", system-ui, sans-serif;
-  --font-sans: "Montserrat", "Roboto", "Hind Madurai", system-ui, sans-serif;
+  --font-sans: "Roboto", "Montserrat", "Hind Madurai", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --radius-card: 12px;   /* --radius */
-  --shadow-card: 0 1px 2px rgb(27 31 74 / 0.06), 0 4px 16px rgb(27 31 74 / 0.07);
+  /* Elevation is a long, low navy haze rather than a grey drop — a card
+     lifts off the canvas without drawing a grey line under itself. */
+  --shadow-card: 0 1px 2px rgb(41 48 136 / 0.06), 0 16px 28px -24px rgb(41 48 136 / 0.40);
 
   /* --- Derived, for depth and motion. The palette above is unchanged. --- */
 
@@ -95,9 +106,16 @@
   --color-sanctum-950: #0B0D28;
 
   /* One elevation scale, so cards do not all shout at once. */
-  --shadow-flat: 0 1px 1px rgb(27 31 74 / 0.05);
-  --shadow-lift: 0 2px 4px rgb(27 31 74 / 0.07), 0 12px 32px rgb(27 31 74 / 0.10);
-  --shadow-sheet: 0 -2px 8px rgb(27 31 74 / 0.05), 0 24px 56px rgb(27 31 74 / 0.18);
+  --shadow-flat: 0 1px 2px rgb(41 48 136 / 0.05);
+  --shadow-lift: 0 2px 4px rgb(41 48 136 / 0.08), 0 22px 40px -26px rgb(41 48 136 / 0.45);
+  --shadow-sheet: 0 -2px 8px rgb(41 48 136 / 0.05), 0 28px 56px -20px rgb(41 48 136 / 0.35);
+
+  /* --- Chrome gradients, lifted from the reference ------------------- */
+  --canvas-start: #F5F7FA;   /* --layout-bg-start */
+  --canvas-mid:   #F8FAFC;   /* --layout-bg-mid */
+  --canvas-end:   #FAF8F5;   /* --layout-bg-end, a warm last inch */
+  --topbar-end:   #E9EAF7;
+  --topbar-edge:  #C3C9E9;
 
   --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
   --container-8xl: 90rem;
@@ -111,7 +129,7 @@
 
   body {
     margin: 0;
-    background-color: var(--color-navy-50);
+    background-color: var(--canvas-mid);
     color: var(--color-stone-700);
     font-family: var(--font-sans);
     font-size: 14px;
@@ -212,23 +230,69 @@ svg *:focus-visible,
       radial-gradient(circle at 85% 0%, rgb(226 46 38 / 0.04) 0, transparent 40%);
   }
 
-  /* The deep sanctum field behind the hero and the sidebar. */
+  /* The console canvas: a cool blue at the top easing to a warm last inch,
+     so a long page does not read as one flat sheet of grey. Fixed, so the
+     warmth stays at the bottom of the viewport rather than scrolling. */
+  .surface-console {
+    background-color: var(--canvas-mid);
+    background-image: linear-gradient(
+      180deg,
+      var(--canvas-start) 0%,
+      var(--canvas-mid) 55%,
+      var(--canvas-end) 100%
+    );
+    background-attachment: fixed;
+  }
+
+  /* The topbar lifts off white into a faint navy at its lower edge, which is
+     what separates it from the canvas now that the canvas is near-white. */
+  .surface-topbar {
+    background-image: linear-gradient(180deg, var(--color-sandal-50) 0%, var(--topbar-end) 100%);
+    border-color: var(--topbar-edge);
+  }
+
+  /* The deep sanctum field behind the hero and the sidebar: navy at the top
+     running to brand red at the foot, with two soft glows over it. The three
+     stops are variables so a tenant brand can re-point them. */
   .surface-sanctum {
-    background-color: var(--color-navy-900);
+    --sanctum-start: var(--color-navy-600);
+    --sanctum-mid: var(--color-navy-500);
+    /* One step darker than the reference's #E22E26: at full strength the red
+       drops the pale active rail to 2.4:1 and white labels to 4.5:1 flat. */
+    --sanctum-end: var(--color-kumkum-600);
+    background-color: var(--sanctum-start);
     background-image:
-      radial-gradient(ellipse at 15% 0%, rgb(79 88 202 / 0.30) 0, transparent 55%),
-      radial-gradient(ellipse at 100% 100%, rgb(226 46 38 / 0.10) 0, transparent 62%);
+      radial-gradient(ellipse at 10% -10%, rgb(163 172 230 / 0.30) 0, transparent 58%),
+      radial-gradient(ellipse at 100% 108%, rgb(247 164 158 / 0.28) 0, transparent 60%),
+      linear-gradient(
+        185deg,
+        var(--sanctum-start) 0%,
+        var(--sanctum-mid) 47%,
+        var(--sanctum-end) 100%
+      );
   }
 
   /* Each customer picks one of the theme colour families for its console. */
   .surface-sanctum[data-brand='tulsi'] {
-    background-color: var(--color-tulsi-700);
+    --sanctum-start: var(--color-tulsi-700);
+    --sanctum-mid: #117A54;
+    --sanctum-end: var(--color-turmeric-500);
   }
   .surface-sanctum[data-brand='peacock'] {
-    background-color: var(--color-navy-800);
+    --sanctum-start: var(--color-navy-800);
+    --sanctum-mid: var(--color-navy-600);
+    --sanctum-end: var(--color-navy-400);
   }
   .surface-sanctum[data-brand='turmeric'] {
-    background-color: var(--color-stone-900);
+    --sanctum-start: var(--color-stone-900);
+    --sanctum-mid: var(--color-navy-700);
+    --sanctum-end: var(--color-turmeric-600);
+  }
+
+  /* A panel header sits a shade below its own card, the way the reference
+     separates a section head from the rows under it. */
+  .panel-header {
+    background-image: linear-gradient(180deg, var(--color-sandal-100) 0%, var(--canvas-mid) 100%);
   }
 
   /* A hairline brass edge, used where gold should read as inlay rather than fill. */

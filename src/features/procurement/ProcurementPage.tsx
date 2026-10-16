@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, TriangleAlert } from 'lucide-react'
 
 import { OVERRIDE_REASON_MIN, approvalTierLabel } from '@/config'
 import { cn } from '@/lib/cn'
-import { formatDate, formatMoney } from '@/lib/format'
+import { formatDate, formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -200,7 +200,7 @@ export function ProcurementPage() {
                     value={unitPrice}
                     onChange={(e) => setUnitPrice(e.target.value)}
                     className="font-mono tabular-nums"
-                    hint={`AI expects ${formatMoney(choice.expectedPrice)}`}
+                    hint={`AI expects ${formatMoneyShort(choice.expectedPrice)}`}
                   />
                   <Select
                     label="Budget head"
@@ -210,7 +210,7 @@ export function ProcurementPage() {
                       { value: '', label: 'Choose a budget head' },
                       ...db.budgets.map((b) => ({
                         value: b.id,
-                        label: `${b.name} — ${formatMoney(available(b))} available`,
+                        label: `${b.name} — ${formatMoneyShort(available(b))} available`,
                       })),
                     ]}
                   />
@@ -226,9 +226,9 @@ export function ProcurementPage() {
                 {priceCents > choice.expectedPrice * 1.1 ? (
                   <p className="mt-4 flex items-start gap-2 rounded-lg border border-danger-50 bg-danger-50 px-3 py-2.5 text-[13px] text-danger-600">
                     <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
-                    At {formatMoney(priceCents)} this quote is{' '}
+                    At {formatMoneyShort(priceCents)} this quote is{' '}
                     {(((priceCents - choice.expectedPrice) / choice.expectedPrice) * 100).toFixed(0)}% above the
-                    expected price of {formatMoney(choice.expectedPrice)}. Confirm it with the supplier before
+                    expected price of {formatMoneyShort(choice.expectedPrice)}. Confirm it with the supplier before
                     submitting.
                   </p>
                 ) : null}
@@ -298,7 +298,7 @@ export function ProcurementPage() {
                       <div className="mt-4 rounded-lg border border-danger-50 bg-danger-50 px-3 py-2.5">
                         <p className="flex items-start gap-2 text-[13px] text-danger-600">
                           <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
-                          This order is {formatMoney(total - available(head))} more than {head.name} has available.
+                          This order is {formatMoneyShort(total - available(head))} more than {head.name} has available.
                           It cannot be submitted.
                         </p>
                         <Button
@@ -312,7 +312,7 @@ export function ProcurementPage() {
                       </div>
                     ) : (
                       <p className="mt-4 text-[13px] text-stone-500">
-                        At {formatMoney(total)} this order needs {approvalTierLabel(total)} to approve.
+                        At {formatMoneyShort(total)} this order needs {approvalTierLabel(total)} to approve.
                       </p>
                     )}
                   </>
@@ -334,14 +334,14 @@ export function ProcurementPage() {
               <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
                 <Summary label="Supplier" value={`${choice.supplier.name} (rank ${choice.rank})`} />
                 <Summary label="Item" value={`${item.name} — ${qtyNum} ${item.unit}`} />
-                <Summary label="Unit price" value={formatMoney(priceCents)} />
-                <Summary label="Order total" value={formatMoney(total)} />
+                <Summary label="Unit price" value={formatMoneyShort(priceCents)} />
+                <Summary label="Order total" value={formatMoneyShort(total)} />
                 <Summary label="Budget head" value={head.name} />
                 <Summary label="Expected delivery" value={expectedBy ? formatDate(expectedBy) : '—'} />
                 <Summary label="Approval needed" value={approvalTierLabel(total)} />
                 <Summary
                   label="Available after approval"
-                  value={formatMoney(available(head) - total)}
+                  value={formatMoneyShort(available(head) - total)}
                 />
               </dl>
 

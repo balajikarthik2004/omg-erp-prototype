@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { History, Plus, RefreshCw, Send, Trash2 } from 'lucide-react'
 
-import { formatMoney } from '@/lib/format'
+import { formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
@@ -134,7 +134,7 @@ export function BudgetTab({ view }: { view: EventView }) {
                     {r.history && r.history.length > 0 ? (
                       <ul className="flex flex-col gap-0.5 font-mono text-[12px] text-stone-700 tabular-nums">
                         {r.history.map((h) => (
-                          <li key={h.year}>{h.year} · {formatMoney(h.actual)}</li>
+                          <li key={h.year}>{h.year} · {formatMoneyShort(h.actual)}</li>
                         ))}
                       </ul>
                     ) : (

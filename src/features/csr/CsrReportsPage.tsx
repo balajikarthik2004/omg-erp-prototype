@@ -9,7 +9,7 @@ import {
   Users,
 } from 'lucide-react'
 
-import { formatMoney } from '@/lib/format'
+import { formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Dialog } from '@/components/ui/Dialog'
@@ -248,19 +248,19 @@ export function CsrReportsPage() {
                     <div>
                       <span className="text-sandalwood-500 block">Tranche Received</span>
                       <strong className="font-mono text-sm font-bold text-sandalwood-900">
-                        {formatMoney(uc.amountReceived)}
+                        {formatMoneyShort(uc.amountReceived)}
                       </strong>
                     </div>
                     <div>
                       <span className="text-sandalwood-500 block">Amount Utilised</span>
                       <strong className="font-mono text-sm font-bold text-tulsi-700">
-                        {formatMoney(uc.amountUtilised)}
+                        {formatMoneyShort(uc.amountUtilised)}
                       </strong>
                     </div>
                     <div>
                       <span className="text-sandalwood-500 block">Balance Remaining</span>
                       <strong className="font-mono text-sm font-bold text-sandalwood-800">
-                        {formatMoney(uc.balanceRemaining)}
+                        {formatMoneyShort(uc.balanceRemaining)}
                       </strong>
                     </div>
                   </div>
@@ -417,7 +417,7 @@ export function CsrReportsPage() {
                 }}
                 options={ucDeals.map((d) => ({
                   value: d.id,
-                  label: `${companies.find((c) => c.id === d.companyId)?.name} — ${formatMoney(d.committedAmount)}`,
+                  label: `${companies.find((c) => c.id === d.companyId)?.name} — ${formatMoneyShort(d.committedAmount)}`,
                 }))}
               />
             </div>
@@ -429,7 +429,7 @@ export function CsrReportsPage() {
                 onChange={(e) => setSelectedTrancheId(e.target.value)}
                 options={ucReady(ucDeals.find((d) => d.id === selectedDealId) ?? ucDeals[0]!).map((t) => ({
                   value: t.id,
-                  label: `Tranche #${t.seqNo} (${formatMoney(t.amount)}) — ${t.status}`,
+                  label: `Tranche #${t.seqNo} (${formatMoneyShort(t.amount)}) — ${t.status}`,
                 }))}
               />
             </div>

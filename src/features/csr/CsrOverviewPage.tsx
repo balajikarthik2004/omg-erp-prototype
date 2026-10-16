@@ -12,7 +12,7 @@ import {
   TrendingUp,
 } from 'lucide-react'
 
-import { formatMoney } from '@/lib/format'
+import { formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -78,14 +78,14 @@ export function CsrOverviewPage() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Stat
           label="Grants Committed"
-          value={formatMoney(stats.totalCommitted)}
+          value={formatMoneyShort(stats.totalCommitted)}
           sub="Legally sanctioned MoUs"
           accentClass="bg-marigold-500"
           icon={<Handshake className="size-4" aria-hidden />}
         />
         <Stat
           label="Disbursed Funds"
-          value={formatMoney(stats.totalReceived)}
+          value={formatMoneyShort(stats.totalReceived)}
           sub="Direct to restricted project funds"
           accentClass="bg-tulsi-500"
           icon={<TrendingUp className="size-4" aria-hidden />}
@@ -323,7 +323,7 @@ export function CsrOverviewPage() {
                         </h4>
                       </div>
                       <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-sandalwood-600">
-                        <span>Grant: <strong className="text-sandalwood-900">{formatMoney(deal.committedAmount)}</strong></span>
+                        <span>Grant: <strong className="text-sandalwood-900">{formatMoneyShort(deal.committedAmount)}</strong></span>
                         <span>Admin Cap: <strong className="font-mono text-tulsi-700">{deal.adminCapPct}%</strong> (&le; 5.0% cap)</span>
                         <span>MoU Signed: <strong>{deal.mouSignedOn ?? 'Pending'}</strong></span>
                       </div>
@@ -337,7 +337,7 @@ export function CsrOverviewPage() {
                   <div className="mt-2.5">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-sandalwood-600">
-                        Disbursed: <strong className="text-sandalwood-900">{formatMoney(totalReceived)}</strong> ({pctReceived}%)
+                        Disbursed: <strong className="text-sandalwood-900">{formatMoneyShort(totalReceived)}</strong> ({pctReceived}%)
                       </span>
                       <span className="font-mono text-[11px] text-sandalwood-500">
                         {receivedTranches.length} of {deal.tranches.length} Tranches released
@@ -359,7 +359,7 @@ export function CsrOverviewPage() {
                         className="flex items-center justify-between rounded border border-sandalwood-200 bg-white px-2.5 py-1.5"
                       >
                         <span className="font-mono font-medium text-sandalwood-800">
-                          Tranche #{t.seqNo}: {formatMoney(t.amount)}
+                          Tranche #{t.seqNo}: {formatMoneyShort(t.amount)}
                         </span>
                         <span
                           className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${

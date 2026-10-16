@@ -48,7 +48,7 @@ export function Topbar() {
   const here = locate(pathname)
 
   return (
-    <header className="no-print sticky top-0 z-30 border-b border-sandal-200 bg-sandal-50/95 backdrop-blur-md">
+    <header className="surface-topbar no-print sticky top-0 z-30 border-b backdrop-blur-md">
       <div className="flex h-15 items-center gap-3 px-4 sm:px-6">
         <button
           type="button"

@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { FileDown, Table2 } from 'lucide-react'
 
 import { SECTORS } from '@/config'
-import { formatMoney, formatPct } from '@/lib/format'
+import { formatMoneyShort, formatPct } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Money } from '@/components/ui/Money'
@@ -215,7 +215,7 @@ export function ReportsPage() {
                       <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-2">
                         <span className="text-[15px] text-stone-900">{project.name}</span>
                         <span className="font-mono text-[13px] text-stone-500 tabular-nums">
-                          {formatMoney(project.raised)} of {formatMoney(project.goal)} · {formatPct(pct, 0)}
+                          {formatMoneyShort(project.raised)} of {formatMoneyShort(project.goal)} · {formatPct(pct, 0)}
                         </span>
                       </div>
                       <div className="h-2.5 w-full overflow-hidden rounded-full bg-sandal-200">

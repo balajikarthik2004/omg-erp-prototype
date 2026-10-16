@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { formatDateTime, formatMoney } from '@/lib/format'
+import { formatDateTime, formatMoneyShort } from '@/lib/format'
 import { Drawer } from '@/components/ui/Drawer'
 import { Input } from '@/components/ui/Input'
 import { Money } from '@/components/ui/Money'
@@ -60,7 +60,7 @@ export function ApprovalDetailDrawer({ eventId, kind, onClose }: { eventId: stri
                       <tr key={l.id} className="border-t border-sandal-200 align-top">
                         <td className="px-4 py-3">
                           <p className="text-stone-900">{l.category}</p>
-                          <p className="text-[12px] text-stone-500">{l.history && l.history.length > 0 ? l.history.map((h) => `${h.year}: ${formatMoney(h.actual)}`).join(' · ') : 'No past events'}</p>
+                          <p className="text-[12px] text-stone-500">{l.history && l.history.length > 0 ? l.history.map((h) => `${h.year}: ${formatMoneyShort(h.actual)}`).join(' · ') : 'No past events'}</p>
                         </td>
                         <td className="px-3 py-3 text-right">{l.suggestedAmount !== undefined ? <Money value={l.suggestedAmount} className="text-turmeric-700" /> : <span className="text-[13px] text-stone-500">None</span>}</td>
                         <td className="px-3 py-3 text-right"><Money value={l.requestedAmount} /></td>
