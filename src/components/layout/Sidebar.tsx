@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import { ChevronDown, ExternalLink, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react'
+import { ChevronDown, ExternalLink, PanelLeft, PanelLeftClose, X } from 'lucide-react'
 
 import { PHASES } from '@/config'
 import { cn } from '@/lib/cn'
@@ -207,26 +207,72 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
   return (
     <div
       data-brand={tenant?.brand ?? 'kumkum'}
-      className="surface-sanctum flex h-full flex-col border-r border-navy-700/60 text-white"
+      className="surface-sanctum relative z-40 flex h-full flex-col border-r border-navy-700/60 text-white"
     >
-      {/* On the rail there is no room beside the mark, so the toggle sits
-          under it and the block stacks instead of running across. */}
-      <div
-        className={cn(
-          'flex shrink-0 border-b border-white/10 py-4',
-          collapsed ? 'flex-col items-center gap-3 px-0' : 'items-center justify-between gap-2 px-4',
-        )}
-      >
-        <NavLink
-          to="/console"
-          className="group/brand flex min-w-0 items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-          onClick={onNavigate}
-          title={collapsed ? (tenant?.name ?? 'OMG') : undefined}
-        >
-          <span className="shrink-0 transition-transform duration-200 ease-out-soft motion-safe:group-hover/brand:scale-105">
-            <OmgMark size={collapsed ? 30 : 32} onDark />
-          </span>
-          {collapsed ? null : (
+      {/* Header / Brand block: when collapsed, hovering the logo reveals the toggle button with a tooltip */}
+      {collapsed ? (
+        <div className="relative flex shrink-0 items-center justify-center border-b border-white/10 py-4">
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            aria-label="Toggle sidebar"
+            className={cn(
+              'group/logo-toggle relative flex size-10 items-center justify-center rounded-xl',
+              'transition-all duration-200 ease-out-soft',
+              'hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
+              'cursor-pointer',
+            )}
+          >
+            {/* Default State: OMG Logo */}
+            <span
+              className={cn(
+                'flex items-center justify-center transition-all duration-200 ease-out-soft',
+                'group-hover/logo-toggle:opacity-0 group-hover/logo-toggle:scale-75',
+                'group-focus-visible/logo-toggle:opacity-0 group-focus-visible/logo-toggle:scale-75',
+              )}
+            >
+              <OmgMark size={32} onDark />
+            </span>
+
+            {/* Hover State: Sidebar Toggle Icon */}
+            <span
+              className={cn(
+                'absolute inset-0 flex items-center justify-center text-white',
+                'opacity-0 scale-75 transition-all duration-200 ease-out-soft',
+                'group-hover/logo-toggle:opacity-100 group-hover/logo-toggle:scale-100',
+                'group-focus-visible/logo-toggle:opacity-100 group-focus-visible/logo-toggle:scale-100',
+              )}
+              aria-hidden
+            >
+              <PanelLeft className="size-5" />
+            </span>
+
+            {/* Tooltip on Hover */}
+            <div
+              role="tooltip"
+              className={cn(
+                'pointer-events-none absolute left-full top-1/2 ml-3 -translate-y-1/2 z-50',
+                'opacity-0 -translate-x-1.5 transition-all duration-150 ease-out-soft',
+                'group-hover/logo-toggle:opacity-100 group-hover/logo-toggle:translate-x-0',
+                'group-focus-visible/logo-toggle:opacity-100 group-focus-visible/logo-toggle:translate-x-0',
+              )}
+            >
+              <div className="flex items-center rounded-lg bg-navy-950/95 px-3 py-1.5 text-[12px] font-medium text-white shadow-xl ring-1 ring-white/15 backdrop-blur-md whitespace-nowrap">
+                Toggle sidebar
+              </div>
+            </div>
+          </button>
+        </div>
+      ) : (
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/10 px-4 py-4">
+          <NavLink
+            to="/console"
+            className="group/brand flex min-w-0 items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            onClick={onNavigate}
+          >
+            <span className="shrink-0 transition-transform duration-200 ease-out-soft motion-safe:group-hover/brand:scale-105">
+              <OmgMark size={32} onDark />
+            </span>
             <span className="min-w-0 leading-none">
               <span className="block truncate font-display text-[15px] font-semibold tracking-tight text-white">
                 {tenant?.name ?? 'OMG'}
@@ -235,40 +281,49 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
                 Admin console
               </span>
             </span>
-          )}
-        </NavLink>
+          </NavLink>
 
-        {onNavigate ? (
-          <button
-            type="button"
-            onClick={onNavigate}
-            aria-label="Close navigation"
-            className="rounded-lg p-1.5 text-white/70 transition-colors duration-150 hover:bg-white/10 lg:hidden"
-          >
-            <X className="size-5" aria-hidden />
-          </button>
-        ) : null}
+          {onNavigate ? (
+            <button
+              type="button"
+              onClick={onNavigate}
+              aria-label="Close navigation"
+              className="rounded-lg p-1.5 text-white/70 transition-colors duration-150 hover:bg-white/10 lg:hidden"
+            >
+              <X className="size-5" aria-hidden />
+            </button>
+          ) : null}
 
-        {/* The rail toggle, with the chrome it controls. Desktop only: the
-            drawer closes rather than collapses. */}
-        <button
-          type="button"
-          onClick={toggleCollapsed}
-          aria-label={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
-          title={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
-          className={cn(
-            'hidden shrink-0 rounded-lg border border-white/10 p-1.5 text-white/70 lg:flex',
-            'transition-colors duration-150 ease-out-soft hover:border-white/20 hover:bg-white/10 hover:text-white',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
-          )}
-        >
-          {collapsed ? (
-            <PanelLeftOpen className="size-4" aria-hidden />
-          ) : (
-            <PanelLeftClose className="size-4" aria-hidden />
-          )}
-        </button>
-      </div>
+          {/* Desktop rail toggle */}
+          <div className="relative group/toggle-tip hidden lg:block">
+            <button
+              type="button"
+              onClick={toggleCollapsed}
+              aria-label="Toggle sidebar"
+              className={cn(
+                'shrink-0 rounded-lg border border-white/10 p-1.5 text-white/70',
+                'transition-colors duration-150 ease-out-soft hover:border-white/20 hover:bg-white/10 hover:text-white',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
+              )}
+            >
+              <PanelLeftClose className="size-4" aria-hidden />
+            </button>
+            <div
+              role="tooltip"
+              className={cn(
+                'pointer-events-none absolute right-0 top-full mt-2 z-50',
+                'opacity-0 translate-y-0.5 transition-all duration-150 ease-out-soft',
+                'group-hover/toggle-tip:opacity-100 group-hover/toggle-tip:translate-y-0',
+                'group-focus-visible/toggle-tip:opacity-100 group-focus-visible/toggle-tip:translate-y-0',
+              )}
+            >
+              <div className="rounded-lg bg-navy-950/95 px-2.5 py-1 text-[11px] font-medium text-white shadow-xl ring-1 ring-white/15 backdrop-blur-md whitespace-nowrap">
+                Toggle sidebar
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* A group holding the page you are on is always open, whatever was
           stored — otherwise the active row could be hidden from view. */}
@@ -350,8 +405,8 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className={cn('no-print hidden shrink-0 lg:block', collapsed ? RAIL : FULL)}>
-        <div className={cn('fixed inset-y-0 left-0', collapsed ? RAIL : FULL)}>
+      <aside className={cn('no-print hidden shrink-0 lg:block relative z-40', collapsed ? RAIL : FULL)}>
+        <div className={cn('fixed inset-y-0 left-0 z-40', collapsed ? RAIL : FULL)}>
           <SidebarContent collapsed={collapsed} />
         </div>
       </aside>
