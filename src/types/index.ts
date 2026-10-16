@@ -143,6 +143,8 @@ export interface CatalogItem {
   prices?: Partial<Record<Currency, Money>>
   /** The cow this sewa is for, on a sponsor-this-cow card. */
   cowId?: string
+  /** Image banner or thumbnail for pooja/hundi/sewa */
+  image?: string
 }
 
 export interface Project {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, ChevronDown, FlaskConical } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
 
 import { cn } from '@/lib/cn'
 import { initials } from '@/lib/format'
@@ -58,13 +58,6 @@ export function PersonaSwitcher() {
           className="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-card border border-sandal-200 bg-sandal-50 shadow-lift"
           style={{ animation: 'omg-fade-in 150ms ease-out' }}
         >
-          <div className="flex items-start gap-2 border-b border-sandal-200 bg-turmeric-50 px-3 py-2.5">
-            <FlaskConical className="mt-0.5 size-4 shrink-0 text-turmeric-700" aria-hidden />
-            <p className="text-[12px] leading-snug text-turmeric-700">
-              <span className="font-bold">Demo control.</span> Switching persona changes the menu and which
-              approvals you are allowed to sign.
-            </p>
-          </div>
           <ul className="max-h-80 overflow-y-auto py-1">
             {USERS.map((u) => {
               const active = u.id === user.id

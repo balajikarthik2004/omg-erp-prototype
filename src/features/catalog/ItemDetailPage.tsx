@@ -102,13 +102,27 @@ export function ItemDetailPage() {
         <SectorChip sectorId={sectorId} />
         <div className="mt-2 flex flex-wrap items-baseline gap-3">
           <h1 className="font-display text-[22px] sm:text-[30px] leading-tight text-stone-900">{item.name}</h1>
+          {item.tamil ? <span className="font-serif text-[18px] text-stone-500">({item.tamil})</span> : null}
         </div>
         <p className="mt-1 max-w-2xl text-[15px] leading-relaxed text-stone-700">{item.description}</p>
       </header>
 
       <div className="grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-start">
         <div className="flex flex-col gap-6">
-          {item.gaushala ? (
+          {item.image ? (
+            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-sandal-200 bg-navy-950 shadow-md">
+              <img
+                src={item.image}
+                alt={item.name}
+                className="h-full w-full object-cover"
+              />
+              {item.category ? (
+                <span className="absolute top-3 left-3 inline-flex items-center rounded-full bg-navy-950/80 backdrop-blur-xs border border-amber-300/30 px-3 py-1 text-[11px] font-semibold text-amber-200 shadow-sm uppercase tracking-wider">
+                  {item.category === 'hundi' ? 'Temple Hundi' : item.category === 'pooja' ? 'Temple Pooja' : item.category}
+                </span>
+              ) : null}
+            </div>
+          ) : item.gaushala ? (
             <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-sandal-200 bg-navy-950 shadow-md">
               <img
                 src={getSewaImage(item).src}

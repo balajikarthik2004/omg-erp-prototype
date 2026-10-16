@@ -42,9 +42,7 @@ export function EventReportsPage() {
   return (
     <div>
       <PageHeader
-        phase="report"
         title="Event financial reports"
-        description="Cash in from tickets, cash sponsors and donations, less what was paid out. In-kind sponsorship is never counted as cash."
         actions={<div className="flex gap-2"><Button variant="secondary" icon={<Table2 className="size-4" aria-hidden />} onClick={() => toast.info('Coming in the next build', 'Excel export runs against the live ledger.')}>Export to Excel</Button><Button variant="secondary" icon={<FileDown className="size-4" aria-hidden />} onClick={() => toast.info('Coming in the next build', 'PDF reports are rendered server-side.')}>Export to PDF</Button></div>}
       />
       {!db.ready ? <TableSkeleton rows={6} cols={7} /> : (

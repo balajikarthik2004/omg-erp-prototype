@@ -28,14 +28,12 @@ export function PosterStudioPage() {
   return (
     <div>
       <PageHeader
-        phase="collect"
         title={
           <span className="flex items-center gap-3">
             Poster Studio
             <Palette className="size-6 text-turmeric-500" aria-hidden />
           </span>
         }
-        description="Independent poster generation. Render background artwork, typography and QR codes on demand at any stage, without waiting for budget approval."
       >
         {mode === 'event' ? picker : null}
       </PageHeader>

@@ -105,9 +105,7 @@ export function EventsPage() {
   return (
     <div>
       <PageHeader
-        phase="collect"
         title="Events"
-        description="Festivals, classes and programmes. Each event gets its own budget, an AI-made poster and a profit and loss at the end."
         actions={
           <Button icon={<Plus className="size-4" aria-hidden />} onClick={() => setCreating(true)}>
             New event

@@ -53,11 +53,13 @@ export function PurchaseOrdersPage() {
       key: 'poNo',
       header: 'PO no.',
       primary: true,
+      sortValue: (po) => po.poNo,
       cell: (po) => <span className="font-mono text-[13px] text-stone-900 tabular-nums">{po.poNo}</span>,
     },
     {
       key: 'supplier',
       header: 'Supplier',
+      sortValue: (po) => db.suppliers.find((s) => s.id === po.supplierId)?.name ?? '',
       cell: (po) => db.suppliers.find((s) => s.id === po.supplierId)?.name ?? '—',
     },
     {
@@ -70,16 +72,23 @@ export function PurchaseOrdersPage() {
     {
       key: 'date',
       header: 'Raised',
+      sortValue: (po) => po.createdAt,
       cell: (po) => <span className="font-mono text-[13px] tabular-nums">{formatDate(po.createdAt)}</span>,
     },
-    { key: 'status', header: 'Status', cell: (po) => <StatusBadge status={po.status} /> },
-    { key: 'total', header: 'Total', align: 'right', primary: true, cell: (po) => <Money value={po.total} /> },
+    { key: 'status', header: 'Status', sortValue: (po) => po.status, cell: (po) => <StatusBadge status={po.status} /> },
+    {
+      key: 'total',
+      header: 'Total',
+      align: 'right',
+      primary: true,
+      sortValue: (po) => po.total,
+      cell: (po) => <Money value={po.total} />,
+    },
   ]
 
   return (
     <div>
       <PageHeader
-        phase="spend"
         title="Purchase orders"
         description={`${rows.length} orders · ${formatMoney(openValue)} committed but not yet paid`}
         actions={

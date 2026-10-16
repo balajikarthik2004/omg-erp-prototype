@@ -90,9 +90,7 @@ export function CashCountsPage() {
   return (
     <div>
       <PageHeader
-        phase="collect"
         title="Counter cash"
-        description="Cash from the hundi and the counters is counted by one person and confirmed by another. Nothing posts to a fund until the second person agrees."
       >
         <Tabs
           value={tab}

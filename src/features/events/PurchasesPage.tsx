@@ -22,7 +22,7 @@ export function PurchasesPage() {
 
   return (
     <div>
-      <PageHeader phase="spend" title="Purchases and orders" description="An admin raises an order against a budget line, the CA approves it, and a different CA pays it. An order cannot exceed what is left on its line.">
+      <PageHeader title="Purchases and orders">
         {picker}
       </PageHeader>
 

@@ -148,9 +148,7 @@ export function InventoryPage() {
   return (
     <div>
       <PageHeader
-        phase="spend"
         title="Inventory"
-        description="What is on the shelf, what has fallen below its reorder level, and what the store has asked for."
       >
         <div className="flex flex-col gap-3">
           <Tabs

@@ -34,7 +34,7 @@ export function Tabs({
             onClick={() => onChange(item.id)}
             className={cn(
               'relative shrink-0 px-3.5 py-2.5 text-[14px] whitespace-nowrap transition-colors duration-150',
-              active ? 'font-bold text-navy-950' : 'text-navy-600/80 hover:text-navy-950 font-medium',
+              active ? 'font-bold text-stone-900' : 'text-stone-500 hover:text-stone-900 font-medium',
             )}
           >
             {item.label}
@@ -42,7 +42,7 @@ export function Tabs({
               <span
                 className={cn(
                   'ml-2 rounded-full px-2 py-0.5 font-mono text-[11px] font-bold tabular-nums transition-colors duration-150',
-                  active ? 'bg-kumkum-100 text-kumkum-800' : 'bg-navy-100 text-navy-700',
+                  active ? 'bg-kumkum-100 text-kumkum-800' : 'bg-sandal-200 text-stone-700',
                 )}
               >
                 {item.count}

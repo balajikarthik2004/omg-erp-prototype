@@ -2,10 +2,10 @@ import { forwardRef, useId, type InputHTMLAttributes, type ReactNode, type Texta
 import { cn } from '@/lib/cn'
 
 const FIELD =
-  'w-full rounded-xl border border-navy-200/90 bg-white px-3.5 py-2.5 text-[15px] text-navy-950 font-medium ' +
-  'placeholder:text-navy-400/80 transition-all duration-150 shadow-2xs ' +
+  'w-full rounded-xl border border-sandal-200 bg-sandal-50 px-3.5 py-2.5 text-[15px] text-stone-900 font-medium ' +
+  'placeholder:text-stone-500 transition-all duration-150 shadow-2xs ' +
   'focus:border-kumkum-500 focus:ring-3 focus:ring-kumkum-500/15 focus:outline-none ' +
-  'disabled:bg-navy-50 disabled:border-navy-100 disabled:text-navy-400'
+  'disabled:bg-sandal-100 disabled:border-sandal-200 disabled:text-stone-500'
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: ReactNode
@@ -24,7 +24,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   return (
     <div className="w-full">
       {label ? (
-        <label htmlFor={fieldId} className="mb-1.5 block text-[13px] font-bold text-navy-900">
+        <label htmlFor={fieldId} className="mb-1.5 block text-[13px] font-bold text-stone-900">
           {label}
         </label>
       ) : null}
@@ -70,7 +70,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
   return (
     <div className="w-full">
       {label ? (
-        <label htmlFor={fieldId} className="mb-1.5 block text-[13px] font-bold text-navy-900">
+        <label htmlFor={fieldId} className="mb-1.5 block text-[13px] font-bold text-stone-900">
           {label}
         </label>
       ) : null}

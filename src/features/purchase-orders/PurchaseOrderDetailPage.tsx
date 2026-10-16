@@ -81,8 +81,8 @@ export function PurchaseOrderDetailPage() {
       </Link>
 
       <PageHeader
-        phase="spend"
         title={po.poNo}
+        showTitle
         description={`${supplier?.name ?? 'Supplier'} · raised by ${userName(po.preparedBy)} on ${formatDate(po.createdAt)}`}
         actions={
           <div className="flex flex-wrap items-center gap-2">

@@ -322,9 +322,7 @@ export function LedgerPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        phase="control"
         title="Ledger"
-        description="Every financial entry, recorded in order and preserved for audit. Entries are never edited or deleted — a mistake is corrected with an append-only reversal."
         actions={
           <div className="flex items-center gap-2">
             <span
@@ -688,108 +686,49 @@ export function LedgerPage() {
                     </div>
                   </div>
 
-                  {/* Expanded Detail View: Full Accounting Entries */}
-                  {isExpanded ? (
-                    <div className="border-t border-navy-100 bg-navy-50/40 p-4 animate-in fade-in-0 duration-150">
-                      {/* Explanatory accounting guidance bar */}
-                      <div className="mb-3 flex items-start gap-2 rounded-lg border border-navy-100 bg-white p-2.5 text-[12px] text-navy-700">
-                        <Info className="size-4 shrink-0 text-navy-500 mt-0.5" aria-hidden />
-                        <div>
-                          <strong className="text-navy-900 font-semibold">Accounting Double-Entry Rules: </strong>
-                          Debits record expense increases or asset receipts; Credits record revenue earnings or cash disbursements from bank accounts.
-                        </div>
-                      </div>
-
-                      {/* Journal Lines Table */}
-                      <div className="overflow-hidden rounded-lg border border-navy-200/90 bg-white shadow-2xs">
-                        <div className="scrollbar-thin overflow-x-auto">
-                          <table className="w-full border-collapse text-[13.5px]">
-                            <thead>
-                              <tr className="border-b border-navy-100 bg-navy-50/70 text-[11px] font-bold uppercase tracking-[0.1em] text-navy-600">
-                                <th className="px-3.5 py-2.5 text-left">Account</th>
-                                <th className="px-3.5 py-2.5 text-left">Fund Allocation</th>
-                                <th className="px-3.5 py-2.5 text-left">Accounting Impact</th>
-                                <th className="px-3.5 py-2.5 text-right">Debit</th>
-                                <th className="px-3.5 py-2.5 text-right">Credit</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-navy-100">
-                              {entry.lines.map((line, idx) => {
-                                const lineFundName = getFundLabel(line.fundId)
-                                const impactDescription = getAccountImpact(line.account, line.debit, line.credit)
-
-                                return (
-                                  <tr key={idx} className="hover:bg-navy-50/30 transition-colors">
-                                    <td className="px-3.5 py-2.5 font-semibold text-navy-950">
-                                      {line.account}
-                                    </td>
-                                    <td className="px-3.5 py-2.5 text-navy-700">
-                                      <span className="font-mono text-[12px] font-medium text-navy-600 block">
-                                        {line.fundId}
-                                      </span>
-                                      <span className="text-[11.5px] text-navy-500 truncate max-w-[200px] block">
-                                        {lineFundName}
-                                      </span>
-                                    </td>
-                                    <td className="px-3.5 py-2.5 text-[12.5px] text-navy-600">
-                                      {impactDescription}
-                                    </td>
-                                    <td className="px-3.5 py-2.5 text-right font-mono font-medium text-navy-950 tabular-nums">
-                                      {line.debit > 0 ? (
-                                        <Money value={line.debit} />
-                                      ) : (
-                                        <span className="text-navy-300">—</span>
-                                      )}
-                                    </td>
-                                    <td className="px-3.5 py-2.5 text-right font-mono font-medium text-navy-950 tabular-nums">
-                                      {line.credit > 0 ? (
-                                        <Money value={line.credit} />
-                                      ) : (
-                                        <span className="text-navy-300">—</span>
-                                      )}
-                                    </td>
-                                  </tr>
-                                )
-                              })}
-                            </tbody>
-                            <tfoot>
-                              <tr className="border-t-2 border-navy-200 bg-navy-50/80 font-semibold text-navy-950">
-                                <td colSpan={3} className="px-3.5 py-2.5">
-                                  <div className="flex items-center gap-2">
-                                    {isBalanced ? (
-                                      <span className="inline-flex items-center gap-1 text-[12px] text-emerald-800 font-bold">
-                                        <Check className="size-3.5 text-emerald-600 stroke-[2.5]" aria-hidden />
-                                        Debits and credits match perfectly (Balanced)
-                                      </span>
-                                    ) : (
-                                      <span className="inline-flex items-center gap-1 text-[12px] text-amber-800 font-bold">
-                                        <AlertCircle className="size-3.5 text-amber-600" aria-hidden />
-                                        Out of balance by {formatMoney(Math.abs(debitTotal - creditTotal))}
-                                      </span>
-                                    )}
-                                  </div>
-                                </td>
-                                <td className="px-3.5 py-2.5 text-right font-mono font-bold text-navy-950 tabular-nums">
-                                  <Money value={debitTotal} />
-                                </td>
-                                <td className="px-3.5 py-2.5 text-right font-mono font-bold text-navy-950 tabular-nums">
-                                  <Money value={creditTotal} />
-                                </td>
-                              </tr>
-                            </tfoot>
-                          </table>
-                        </div>
-                      </div>
-
-                      {/* Reversal audit note */}
-                      {entry.reversalOf ? (
-                        <p className="mt-2 text-[12px] text-danger-700 flex items-center gap-1.5 font-medium">
-                          <Undo2 className="size-3" aria-hidden />
-                          This entry is an append-only reversal of transaction <code>{entry.reversalOf}</code>.
-                        </p>
-                      ) : null}
-                    </div>
-                  ) : null}
+                  <div className="scrollbar-thin overflow-x-auto">
+                    <table className="w-full border-collapse text-[14px]">
+                      <thead>
+                        <tr>
+                          {['Account', 'Fund', 'Debit', 'Credit'].map((h, i) => (
+                            <th
+                              key={h}
+                              className={`px-4 py-2 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase ${i > 1 ? 'text-right' : 'text-left'}`}
+                            >
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {entry.lines.map((line, i) => (
+                          <tr key={i} className="border-t border-sandal-200">
+                            <td className="px-4 py-2 text-stone-900">{line.account}</td>
+                            <td className="px-4 py-2 text-stone-500">
+                              {FUNDS.find((f) => f.id === line.fundId)?.name ?? line.fundId}
+                            </td>
+                            <td className="px-4 py-2 text-right">
+                              {line.debit > 0 ? <Money exact value={line.debit} /> : <span className="text-stone-500">—</span>}
+                            </td>
+                            <td className="px-4 py-2 text-right">
+                              {line.credit > 0 ? <Money exact value={line.credit} /> : <span className="text-stone-500">—</span>}
+                            </td>
+                          </tr>
+                        ))}
+                        <tr className="border-t border-sandal-200 bg-sandal-100">
+                          <td className="px-4 py-2 text-[13px] text-stone-500" colSpan={2}>
+                            {balanced ? 'Balanced' : 'Out of balance — needs review'}
+                          </td>
+                          <td className="px-4 py-2 text-right">
+                            <Money exact value={debit} className="font-medium" />
+                          </td>
+                          <td className="px-4 py-2 text-right">
+                            <Money exact value={credit} className="font-medium" />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </li>
               )
             })}

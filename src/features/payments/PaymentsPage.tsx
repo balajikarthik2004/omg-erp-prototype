@@ -99,7 +99,7 @@ export function PaymentsPage() {
       },
     },
     { key: 'status', header: 'Status', cell: (i) => <StatusBadge status={i.status === 'approved' ? 'awaiting_release' : i.status} /> },
-    { key: 'total', header: 'Total', align: 'right', primary: true, cell: (i) => <Money value={i.total} /> },
+    { key: 'total', header: 'Total', align: 'right', primary: true, cell: (i) => <Money exact value={i.total} /> },
   ]
 
   const openValue = open.reduce((s, i) => s + i.total, 0)
@@ -108,9 +108,7 @@ export function PaymentsPage() {
   return (
     <div>
       <PageHeader
-        phase="spend"
         title="Payments"
-        description="Supplier invoices matched against the order and the goods receipt. Nothing is paid on one person's say-so."
       >
         <div className="flex flex-col gap-3">
           <Tabs
@@ -268,11 +266,11 @@ export function PaymentsPage() {
               <div className="flex items-end justify-between gap-3">
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Invoice total</p>
-                  <Money value={focused.total} className="mt-1 font-display text-[22px] sm:text-[30px] text-stone-900" />
+                  <Money exact value={focused.total} className="mt-1 font-display text-[22px] sm:text-[30px] text-stone-900" />
                 </div>
                 <div className="text-right">
                   <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Ordered</p>
-                  <Money value={focusPo.total} className="mt-1 text-[18px]" />
+                  <Money exact value={focusPo.total} className="mt-1 text-[18px]" />
                 </div>
               </div>
               <p className="mt-2 text-[13px] text-stone-500">Requires {approvalTierLabel(focused.total)}</p>

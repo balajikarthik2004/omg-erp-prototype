@@ -154,8 +154,6 @@ export function GaushalaDonationsPage() {
     <div>
       <PageHeader
         title="Gaushala donations"
-        description="Every gift that credited a Gaushala fund, with the fee the gateway took and what the donor was shown."
-        phase="collect"
         actions={
           <Button
             variant="secondary"

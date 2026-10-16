@@ -1,23 +1,5 @@
-import { PHASES, SECTORS, type Phase, type SectorId } from '@/config'
+import { SECTORS, type SectorId } from '@/config'
 import { cn } from '@/lib/cn'
-
-export function PhaseChip({ phase, className }: { phase: Phase; className?: string }) {
-  const meta = PHASES[phase]
-  return (
-    <span
-      title={meta.meaning}
-      className={cn(
-        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5',
-        'text-[12px] font-medium tracking-[0.06em] uppercase',
-        meta.chipClass,
-        className,
-      )}
-    >
-      <span className={cn('size-1.5 rounded-full', meta.markerClass)} aria-hidden />
-      {meta.label}
-    </span>
-  )
-}
 
 export function SectorChip({
   sectorId,

@@ -38,8 +38,6 @@ export function BookingsPage() {
     <div>
       <PageHeader
         title="Visits & bookings"
-        description="Slots, capacity, closed days and who is coming through the gate today."
-        phase="collect"
       />
 
       <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

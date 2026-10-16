@@ -111,13 +111,11 @@ export function ProcurementPage() {
   return (
     <div>
       <PageHeader
-        phase="spend"
         title="New purchase order"
-        description="Four steps: pick an approved request, compare suppliers, check the budget, then send it for approval."
       />
 
       <Card className="mb-6">
-        <FlowStepper steps={STEPS} current={step} phase="spend" onStepClick={setStep} />
+        <FlowStepper steps={STEPS} current={step} onStepClick={setStep} />
       </Card>
 
       {!db.ready ? (

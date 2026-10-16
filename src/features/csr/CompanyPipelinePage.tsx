@@ -180,9 +180,7 @@ Submitted with board resolution authorization.`
   return (
     <div className="space-y-6">
       <PageHeader
-        phase="collect"
         title="Corporate Partner Directory & Pipeline"
-        description="Corporate Social Responsibility CRM, annual Section 135 obligation tracking, and automated AI proposal synthesis."
         actions={
           <Button
             variant="primary"

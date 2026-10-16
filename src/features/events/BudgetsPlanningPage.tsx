@@ -50,7 +50,7 @@ export function BudgetsPlanningPage() {
 
   return (
     <div>
-      <PageHeader phase="control" title="Budgets and financial planning" description="Every event's budget in one table. Open a row to set, review or approve the cost lines." >
+      <PageHeader title="Budgets and financial planning" >
         <div className="flex flex-col gap-3">
           <Tabs value={tab} onChange={setTab} items={GROUPS.map((g) => ({ id: g.id, label: g.label, count: rows.filter((r) => g.match(r.event.status)).length }))} />
           <Input aria-label="Search events" placeholder="Search events" value={query} onChange={(e) => setQuery(e.target.value)} leading={<Search className="size-4" aria-hidden />} />

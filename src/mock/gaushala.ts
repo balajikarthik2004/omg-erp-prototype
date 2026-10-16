@@ -157,12 +157,6 @@ export const GAUSHALA_SEWAS: CatalogItem[] = [
     price: 2400, presets: [2400, 12_000, 24_000], fundId: 'fund-gau-med', active: true, popular: true,
   },
   {
-    id: 'gau-treatment', sectorId: 'sevalaya', category: 'activity', gaushala: true, gaushalaCategory: 'medical',
-    name: 'Treatment of a Sick Cow',
-    description: 'A vet visit, the course of medicine and the weeks of feeding that follow it.',
-    price: 12_500, presets: [12_500, 25_000, 50_000], fundId: 'fund-gau-med', active: true,
-  },
-  {
     id: 'gau-surgery', sectorId: 'sevalaya', category: 'activity', gaushala: true, gaushalaCategory: 'medical',
     name: 'Surgery',
     description: 'Most of our surgeries remove swallowed plastic and wire. It is the commonest injury we see.',
