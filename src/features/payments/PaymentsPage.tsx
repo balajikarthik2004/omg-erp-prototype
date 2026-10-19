@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Banknote, MessageSquarePlus, Search, TriangleAlert } from 'lucide-react'
+import { Banknote, CalendarClock, FileText, MessageSquarePlus, Search, TriangleAlert } from 'lucide-react'
 
 import { approvalTierLabel } from '@/config'
+import { cn } from '@/lib/cn'
 import { formatDate, formatDue, formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
@@ -87,13 +88,25 @@ export function PaymentsPage() {
     },
     { key: 'sector', header: 'Sector', cell: (i) => <SectorChip sectorId={i.sectorId} /> },
     {
+      key: 'date',
+      header: 'Invoice date',
+      hideOnMobile: true,
+      sortValue: (i) => i.date,
+      cell: (i) => <span className="font-mono text-[13px] tabular-nums">{formatDate(i.date)}</span>,
+    },
+    {
       key: 'due',
       header: 'Due',
+      sortValue: (i) => i.dueDate,
       cell: (i) => {
         const due = formatDue(i.dueDate)
+        const late = due.overdue && i.status !== 'paid' && i.status !== 'rejected'
         return (
-          <span className={due.overdue && i.status !== 'paid' ? 'text-danger-600' : 'text-stone-700'}>
-            {formatDate(i.dueDate)}
+          <span className="block">
+            <span className="block font-mono text-[13px] tabular-nums text-stone-700">{formatDate(i.dueDate)}</span>
+            <span className={cn('block text-[12px]', late ? 'font-semibold text-danger-600' : 'text-stone-500')}>
+              {due.label}
+            </span>
           </span>
         )
       },
@@ -104,11 +117,17 @@ export function PaymentsPage() {
 
   const openValue = open.reduce((s, i) => s + i.total, 0)
   const variances = open.filter((i) => i.status === 'variance').length
+  const overdue = open.filter((i) => formatDue(i.dueDate).overdue)
+  const overdueValue = overdue.reduce((s, i) => s + i.total, 0)
+  // Approved is not paid: a different person still has to release the money.
+  const awaitingRelease = open.filter((i) => i.status === 'approved')
+  const releaseValue = awaitingRelease.reduce((s, i) => s + i.total, 0)
 
   return (
     <div>
       <PageHeader
         title="Payments"
+        description="Supplier invoices, checked against the order and the goods receipt before anything is paid. Approving an invoice does not pay it — a different person releases the money afterwards, so no one can both authorise and make a payment."
       >
         <div className="flex flex-col gap-3">
           <Tabs
@@ -133,8 +152,28 @@ export function PaymentsPage() {
         <TableSkeleton rows={8} cols={7} />
       ) : (
         <div className="flex flex-col gap-6">
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Stat label="Open invoices" value={open.length} sub={formatMoneyShort(openValue)} accentClass="bg-marigold-500" />
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <Stat
+              label="Open invoices"
+              value={open.length}
+              sub={`${formatMoneyShort(openValue)} outstanding`}
+              accentClass="bg-marigold-500"
+              icon={<FileText className="size-4" aria-hidden />}
+            />
+            <Stat
+              label="Past their due date"
+              value={overdue.length}
+              sub={overdue.length > 0 ? `${formatMoneyShort(overdueValue)} late` : 'nothing is late'}
+              accentClass={overdue.length > 0 ? 'bg-danger-600' : 'bg-tulsi-500'}
+              icon={<CalendarClock className="size-4" aria-hidden />}
+            />
+            <Stat
+              label="Approved, not yet paid"
+              value={awaitingRelease.length}
+              sub={`${formatMoneyShort(releaseValue)} to release`}
+              accentClass="bg-turmeric-500"
+              icon={<Banknote className="size-4" aria-hidden />}
+            />
             <Stat
               label="Price mismatches"
               value={variances}
@@ -142,7 +181,6 @@ export function PaymentsPage() {
               accentClass={variances > 0 ? 'bg-danger-600' : 'bg-tulsi-500'}
               icon={<TriangleAlert className="size-4" aria-hidden />}
             />
-            <Stat label="Settled" value={settled.length} accentClass="bg-tulsi-500" />
           </div>
 
           {rows.length === 0 ? (
@@ -271,9 +309,41 @@ export function PaymentsPage() {
                 <div className="text-right">
                   <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Ordered</p>
                   <Money value={focusPo.total} className="mt-1 text-[18px]" />
+                  {focused.total !== focusPo.total ? (
+                    <Money
+                      value={focused.total - focusPo.total}
+                      signed
+                      tone={focused.total > focusPo.total ? 'out' : 'in'}
+                      className="mt-0.5 block text-[13px] font-semibold"
+                    />
+                  ) : null}
                 </div>
               </div>
-              <p className="mt-2 text-[13px] text-stone-500">Requires {approvalTierLabel(focused.total)}</p>
+
+              <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-sandal-200 pt-3 text-[13px] sm:grid-cols-3">
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-[0.1em] text-stone-500">Invoiced</dt>
+                  <dd className="font-mono tabular-nums text-stone-900">{formatDate(focused.date)}</dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-[0.1em] text-stone-500">Due</dt>
+                  <dd className="font-mono tabular-nums text-stone-900">{formatDate(focused.dueDate)}</dd>
+                  <dd
+                    className={cn(
+                      'text-[12px]',
+                      formatDue(focused.dueDate).overdue && focused.status !== 'paid'
+                        ? 'font-semibold text-danger-600'
+                        : 'text-stone-500',
+                    )}
+                  >
+                    {formatDue(focused.dueDate).label}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-[0.1em] text-stone-500">Approval needed</dt>
+                  <dd className="text-stone-900">{approvalTierLabel(focused.total)}</dd>
+                </div>
+              </dl>
             </div>
 
             <section>

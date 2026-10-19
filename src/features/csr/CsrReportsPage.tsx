@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import {
-  Award,
   CheckCircle2,
   FileCheck2,
-  Image,
   Plus,
   ShieldCheck,
   Users,
@@ -16,6 +14,7 @@ import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { Tabs } from '@/components/ui/Tabs'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { userById, userName } from '@/mock/seed'
 import { useDb } from '@/store/db'
@@ -135,65 +134,37 @@ export function CsrReportsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Utilisation Certificates & Impact Reports">
-        <div className="flex items-center justify-between gap-2.5">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setActiveTab('ucs')}
-              className={`flex h-9 items-center gap-1.5 rounded-lg px-3 text-[13px] font-semibold whitespace-nowrap transition sm:px-3.5 sm:text-sm ${
-                activeTab === 'ucs'
-                  ? 'bg-turmeric-600 text-white shadow-xs'
-                  : 'bg-white text-sandalwood-700 hover:bg-sandalwood-100 border border-sandalwood-200'
-              }`}
-            >
-              <Award className="size-4 shrink-0" />
-              <span>
-                <span className="hidden xl:inline">Statutory </span>
-                Utilisation Certificates ({ucs.length})
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('progress')}
-              className={`flex h-9 items-center gap-1.5 rounded-lg px-3 text-[13px] font-semibold whitespace-nowrap transition sm:px-3.5 sm:text-sm ${
-                activeTab === 'progress'
-                  ? 'bg-turmeric-600 text-white shadow-xs'
-                  : 'bg-white text-sandalwood-700 hover:bg-sandalwood-100 border border-sandalwood-200'
-              }`}
-            >
-              <Image className="size-4 shrink-0" />
-              <span>
-                <span className="hidden xl:inline">Field Photo Evidence & </span>
-                <span className="xl:hidden">Field </span>
-                Milestones ({progressUpdates.length})
-              </span>
-            </button>
-          </div>
+      <PageHeader
+        title="UCs and reports"
+        description="A utilisation certificate is what the company files with the MCA: proof that the grant was spent on the project it was given for. Nothing is certified until the spend is in the ledger."
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          {/* The shared Tabs control, so this page switches views the same
+              way every other console page does. */}
+          <Tabs
+            value={activeTab}
+            onChange={(id) => setActiveTab(id as typeof activeTab)}
+            items={[
+              { id: 'ucs', label: 'Utilisation certificates', count: ucs.length },
+              { id: 'progress', label: 'Field milestones', count: progressUpdates.length },
+            ]}
+          />
 
           <div className="flex items-center gap-2">
             <Button
               variant="secondary"
               icon={<Plus className="size-4 shrink-0" />}
               onClick={() => setAddProgressModal(true)}
-              className="h-9 px-3 text-[13px] sm:px-3.5 sm:text-sm whitespace-nowrap"
             >
-              <span>
-                Log <span className="hidden xl:inline">Field </span>Milestone
-              </span>
+              Log milestone
             </Button>
             <Button
-              variant="primary"
               icon={<FileCheck2 className="size-4 shrink-0" />}
               disabled={ucDeals.length === 0}
               title={ucDeals.length === 0 ? 'Every received tranche already has a certificate.' : 'Draft a certificate for a received tranche'}
               onClick={() => setDraftUcModal(true)}
-              className="h-9 px-3 text-[13px] sm:px-3.5 sm:text-sm whitespace-nowrap"
             >
-              <span>
-                Draft <span className="hidden xl:inline">Utilisation </span>Certificate
-              </span>
+              Draft certificate
             </Button>
           </div>
         </div>
@@ -209,7 +180,7 @@ export function CsrReportsPage() {
             const isSigned = uc.status === 'signed'
 
             return (
-              <Card key={uc.id} className="overflow-hidden border border-sandalwood-300">
+              <Card key={uc.id} className="overflow-hidden border border-sandal-300">
                 <div className="p-5">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div>
@@ -217,8 +188,8 @@ export function CsrReportsPage() {
                         <span className="text-xs font-bold uppercase tracking-wider text-turmeric-800">
                           {company?.name}
                         </span>
-                        <span className="text-sandalwood-400">→</span>
-                        <h3 className="font-serif text-base font-bold text-sandalwood-900">
+                        <span className="text-stone-500">→</span>
+                        <h3 className="font-display text-base font-bold text-stone-900">
                           {project?.title} (Tranche #{uc.trancheSeq})
                         </h3>
                         <span
@@ -232,10 +203,10 @@ export function CsrReportsPage() {
                         </span>
                       </div>
 
-                      <div className="mt-2 text-xs text-sandalwood-600 space-y-1">
+                      <div className="mt-2 text-xs text-stone-700 space-y-1">
                         <p>{uc.narrative}</p>
-                        <p className="text-[11px] text-sandalwood-500">
-                          Prepared by: <strong className="text-sandalwood-700">{userName(uc.preparedBy)}</strong> on {uc.preparedAt.slice(0, 10)}
+                        <p className="text-[11px] text-stone-500">
+                          Prepared by: <strong className="text-stone-700">{userName(uc.preparedBy)}</strong> on {uc.preparedAt.slice(0, 10)}
                         </p>
                       </div>
                     </div>
@@ -257,22 +228,22 @@ export function CsrReportsPage() {
                   </div>
 
                   {/* Financial Metrics Strip */}
-                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 rounded-lg bg-sandalwood-50 p-3 text-xs">
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 rounded-lg bg-sandal-50 p-3 text-xs">
                     <div>
-                      <span className="text-sandalwood-500 block">Tranche Received</span>
-                      <strong className="font-mono text-sm font-bold text-sandalwood-900">
+                      <span className="text-stone-500 block">Tranche Received</span>
+                      <strong className="font-mono text-sm font-bold text-stone-900">
                         {formatMoneyShort(uc.amountReceived)}
                       </strong>
                     </div>
                     <div>
-                      <span className="text-sandalwood-500 block">Amount Utilised</span>
+                      <span className="text-stone-500 block">Amount Utilised</span>
                       <strong className="font-mono text-sm font-bold text-tulsi-700">
                         {formatMoneyShort(uc.amountUtilised)}
                       </strong>
                     </div>
                     <div>
-                      <span className="text-sandalwood-500 block">Balance Remaining</span>
-                      <strong className="font-mono text-sm font-bold text-sandalwood-800">
+                      <span className="text-stone-500 block">Balance Remaining</span>
+                      <strong className="font-mono text-sm font-bold text-stone-900">
                         {formatMoneyShort(uc.balanceRemaining)}
                       </strong>
                     </div>
@@ -285,7 +256,7 @@ export function CsrReportsPage() {
                         <div className="flex items-center gap-2">
                           <CheckCircle2 className="size-5 text-tulsi-600 shrink-0" />
                           <div>
-                            <p className="font-serif font-bold text-tulsi-950">
+                            <p className="font-display font-bold text-tulsi-950">
                               Digitally Verified by Chartered Accountant
                             </p>
                             <p className="text-[11px] text-tulsi-800">
@@ -295,7 +266,7 @@ export function CsrReportsPage() {
                         </div>
 
                         <div className="rounded bg-white px-3 py-1.5 border border-tulsi-200 text-right">
-                          <span className="block text-[10px] uppercase font-bold text-sandalwood-500">ICAI UDIN</span>
+                          <span className="block text-[10px] uppercase font-bold text-stone-500">ICAI UDIN</span>
                           <span className="font-mono text-xs font-bold text-tulsi-900 tracking-wider">
                             {uc.caUdin}
                           </span>
@@ -315,10 +286,10 @@ export function CsrReportsPage() {
             const project = projects.find((p) => p.id === upd.projectId)
 
             return (
-              <Card key={upd.id} className="overflow-hidden border border-sandalwood-300">
+              <Card key={upd.id} className="overflow-hidden border border-sandal-300">
                 <div className="p-5">
                   <div className="flex items-center justify-between gap-2">
-                    <h3 className="font-serif text-base font-bold text-sandalwood-900">
+                    <h3 className="font-display text-base font-bold text-stone-900">
                       {project?.title}
                     </h3>
                     <span className="inline-flex items-center gap-1 rounded bg-peacock-50 px-2.5 py-0.5 text-xs font-semibold text-peacock-800 border border-peacock-200">
@@ -327,25 +298,25 @@ export function CsrReportsPage() {
                     </span>
                   </div>
 
-                  <p className="mt-2 text-xs text-sandalwood-600 leading-relaxed">
+                  <p className="mt-2 text-xs text-stone-700 leading-relaxed">
                     {upd.narrative}
                   </p>
 
-                  <div className="mt-1 text-[11px] text-sandalwood-500">
+                  <div className="mt-1 text-[11px] text-stone-500">
                     Period: {upd.periodStart} to {upd.periodEnd} · Recorded by {userName(upd.createdBy)}
                   </div>
 
                   {/* Photo Evidence Grid */}
                   <div className="mt-4 grid grid-cols-1 gap-2">
                     {upd.photos.map((ph, idx) => (
-                      <div key={idx} className="rounded-lg overflow-hidden border border-sandalwood-200 bg-sandalwood-50">
+                      <div key={idx} className="rounded-lg overflow-hidden border border-sandal-200 bg-sandal-50">
                         <img
                           src={ph.url}
                           alt={ph.caption}
                           className="h-48 w-full object-cover"
                         />
                         <div className="p-2.5 flex items-center justify-between text-xs">
-                          <span className="font-medium text-sandalwood-800">{ph.caption}</span>
+                          <span className="font-medium text-stone-900">{ph.caption}</span>
                           <span className="text-[10px] font-semibold text-tulsi-700 bg-tulsi-50 px-2 py-0.5 rounded">
                             Consent Verified
                           </span>
@@ -376,7 +347,7 @@ export function CsrReportsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+              <label className="block text-xs font-medium text-stone-700 mb-1">
                 ICAI Membership Number
               </label>
               <Input
@@ -388,7 +359,7 @@ export function CsrReportsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+              <label className="block text-xs font-medium text-stone-700 mb-1">
                 18-Digit ICAI UDIN (Unique Document Identification Number)
               </label>
               <Input
@@ -448,7 +419,7 @@ export function CsrReportsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+              <label className="block text-xs font-medium text-stone-700 mb-1">
                 Amount Utilised (₹)
               </label>
               <Input
@@ -460,11 +431,11 @@ export function CsrReportsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+              <label className="block text-xs font-medium text-stone-700 mb-1">
                 Utilisation & Audit Narrative
               </label>
               <textarea
-                className="w-full rounded-md border border-sandalwood-300 p-2 text-xs focus:border-turmeric-500 focus:outline-hidden"
+                className="w-full rounded-md border border-sandal-300 p-2 text-xs focus:border-turmeric-500 focus:outline-hidden"
                 rows={3}
                 value={ucNarrative}
                 onChange={(e) => setUcNarrative(e.target.value)}
@@ -506,7 +477,7 @@ export function CsrReportsPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                <label className="block text-xs font-medium text-stone-700 mb-1">
                   Beneficiaries Directly Reached
                 </label>
                 <Input
@@ -517,7 +488,7 @@ export function CsrReportsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                <label className="block text-xs font-medium text-stone-700 mb-1">
                   Photo Caption
                 </label>
                 <Input
@@ -529,11 +500,11 @@ export function CsrReportsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+              <label className="block text-xs font-medium text-stone-700 mb-1">
                 Progress Narrative Summary
               </label>
               <textarea
-                className="w-full rounded-md border border-sandalwood-300 p-2 text-xs focus:border-turmeric-500 focus:outline-hidden"
+                className="w-full rounded-md border border-sandal-300 p-2 text-xs focus:border-turmeric-500 focus:outline-hidden"
                 rows={3}
                 placeholder="Details of food distribution, equipment installation, student attendance..."
                 value={progressNarrative}

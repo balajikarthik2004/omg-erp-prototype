@@ -159,7 +159,8 @@ export function CsrProjectsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="CSR Project Builder & Schedule VII"
+        title="CSR projects"
+        description="The work a grant is earmarked for, classified against the Schedule VII heads a company may lawfully spend CSR money on."
         actions={
           <Button
             variant="primary"
@@ -178,7 +179,7 @@ export function CsrProjectsPage() {
           className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
             selectedFilter === 'ALL'
               ? 'bg-turmeric-600 text-white shadow-xs'
-              : 'bg-white text-sandalwood-700 hover:bg-sandalwood-100 border border-sandalwood-200'
+              : 'bg-white text-stone-700 hover:bg-sandal-100 border border-sandal-200'
           }`}
         >
           All Categories ({projects.length})
@@ -190,7 +191,7 @@ export function CsrProjectsPage() {
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
               selectedFilter === item.code
                 ? 'bg-turmeric-600 text-white shadow-xs'
-                : 'bg-white text-sandalwood-700 hover:bg-sandalwood-100 border border-sandalwood-200'
+                : 'bg-white text-stone-700 hover:bg-sandal-100 border border-sandal-200'
             }`}
           >
             <span className="font-mono">({item.code})</span>
@@ -225,51 +226,51 @@ export function CsrProjectsPage() {
                         ? 'bg-marigold-100 text-marigold-800 border border-marigold-200'
                         : isFunded
                         ? 'bg-peacock-100 text-peacock-800 border border-peacock-200'
-                        : 'bg-sandalwood-100 text-sandalwood-700'
+                        : 'bg-sandal-100 text-stone-700'
                     }`}
                   >
                     {prj.status.replace(/_/g, ' ')}
                   </span>
                 </div>
 
-                <h3 className="mt-2.5 font-serif text-base font-bold text-sandalwood-900 leading-snug">
+                <h3 className="mt-2.5 font-display text-base font-bold text-stone-900 leading-snug">
                   {prj.title}
                 </h3>
-                <p className="mt-1 text-xs text-sandalwood-600 line-clamp-2">
+                <p className="mt-1 text-xs text-stone-700 line-clamp-2">
                   {prj.description}
                 </p>
 
-                <div className="mt-4 space-y-2 border-t border-sandalwood-200/80 pt-3 text-xs">
-                  <div className="flex items-center justify-between text-sandalwood-600">
+                <div className="mt-4 space-y-2 border-t border-sandal-200/80 pt-3 text-xs">
+                  <div className="flex items-center justify-between text-stone-700">
                     <span>Implementing Agency:</span>
-                    <strong className="text-sandalwood-900">{entity?.legalName.slice(0, 24)}...</strong>
+                    <strong className="text-stone-900">{entity?.legalName.slice(0, 24)}...</strong>
                   </div>
-                  <div className="flex items-center justify-between text-sandalwood-600">
+                  <div className="flex items-center justify-between text-stone-700">
                     <span>Location:</span>
-                    <span className="flex items-center gap-1 font-medium text-sandalwood-800">
+                    <span className="flex items-center gap-1 font-medium text-stone-900">
                       <MapPin className="size-3 text-turmeric-600" />
                       {prj.district}, {prj.state}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-sandalwood-600">
+                  <div className="flex items-center justify-between text-stone-700">
                     <span>Target Impact:</span>
-                    <span className="font-semibold text-sandalwood-900">
+                    <span className="font-semibold text-stone-900">
                       {prj.beneficiaryTarget.toLocaleString()} {prj.beneficiaryType}
                     </span>
                   </div>
                 </div>
 
                 {/* Financial Progress */}
-                <div className="mt-4 rounded-lg bg-sandalwood-50 p-3">
+                <div className="mt-4 rounded-lg bg-sandal-50 p-3">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-sandalwood-600">Budget:</span>
-                    <strong className="font-mono text-sandalwood-900">{formatMoneyShort(prj.totalBudget)}</strong>
+                    <span className="text-stone-700">Budget:</span>
+                    <strong className="font-mono text-stone-900">{formatMoneyShort(prj.totalBudget)}</strong>
                   </div>
                   <div className="mt-1 flex items-center justify-between text-xs">
-                    <span className="text-sandalwood-600">Committed Grant:</span>
+                    <span className="text-stone-700">Committed Grant:</span>
                     <strong className="font-mono text-tulsi-700">{formatMoneyShort(totalCommitted)}</strong>
                   </div>
-                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-sandalwood-200">
+                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-sandal-200">
                     <div
                       className="h-full rounded-full bg-tulsi-600"
                       style={{
@@ -281,7 +282,7 @@ export function CsrProjectsPage() {
               </div>
 
               {/* Action Footer */}
-              <div className="border-t border-sandalwood-200 bg-sandalwood-50/50 p-3.5 flex items-center justify-between">
+              <div className="border-t border-sandal-200 bg-sandal-50/50 p-3.5 flex items-center justify-between">
                 <button
                   onClick={() => setSelectedProject(prj)}
                   className="text-xs font-semibold text-turmeric-800 hover:text-turmeric-900"
@@ -325,23 +326,23 @@ export function CsrProjectsPage() {
           title={`Project Dossier: ${selectedProject.title}`}
         >
           <div className="space-y-4">
-            <div className="rounded-lg bg-sandalwood-50 p-3 text-xs space-y-1">
+            <div className="rounded-lg bg-sandal-50 p-3 text-xs space-y-1">
               <p><strong>Schedule VII Item:</strong> ({selectedProject.scheduleViiCode}) {CSR_SCHEDULE_VII_ITEMS.find((s) => s.code === selectedProject.scheduleViiCode)?.title}</p>
               <p><strong>District & State:</strong> {selectedProject.district}, {selectedProject.state}</p>
               <p><strong>Timeline:</strong> {selectedProject.startDate} to {selectedProject.endDate}</p>
-              <p><strong>Total Approved Budget:</strong> <span className="font-mono font-bold text-sandalwood-900">{formatMoneyShort(selectedProject.totalBudget)}</span></p>
+              <p><strong>Total Approved Budget:</strong> <span className="font-mono font-bold text-stone-900">{formatMoneyShort(selectedProject.totalBudget)}</span></p>
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-sandalwood-700 mb-2">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-stone-700 mb-2">
                 Detailed Budget Heads
               </h4>
-              <div className="divide-y divide-sandalwood-200 border rounded-lg overflow-hidden">
+              <div className="divide-y divide-sandal-200 border rounded-lg overflow-hidden">
                 {selectedProject.budgetLines.map((line) => (
                   <div key={line.id} className="p-3 text-xs flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-semibold text-[10px] uppercase bg-sandalwood-200 text-sandalwood-800 px-1.5 py-0.5 rounded">
+                        <span className="font-mono font-semibold text-[10px] uppercase bg-sandal-200 text-stone-900 px-1.5 py-0.5 rounded">
                           {line.category}
                         </span>
                         {line.isCapital && (
@@ -355,9 +356,9 @@ export function CsrProjectsPage() {
                           </span>
                         )}
                       </div>
-                      <p className="mt-1 font-medium text-sandalwood-900">{line.description}</p>
+                      <p className="mt-1 font-medium text-stone-900">{line.description}</p>
                     </div>
-                    <span className="font-mono font-bold text-sandalwood-900">
+                    <span className="font-mono font-bold text-stone-900">
                       {formatMoneyShort(line.amount)}
                     </span>
                   </div>
@@ -403,7 +404,7 @@ export function CsrProjectsPage() {
 
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-2">
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                <label className="block text-xs font-medium text-stone-700 mb-1">
                   Project Title
                 </label>
                 <Input
@@ -427,11 +428,11 @@ export function CsrProjectsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+              <label className="block text-xs font-medium text-stone-700 mb-1">
                 Project Scope & Beneficiary Impact Narrative
               </label>
               <textarea
-                className="w-full rounded-md border border-sandalwood-300 p-2 text-xs focus:border-turmeric-500 focus:outline-hidden"
+                className="w-full rounded-md border border-sandal-300 p-2 text-xs focus:border-turmeric-500 focus:outline-hidden"
                 rows={2}
                 placeholder="Comprehensive project objectives, targeting disadvantaged groups..."
                 value={description}
@@ -442,11 +443,11 @@ export function CsrProjectsPage() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">State</label>
+                <label className="block text-xs font-medium text-stone-700 mb-1">State</label>
                 <Input value={stateName} onChange={(e) => setStateName(e.target.value)} required />
               </div>
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">District</label>
+                <label className="block text-xs font-medium text-stone-700 mb-1">District</label>
                 <Input
                   placeholder="e.g. Thanjavur"
                   value={district}
@@ -455,7 +456,7 @@ export function CsrProjectsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">Beneficiaries</label>
+                <label className="block text-xs font-medium text-stone-700 mb-1">Beneficiaries</label>
                 <Input
                   type="number"
                   value={beneficiaryTarget}
@@ -464,7 +465,7 @@ export function CsrProjectsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">Type</label>
+                <label className="block text-xs font-medium text-stone-700 mb-1">Type</label>
                 <Input
                   value={beneficiaryType}
                   onChange={(e) => setBeneficiaryType(e.target.value)}
@@ -474,9 +475,9 @@ export function CsrProjectsPage() {
             </div>
 
             {/* Dynamic Budget Lines */}
-            <div className="border-t border-sandalwood-200 pt-3">
+            <div className="border-t border-sandal-200 pt-3">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-sandalwood-700">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-700">
                   Budget Line Breakdown ({budgetLines.length})
                 </h4>
                 <Button type="button" size="sm" variant="secondary" onClick={handleAddBudgetLine}>
@@ -488,7 +489,7 @@ export function CsrProjectsPage() {
                 {budgetLines.map((line) => (
                   <div
                     key={line.id}
-                    className="flex flex-wrap items-center gap-2 rounded-md border border-sandalwood-200 bg-sandalwood-50/50 p-2 text-xs"
+                    className="flex flex-wrap items-center gap-2 rounded-md border border-sandal-200 bg-sandal-50/50 p-2 text-xs"
                   >
                     <div className="w-44">
                       <Select
@@ -532,7 +533,7 @@ export function CsrProjectsPage() {
                       />
                     </div>
 
-                    <label className="flex items-center gap-1 text-[11px] text-sandalwood-700 cursor-pointer">
+                    <label className="flex items-center gap-1 text-[11px] text-stone-700 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={Boolean(line.isCapital)}
@@ -545,7 +546,7 @@ export function CsrProjectsPage() {
                       <button
                         type="button"
                         onClick={() => handleRemoveBudgetLine(line.id)}
-                        className="text-sandalwood-400 hover:text-kumkum-600 transition"
+                        className="text-stone-500 hover:text-kumkum-600 transition"
                       >
                         <Trash2 className="size-4" />
                       </button>
@@ -555,15 +556,15 @@ export function CsrProjectsPage() {
               </div>
 
               {/* Total and Admin Check Banner */}
-              <div className="mt-3 flex items-center justify-between rounded-lg bg-sandalwood-100 p-3 text-xs">
+              <div className="mt-3 flex items-center justify-between rounded-lg bg-sandal-100 p-3 text-xs">
                 <div>
-                  <span className="text-sandalwood-600">Total Project Outlay:</span>
-                  <strong className="ml-2 font-mono text-sm font-bold text-sandalwood-900">
+                  <span className="text-stone-700">Total Project Outlay:</span>
+                  <strong className="ml-2 font-mono text-sm font-bold text-stone-900">
                     {formatMoneyShort(totalBudget)}
                   </strong>
                 </div>
                 <div>
-                  <span className="text-sandalwood-600">Admin Overhead:</span>
+                  <span className="text-stone-700">Admin Overhead:</span>
                   <strong
                     className={`ml-1 font-mono font-bold ${
                       Number(adminPct) > 5.0 ? 'text-kumkum-700' : 'text-tulsi-700'

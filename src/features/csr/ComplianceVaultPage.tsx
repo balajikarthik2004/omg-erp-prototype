@@ -119,7 +119,8 @@ export function ComplianceVaultPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Compliance Vault"
+        title="Compliance vault"
+        description="The statutory file: registration certificates, MoUs, board resolutions and bank mandates. A CA verifies each one, and a grant cannot be reported on until its paperwork is complete."
         actions={
           <Button
             variant="primary"
@@ -143,13 +144,13 @@ export function ComplianceVaultPage() {
               className={`flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-sm font-medium transition ${
                 isSelected
                   ? 'border border-turmeric-400 bg-turmeric-50/80 text-turmeric-900 shadow-xs'
-                  : 'border border-transparent bg-white text-sandalwood-700 hover:border-sandalwood-200 hover:bg-sandalwood-50'
+                  : 'border border-transparent bg-white text-stone-700 hover:border-sandal-200 hover:bg-sandal-50'
               }`}
             >
               <ShieldCheck
                 className={`size-4 ${isReady ? 'text-tulsi-600' : 'text-turmeric-600'}`}
               />
-              <span className="font-serif font-semibold">{ent.legalName}</span>
+              <span className="font-display font-semibold">{ent.legalName}</span>
               <span
                 className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
                   isReady ? 'bg-tulsi-100 text-tulsi-800' : 'bg-turmeric-100 text-turmeric-800'
@@ -178,14 +179,14 @@ export function ComplianceVaultPage() {
                 <span
                   className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                     activeEntity.readinessStatus === 'CSR_READY'
-                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                      : 'bg-amber-50 text-amber-800 border border-amber-200'
+                      ? 'bg-tulsi-50 text-tulsi-700 border border-tulsi-500/30'
+                      : 'bg-marigold-50 text-marigold-500 border border-marigold-500/30'
                   }`}
                 >
                   {activeEntity.readinessStatus === 'CSR_READY' ? (
-                    <CheckCircle2 className="size-3.5 text-emerald-600" />
+                    <CheckCircle2 className="size-3.5 text-tulsi-700" />
                   ) : (
-                    <Clock className="size-3.5 text-amber-600" />
+                    <Clock className="size-3.5 text-marigold-500" />
                   )}
                   {activeEntity.readinessStatus === 'CSR_READY' ? 'CSR READY (MCA Section 135 Compliant)' : 'IN PROGRESS'}
                 </span>
@@ -254,16 +255,16 @@ export function ComplianceVaultPage() {
                   key={item.key}
                   className={`flex flex-col justify-between rounded-xl border p-3 transition ${
                     item.found
-                      ? 'border-emerald-200 bg-emerald-50/40'
-                      : 'border-amber-200 bg-amber-50/40'
+                      ? 'border-tulsi-500/30 bg-tulsi-50/50'
+                      : 'border-marigold-500/30 bg-marigold-50/60'
                   }`}
                 >
                   <div>
                     <div className="flex items-start gap-2">
                       {item.found ? (
-                        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+                        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-tulsi-700" />
                       ) : (
-                        <AlertCircle className="mt-0.5 size-4 shrink-0 text-amber-600" />
+                        <AlertCircle className="mt-0.5 size-4 shrink-0 text-marigold-500" />
                       )}
                       <h4 className="font-heritage text-xs font-bold text-navy-950 leading-snug">
                         {item.title}
@@ -276,7 +277,7 @@ export function ComplianceVaultPage() {
                   <div className="mt-2.5 pt-2 border-t border-black/5 flex items-center justify-end">
                     <span
                       className={`inline-block font-mono text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded ${
-                        item.found ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                        item.found ? 'bg-tulsi-50 text-tulsi-700' : 'bg-marigold-50 text-marigold-500'
                       }`}
                     >
                       {item.found ? 'VERIFIED' : 'PENDING'}
@@ -296,8 +297,8 @@ export function ComplianceVaultPage() {
           description="Legally required tax exemptions, registration certifications, and certified accounts."
         />
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-sandalwood-800">
-            <thead className="border-b border-sandalwood-200 bg-sandalwood-50 text-xs font-semibold uppercase tracking-wider text-sandalwood-600">
+          <table className="w-full text-left text-sm text-stone-900">
+            <thead className="border-b border-sandal-200 bg-sandal-50 text-xs font-semibold uppercase tracking-wider text-stone-700">
               <tr>
                 <th className="px-4 py-3">Document Title</th>
                 <th className="px-4 py-3">Type / Category</th>
@@ -307,38 +308,38 @@ export function ComplianceVaultPage() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-sandalwood-200">
+            <tbody className="divide-y divide-sandal-200">
               {entityDocs.map((doc) => {
                 const isVerified = doc.status === 'verified'
                 const isRejected = doc.status === 'rejected'
 
                 return (
-                  <tr key={doc.id} className="hover:bg-sandalwood-50/50 transition">
+                  <tr key={doc.id} className="hover:bg-sandal-50/50 transition">
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-2">
-                        <FileText className="size-4 shrink-0 text-sandalwood-400" />
+                        <FileText className="size-4 shrink-0 text-stone-500" />
                         <div>
-                          <strong className="font-serif text-sm font-semibold text-sandalwood-900">
+                          <strong className="font-display text-sm font-semibold text-stone-900">
                             {doc.label}
                           </strong>
                           {doc.comment && (
-                            <p className="text-xs text-sandalwood-500 italic">CA Note: {doc.comment}</p>
+                            <p className="text-xs text-stone-500 italic">CA Note: {doc.comment}</p>
                           )}
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className="font-mono text-xs rounded bg-sandalwood-100 px-2 py-0.5 text-sandalwood-700">
+                      <span className="font-mono text-xs rounded bg-sandal-100 px-2 py-0.5 text-stone-700">
                         {doc.docType}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5 font-mono text-xs text-sandalwood-700">
+                    <td className="px-4 py-3.5 font-mono text-xs text-stone-700">
                       {doc.docNumber ?? '—'}
                     </td>
-                    <td className="px-4 py-3.5 text-xs text-sandalwood-700">
+                    <td className="px-4 py-3.5 text-xs text-stone-700">
                       {doc.financialYear && <span>FY {doc.financialYear}</span>}
                       {doc.validUntil && (
-                        <span className="block text-[11px] text-sandalwood-500">
+                        <span className="block text-[11px] text-stone-500">
                           Valid until: {doc.validUntil}
                         </span>
                       )}
@@ -360,7 +361,7 @@ export function ComplianceVaultPage() {
                         {doc.status.toUpperCase()}
                       </span>
                       {doc.verifiedAt && (
-                        <span className="block mt-0.5 text-[10px] text-sandalwood-500">
+                        <span className="block mt-0.5 text-[10px] text-stone-500">
                           Verified: {doc.verifiedAt.slice(0, 10)}
                         </span>
                       )}
@@ -386,7 +387,7 @@ export function ComplianceVaultPage() {
                           href={doc.filePath}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1 rounded border border-sandalwood-200 bg-white px-2 py-1 text-xs text-sandalwood-700 hover:bg-sandalwood-100"
+                          className="inline-flex items-center gap-1 rounded border border-sandal-200 bg-white px-2 py-1 text-xs text-stone-700 hover:bg-sandal-100"
                         >
                           <Eye className="size-3.5" />
                           View
@@ -409,7 +410,7 @@ export function ComplianceVaultPage() {
           title="Upload Statutory Document"
         >
           <form onSubmit={handleUploadSubmit} className="space-y-4">
-            <p className="text-xs text-sandalwood-600">
+            <p className="text-xs text-stone-700">
               Upload compliance documents for <strong>{activeEntity.legalName}</strong>. All documents are reviewed by a Chartered Accountant prior to sanction.
             </p>
 
@@ -433,7 +434,7 @@ export function ComplianceVaultPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+              <label className="block text-xs font-medium text-stone-700 mb-1">
                 Document Title / Label
               </label>
               <Input
@@ -446,7 +447,7 @@ export function ComplianceVaultPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                <label className="block text-xs font-medium text-stone-700 mb-1">
                   Registration / Approval No.
                 </label>
                 <Input
@@ -456,7 +457,7 @@ export function ComplianceVaultPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                <label className="block text-xs font-medium text-stone-700 mb-1">
                   Financial Year
                 </label>
                 <Input
@@ -466,7 +467,7 @@ export function ComplianceVaultPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                <label className="block text-xs font-medium text-stone-700 mb-1">
                   Valid Until
                 </label>
                 <Input
@@ -477,12 +478,12 @@ export function ComplianceVaultPage() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-dashed border-sandalwood-300 p-4 text-center">
-              <UploadCloud className="mx-auto size-8 text-sandalwood-400" />
-              <p className="mt-1 text-xs font-medium text-sandalwood-800">
+            <div className="rounded-lg border border-dashed border-sandal-300 p-4 text-center">
+              <UploadCloud className="mx-auto size-8 text-stone-500" />
+              <p className="mt-1 text-xs font-medium text-stone-900">
                 Click or drag PDF file to upload
               </p>
-              <p className="text-[11px] text-sandalwood-500">Max size: 25MB (PDF or Signed Scan)</p>
+              <p className="text-[11px] text-stone-500">Max size: 25MB (PDF or Signed Scan)</p>
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
@@ -513,7 +514,7 @@ export function ComplianceVaultPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+              <label className="block text-xs font-medium text-stone-700 mb-1">
                 Audit Decision
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -523,7 +524,7 @@ export function ComplianceVaultPage() {
                   className={`flex items-center justify-center gap-2 rounded-lg border p-2.5 text-xs font-semibold ${
                     verifyStatus === 'verified'
                       ? 'border-tulsi-500 bg-tulsi-50 text-tulsi-900'
-                      : 'border-sandalwood-200 bg-white text-sandalwood-700'
+                      : 'border-sandal-200 bg-white text-stone-700'
                   }`}
                 >
                   <CheckCircle2 className="size-4 text-tulsi-600" />
@@ -535,7 +536,7 @@ export function ComplianceVaultPage() {
                   className={`flex items-center justify-center gap-2 rounded-lg border p-2.5 text-xs font-semibold ${
                     verifyStatus === 'rejected'
                       ? 'border-kumkum-500 bg-kumkum-50 text-kumkum-900'
-                      : 'border-sandalwood-200 bg-white text-sandalwood-700'
+                      : 'border-sandal-200 bg-white text-stone-700'
                   }`}
                 >
                   <XCircle className="size-4 text-kumkum-600" />
@@ -545,11 +546,11 @@ export function ComplianceVaultPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+              <label className="block text-xs font-medium text-stone-700 mb-1">
                 CA Auditor Remarks / Ledger Comments
               </label>
               <textarea
-                className="w-full rounded-md border border-sandalwood-300 p-2 text-xs focus:border-turmeric-500 focus:outline-hidden"
+                className="w-full rounded-md border border-sandal-300 p-2 text-xs focus:border-turmeric-500 focus:outline-hidden"
                 rows={3}
                 placeholder="Confirm that registration certificate numbers, validity dates and stamp seals match MCA records..."
                 value={verifyComment}
