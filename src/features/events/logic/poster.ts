@@ -4,36 +4,38 @@ import QRCode from 'qrcode'
 import { createRng, type Rng } from '@/lib/rng'
 import { formatMoney } from '@/lib/format'
 import type { EventRecord, ImageProviderType, PosterDesign, PosterVariant, SectorId } from '@/types'
+import { resolvePosterPhoto, type PosterPhoto } from './posterPhotos'
+import { PHOTO_BRIEF_SUFFIX, POSTER_THEMES, selectPosterTheme, type PosterTheme } from './posterThemes'
 
 /**
- * Poster pipeline. The artwork is background only, with no words. Every word,
- * the logo and the QR code are drawn by the app from the event record, so the
- * text is always exact and Tamil never goes through an image model.
+ * Poster pipeline. The picture is background only, with no words in it. Every
+ * word, the logo and the QR code are drawn by the app from the event record, so
+ * the text is always exact and Tamil never goes through an image model.
  *
- * The real service asks Cloudflare FLUX, then Pollinations, then falls back to
- * bundled templates. A prototype has no keys and no server, so the provider
- * here is the bundled-template one (drawn from a seed), and the prompt that
- * would be sent is still built and shown.
+ * Each theme is a template with one fixed photograph behind it, so every
+ * Traditional poster reads as the same house style and only the event's words
+ * change. See `posterPhotos.ts` for the templates, the alternates and
+ * for the seam where a stock or generation service would plug in. If the bytes
+ * cannot be fetched the poster falls back to the drawn art further down this
+ * file, so a preview is never blank.
  */
 
 export const POSTER_W = 1024
 export const POSTER_H = 1448
 
 export const VARIANTS: { id: PosterVariant; label: string }[] = [
-  { id: 'traditional', label: 'Traditional' },
-  { id: 'modern', label: 'Modern minimal' },
-  { id: 'festive', label: 'Festive' },
+  { id: 'traditional', label: 'Traditional Heritage' },
+  { id: 'modern', label: 'Modern Minimal' },
+  { id: 'festive', label: 'Festive Celebration' },
 ]
 
-/** Poster colours. A poster is an exported file, so these are fixed values rather than theme variables. */
+/** Palettes for the drawn fallback art only. The themed poster uses `posterThemes.ts`. */
 const PALETTE: Record<SectorId, { bg: string; main: string; accent: string; soft: string }> = {
   temple: { bg: '#FBF3E4', main: '#9A1F18', accent: '#D4971A', soft: '#F2E4C9' },
   sevalaya: { bg: '#EEF5EC', main: '#1F5A38', accent: '#D4971A', soft: '#CFE6D5' },
   sangam: { bg: '#E9F2F6', main: '#134E64', accent: '#D4971A', soft: '#CFE3EC' },
 }
-const INK = '#2B1A12'
 const PAPER = '#FFFBF4'
-const RULE = '#E3CDA4'
 
 const SECTOR_LABEL: Record<SectorId, string> = {
   temple: 'கோயில் · Temple',
@@ -43,21 +45,19 @@ const SECTOR_LABEL: Record<SectorId, string> = {
 
 /* ---------------------------------------------------------------- prompt */
 
-export function buildPosterPrompt(variant: PosterVariant, sectorId: SectorId, eventType: string): string {
-  const style: Record<PosterVariant, string> = {
-    traditional: 'Rich traditional South Indian art style with ornate brass lamps and sacred kolam borders',
-    modern: 'Clean modern minimal flat illustration with a soft temple gopuram silhouette and geometric borders',
-    festive: 'Vibrant festive artwork with flowing marigold garlands, deepam lamps and toran banners',
-  }
-  const motifs: Record<SectorId, string> = {
-    temple: 'warm turmeric gold and kumkum red palette',
-    sevalaya: 'sandalwood and tulsi green tones, nurturing hands, banyan tree canopy',
-    sangam: 'palm-leaf manuscript texture, veena strings, Tamil geometric border',
-  }
-  return `${style[variant]}, background artwork for a ${sectorId} ${eventType.toLowerCase()} celebration, ${motifs[sectorId]}, soft empty area in the lower third, print quality. No text, no letters, no words, no numbers, no logos, no human faces, no deities.`
+const SECTOR_BRIEF: Record<SectorId, string> = {
+  temple: 'Set in and around a working South Indian temple.',
+  sevalaya: 'Set at a community service hall: volunteers, banana-leaf meals, open daylight.',
+  sangam: 'Set at a Tamil Sangam cultural hall: veena and mridangam, palm-leaf manuscripts, stage lighting.',
 }
 
-/* ------------------------------------------------------------------- art */
+/** The art direction a photo service would be given for this theme and event. */
+export function buildPosterPrompt(variant: PosterVariant, sectorId: SectorId, eventType: string): string {
+  const theme = POSTER_THEMES[variant]
+  return `${theme.brief} ${SECTOR_BRIEF[sectorId]} The occasion is a ${eventType.toLowerCase().replace(/_/g, ' ')}. ${PHOTO_BRIEF_SUFFIX}`
+}
+
+/* ----------------------------------------------- drawn fallback artwork */
 
 type Pal = (typeof PALETTE)[SectorId]
 
@@ -144,17 +144,27 @@ function artFestive(pal: Pal, rng: Rng): string {
   ${[150, 330, 694, 874].map((x) => diya(x, 640, 0.75, pal)).join('')}`
 }
 
-export function renderArt(variant: PosterVariant, sectorId: SectorId, seed: number): string {
+function drawArt(variant: PosterVariant, pal: Pal, seed: number): string {
   const rng = createRng(seed)
-  const pal = PALETTE[sectorId]
   if (variant === 'traditional') return artTraditional(pal, rng)
   if (variant === 'modern') return artModern(pal, rng)
   return artFestive(pal, rng)
 }
 
+export function renderArt(variant: PosterVariant, sectorId: SectorId, seed: number): string {
+  return drawArt(variant, PALETTE[sectorId], seed)
+}
+
+/** The theme's own colours expressed as fallback-art colours, so a failed photo still looks on-theme. */
+function themeArtPalette(theme: PosterTheme): Pal {
+  return { bg: theme.palette.background, main: theme.palette.secondary, accent: theme.palette.primary, soft: theme.palette.accent }
+}
+
+/* ------------------------------------------------------------- designs */
+
 /**
- * Three designs for one event. Cloudflare and Pollinations need keys and a
- * network, so a prototype always lands on the bundled-template provider.
+ * Three designs for one event, one per theme, led by the theme the event's own
+ * category calls for. An admin can still pick either of the other two.
  */
 export function generateDesigns(
   event: EventRecord,
@@ -164,7 +174,10 @@ export function generateDesigns(
 ): PosterDesign[] {
   const baseSeed = batchNo * 10_000 + Math.abs(hash(event.id)) % 9_000
   const provider: ImageProviderType = 'template'
-  return VARIANTS.map((v, i) => ({
+  const recommended = selectPosterTheme(event).theme.id
+  const ordered = [...VARIANTS].sort((a, b) => Number(b.id === recommended) - Number(a.id === recommended))
+
+  return ordered.map((v, i) => ({
     id: makeId(),
     eventId: event.id,
     batchNo,
@@ -238,8 +251,34 @@ export async function qrSvg(data: string, size = 240): Promise<string> {
   return QRCode.toString(data, { type: 'svg', margin: 2, width: size, errorCorrectionLevel: 'M' })
 }
 
-const SERIF = "'Cormorant Garamond','Hind Madurai',Georgia,serif"
-const SANS = "'Hind Madurai','Segoe UI',sans-serif"
+/** Keeps the focal point of the photograph inside the crop. */
+function slice(focusY: number): string {
+  if (focusY <= 0.42) return 'xMidYMin slice'
+  if (focusY >= 0.62) return 'xMidYMax slice'
+  return 'xMidYMid slice'
+}
+
+function ornament(theme: PosterTheme, photoBottom: number): string {
+  const c = theme.palette
+  if (theme.ornament === 'double-rule') {
+    return `<rect x="22" y="22" width="${POSTER_W - 44}" height="${POSTER_H - 44}" fill="none" stroke="${c.primary}" stroke-width="3"/>
+    <rect x="34" y="34" width="${POSTER_W - 68}" height="${POSTER_H - 68}" fill="none" stroke="${c.accent}" stroke-width="1.2" opacity="0.65"/>`
+  }
+  if (theme.ornament === 'hairline') {
+    return `<rect x="32" y="32" width="${POSTER_W - 64}" height="${POSTER_H - 64}" fill="none" stroke="${c.secondary}" stroke-width="1.2"/>`
+  }
+  // garland: a scalloped swag of marigold-sized dots hung under the photograph
+  const dots = Array.from({ length: 23 }, (_, i) => {
+    const t = i / 22
+    const x = 26 + t * (POSTER_W - 52)
+    const y = photoBottom + 6 + Math.sin(t * Math.PI) * 16
+    const fill = i % 3 === 0 ? c.primary : i % 3 === 1 ? c.accent : c.secondary
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="${fill}" opacity="0.9"/>`
+  }).join('')
+  return `<rect x="22" y="22" width="${POSTER_W - 44}" height="${POSTER_H - 44}" fill="none" stroke="${c.primary}" stroke-width="2.5"/>${dots}`
+}
+
+const SERIF_FALLBACK = "'Hind Madurai','Segoe UI',sans-serif"
 
 export interface PosterInput {
   event: EventRecord
@@ -247,58 +286,156 @@ export interface PosterInput {
   organisation: string
   /** What the QR opens: the public registration page. */
   registrationUrl: string
+  /** Admin override. Defaults to the design's own theme. */
+  themeId?: PosterVariant
+  /** A photograph the admin picked by hand, instead of the automatic one. */
+  photoSrc?: string
+  /** Print the event's own `image` instead of a library photograph. */
+  useEventImage?: boolean
 }
 
-/** The finished poster as one SVG: art, then the exact words, the logo and the QR. */
-export async function renderPosterSvg({ event, design, organisation, registrationUrl }: PosterInput): Promise<string> {
-  const pal = PALETTE[event.sectorId]
+export interface RenderedPoster {
+  svg: string
+  theme: PosterTheme
+  photo: PosterPhoto
+  /** False when the photograph could not be fetched and the drawn art was used. */
+  photoEmbedded: boolean
+}
+
+/** The finished poster as one SVG: photograph, then the exact words, the logo and the QR. */
+export async function renderPoster(input: PosterInput): Promise<RenderedPoster> {
+  const { event, design, organisation, registrationUrl, themeId, photoSrc, useEventImage } = input
+  const theme = POSTER_THEMES[themeId ?? design.variant]
+  const c = theme.palette
   const W = POSTER_W
   const H = POSTER_H
   const text = design.textSnapshot
+  const uid = design.id.replace(/[^a-zA-Z0-9_-]/g, '')
 
-  const titleLines = wrap(text.eventName, 20, 3)
-  const titleY = 800
-  const title = titleLines
-    .map((line, i) => `<text x="${W / 2}" y="${titleY + i * 74}" text-anchor="middle" font-family="${SERIF}" font-size="64" font-weight="700" fill="${INK}">${xmlEscape(line)}</text>`)
-    .join('')
+  const { photo, dataUri } = await resolvePosterPhoto({
+    event,
+    theme: theme.id,
+    explicitSrc: photoSrc,
+    useEventImage,
+  })
 
-  const top = titleY + titleLines.length * 74 + 8
-  const rows: [string, string][] = [['WHEN', when(text.startAt, text.endAt)], ['WHERE', text.venue]]
+  /* ---- the text block is measured from the bottom edge up, so a long event
+     name shortens the photograph instead of running off the page. */
+  const margin = 64
+  const titleLines = wrap(text.eventName, 22, 3)
+  const titleSize = titleLines.length >= 3 ? 50 : titleLines.length === 2 ? 58 : 64
+  const lineH = Math.round(titleSize * 1.12)
+  const titleH = titleLines.length * lineH
+
+  const rows: [string, string][] = [
+    ['WHEN', when(text.startAt, text.endAt)],
+    ['WHERE', text.venue],
+  ]
   if (text.chiefGuest) rows.push(['CHIEF GUEST', text.chiefGuest])
   rows.push(['ENTRY', text.ticketPrice ? `${formatMoney(text.ticketPrice)} per person` : 'Free entry'])
   rows.push(['CONTACT', text.contact])
+
+  const rowH = 46
+  const subH = 34
+  const ruleGap = 26
+  const afterRule = 22
+  const blockH = titleH + subH + ruleGap + afterRule + rows.length * rowH
+  const blockTop = H - 58 - blockH
+
+  const titleTop = blockTop
+  const subY = titleTop + titleH + 26
+  const ruleY = titleTop + titleH + subH + 10
+  const rowsTop = titleTop + titleH + subH + ruleGap + afterRule
+
+  /* ---- photograph panel */
+  const mastheadOnPhoto = theme.photo.scrimOpacity > 0
+  const photoTop = mastheadOnPhoto ? 0 : 124
+  const photoBottom = Math.min(theme.photo.maxHeight, blockTop - theme.photo.gap)
+  const photoH = Math.max(0, photoBottom - photoTop)
+  /** A full-bleed photo dissolves into the paper; a framed one keeps its edges. */
+  const bleeds = theme.photo.inset === 0
+  const photoX = theme.photo.inset
+  const photoW = W - theme.photo.inset * 2
+
+  const picture = dataUri
+    ? `<image href="${dataUri}" xlink:href="${dataUri}" x="${photoX}" y="${photoTop}" width="${photoW}" height="${photoH}" preserveAspectRatio="${slice(photo.focusY)}"/>`
+    : `<svg x="${photoX}" y="${photoTop}" width="${photoW}" height="${photoH}" viewBox="0 0 1024 1024" preserveAspectRatio="xMidYMid slice">${drawArt(theme.id, themeArtPalette(theme), design.seed)}</svg>`
+
+  /* ---- masthead */
+  const onPhotoInk = mastheadOnPhoto ? '#FFFFFF' : c.text
+  const masthead = `<g transform="translate(${margin} ${mastheadOnPhoto ? 40 : 36})">
+    <circle cx="30" cy="30" r="29" fill="${mastheadOnPhoto ? 'rgba(0,0,0,0.28)' : c.background}" stroke="${c.primary}" stroke-width="2.5"/>
+    <path d="M30 11C37 22 39 28 30 35C21 28 23 22 30 11Z" fill="${c.primary}"/>
+    <path d="M14 40Q30 56 46 40Z" fill="${c.accent}"/>
+    <text x="74" y="28" font-family="${theme.fonts.display}, ${SERIF_FALLBACK}" font-size="29" font-weight="700" fill="${onPhotoInk}">${xmlEscape(wrap(organisation, 28, 1)[0] ?? '')}</text>
+    <text x="74" y="52" font-family="${theme.fonts.body}" font-size="15" letter-spacing="1.4" fill="${c.primary}">${xmlEscape(SECTOR_LABEL[event.sectorId])}</text>
+  </g>`
+
+  /* ---- words */
+  const title = titleLines
+    .map((line, i) => `<text x="${margin}" y="${titleTop + titleSize + i * lineH}" font-family="${theme.fonts.display}, ${SERIF_FALLBACK}" font-size="${titleSize}" font-weight="700" fill="${c.text}">${xmlEscape(line)}</text>`)
+    .join('')
+
+  const kicker = `${POSTER_THEMES[theme.id].tamilLabel} · ${event.eventType.replace(/_/g, ' ')}`
+  const subtitle = `<text x="${margin}" y="${subY}" font-family="${theme.fonts.body}" font-size="19" letter-spacing="3" fill="${c.accent}">${xmlEscape(kicker.toUpperCase())}</text>`
+
+  const qrSize = 158
+  const qrX = W - margin - qrSize
+  const qrY = rowsTop + 2
+  const valueMax = Math.floor((qrX - 24 - (margin + 164)) / 11.2)
+
   const body = rows
     .map(([label, value], i) => {
-      const y = top + i * 52
-      return `<text x="70" y="${y}" font-family="${SANS}" font-size="15" font-weight="700" letter-spacing="2" fill="${pal.accent}">${label}</text>
-      <text x="236" y="${y}" font-family="${SANS}" font-size="24" fill="${INK}">${xmlEscape(wrap(value, 44, 1)[0] ?? '')}</text>`
+      const y = rowsTop + 28 + i * rowH
+      return `<text x="${margin}" y="${y}" font-family="${theme.fonts.body}" font-size="14" font-weight="700" letter-spacing="2" fill="${c.primary}">${label}</text>
+      <text x="${margin + 164}" y="${y}" font-family="${theme.fonts.body}" font-size="22" fill="${c.text}">${xmlEscape(wrap(value, Math.max(18, valueMax), 1)[0] ?? '')}</text>`
     })
     .join('')
 
-  const size = 200
-  const qrX = W - 70 - size
-  const qrY = H - 70 - size - 34
-  const code = await qr(registrationUrl, qrX, qrY, size)
+  const code = await qr(registrationUrl, qrX, qrY, qrSize)
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${xmlEscape(text.eventName)} poster">
-  <defs><linearGradient id="pf-${design.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${PAPER}" stop-opacity="0"/><stop offset="1" stop-color="${PAPER}"/></linearGradient></defs>
-  <rect width="${W}" height="${H}" fill="${PAPER}"/>
-  <svg x="0" y="0" width="${W}" height="${W}" viewBox="0 0 1024 1024" preserveAspectRatio="xMidYMid slice">${renderArt(design.variant, event.sectorId, design.seed)}</svg>
-  <rect x="0" y="${W - 220}" width="${W}" height="220" fill="url(#pf-${design.id})"/>
-  <rect x="0" y="${W}" width="${W}" height="${H - W}" fill="${PAPER}"/>
-  <rect x="0" y="0" width="${W}" height="104" fill="${PAPER}" opacity="0.9"/>
-  <g transform="translate(40 16)">
-    <circle cx="36" cy="36" r="34" fill="${PAPER}" stroke="${pal.accent}" stroke-width="3"/>
-    <path d="M36 14C43 25 45 31 36 38C27 31 29 25 36 14Z" fill="${pal.main}"/>
-    <path d="M19 44Q36 60 53 44Z" fill="${pal.accent}"/>
-    <text x="84" y="36" font-family="${SERIF}" font-size="32" font-weight="700" fill="${INK}">${xmlEscape(wrap(organisation, 26, 1)[0] ?? '')}</text>
-    <text x="84" y="62" font-family="${SANS}" font-size="16" fill="${pal.main}">${xmlEscape(SECTOR_LABEL[event.sectorId])}</text>
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${xmlEscape(text.eventName)} poster, ${theme.label} theme">
+  <defs>
+    <clipPath id="pc-${uid}"><rect x="${photoX}" y="${photoTop}" width="${photoW}" height="${photoH}" rx="${theme.photo.radius}"/></clipPath>
+    <linearGradient id="pf-${uid}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${c.background}" stop-opacity="0"/>
+      <stop offset="0.65" stop-color="${c.background}" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="${c.background}"/>
+    </linearGradient>
+    <linearGradient id="ps-${uid}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#140C06" stop-opacity="${theme.photo.scrimOpacity}"/>
+      <!-- Held flat past the masthead baseline: a plain top-down fade leaves the sector
+           label stranded on whatever the photograph happens to be doing at y=52. -->
+      <stop offset="0.45" stop-color="#140C06" stop-opacity="${(theme.photo.scrimOpacity * 0.9).toFixed(3)}"/>
+      <stop offset="1" stop-color="#140C06" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="${W}" height="${H}" fill="${c.background}"/>
+
+  <g clip-path="url(#pc-${uid})">
+    ${picture}
+    <rect x="${photoX}" y="${photoTop}" width="${photoW}" height="${photoH}" fill="${c.secondary}" opacity="${theme.photo.washOpacity}"/>
+    ${mastheadOnPhoto ? `<rect x="${photoX}" y="${photoTop}" width="${photoW}" height="210" fill="url(#ps-${uid})"/>` : ''}
+    ${bleeds ? `<rect x="${photoX}" y="${photoBottom - 240}" width="${photoW}" height="240" fill="url(#pf-${uid})"/>` : ''}
   </g>
+
+  ${ornament(theme, photoBottom)}
+  ${masthead}
   ${title}
-  <line x1="70" y1="${top - 40}" x2="${W - 70}" y2="${top - 40}" stroke="${RULE}" stroke-width="2"/>
+  ${subtitle}
+  <line x1="${margin}" y1="${ruleY}" x2="${W - margin}" y2="${ruleY}" stroke="${c.primary}" stroke-width="2" opacity="0.6"/>
   ${body}
-  <rect x="${qrX - 10}" y="${qrY - 10}" width="${size + 20}" height="${size + 20}" rx="10" fill="#FFFFFF" stroke="${RULE}" stroke-width="2"/>
+
+  <rect x="${qrX - 10}" y="${qrY - 10}" width="${qrSize + 20}" height="${qrSize + 20}" rx="8" fill="#FFFFFF" stroke="${c.primary}" stroke-width="2"/>
   ${code}
-  <text x="${qrX + size / 2}" y="${qrY + size + 38}" text-anchor="middle" font-family="${SANS}" font-size="18" font-weight="600" fill="${INK}">Scan to register</text>
+  <text x="${qrX + qrSize / 2}" y="${qrY + qrSize + 32}" text-anchor="middle" font-family="${theme.fonts.body}" font-size="16" font-weight="600" fill="${c.text}">Scan to register</text>
 </svg>`
+
+  return { svg, theme, photo, photoEmbedded: dataUri !== null }
+}
+
+/** The poster as a plain SVG string. Kept for the many callers that only want the markup. */
+export async function renderPosterSvg(input: PosterInput): Promise<string> {
+  return (await renderPoster(input)).svg
 }

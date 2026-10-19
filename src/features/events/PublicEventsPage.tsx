@@ -6,6 +6,7 @@ import { formatDateTime, formatMoney } from '@/lib/format'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { SectorChip } from '@/components/layout/PhaseChip'
+import { ModuleBodyBackground } from '@/components/layout/ModuleBodyBackground'
 import { useDb } from '@/store/db'
 import { REGISTRATION_STATES, seatsTaken } from './logic/rules'
 
@@ -15,7 +16,10 @@ export function PublicEventsPage() {
   const open = db.events.filter((e) => REGISTRATION_STATES.includes(e.status)).sort((a, b) => a.startAt.localeCompare(b.startAt))
 
   return (
-    <>
+    <ModuleBodyBackground
+      gradient="bg-gradient-to-b from-[#FFFDF9] via-[#FDF8EE] to-[#FAF1DD]"
+      glow="rgba(255, 193, 7, 0.15)"
+    >
       <div className="mx-auto max-w-8xl px-5 pt-4 sm:px-8 sm:pt-6">
         <header className="relative isolate overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl bg-gradient-to-br from-[#2E1805] via-[#482409] to-[#1C0D02] border border-amber-700/40 p-5 sm:p-6 lg:px-8 lg:py-6">
           {/* Subtle background glow */}
@@ -91,7 +95,7 @@ export function PublicEventsPage() {
             const left = e.capacity ? e.capacity - seatsTaken(db, e.id) : null
             return (
               <li key={e.id}>
-                <Link to={`/register/${e.id}`} className="group flex h-full flex-col overflow-hidden rounded-card border border-sandal-200 bg-sandal-50 shadow-card transition-all duration-200 hover:-translate-y-1 hover:shadow-lift focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:outline-none">
+                <Link to={`/register/${e.id}`} className="group flex h-full flex-col overflow-hidden rounded-card border border-sandal-200/90 bg-white shadow-card transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl focus-visible:ring-2 focus-visible:ring-turmeric-400 focus-visible:outline-none">
                   {e.image ? (
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-100">
                       <img
@@ -119,8 +123,8 @@ export function PublicEventsPage() {
           })}
         </ul>
       )}
-      <p className="mt-10 text-center text-[13px] text-stone-500">{SECTORS.temple.name}, {SECTORS.sevalaya.name} and {SECTORS.sangam.name} events all use the same page.</p>
+      <p className="mt-10 text-center text-[13px] text-stone-500 font-normal">{SECTORS.temple.name}, {SECTORS.sevalaya.name} and {SECTORS.sangam.name} events all use the same page.</p>
       </div>
-    </>
+    </ModuleBodyBackground>
   )
 }

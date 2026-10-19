@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { History, Plus, RefreshCw, Send, Trash2 } from 'lucide-react'
 
 import { formatMoneyShort } from '@/lib/format'
@@ -10,6 +10,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge'
 import { useDb } from '@/store/db'
 import { currentUser, useSession } from '@/store/session'
 import type { HistoryPoint } from '@/types'
+import { BudgetAgentPanel } from './BudgetAgentPanel'
 import { BudgetDecisionPanel } from './BudgetDecisionPanel'
 import { DEFAULT_CATEGORIES } from './logic/budget'
 import { isAdmin, isTrustee } from './logic/stateMachine'
@@ -64,12 +65,21 @@ export function BudgetTab({ view }: { view: EventView }) {
     setRows((rs) => rs.map((r, i) => ({ ...r, suggested: fresh[i]?.suggested ?? undefined, note: fresh[i]?.note, history: fresh[i]?.history })))
   }
 
-  function addLine(category: string) {
+  function addLine(category: string, requestedAmount?: number) {
     const name = category.trim()
     if (!name || rows.some((r) => r.category.toLowerCase() === name.toLowerCase())) return
     const s = suggestBudget(event.id, [name])[0]!
-    setRows((rs) => [...rs, { key: `n-${name}-${rs.length}`, category: name, requested: toField(s.suggested ?? undefined), suggested: s.suggested ?? undefined, note: s.note, history: s.history }])
+    const requested = requestedAmount ?? s.suggested ?? undefined
+    setRows((rs) => [...rs, { key: `n-${name}-${rs.length}`, category: name, requested: toField(requested), suggested: s.suggested ?? undefined, note: s.note, history: s.history }])
     setCustom('')
+  }
+
+  /** The agent reads the draft as it stands, not as it was last saved. */
+  const draft = useMemo(() => rows.map((r) => ({ category: r.category, requested: toCents(r.requested || '0') })), [rows])
+
+  const setRequestedFor = (category: string, amount: number) => {
+    const row = rows.find((r) => r.category.trim().toLowerCase() === category.trim().toLowerCase())
+    if (row) patch(row.key, { requested: toField(amount) })
   }
 
   const toInputs = () => rows.map((r) => ({ id: r.id, category: r.category, requestedAmount: toCents(r.requested || '0'), suggestedAmount: r.suggested, suggestionNote: r.note, history: r.history }))
@@ -88,6 +98,14 @@ export function BudgetTab({ view }: { view: EventView }) {
 
   return (
     <div className="flex flex-col gap-6">
+      <BudgetAgentPanel
+        event={event}
+        draft={draft}
+        editable={editable}
+        onUseAmount={setRequestedFor}
+        onAddLine={(category, amount) => addLine(category, amount)}
+      />
+
       <Card padded={false}>
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-sandal-200 p-5">
           <div>

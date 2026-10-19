@@ -27,7 +27,7 @@ export function AdoptTab({ currency }: { currency: Currency }) {
     <div>
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr] lg:items-start">
         <div>
-          <h2 className="font-display text-[22px] leading-tight text-stone-900">Adopt a cow</h2>
+          <h2 className="font-display text-[22px] leading-tight text-stone-900 font-bold">Adopt a cow</h2>
           <p className="mt-2 max-w-2xl text-[14.5px] leading-relaxed text-stone-700">
             Sponsorship pays for one animal&rsquo;s keep — her feed, her bedding, her caretaker and the vet when she
             needs one. You get a certificate, a photograph every month and her health reports, and you are welcome to

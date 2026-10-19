@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { ConsoleLayout } from '@/components/layout/ConsoleLayout'
 import { DonorLayout } from '@/components/layout/DonorLayout'
+import { SmoothScroll } from '@/components/layout/SmoothScroll'
 import { Toaster } from '@/components/ui/Toast'
 
 import { HomePage } from '@/features/donor/HomePage'
@@ -66,6 +67,7 @@ import { CsrReportsPage } from '@/features/csr/CsrReportsPage'
 export function App() {
   return (
     <>
+      <SmoothScroll />
       <Routes>
         {/* Sign-in stands alone: no donor navbar or footer on this surface. */}
         <Route path="/login" element={<LoginPage />} />
