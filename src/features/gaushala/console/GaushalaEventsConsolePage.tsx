@@ -124,7 +124,7 @@ export function GaushalaEventsConsolePage() {
         <Stat label="Registration income" value={<Money value={paidTake} />} sub="paid festivals only" accentClass="bg-kumkum-500" />
       </div>
 
-      <p className="mb-5 flex items-start gap-2.5 rounded-xl border border-navy-100 bg-navy-50/60 px-4 py-3 text-[13.5px] leading-relaxed text-navy-800">
+      <p className="mb-5 flex items-start gap-2.5 rounded-xl border border-navy-100 bg-navy-50 px-4 py-3 text-[13.5px] leading-relaxed text-navy-800">
         <Info className="mt-0.5 size-4 shrink-0 text-navy-600" aria-hidden />
         <span>
           These are calendar entries with an RSVP, deliberately without budgets, posters or approval gates. A
@@ -327,7 +327,7 @@ function RegistrationsDrawer({ event, onClose }: { event: GaushalaEvent | null; 
         ) : (
           <ul className="space-y-2.5">
             {rows.map((rsvp: GaushalaEventRsvp) => (
-              <li key={rsvp.id} className="rounded-xl border border-navy-100 bg-white px-3.5 py-3">
+              <li key={rsvp.id} className="rounded-xl border border-navy-100 bg-sandal-50 px-3.5 py-3">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="truncate text-[14px] font-semibold text-navy-950">{rsvp.name}</p>

@@ -288,7 +288,6 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
   const groups = visibleGroups(user.role, tenant?.modules)
   const mine = db.ready ? actionableTasks(db, sectorFilter, user) : []
   const myTasks = mine.length
-  const myEventTasks = mine.filter((t) => t.kind.startsWith('event_') && t.kind !== 'event_order').length
 
   const onlyModules = groups.every((g) => g.kind === 'module')
 
@@ -375,7 +374,7 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
                         collapsed={collapsed}
                         onNavigate={onNavigate}
                         count={
-                          item.badge === 'approvals' ? myTasks : item.badge === 'eventApprovals' ? myEventTasks : 0
+                          item.badge === 'approvals' ? myTasks : 0
                         }
                       />
                     </li>

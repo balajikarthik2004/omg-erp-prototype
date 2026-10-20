@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { Search } from 'lucide-react'
 
 import { Input } from '@/components/ui/Input'
@@ -50,7 +50,13 @@ const TABS: TabDef[] = [
 ]
 
 export function GaushalaPage() {
-  const [tab, setTab] = useState<GaushalaTabId>('sewas')
+  // The tab lives in the URL so a view can be linked to and shared — the
+  // transparency figures in particular are published to be pointed at.
+  const [params, setParams] = useSearchParams()
+  const requested = params.get('tab')
+  const tab: GaushalaTabId = TABS.some((t) => t.id === requested)
+    ? (requested as GaushalaTabId)
+    : 'sewas'
   const [query, setQuery] = useState('')
 
   // The viewer's own money. Guessed from the browser on first load, kept in
@@ -172,7 +178,7 @@ export function GaushalaPage() {
         <Tabs
           value={tab}
           onChange={(id) => {
-            setTab(id as GaushalaTabId)
+            setParams(id === 'sewas' ? {} : { tab: id }, { replace: true })
             setQuery('')
           }}
           items={TABS.map((t) => ({

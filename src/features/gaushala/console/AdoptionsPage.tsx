@@ -151,7 +151,7 @@ export function AdoptionsPage() {
       </div>
 
       {stats.lapsed.length > 0 ? (
-        <p className="mb-5 flex items-start gap-2.5 rounded-xl border border-marigold-50 bg-marigold-50/60 px-4 py-3 text-[13.5px] leading-relaxed text-marigold-500">
+        <p className="mb-5 flex items-start gap-2.5 rounded-xl border border-marigold-50 bg-marigold-50 px-4 py-3 text-[13.5px] leading-relaxed text-marigold-500">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
           <span>
             {stats.lapsed.length} sponsorship{stats.lapsed.length === 1 ? ' has' : 's have'} lapsed. The cow goes back
@@ -289,7 +289,7 @@ function AdoptionDrawer({ adoption, onClose }: { adoption: Adoption | null; onCl
           ) : (
             <ul className="mt-3 space-y-2.5">
               {adoption.updates.map((update) => (
-                <li key={update.id} className="rounded-xl border border-navy-100 bg-white px-3.5 py-3">
+                <li key={update.id} className="rounded-xl border border-navy-100 bg-sandal-50 px-3.5 py-3">
                   <div className="flex items-baseline justify-between gap-3">
                     <span className="text-[13.5px] font-bold text-navy-950">{update.title}</span>
                     <span className="shrink-0 font-mono text-[12px] text-navy-600">{formatDate(update.at)}</span>

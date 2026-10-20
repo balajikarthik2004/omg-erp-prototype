@@ -339,7 +339,7 @@ function SlotCalendar() {
                 key={date}
                 className={cn(
                   'flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3',
-                  closed ? 'border-danger-50 bg-danger-50/40' : 'border-navy-100 bg-white',
+                  closed ? 'border-danger-50 bg-danger-50' : 'border-navy-100 bg-sandal-50',
                 )}
               >
                 <div className="min-w-0">
@@ -428,7 +428,7 @@ function CheckInPanel() {
             className={cn(
               'mt-4 flex items-start gap-2 rounded-xl border px-3.5 py-2.5 text-[13.5px] leading-relaxed',
               result.ok
-                ? 'border-tulsi-50 bg-tulsi-50/60 text-tulsi-700'
+                ? 'border-tulsi-50 bg-tulsi-50 text-tulsi-700'
                 : 'border-danger-50 bg-danger-50 text-danger-600',
             )}
           >

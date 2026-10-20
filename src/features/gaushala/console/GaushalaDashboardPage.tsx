@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { CalendarCheck, CalendarDays, HandCoins, HandHeart, HeartPulse, PackageCheck, Repeat } from 'lucide-react'
+import { CalendarCheck, CalendarDays, ExternalLink, HandCoins, HandHeart, HeartPulse, PackageCheck, Repeat, ShieldCheck } from 'lucide-react'
 
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Card, CardHeader } from '@/components/ui/Card'
@@ -122,6 +122,19 @@ export function GaushalaDashboardPage() {
     <div>
       <PageHeader
         title="Gaushala"
+        description="The herd, the money given for it, and what is waiting on someone today."
+        actions={
+          <a
+            href="/sevalaya/gaushala?tab=transparency"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-sandal-200 bg-sandal-50 px-3 py-2 text-[13px] font-semibold text-stone-700 transition-colors duration-150 hover:border-sandal-300 hover:bg-sandal-100 focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:outline-none"
+          >
+            <ShieldCheck className="size-4 text-tulsi-700" aria-hidden />
+            Public transparency page
+            <ExternalLink className="size-3.5 text-stone-500" aria-hidden />
+          </a>
+        }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -223,7 +236,7 @@ export function GaushalaDashboardPage() {
             action={
               <Link
                 to="/console/gaushala/cows"
-                className="text-[13px] font-semibold text-kumkum-700 hover:underline"
+                className="text-[13px] font-semibold text-navy-600 hover:text-navy-800 hover:underline"
               >
                 Cow register
               </Link>
@@ -273,7 +286,7 @@ export function GaushalaDashboardPage() {
                 {stats.unwell.map((cow) => (
                   <li
                     key={cow.id}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-navy-100 bg-navy-50/50 px-3.5 py-2.5"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-navy-100 bg-navy-50 px-3.5 py-2.5"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-[14px] font-semibold text-navy-950">{cow.name}</span>
@@ -346,7 +359,7 @@ function ProgramTile({
     <Link
       to={to}
       className={cn(
-        'group block rounded-2xl border-2 bg-white p-5 shadow-card transition-all duration-200',
+        'group block rounded-2xl border-2 bg-sandal-50 p-5 shadow-card transition-all duration-200',
         'hover:-translate-y-0.5 hover:shadow-lift',
         warn ? 'border-marigold-50' : 'border-navy-100/90',
       )}

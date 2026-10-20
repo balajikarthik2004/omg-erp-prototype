@@ -398,7 +398,7 @@ function HealthDrawer({ cow, onClose }: { cow: Cow | null; onClose: () => void }
   return (
     <Drawer open onClose={onClose} title={`${cow.name} — health record`} width="lg">
       <div className="space-y-6">
-        <section className="rounded-2xl border border-navy-100 bg-navy-50/50 p-4">
+        <section className="rounded-2xl border border-navy-100 bg-navy-50 p-4">
           <h3 className="text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">Log a visit</h3>
           <div className="mt-3.5 space-y-3.5">
             <Select
@@ -439,7 +439,7 @@ function HealthDrawer({ cow, onClose }: { cow: Cow | null; onClose: () => void }
           ) : (
             <ul className="mt-3 space-y-2.5">
               {mine.map((r) => (
-                <li key={r.id} className="rounded-xl border border-navy-100 bg-white px-3.5 py-3">
+                <li key={r.id} className="rounded-xl border border-navy-100 bg-sandal-50 px-3.5 py-3">
                   <div className="flex items-baseline justify-between gap-3">
                     <span className="text-[13.5px] font-bold text-navy-950">{titleCase(r.kind)}</span>
                     <span className="font-mono text-[12.5px] text-navy-600 tabular-nums">{formatDate(r.at)}</span>

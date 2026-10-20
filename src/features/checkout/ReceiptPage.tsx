@@ -156,7 +156,10 @@ export function ReceiptPage() {
         </div>
 
         {/* Particulars ------------------------------------------------- */}
-        <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-6 sm:px-8 print:overflow-visible">
+        <div
+          data-lenis-prevent
+          className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-6 sm:px-8 print:overflow-visible"
+        >
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-sandal-300">

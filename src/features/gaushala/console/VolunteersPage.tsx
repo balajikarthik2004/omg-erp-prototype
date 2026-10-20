@@ -225,7 +225,7 @@ function VolunteerDrawer({ volunteer, onClose }: { volunteer: Volunteer | null; 
           <h4 className="text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">Wants to help with</h4>
           <ul className="mt-2 flex flex-wrap gap-1.5">
             {volunteer.interests.map((i) => (
-              <li key={i} className="rounded-full border border-navy-200 bg-white px-2.5 py-1 text-[12.5px] text-navy-800">
+              <li key={i} className="rounded-full border border-navy-200 bg-sandal-50 px-2.5 py-1 text-[12.5px] text-navy-800">
                 {VOLUNTEER_INTEREST_LABEL[i]}
               </li>
             ))}
@@ -300,7 +300,7 @@ function VolunteerDrawer({ volunteer, onClose }: { volunteer: Volunteer | null; 
                   {shifts.map((shift) => (
                     <li
                       key={shift.id}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-navy-100 bg-white px-3.5 py-2.5"
+                      className="flex items-center justify-between gap-3 rounded-lg border border-navy-100 bg-sandal-50 px-3.5 py-2.5"
                     >
                       <span className="min-w-0">
                         <span className="block truncate text-[13.5px] font-medium text-navy-950">

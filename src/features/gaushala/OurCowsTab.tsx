@@ -152,7 +152,10 @@ function CowStoryModal({ cow, onClose }: { cow: Cow | null; onClose: () => void 
   const cowImg = cow.image ?? `/images/cows/${cow.name}.png`
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div
+      data-lenis-prevent
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-3 sm:p-6"
+    >
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-stone-950/70 backdrop-blur-sm transition-opacity duration-300"
@@ -218,7 +221,10 @@ function CowStoryModal({ cow, onClose }: { cow: Cow | null; onClose: () => void 
         </div>
 
         {/* Scrollable Content Body */}
-        <div className="scrollbar-thin max-h-[calc(85vh-260px)] sm:max-h-[calc(85vh-320px)] overflow-y-auto px-6 py-6 sm:px-7 space-y-5">
+        <div
+          data-lenis-prevent
+          className="scrollbar-thin max-h-[calc(85vh-260px)] space-y-5 overflow-y-auto px-6 py-6 sm:max-h-[calc(85vh-320px)] sm:px-7"
+        >
           {/* Quick Info Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div className="rounded-2xl border border-sandal-200 bg-sandal-50/60 p-3.5">
