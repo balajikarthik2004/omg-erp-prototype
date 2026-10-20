@@ -8,7 +8,7 @@ import { formatDate, formatDue, formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { Input, Textarea } from '@/components/ui/Input'
+import { Input } from '@/components/ui/Input'
 import { Money } from '@/components/ui/Money'
 import { Stat } from '@/components/ui/Stat'
 import { StatusBadge } from '@/components/ui/StatusBadge'
@@ -18,7 +18,7 @@ import { Tabs } from '@/components/ui/Tabs'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { SectorChip } from '@/components/layout/PhaseChip'
 import { ApprovalTimeline } from '@/components/flow/ApprovalTimeline'
-import { MakerCheckerNote } from '@/components/flow/MakerCheckerNote'
+import { DecisionFooter } from '@/components/flow/DecisionFooter'
 import { approvalBlock, threeWayMatch, useDb } from '@/store/db'
 import { releaseBlock } from '@/store/rules'
 import { currentUser, useSession } from '@/store/session'
@@ -218,52 +218,52 @@ export function PaymentsPage() {
             : undefined
         }
         width="lg"
+        accent="tulsi"
+        tone="canvas"
+        headerExtra={
+          focused && focusPo ? (
+            <>
+              <StatusBadge status={focused.status === 'approved' ? 'awaiting_release' : focused.status} />
+              <SectorChip sectorId={focused.sectorId} />
+              <Link
+                to={`/console/purchase-orders/${encodeURIComponent(focusPo.id)}`}
+                className="font-mono text-[12px] text-navy-600 tabular-nums hover:underline"
+              >
+                {focusPo.poNo}
+              </Link>
+            </>
+          ) : null
+        }
         footer={
           focused && ['received', 'matched', 'variance', 'payment_pending'].includes(focused.status) ? (
-            <div className="flex flex-col gap-3">
-              <MakerCheckerNote preparedBy={focused.preparedBy} block={block} />
-              {blockedByVariance ? (
-                <p className="flex items-start gap-2 rounded-lg border border-danger-50 bg-danger-50 px-3 py-2.5 text-[13px] text-danger-600">
-                  <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
-                  The 3-way match is outside the 2% tolerance. Add a CA comment explaining the difference before
-                  this payment can be approved.
-                </p>
-              ) : null}
-              <Textarea
-                label="Comment"
-                placeholder="Required when rejecting; optional when approving."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-              <div className="flex gap-2">
-                <Button
-                  fullWidth
-                  variant="success"
-                  disabled={Boolean(block) || blockedByVariance}
-                  title={block ?? (blockedByVariance ? 'A CA comment on the variance is required first.' : undefined)}
-                  onClick={() => {
-                    decidePayment(focused.id, 'approved', user, comment || undefined)
-                    setParams({})
-                    setComment('')
-                  }}
-                >
-                  Approve payment
-                </Button>
-                <Button
-                  fullWidth
-                  variant="secondary"
-                  disabled={comment.trim().length < 5}
-                  title={comment.trim().length < 5 ? 'Add a comment explaining the rejection.' : undefined}
-                  onClick={() => {
-                    decidePayment(focused.id, 'rejected', user, comment)
-                    setParams({})
-                    setComment('')
-                  }}
-                >
-                  Reject
-                </Button>
-              </div>
-            </div>
+            <DecisionFooter
+              preparedBy={focused.preparedBy}
+              block={block}
+              comment={comment}
+              onCommentChange={setComment}
+              approveLabel="Approve payment"
+              approveDisabled={blockedByVariance}
+              approveTitle={blockedByVariance ? 'A CA comment on the variance is required first.' : undefined}
+              warning={
+                blockedByVariance ? (
+                  <p className="flex items-start gap-2 rounded-lg border border-danger-50 bg-danger-50 px-3 py-2.5 text-[13px] text-danger-600">
+                    <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
+                    The 3-way match is outside the 2% tolerance. Add a CA comment explaining the difference before
+                    this payment can be approved.
+                  </p>
+                ) : null
+              }
+              onApprove={() => {
+                decidePayment(focused.id, 'approved', user, comment || undefined)
+                setParams({})
+                setComment('')
+              }}
+              onReject={() => {
+                decidePayment(focused.id, 'rejected', user, comment)
+                setParams({})
+                setComment('')
+              }}
+            />
           ) : focused?.status === 'approved' ? (
             <div className="flex flex-col gap-3">
               <p className="text-[13px] text-stone-500">
@@ -289,18 +289,7 @@ export function PaymentsPage() {
       >
         {focused && focusPo && match ? (
           <div className="flex flex-col gap-5">
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge status={focused.status === 'approved' ? 'awaiting_release' : focused.status} />
-              <SectorChip sectorId={focused.sectorId} />
-              <Link
-                to={`/console/purchase-orders/${encodeURIComponent(focusPo.id)}`}
-                className="font-mono text-[13px] text-navy-600 tabular-nums hover:underline"
-              >
-                {focusPo.poNo}
-              </Link>
-            </div>
-
-            <div className="rounded-card border border-sandal-200 bg-sandal-100 p-4">
+            <div className="rounded-card border border-sandal-200 bg-sandal-50 p-4 shadow-card">
               <div className="flex items-end justify-between gap-3">
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Invoice total</p>
@@ -346,7 +335,7 @@ export function PaymentsPage() {
               </dl>
             </div>
 
-            <section>
+            <section className="rounded-card border border-sandal-200 bg-sandal-50 p-4 shadow-flat">
               <h3 className="mb-2 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">3-way match</h3>
               <ThreeWayMatch rows={match.rows} />
               <p className="mt-2 text-[13px] text-stone-500">
@@ -386,7 +375,9 @@ export function PaymentsPage() {
               </section>
             ) : null}
 
-            <ApprovalTimeline steps={focused.approvals} amount={focused.total} />
+            <section className="rounded-card border border-sandal-200 bg-sandal-50 p-4 shadow-flat">
+              <ApprovalTimeline steps={focused.approvals} amount={focused.total} />
+            </section>
           </div>
         ) : null}
       </Drawer>

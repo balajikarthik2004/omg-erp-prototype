@@ -3,10 +3,9 @@ import { useSearchParams } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 
 import { approvalTierLabel } from '@/config'
-import { formatAge, formatDate, formatMoneyShort } from '@/lib/format'
+import { formatAge, formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
-import { Drawer } from '@/components/ui/Drawer'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Input, Textarea } from '@/components/ui/Input'
 import { Money } from '@/components/ui/Money'
@@ -17,26 +16,20 @@ import { TableSkeleton } from '@/components/ui/Skeleton'
 import { Tabs } from '@/components/ui/Tabs'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { SectorChip } from '@/components/layout/PhaseChip'
-import { ApprovalTimeline } from '@/components/flow/ApprovalTimeline'
-import { MakerCheckerNote } from '@/components/flow/MakerCheckerNote'
-import { BudgetBar } from '@/components/flow/BudgetBar'
-import { allotmentFundError, approvalBlock, available, useDb } from '@/store/db'
+import { allotmentFundError, useDb } from '@/store/db'
 import { currentUser, useSession } from '@/store/session'
 import { inSector } from '@/store/selectors'
 import { userName } from '@/mock/seed'
+import { AllotmentDrawer } from './AllotmentDrawer'
 import type { Allotment } from '@/types'
 
 export function AllotmentsPage() {
   const db = useDb()
   const filter = useSession((s) => s.sectorFilter)
-  const personaId = useSession((s) => s.personaId)
-  const user = currentUser(personaId)
-  const decideAllotment = useDb((s) => s.decideAllotment)
 
   const [params, setParams] = useSearchParams()
   const [tab, setTab] = useState('pending')
   const [composing, setComposing] = useState(false)
-  const [comment, setComment] = useState('')
 
   const all = useMemo(() => inSector(db.allotments, filter), [db.allotments, filter])
   const pending = all.filter((a) => a.status === 'pending')
@@ -45,8 +38,6 @@ export function AllotmentsPage() {
 
   const focusId = params.get('focus')
   const focused = db.allotments.find((a) => a.id === focusId)
-  const focusHead = focused ? db.budgets.find((b) => b.id === focused.toBudgetHeadId) : undefined
-  const block = focused ? approvalBlock(user, focused.preparedBy, focused.amount, focused.approvals) : null
 
   const columns: Column<Allotment>[] = [
     {
@@ -118,110 +109,7 @@ export function AllotmentsPage() {
         <Table columns={columns} rows={rows} rowKey={(a) => a.id} onRowClick={(a) => setParams({ focus: a.id })} />
       )}
 
-      {/* Detail + approve */}
-      <Drawer
-        open={Boolean(focused)}
-        onClose={() => {
-          setParams({})
-          setComment('')
-        }}
-        title={focusHead ? `Allot to ${focusHead.name}` : 'Allotment'}
-        subtitle={focused ? `${focused.id} · prepared ${formatDate(focused.preparedAt)}` : undefined}
-        width="lg"
-        footer={
-          focused?.status === 'pending' ? (
-            <div className="flex flex-col gap-3">
-              <MakerCheckerNote preparedBy={focused.preparedBy} block={block} />
-              <Textarea
-                label="Comment (required to reject)"
-                placeholder="Why are you approving or rejecting this?"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-              <div className="flex gap-2">
-                <Button
-                  fullWidth
-                  variant="success"
-                  disabled={Boolean(block)}
-                  title={block ?? undefined}
-                  onClick={() => {
-                    decideAllotment(focused.id, 'approved', user, comment || undefined)
-                    setParams({})
-                    setComment('')
-                  }}
-                >
-                  Approve allotment
-                </Button>
-                <Button
-                  fullWidth
-                  variant="secondary"
-                  disabled={comment.trim().length < 5}
-                  title={comment.trim().length < 5 ? 'Add a comment explaining the rejection.' : undefined}
-                  onClick={() => {
-                    decideAllotment(focused.id, 'rejected', user, comment)
-                    setParams({})
-                    setComment('')
-                  }}
-                >
-                  Reject
-                </Button>
-              </div>
-            </div>
-          ) : null
-        }
-      >
-        {focused ? (
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge status={focused.status} />
-              <SectorChip sectorId={focused.sectorId} />
-            </div>
-
-            <div className="rounded-card border border-sandal-200 bg-sandal-100 p-4">
-              <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Amount</p>
-              <Money value={focused.amount} className="mt-1 font-display text-[22px] sm:text-[30px] text-stone-900" />
-              <p className="mt-1 text-[13px] text-stone-500">Requires {approvalTierLabel(focused.amount)}</p>
-            </div>
-
-            <dl className="grid grid-cols-1 gap-3 text-[14px] sm:grid-cols-2">
-              <div>
-                <dt className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">From fund</dt>
-                <dd className="mt-0.5 text-stone-900">
-                  {db.funds.find((f) => f.id === focused.fromFundId)?.name}
-                  <span className="block text-[13px] text-stone-500">
-                    Balance {formatMoneyShort(db.funds.find((f) => f.id === focused.fromFundId)?.balance ?? 0)}
-                  </span>
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">To budget head</dt>
-                <dd className="mt-0.5 text-stone-900">{focusHead?.name}</dd>
-              </div>
-              <div className="sm:col-span-2">
-                <dt className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Reason</dt>
-                <dd className="mt-0.5 text-stone-700">{focused.reason}</dd>
-              </div>
-            </dl>
-
-            {focusHead ? (
-              <section>
-                <h3 className="mb-2 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">
-                  Effect on {focusHead.name}
-                </h3>
-                <BudgetBar head={focusHead} />
-                <p className="mt-2 text-[13px] text-stone-500">
-                  Available now {formatMoneyShort(available(focusHead))} ·{' '}
-                  <span className="text-tulsi-700">
-                    {formatMoneyShort(available(focusHead) + focused.amount)} if approved
-                  </span>
-                </p>
-              </section>
-            ) : null}
-
-            <ApprovalTimeline steps={focused.approvals} amount={focused.amount} />
-          </div>
-        ) : null}
-      </Drawer>
+      <AllotmentDrawer allotment={focused} onClose={() => setParams({})} />
 
       <NewAllotmentDialog open={composing} onClose={() => setComposing(false)} />
     </div>

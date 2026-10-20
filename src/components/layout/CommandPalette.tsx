@@ -117,7 +117,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
             Nothing matches “{query.trim()}”. Try a shorter word.
           </p>
         ) : (
-          <ul ref={listRef} className="scrollbar-thin max-h-[52vh] overflow-y-auto py-1.5">
+          <ul ref={listRef} data-lenis-prevent className="scrollbar-thin max-h-[52vh] overflow-y-auto py-1.5">
             {hits.map(({ item, group }, i) => {
               const Icon = item.icon
               const on = i === active

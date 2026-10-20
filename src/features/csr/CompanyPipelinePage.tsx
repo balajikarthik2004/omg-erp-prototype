@@ -17,20 +17,12 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { userById } from '@/mock/seed'
 import { useDb } from '@/store/db'
 import { csrPitchBlock } from '@/store/csrRules'
 import { useSession } from '@/store/session'
-import type { CsrCompany, CsrDealStatus, CsrProject } from '@/types'
-
-const STAGES: Array<{ key: CsrDealStatus; label: string; color: string }> = [
-  { key: 'LEAD', label: '1. Lead Identified', color: 'bg-sandal-100 text-stone-900' },
-  { key: 'SHORTLISTED', label: '2. Shortlisted', color: 'bg-turmeric-100 text-turmeric-800' },
-  { key: 'PITCHED', label: '3. Pitched', color: 'bg-marigold-100 text-marigold-800' },
-  { key: 'PROPOSAL_SENT', label: '4. Proposal Sent', color: 'bg-peacock-100 text-peacock-800' },
-  { key: 'DUE_DILIGENCE', label: '5. Due Diligence', color: 'bg-peacock-50 text-peacock-700' },
-  { key: 'ACTIVE', label: '6. MoU Active', color: 'bg-tulsi-100 text-tulsi-800' },
-]
+import type { CsrCompany, CsrProject } from '@/types'
 
 export function CompanyPipelinePage() {
   const db = useDb()
@@ -217,15 +209,7 @@ Submitted with board resolution authorization.`
                     </div>
                   </div>
 
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                      activeDeal
-                        ? STAGES.find((s) => s.key === activeDeal.status)?.color ?? 'bg-sandal-100'
-                        : 'bg-sandal-100 text-stone-700'
-                    }`}
-                  >
-                    {activeDeal ? activeDeal.status.replace(/_/g, ' ') : 'PROSPECT'}
-                  </span>
+                  <StatusBadge status={activeDeal ? activeDeal.status : 'draft'} />
                 </div>
 
                 <div className="mt-4 space-y-2 border-t border-sandal-200/80 pt-3 text-xs">

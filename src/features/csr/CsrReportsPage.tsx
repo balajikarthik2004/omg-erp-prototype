@@ -460,7 +460,7 @@ export function CsrReportsPage() {
         <Dialog
           open={addProgressModal}
           onClose={() => setAddProgressModal(false)}
-          title="Log Field Progress & Evidence Milestone"
+          title="Log field progress"
         >
           <form onSubmit={handleAddProgressSubmit} className="space-y-4">
             <div>

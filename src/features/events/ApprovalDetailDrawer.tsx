@@ -34,18 +34,25 @@ export function ApprovalDetailDrawer({ eventId, kind, onClose }: { eventId: stri
       width="lg"
       title={event ? `${event.name} · ${kind === 'event_poster' ? 'poster' : 'budget'}` : ''}
       subtitle={event ? `${formatDateTime(event.startAt)} · ${event.venue}` : undefined}
+      accent="kumkum"
+      tone="canvas"
+      headerExtra={
+        view && event ? (
+          <>
+            <StatusBadge status={event.status} />
+            <SectorChip sectorId={event.sectorId} />
+            <Link to={`/console/events/${event.id}`} className="text-[12px] text-kumkum-700 hover:underline">
+              Open the full workspace
+            </Link>
+          </>
+        ) : null
+      }
     >
       {view && event ? (
         <div className="flex flex-col gap-5">
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusBadge status={event.status} />
-            <SectorChip sectorId={event.sectorId} />
-            <Link to={`/console/events/${event.id}`} className="text-[13px] text-kumkum-700 hover:underline">Open the full workspace</Link>
-          </div>
-
           {kind === 'event_budget' ? (
             <>
-              <div className="overflow-x-auto rounded-card border border-sandal-200">
+              <div className="overflow-x-auto rounded-card border border-sandal-200 bg-sandal-50 shadow-flat">
                 <table className="w-full min-w-[520px] border-collapse text-[14px]">
                   <thead>
                     <tr className="bg-sandal-100 text-left text-[11px] font-semibold tracking-[0.1em] text-stone-500 uppercase">

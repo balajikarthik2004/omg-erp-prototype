@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { userById } from '@/mock/seed'
 import { useDb } from '@/store/db'
 import { csrDocVerifyBlock } from '@/store/csrRules'
@@ -151,13 +152,7 @@ export function ComplianceVaultPage() {
                 className={`size-4 ${isReady ? 'text-tulsi-600' : 'text-turmeric-600'}`}
               />
               <span className="font-display font-semibold">{ent.legalName}</span>
-              <span
-                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
-                  isReady ? 'bg-tulsi-100 text-tulsi-800' : 'bg-turmeric-100 text-turmeric-800'
-                }`}
-              >
-                {isReady ? 'Ready' : 'Pending Docs'}
-              </span>
+              <StatusBadge status={isReady ? 'CSR_READY' : 'DOCS_UPLOADED'} />
             </button>
           )
         })}
@@ -173,14 +168,14 @@ export function ComplianceVaultPage() {
                 <h2 className="font-heritage text-base sm:text-lg font-bold text-navy-950">
                   {activeEntity.legalName}
                 </h2>
-                <span className="rounded bg-navy-50 border border-navy-200/80 px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-navy-700">
+                <span className="rounded-full border border-navy-200 bg-navy-50 px-2.5 py-0.5 text-[11px] font-semibold tracking-[0.08em] text-navy-700 uppercase">
                   {activeEntity.entityType}
                 </span>
                 <span
-                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-semibold ${
                     activeEntity.readinessStatus === 'CSR_READY'
-                      ? 'bg-tulsi-50 text-tulsi-700 border border-tulsi-500/30'
-                      : 'bg-marigold-50 text-marigold-500 border border-marigold-500/30'
+                      ? 'border border-tulsi-200 bg-tulsi-50 text-tulsi-700'
+                      : 'border border-marigold-200 bg-marigold-50 text-marigold-500'
                   }`}
                 >
                   {activeEntity.readinessStatus === 'CSR_READY' ? (

@@ -130,6 +130,9 @@ export function ReconciliationPage() {
         title={open?.payoutRef ?? ''}
         subtitle={open ? `${formatDate(open.date)} · ${open.donationIds.length} donations` : undefined}
         width="lg"
+        accent="kumkum"
+        tone="canvas"
+        headerExtra={open ? <StatusBadge status={open.status} /> : null}
         footer={
           open && open.status !== 'matched' && variance ? (
             <div className="flex flex-col gap-3">
@@ -160,15 +163,13 @@ export function ReconciliationPage() {
       >
         {open && variance ? (
           <div className="flex flex-col gap-5">
-            <StatusBadge status={open.status} />
-
             {open.note ? (
               <div className="rounded-lg border border-marigold-50 bg-marigold-50 px-3 py-2.5 text-[13px] text-marigold-500">
                 {open.note}
               </div>
             ) : null}
 
-            <Card className="bg-sandal-100">
+            <Card>
               <h3 className="mb-3 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Three-way tie</h3>
               <dl className="space-y-2 text-[14px]">
                 <div className="flex justify-between">

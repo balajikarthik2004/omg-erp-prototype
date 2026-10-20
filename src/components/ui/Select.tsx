@@ -228,7 +228,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
             )}
             style={{ animation: 'omg-fade-in 120ms ease-out' }}
           >
-            <div className="max-h-60 overflow-y-auto scrollbar-thin space-y-0.5">
+            <div data-lenis-prevent className="max-h-60 overflow-y-auto scrollbar-thin space-y-0.5">
               {options.map((opt, index) => {
                 const isSelected = String(opt.value) === currentValue
                 const isFocused = index === focusedIndex

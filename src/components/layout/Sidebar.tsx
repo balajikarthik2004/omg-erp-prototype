@@ -347,6 +347,7 @@ function SidebarContent({ onNavigate, collapsed = false }: { onNavigate?: () => 
           stored — otherwise the active row could be hidden from view. */}
       <nav
         aria-label="Console"
+        data-lenis-prevent
         className={cn(
           'scrollbar-thin scroll-fade-y min-h-0 flex-1 overflow-y-auto py-4',
           collapsed ? 'px-3' : 'px-2.5',

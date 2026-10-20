@@ -2,7 +2,6 @@ import { useState } from 'react'
 import {
   CheckCircle2,
   Clock,
-  Coins,
   Lock,
   LockOpen,
   ShieldCheck,
@@ -15,6 +14,7 @@ import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { userById } from '@/mock/seed'
 import { available, useDb } from '@/store/db'
 import { csrMouDecideBlock, csrTrancheReceiveBlock } from '@/store/csrRules'
@@ -87,22 +87,18 @@ export function CsrDealsPage() {
             .reduce((sum, t) => sum + t.amount, 0)
 
           return (
-            <Card key={deal.id} className="overflow-hidden border border-sandal-300">
+            <Card key={deal.id} className="overflow-hidden border border-sandal-200 shadow-card">
               {/* Header Banner */}
-              <div className="border-b border-sandal-200 bg-sandal-50/70 p-5">
+              <div className="border-b border-sandal-200 bg-sandal-100 p-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-turmeric-800">
-                        {comp?.name}
-                      </span>
+                      <span className="text-[13px] font-semibold text-navy-700">{comp?.name}</span>
                       <span className="text-stone-500">→</span>
                       <h3 className="font-display text-lg font-bold text-stone-900">
                         {proj?.title}
                       </h3>
-                      <span className="rounded-full bg-tulsi-100 px-2.5 py-0.5 text-xs font-semibold text-tulsi-800 border border-tulsi-200">
-                        {deal.status}
-                      </span>
+                      <StatusBadge status={deal.status} />
                     </div>
 
                     <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-stone-700">
@@ -152,7 +148,7 @@ export function CsrDealsPage() {
                         <CheckCircle2 className="size-3.5" /> Approved ({caApproval.at?.slice(0, 10)})
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 font-semibold text-turmeric-700">
+                      <span className="inline-flex items-center gap-1 font-semibold text-marigold-500">
                         <Clock className="size-3.5" /> Pending Review
                       </span>
                     )}
@@ -165,7 +161,7 @@ export function CsrDealsPage() {
                         <CheckCircle2 className="size-3.5" /> Approved ({trusteeApproval.at?.slice(0, 10)})
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 font-semibold text-turmeric-700">
+                      <span className="inline-flex items-center gap-1 font-semibold text-marigold-500">
                         <Clock className="size-3.5" /> Pending Sanction
                       </span>
                     )}
@@ -179,7 +175,7 @@ export function CsrDealsPage() {
 
               {/* Tranche Milestone Schedule Table */}
               <div className="p-4">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-700 mb-3">
+                <h4 className="mb-3 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">
                   Instalment & Utilisation Certificate Gate Schedule
                 </h4>
 
@@ -200,7 +196,6 @@ export function CsrDealsPage() {
                         const receiveBlock = csrTrancheReceiveBlock(deal, t, entity)
                         const isReceived =
                           t.status === 'RECEIVED' || t.status === 'UTILISED' || t.status === 'UC_SIGNED'
-                        const isUcSigned = t.status === 'UC_SIGNED'
 
                         return (
                           <tr key={t.id} className="hover:bg-sandal-50/50">
@@ -222,20 +217,7 @@ export function CsrDealsPage() {
                               )}
                             </td>
                             <td className="px-3 py-3">
-                              <span
-                                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                                  isUcSigned
-                                    ? 'bg-tulsi-100 text-tulsi-800'
-                                    : t.status === 'RECEIVED'
-                                    ? 'bg-peacock-100 text-peacock-800'
-                                    : 'bg-sandal-100 text-stone-700'
-                                }`}
-                              >
-                                {isUcSigned && <CheckCircle2 className="size-3" />}
-                                {t.status === 'RECEIVED' && <Coins className="size-3" />}
-                                {!isReceived && <Clock className="size-3" />}
-                                {t.status}
-                              </span>
+                              <StatusBadge status={t.status} />
                             </td>
                             <td className="px-3 py-3 text-right">
                               {!isReceived ? (
@@ -364,7 +346,7 @@ export function CsrDealsPage() {
         <Dialog
           open={Boolean(selectedDeal)}
           onClose={() => setSelectedDeal(null)}
-          title="Bilateral Agreement & Proposal Dossier"
+          title="Agreement and proposal dossier"
         >
           <div className="space-y-3">
             <textarea

@@ -194,6 +194,9 @@ function CowDrawer({ cow, onClose }: { cow: Cow | null; onClose: () => void }) {
       onClose={onClose}
       title={cow.name}
       subtitle={`${cow.breed} · ${titleCase(cow.kind)} · ${cow.ageYears} years`}
+      accent="tulsi"
+      tone="canvas"
+      headerExtra={<StatusBadge status={cow.status} />}
       footer={
         <div className="flex gap-2">
           <Button onClick={save}>Save changes</Button>
@@ -203,8 +206,8 @@ function CowDrawer({ cow, onClose }: { cow: Cow | null; onClose: () => void }) {
         </div>
       }
     >
-      <div className="space-y-5 px-6 py-5">
-        <div className="flex items-center gap-4">
+      <div className="space-y-5">
+        <div className="flex items-center gap-4 rounded-xl border border-navy-100 bg-sandal-50 p-4 shadow-flat">
           <span className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-navy-100 bg-navy-50">
             <CowPortrait cow={cow} size={92} />
           </span>
@@ -296,7 +299,7 @@ function NewCowDrawer({ open, onClose }: { open: boolean; onClose: () => void })
         </div>
       }
     >
-      <div className="space-y-4 px-6 py-5">
+      <div className="space-y-4">
         <Input label="Name" value={name} onChange={(e) => setName(e.target.value)} />
         <Input
           label="Name in Tamil"
@@ -394,7 +397,7 @@ function HealthDrawer({ cow, onClose }: { cow: Cow | null; onClose: () => void }
 
   return (
     <Drawer open onClose={onClose} title={`${cow.name} — health record`} width="lg">
-      <div className="space-y-6 px-6 py-5">
+      <div className="space-y-6">
         <section className="rounded-2xl border border-navy-100 bg-navy-50/50 p-4">
           <h3 className="text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">Log a visit</h3>
           <div className="mt-3.5 space-y-3.5">

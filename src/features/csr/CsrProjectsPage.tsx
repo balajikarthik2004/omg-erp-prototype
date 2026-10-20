@@ -6,6 +6,7 @@ import {
   Trash2,
 } from 'lucide-react'
 
+import { cn } from '@/lib/cn'
 import { formatMoneyShort } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -13,6 +14,7 @@ import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { userById } from '@/mock/seed'
 import { useDb } from '@/store/db'
@@ -176,11 +178,13 @@ export function CsrProjectsPage() {
       <div className="flex flex-wrap items-center gap-2 pb-1">
         <button
           onClick={() => setSelectedFilter('ALL')}
-          className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+          className={cn(
+            'rounded-lg border px-3 py-1.5 text-[13px] font-semibold transition-colors duration-150',
+            'focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:outline-none',
             selectedFilter === 'ALL'
-              ? 'bg-turmeric-600 text-white shadow-xs'
-              : 'bg-white text-stone-700 hover:bg-sandal-100 border border-sandal-200'
-          }`}
+              ? 'border-kumkum-600 bg-kumkum-600 text-white shadow-flat'
+              : 'border-sandal-200 bg-sandal-50 text-stone-700 hover:border-sandal-300 hover:bg-sandal-100',
+          )}
         >
           All Categories ({projects.length})
         </button>
@@ -188,13 +192,15 @@ export function CsrProjectsPage() {
           <button
             key={item.code}
             onClick={() => setSelectedFilter(item.code)}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+            className={cn(
+              'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[13px] font-semibold transition-colors duration-150',
+              'focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:outline-none',
               selectedFilter === item.code
-                ? 'bg-turmeric-600 text-white shadow-xs'
-                : 'bg-white text-stone-700 hover:bg-sandal-100 border border-sandal-200'
-            }`}
+                ? 'border-kumkum-600 bg-kumkum-600 text-white shadow-flat'
+                : 'border-sandal-200 bg-sandal-50 text-stone-700 hover:border-sandal-300 hover:bg-sandal-100',
+            )}
           >
-            <span className="font-mono">({item.code})</span>
+            <span className={selectedFilter === item.code ? 'text-white/70' : 'text-stone-500'}>({item.code})</span>
             <span>{item.title}</span>
           </button>
         ))}
@@ -208,29 +214,18 @@ export function CsrProjectsPage() {
           const totalCommitted = activeDeals.reduce((sum, d) => sum + d.committedAmount, 0)
 
           const isSubmitted = prj.status === 'SUBMITTED'
-          const isOpen = prj.status === 'OPEN_FOR_FUNDING'
-          const isFunded = prj.status === 'FUNDED' || prj.status === 'IN_PROGRESS'
 
           return (
-            <Card key={prj.id} className="flex flex-col justify-between hover:border-turmeric-300 transition">
+            <Card
+              key={prj.id}
+              className="flex flex-col justify-between shadow-card transition-colors duration-150 hover:border-turmeric-400"
+            >
               <div className="p-5">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="inline-flex items-center gap-1 rounded bg-turmeric-50 px-2 py-0.5 font-mono text-[11px] font-semibold text-turmeric-800 border border-turmeric-200">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-turmeric-200 bg-turmeric-50 px-2.5 py-0.5 text-[12px] font-semibold text-turmeric-700">
                     Schedule VII ({prj.scheduleViiCode})
                   </span>
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                      isOpen
-                        ? 'bg-tulsi-100 text-tulsi-800 border border-tulsi-200'
-                        : isSubmitted
-                        ? 'bg-marigold-100 text-marigold-800 border border-marigold-200'
-                        : isFunded
-                        ? 'bg-peacock-100 text-peacock-800 border border-peacock-200'
-                        : 'bg-sandal-100 text-stone-700'
-                    }`}
-                  >
-                    {prj.status.replace(/_/g, ' ')}
-                  </span>
+                  <StatusBadge status={prj.status} />
                 </div>
 
                 <h3 className="mt-2.5 font-display text-base font-bold text-stone-900 leading-snug">
@@ -243,7 +238,9 @@ export function CsrProjectsPage() {
                 <div className="mt-4 space-y-2 border-t border-sandal-200/80 pt-3 text-xs">
                   <div className="flex items-center justify-between text-stone-700">
                     <span>Implementing Agency:</span>
-                    <strong className="text-stone-900">{entity?.legalName.slice(0, 24)}...</strong>
+                    <strong className="min-w-0 truncate text-stone-900" title={entity?.legalName}>
+                      {entity?.legalName}
+                    </strong>
                   </div>
                   <div className="flex items-center justify-between text-stone-700">
                     <span>Location:</span>
@@ -261,7 +258,7 @@ export function CsrProjectsPage() {
                 </div>
 
                 {/* Financial Progress */}
-                <div className="mt-4 rounded-lg bg-sandal-50 p-3">
+                <div className="mt-4 rounded-lg border border-sandal-200 bg-sandal-100 p-3">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-stone-700">Budget:</span>
                     <strong className="font-mono text-stone-900">{formatMoneyShort(prj.totalBudget)}</strong>
@@ -282,12 +279,12 @@ export function CsrProjectsPage() {
               </div>
 
               {/* Action Footer */}
-              <div className="border-t border-sandal-200 bg-sandal-50/50 p-3.5 flex items-center justify-between">
+              <div className="flex items-center justify-between gap-3 border-t border-sandal-200 bg-sandal-100 p-3.5">
                 <button
                   onClick={() => setSelectedProject(prj)}
-                  className="text-xs font-semibold text-turmeric-800 hover:text-turmeric-900"
+                  className="rounded-lg text-[13px] font-semibold text-navy-600 transition-colors duration-150 hover:text-navy-800 focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:outline-none"
                 >
-                  View Budget Lines ({prj.budgetLines.length}) →
+                  View budget lines ({prj.budgetLines.length}) →
                 </button>
 
                 {isSubmitted && (

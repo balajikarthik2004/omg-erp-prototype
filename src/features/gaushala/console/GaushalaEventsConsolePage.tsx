@@ -228,7 +228,7 @@ function EventDrawer({ event, onClose }: { event: GaushalaEvent | 'new' | null; 
         </div>
       }
     >
-      <div className="space-y-4 px-6 py-5">
+      <div className="space-y-4">
         <Input label="Name" value={name} onChange={(e) => setName(e.target.value)} />
         <Input label="Name in Tamil" value={tamil} onChange={(e) => setTamil(e.target.value)} />
         <div className="grid gap-4 sm:grid-cols-2">
@@ -321,7 +321,7 @@ function RegistrationsDrawer({ event, onClose }: { event: GaushalaEvent | null; 
       subtitle={`${people} people across ${rows.length} registrations`}
       width="lg"
     >
-      <div className="space-y-4 px-6 py-5">
+      <div className="space-y-4">
         {rows.length === 0 ? (
           <EmptyState title="Nobody yet" message="No one has registered for this one." />
         ) : (

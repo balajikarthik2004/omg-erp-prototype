@@ -262,6 +262,14 @@ function PaymentDrawer({ donation, onClose }: { donation: Donation | null; onClo
       title={donation.receiptNo !== '\u2014' ? donation.receiptNo : donation.id}
       subtitle={formatDateTime(donation.createdAt)}
       width="lg"
+      accent="turmeric"
+      tone="canvas"
+      headerExtra={
+        <>
+          <StatusBadge status={statusKey(donation)} />
+          {order ? <StatusBadge status={order.status === 'completed' ? 'done' : order.status} /> : null}
+        </>
+      }
       footer={
         donation.status === 'pending' || (donation.status === 'paid' && donation.receiptNo === '\u2014') ? (
           <div className="flex flex-col gap-2">
@@ -293,12 +301,7 @@ function PaymentDrawer({ donation, onClose }: { donation: Donation | null; onClo
         ) : null
       }
     >
-      <div className="space-y-5 px-6 py-5">
-        <div className="flex flex-wrap items-center gap-2">
-          <StatusBadge status={statusKey(donation)} />
-          {order ? <StatusBadge status={order.status === 'completed' ? 'done' : order.status} /> : null}
-        </div>
-
+      <div className="space-y-5">
         {donation.disputed ? (
           <p className="rounded-xl border border-danger-50 bg-danger-50 px-3.5 py-2.5 text-[13px] leading-relaxed text-danger-600">
             The card issuer has raised a dispute on this charge. Contest it with the proof of sewa below, or refund
@@ -306,7 +309,7 @@ function PaymentDrawer({ donation, onClose }: { donation: Donation | null; onClo
           </p>
         ) : null}
 
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-[14px]">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-xl border border-navy-100 bg-sandal-50 p-4 shadow-flat text-[14px]">
           <Field label="Donation ref." value={<span className="font-mono tabular-nums">{donation.id}</span>} />
           <Field label="Sewa" value={sewa?.name ?? '\u2014'} />
           <Field label="Method" value={titleCase(donation.method)} />

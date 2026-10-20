@@ -182,7 +182,7 @@ function AdoptDrawer({ cow, currency, onClose }: { cow: Cow | null; currency: Cu
         )
       }
     >
-      <div className="space-y-5 px-6 py-5">
+      <div className="space-y-5">
         <div className="flex items-center gap-4">
           <span className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-navy-100 bg-navy-50">
             <CowPortrait cow={cow} size={92} />

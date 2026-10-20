@@ -1,13 +1,8 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  ArrowRight,
-  Building2,
-  CheckCircle2,
-  Clock,
   FileCheck2,
   Handshake,
-  ScrollText,
   ShieldCheck,
   TrendingUp,
 } from 'lucide-react'
@@ -18,6 +13,8 @@ import { Card, CardHeader } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { Stat } from '@/components/ui/Stat'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { CsrLifecycleStrip } from './CsrLifecycleStrip'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { useDb } from '@/store/db'
 
 export function CsrOverviewPage() {
@@ -107,130 +104,16 @@ export function CsrOverviewPage() {
         />
       </div>
 
-      {/* 6-Step Module Navigator Strip */}
-      <Card className="border border-sandal-300/80 bg-white shadow-xs">
-        <div className="p-4 sm:p-5">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-display text-base font-semibold text-stone-900">
-              CSR Lifecycle & Governance Workflow
-            </h2>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-turmeric-50 px-2.5 py-0.5 text-xs font-medium text-turmeric-800">
-              MCA Sec 135 & Schedule VII
-            </span>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            <Link
-              to="/console/csr/compliance"
-              className="group flex flex-col justify-between rounded-lg border border-sandal-200 bg-sandal-50/50 p-3.5 transition hover:border-turmeric-400 hover:bg-white hover:shadow-sm"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-semibold text-turmeric-700">01. VAULT</span>
-                  <ShieldCheck className="size-4 text-turmeric-600 group-hover:scale-110 transition-transform" />
-                </div>
-                <h3 className="mt-1 font-display text-sm font-semibold text-stone-900">Compliance Vault</h3>
-                <p className="mt-0.5 text-xs text-stone-700">
-                  CSR-1, RNPO 332, 354 approval & 3-yr audited records.
-                </p>
-              </div>
-              <div className="mt-3 flex items-center gap-1 text-xs font-medium text-turmeric-700">
-                <span>View entities</span>
-                <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-            </Link>
-
-            <Link
-              to="/console/csr/projects"
-              className="group flex flex-col justify-between rounded-lg border border-sandal-200 bg-sandal-50/50 p-3.5 transition hover:border-turmeric-400 hover:bg-white hover:shadow-sm"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-semibold text-turmeric-700">02. BUILDER</span>
-                  <ScrollText className="size-4 text-turmeric-600 group-hover:scale-110 transition-transform" />
-                </div>
-                <h3 className="mt-1 font-display text-sm font-semibold text-stone-900">Project Builder</h3>
-                <p className="mt-0.5 text-xs text-stone-700">
-                  Schedule VII item mapping & pooja-block validation.
-                </p>
-              </div>
-              <div className="mt-3 flex items-center gap-1 text-xs font-medium text-turmeric-700">
-                <span>Configure heads</span>
-                <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-            </Link>
-
-            <Link
-              to="/console/csr/pipeline"
-              className="group flex flex-col justify-between rounded-lg border border-sandal-200 bg-sandal-50/50 p-3.5 transition hover:border-turmeric-400 hover:bg-white hover:shadow-sm"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-semibold text-turmeric-700">03. PIPELINE</span>
-                  <Building2 className="size-4 text-turmeric-600 group-hover:scale-110 transition-transform" />
-                </div>
-                <h3 className="mt-1 font-display text-sm font-semibold text-stone-900">Corporate CRM</h3>
-                <p className="mt-0.5 text-xs text-stone-700">
-                  Mandatory CSR obligation tracking & AI proposals.
-                </p>
-              </div>
-              <div className="mt-3 flex items-center gap-1 text-xs font-medium text-turmeric-700">
-                <span>View partners</span>
-                <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-            </Link>
-
-            <Link
-              to="/console/csr/deals"
-              className="group flex flex-col justify-between rounded-lg border border-sandal-200 bg-sandal-50/50 p-3.5 transition hover:border-turmeric-400 hover:bg-white hover:shadow-sm"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-semibold text-turmeric-700">04. MOUS</span>
-                  <Handshake className="size-4 text-turmeric-600 group-hover:scale-110 transition-transform" />
-                </div>
-                <h3 className="mt-1 font-display text-sm font-semibold text-stone-900">Deals & Tranches</h3>
-                <p className="mt-0.5 text-xs text-stone-700">
-                  Dual sign-off (CA+Trustee) and 5% admin cap check.
-                </p>
-              </div>
-              <div className="mt-3 flex items-center gap-1 text-xs font-medium text-turmeric-700">
-                <span>Review tranches</span>
-                <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-            </Link>
-
-            <Link
-              to="/console/csr/reports"
-              className="group flex flex-col justify-between rounded-lg border border-sandal-200 bg-sandal-50/50 p-3.5 transition hover:border-turmeric-400 hover:bg-white hover:shadow-sm"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-semibold text-turmeric-700">05. CERTIFY</span>
-                  <FileCheck2 className="size-4 text-turmeric-600 group-hover:scale-110 transition-transform" />
-                </div>
-                <h3 className="mt-1 font-display text-sm font-semibold text-stone-900">UC & Reporting</h3>
-                <p className="mt-0.5 text-xs text-stone-700">
-                  CA-signed Utilisation Certificates with UDIN seal.
-                </p>
-              </div>
-              <div className="mt-3 flex items-center gap-1 text-xs font-medium text-turmeric-700">
-                <span>Sign certificates</span>
-                <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-            </Link>
-          </div>
-        </div>
-      </Card>
+      <CsrLifecycleStrip />
 
       {/* Main Grid: Compliance Status & Active MoUs */}
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Implementing Entities Readiness */}
         <Card>
           <CardHeader
-            title="Implementing Agencies & Readiness Status"
+            title="Implementing agencies"
             action={
-              <Link to="/console/csr/compliance" className="text-xs font-medium text-turmeric-700 hover:underline">
+              <Link to="/console/csr/compliance" className="text-[12.5px] font-semibold text-navy-600 hover:text-navy-800 hover:underline">
                 Open Compliance Vault →
               </Link>
             }
@@ -263,19 +146,13 @@ export function CsrOverviewPage() {
                         )}
                       </div>
                     </div>
-                    <span
-                      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                        isReady
-                          ? 'border border-tulsi-200 bg-tulsi-50 text-tulsi-800'
-                          : 'border border-turmeric-200 bg-turmeric-50 text-turmeric-800'
-                      }`}
-                    >
-                      {isReady ? <CheckCircle2 className="size-3.5" /> : <Clock className="size-3.5" />}
-                      {isReady ? 'CSR READY' : 'DOCS UPLOADED'}
-                    </span>
+                    <StatusBadge
+                      status={isReady ? 'CSR_READY' : 'DOCS_UPLOADED'}
+                      className="shrink-0"
+                    />
                   </div>
 
-                  <div className="mt-3 flex items-center justify-between rounded-md bg-sandal-100/60 px-3 py-2 text-xs">
+                  <div className="mt-3 flex items-center justify-between rounded-lg border border-sandal-200 bg-sandal-100 px-3 py-2 text-xs">
                     <span className="text-stone-700">
                       Compliance dossier: <strong>{verifiedDocs} of {docs.length}</strong> verified by CA
                     </span>
@@ -292,9 +169,9 @@ export function CsrOverviewPage() {
         {/* Active MoUs & Grant Disbursements */}
         <Card>
           <CardHeader
-            title="Active Corporate Grants & Tranches"
+            title="Active corporate grants"
             action={
-              <Link to="/console/csr/deals" className="text-xs font-medium text-turmeric-700 hover:underline">
+              <Link to="/console/csr/deals" className="text-[12.5px] font-semibold text-navy-600 hover:text-navy-800 hover:underline">
                 View all MoUs →
               </Link>
             }
@@ -311,13 +188,11 @@ export function CsrOverviewPage() {
               const pctReceived = Math.round((totalReceived / deal.committedAmount) * 100)
 
               return (
-                <div key={deal.id} className="p-3 sm:p-3.5 transition hover:bg-sandal-50/50">
+                <div key={deal.id} className="p-3 transition-colors duration-150 hover:bg-sandal-100 sm:p-3.5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-turmeric-700">
-                          {company?.name}
-                        </span>
+                        <span className="text-[13px] font-semibold text-navy-700">{company?.name}</span>
                         <span className="text-xs text-stone-500">→</span>
                         <h4 className="font-display text-sm font-semibold text-stone-900">
                           {project?.title}
@@ -329,9 +204,7 @@ export function CsrOverviewPage() {
                         <span>MoU Signed: <strong>{deal.mouSignedOn ?? 'Pending'}</strong></span>
                       </div>
                     </div>
-                    <span className="inline-flex shrink-0 items-center rounded-full bg-tulsi-50 px-2.5 py-0.5 text-xs font-medium text-tulsi-700 border border-tulsi-200">
-                      {deal.status}
-                    </span>
+                    <StatusBadge status={deal.status} className="shrink-0" />
                   </div>
 
                   {/* Tranche progress bar */}
@@ -340,8 +213,11 @@ export function CsrOverviewPage() {
                       <span className="text-stone-700">
                         Disbursed: <strong className="text-stone-900">{formatMoneyShort(totalReceived)}</strong> ({pctReceived}%)
                       </span>
-                      <span className="font-mono text-[11px] text-stone-500">
-                        {receivedTranches.length} of {deal.tranches.length} Tranches released
+                      <span className="text-[12px] text-stone-500">
+                        <span className="font-mono tabular-nums">
+                          {receivedTranches.length} of {deal.tranches.length}
+                        </span>{' '}
+                        tranches released
                       </span>
                     </div>
                     <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-sandal-200">
@@ -357,22 +233,15 @@ export function CsrOverviewPage() {
                     {deal.tranches.map((t) => (
                       <div
                         key={t.id}
-                        className="flex items-center justify-between rounded border border-sandal-200 bg-white px-2.5 py-1.5"
+                        className="flex items-center justify-between gap-2 rounded-lg border border-sandal-200 bg-sandal-50 px-2.5 py-1.5"
                       >
-                        <span className="font-mono font-medium text-stone-900">
-                          Tranche #{t.seqNo}: {formatMoneyShort(t.amount)}
+                        <span className="text-[12px] text-stone-700">
+                          Tranche {t.seqNo}
+                          <strong className="ml-1.5 font-mono text-stone-900 tabular-nums">
+                            {formatMoneyShort(t.amount)}
+                          </strong>
                         </span>
-                        <span
-                          className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
-                            t.status === 'UC_SIGNED'
-                              ? 'bg-tulsi-100 text-tulsi-800'
-                              : t.status === 'RECEIVED'
-                              ? 'bg-peacock-100 text-peacock-800'
-                              : 'bg-sandal-100 text-stone-700'
-                          }`}
-                        >
-                          {t.status}
-                        </span>
+                        <StatusBadge status={t.status} compact />
                       </div>
                     ))}
                   </div>
