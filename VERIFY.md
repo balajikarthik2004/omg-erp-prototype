@@ -24,7 +24,7 @@ are. The store resets to seed data on every reload, so reload to start clean.
 | Persona | Name |
 |---|---|
 | Super Admin | Kavitha Ramesh |
-| Sector Admin | Saravanan Pillai |
+| Sector Admin | Santhosh Kumar |
 | Store Keeper | Vasanthi Murugan |
 | Procurement Officer | Dinesh Kumar |
 | CA Staff | Anitha Rajan |
@@ -61,7 +61,7 @@ are. The store resets to seed data on every reload, so reload to start clean.
 | 4 Webhook | Console **Donations** (as CA Staff), open the new gift | Shows *Webhook confirmed* with a time, status Receipted. |
 | 5 Receipt and journal | Console **Ledger** | A new `Donation received` entry for that receipt number, and the fund balance rose by the net. |
 | 3 Counter cash | **Vasanthi** → **Counter cash** → record `525.00` for Hundi | Row is *pending*. Open it: **Confirm** is disabled with *You counted this cash. A second person must confirm the count.* |
-| | Switch to **Saravanan Pillai** (Sector Admin), open it, **Confirm the count** | Count becomes Confirmed. A cash donation appears in **Donations** and the Ledger. Procurement Officer cannot confirm. |
+| | Switch to **Santhosh Kumar** (Sector Admin), open it, **Confirm the count** | Count becomes Confirmed. A cash donation appears in **Donations** and the Ledger. Procurement Officer cannot confirm. |
 
 ### 02 Control
 

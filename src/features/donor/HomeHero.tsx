@@ -4,28 +4,15 @@ import { ArrowRight, CreditCard, ShieldCheck, Star } from 'lucide-react'
 import { Etching } from '@/components/ui/Ornament'
 import { TempleTowerIcon } from './HeritageArt'
 
-// Normalized path for SVG clipPath (0 to 1 objectBoundingBox)
-const ARCH_CLIP_PATH =
-  'M 0.0867,1.0000 L 0.0867,0.4571 C 0.0867,0.4357 0.0967,0.4229 0.1133,0.4143 C 0.0833,0.3786 0.0867,0.3257 0.1417,0.2943 C 0.1867,0.2686 0.2100,0.2743 0.2367,0.2800 C 0.2100,0.2400 0.2250,0.1857 0.2867,0.1600 C 0.3367,0.1386 0.3667,0.1500 0.3933,0.1571 C 0.3833,0.1114 0.4250,0.0600 0.5000,0.0286 C 0.5750,0.0600 0.6167,0.1114 0.6067,0.1571 C 0.6333,0.1500 0.6633,0.1386 0.7133,0.1600 C 0.7750,0.1857 0.7900,0.2400 0.7633,0.2800 C 0.7900,0.2743 0.8133,0.2686 0.8583,0.2943 C 0.9133,0.3257 0.9167,0.3786 0.8867,0.4143 C 0.9033,0.4229 0.9133,0.4357 0.9133,0.4571 L 0.9133,1.0000 Z'
+/** The photograph's own edge, dissolved. Opaque only past its right half,
+ *  so the headline column never has stone under it. */
+const TEMPLE_FADE =
+  'linear-gradient(90deg, transparent 0%, transparent 22%, rgba(0,0,0,0.10) 40%, rgba(0,0,0,0.48) 57%, rgba(0,0,0,0.88) 73%, #000 85%)'
 
-// Path for SVG stroke border in 600x700 viewBox
-const ARCH_STROKE_PATH = `
-  M 52,700
-  L 52,320
-  C 52,305 58,296 68,290
-  C 50,265 52,228 85,206
-  C 112,188 126,192 142,196
-  C 126,168 135,130 172,112
-  C 202,97 220,105 236,110
-  C 230,78 255,42 300,20
-  C 345,42 370,78 364,110
-  C 380,105 398,97 428,112
-  C 465,130 474,168 458,196
-  C 474,192 488,188 515,206
-  C 548,228 550,265 532,290
-  C 542,296 548,305 548,320
-  L 548,700
-`
+/** Golden hour over the stone: brass in the sky, sanctum dark at the foot, so
+ *  the eye travels up the tower rather than off the bottom edge. */
+const GOLDEN_HOUR =
+  'linear-gradient(180deg, color-mix(in srgb, var(--color-turmeric-400) 20%, transparent) 0%, transparent 32%, color-mix(in srgb, var(--color-sanctum-950) 30%, transparent) 80%, color-mix(in srgb, var(--color-sanctum-950) 48%, transparent) 100%)'
 
 /** The three claims under the fold. Each names something the product does. */
 const ASSURANCES = [
@@ -51,44 +38,70 @@ const ASSURANCES = [
 
 export function HomeHero() {
   return (
-    <section className="relative isolate overflow-hidden bg-linear-to-b from-sandal-50 via-sandal-50 to-navy-50 pb-6 pt-3 sm:pb-8 sm:pt-4 lg:pb-10 lg:pt-5">
-      {/* Hidden SVG defining the normalized clip path for the temple arch */}
-      <svg width="0" height="0" className="pointer-events-none absolute" aria-hidden>
-        <defs>
-          <clipPath id="templeSanctumArch" clipPathUnits="objectBoundingBox">
-            <path d={ARCH_CLIP_PATH} />
-          </clipPath>
-        </defs>
-      </svg>
+    <section className="relative isolate overflow-hidden bg-sandal-50 pb-6 pt-3 sm:pb-8 sm:pt-4 lg:pb-10 lg:pt-5">
+      {/* ------------------------------------------------------------------
+          The gopuram itself, unframed. It fills the right of the section and
+          bleeds off the top and right edges, then dissolves leftward into the
+          page so the headline keeps its paper. Standing inside the temple
+          reads as devotion; the same photograph cut into a gold-rimmed arch
+          read as a picture of one.
+          ------------------------------------------------------------------ */}
+      <div className="pointer-events-none absolute inset-0 -z-20 select-none" aria-hidden>
+        {/* From lg the photograph and its washes share one soft-edged mask, so
+            the stone dissolves into the paper with no seam to find. A veil
+            laid over the top instead always shows the picture's own edge. */}
+        <div
+          className="absolute inset-y-0 right-0 hidden w-[68%] lg:block xl:w-[64%]"
+          style={{
+            WebkitMaskImage: TEMPLE_FADE,
+            maskImage: TEMPLE_FADE,
+          }}
+        >
+          <img
+            src="/images/temple-gopuram-grand.webp"
+            alt=""
+            loading="eager"
+            decoding="async"
+            className="h-full w-full scale-105 object-cover object-[58%_38%]"
+          />
+          <div className="absolute inset-0" style={{ background: GOLDEN_HOUR }} />
+        </div>
 
-      {/* Atmospheric glow. Brass warmth on the arch side, navy on the type side. */}
-      <div
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            'radial-gradient(ellipse 65% 55% at 84% 38%, color-mix(in srgb, var(--color-turmeric-400) 18%, transparent) 0%, color-mix(in srgb, var(--color-kumkum-500) 8%, transparent) 32%, transparent 68%), radial-gradient(circle at 16% 25%, color-mix(in srgb, var(--color-navy-600) 6%, transparent) 0%, transparent 48%)',
-        }}
-        aria-hidden
-      />
+        {/* Below lg it sits behind the words, so it is veiled down to a
+            devotional texture rather than competing with them. */}
+        <div className="absolute inset-0 lg:hidden">
+          <img
+            src="/images/temple-gopuram-grand.webp"
+            alt=""
+            loading="eager"
+            decoding="async"
+            className="h-full w-full object-cover object-[58%_38%]"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, color-mix(in srgb, var(--color-sandal-50) 94%, transparent) 0%, color-mix(in srgb, var(--color-sandal-50) 90%, transparent) 60%, color-mix(in srgb, var(--color-sandal-50) 97%, transparent) 100%)',
+            }}
+          />
+        </div>
 
-      {/* Sacred mandala watermark behind the arch */}
-      <div
-        className="pointer-events-none absolute right-2 top-[42%] z-0 h-136 w-136 -translate-y-1/2 select-none opacity-[0.14] lg:right-10 xl:right-20"
-        aria-hidden
-      >
-        <Etching src="/images/hero-mandala-etching.png" className="bg-navy-600" position="center" />
+        {/* Settle into the wave divider at the foot of the section. */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-28"
+          style={{
+            background:
+              'linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--color-sandal-50) 65%, transparent) 72%, var(--color-sandal-50) 100%)',
+          }}
+        />
       </div>
 
-      {/* Hanging brass deepams from the top right */}
+      {/* Sacred mandala, turning slowly over the stone. */}
       <div
-        className="pointer-events-none absolute -top-1 right-2 z-25 h-68 w-36 select-none drop-shadow-lg sm:right-6 sm:h-78 sm:w-44 lg:right-8 lg:h-88 xl:right-14"
+        className="pointer-events-none absolute right-2 top-[44%] -z-10 h-136 w-136 -translate-y-1/2 select-none opacity-[0.10] lg:right-10 lg:opacity-[0.16] xl:right-20"
         aria-hidden
       >
-        <img
-          src="/images/hero-hanging-deepams.png"
-          alt=""
-          className="h-full w-full object-contain object-top"
-        />
+        <Etching src="/images/hero-mandala-etching.png" className="bg-sandal-50" position="center" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-10">
@@ -161,143 +174,47 @@ export function HomeHero() {
           </div>
 
           {/* ---------------------------------------------------------- */}
-          {/* Right: the sanctum arch                                     */}
+          {/* Right: nothing framed. The temple is already behind this     */}
+          {/* column, so it carries only what has to be read over it.      */}
           {/* ---------------------------------------------------------- */}
-          <div className="relative mx-auto w-full max-w-105 sm:max-w-115 lg:ml-auto lg:mr-0 lg:max-w-122 xl:max-w-132">
-            <div className="group relative aspect-[6/7] w-full">
-              <div
-                className="relative h-full w-full overflow-hidden shadow-2xl shadow-navy-950/30 transition-transform duration-700 ease-out group-hover:scale-[1.01] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                style={{ clipPath: 'url(#templeSanctumArch)', WebkitClipPath: 'url(#templeSanctumArch)' }}
-              >
-                <img
-                  src="/images/temple-gopuram-grand.webp"
-                  alt="A South Indian temple raja gopuram at golden hour"
-                  loading="eager"
-                  decoding="async"
-                  // The photo is landscape in a portrait arch, so cover scales it to the
-                  // frame height and crops the sides: only the horizontal position
-                  // does anything here. 56% slides the view right, which carries the
-                  // gopuram a little left inside the arch.
-                  className="h-full w-full scale-102 object-cover object-[56%_center] saturate-[1.1] transition-transform duration-1000 ease-out group-hover:scale-106 motion-reduce:transition-none motion-reduce:group-hover:scale-102"
-                />
-
-                <div
-                  className="pointer-events-none absolute inset-0 bg-linear-to-t from-navy-950/55 via-transparent to-navy-950/15"
-                  aria-hidden
-                />
-
-                <p className="absolute bottom-5 left-10 z-20 hidden items-center gap-2 rounded-lg border border-sandal-200 bg-sandal-50/95 px-3 py-1.5 shadow-lift backdrop-blur-md sm:flex">
-                  <ShieldCheck className="size-4 shrink-0 text-tulsi-500" aria-hidden />
-                  <span className="text-left">
-                    <span className="block text-[10px] font-bold uppercase tracking-[0.12em] text-stone-900">
-                      Public CA audit
-                    </span>
-                    <span className="block text-[10.5px] text-stone-500">Double-signed and verified</span>
-                  </span>
-                </p>
-              </div>
-
-              {/* Brass rim tracing the multi-cusped arch. The stops below are a
-                  metallic ramp — highlight, body and shadow — which the flat
-                  turmeric token cannot express, so this stays hand-mixed, as
-                  the other hand-drawn ornament does. */}
-              <svg
-                viewBox="0 0 600 700"
-                className="pointer-events-none absolute inset-0 z-15 size-full"
-                fill="none"
-                aria-hidden
-              >
-                <defs>
-                  <linearGradient id="goldArchRim" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#FFF2B2" />
-                    <stop offset="20%" stopColor="#F5C138" />
-                    <stop offset="45%" stopColor="#FFF9DB" />
-                    <stop offset="70%" stopColor="#D99B16" />
-                    <stop offset="100%" stopColor="#FFD54F" />
-                  </linearGradient>
-                  <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
-                </defs>
-
-                <path
-                  d={ARCH_STROKE_PATH}
-                  stroke="#FFC107"
-                  strokeWidth="8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  opacity="0.38"
-                  filter="url(#goldGlow)"
-                />
-                <path
-                  d={ARCH_STROKE_PATH}
-                  stroke="url(#goldArchRim)"
-                  strokeWidth="3.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d={ARCH_STROKE_PATH}
-                  stroke="#FFFFFF"
-                  strokeWidth="1.2"
-                  opacity="0.65"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-
-                {/* A second, finer line set just inside the band. Temple arch
-                    mouldings are cut this way — a heavy course with a thin
-                    one shadowing it — and it is what stops the rim reading
-                    as a single drawn outline. */}
-                <path
-                  d={ARCH_STROKE_PATH}
-                  transform="translate(300 350) scale(0.955) translate(-300 -350)"
-                  stroke="url(#goldArchRim)"
-                  strokeWidth="1.1"
-                  opacity="0.55"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-
-                {/* The kalasam that finishes every gopuram, at the apex. */}
-                <g opacity="0.95">
-                  <path d="M300 2 L303.4 13 L300 24 L296.6 13 Z" fill="url(#goldArchRim)" />
-                  <circle cx="300" cy="13" r="4.6" fill="url(#goldArchRim)" />
-                  <circle cx="300" cy="13" r="4.6" fill="none" stroke="#FFF9DB" strokeWidth="0.8" opacity="0.7" />
-                </g>
-              </svg>
-
-              <p className="absolute -top-3 left-8 z-20 flex items-center gap-2 rounded-full border border-sandal-200 bg-sandal-50 px-3 py-1 shadow-flat sm:left-14">
-                <span className="flex items-center gap-1 text-turmeric-500">
-                  <Star className="size-3 fill-turmeric-400 text-turmeric-400" aria-hidden />
-                  <span className="font-mono text-[11px] font-bold tabular-nums text-stone-900">4.9</span>
+          <div className="relative mt-5 flex flex-row flex-wrap items-start gap-2.5 lg:mt-0 lg:min-h-125 lg:flex-col lg:items-stretch lg:justify-end lg:gap-3 xl:min-h-135">
+            {/* On a phone the stone is a faint wash, so these keep the page
+                border; from lg they sit on the photograph and need the glass
+                treatment to stay legible. */}
+            <p className="inline-flex w-fit items-center gap-2 rounded-full border border-sandal-200 bg-sandal-50/95 px-3.5 py-1.5 shadow-lift backdrop-blur-md lg:border-white/25 lg:bg-sanctum-950/45">
+              <span className="flex items-center gap-1">
+                <Star className="size-3.5 fill-turmeric-400 text-turmeric-400" aria-hidden />
+                <span className="font-mono text-[12px] font-bold tabular-nums text-stone-900 lg:text-white">
+                  4.9
                 </span>
-                <span className="text-sandal-300" aria-hidden>
-                  ·
-                </span>
-                <span className="font-mono text-[10.5px] tabular-nums text-stone-500">85,000+ offerings</span>
-              </p>
-            </div>
+              </span>
+              <span className="text-sandal-300 lg:text-white/35" aria-hidden>
+                ·
+              </span>
+              <span className="font-mono text-[11px] tabular-nums text-stone-500 lg:text-white/80">
+                85,000+ offerings
+              </span>
+            </p>
 
-            {/* Brass diya on stone, bottom right */}
-            <div
-              className="pointer-events-none absolute -bottom-6 -right-4 z-25 w-36 select-none drop-shadow-[0_12px_24px_rgb(11_13_40/0.25)] sm:-right-6 sm:w-44 lg:-right-4 lg:w-50 xl:-right-2"
-              aria-hidden
-            >
-              <img
-                src="/images/quick-hundi-diya.png"
-                alt=""
-                className="h-auto w-full object-contain saturate-[1.08]"
-              />
-            </div>
+            <p className="inline-flex w-fit items-center gap-2.5 rounded-xl border border-sandal-200 bg-sandal-50/95 px-3.5 py-2 shadow-lift backdrop-blur-md lg:border-white/25 lg:bg-sanctum-950/45">
+              <ShieldCheck className="size-4.5 shrink-0 text-tulsi-500 lg:text-tulsi-300" aria-hidden />
+              <span className="text-left">
+                <span className="block text-[10.5px] font-bold uppercase tracking-[0.12em] text-stone-900 lg:text-white">
+                  Public CA audit
+                </span>
+                <span className="block text-[11px] text-stone-500 lg:text-white/80">
+                  Double-signed and verified
+                </span>
+              </span>
+            </p>
+
           </div>
         </div>
       </div>
 
       {/* Blooming lotus, bottom left */}
       <div
-        className="pointer-events-none absolute -bottom-5 -left-5 z-10 w-28 select-none opacity-90 drop-shadow-md sm:-bottom-7 sm:left-0 sm:w-36 lg:left-4 lg:w-44"
+        className="pointer-events-none absolute -bottom-5 -left-5 z-0 w-28 select-none opacity-90 drop-shadow-md sm:-bottom-7 sm:left-0 sm:w-36 lg:left-4 lg:w-44"
         aria-hidden
       >
         <img src="/images/hero-lotus-flower.png" alt="" className="h-auto w-full object-contain" />

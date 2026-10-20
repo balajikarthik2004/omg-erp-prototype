@@ -19,7 +19,7 @@ import type {
 export const USERS: User[] = [
   { id: 'u-sup', name: 'R. Perumal', role: 'super_admin', email: 'perumal@omgplatform.io', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-dev', name: 'Lakshmi Narayanan', role: 'devotee', email: 'lakshmi.n@example.com', sectorIds: ['temple', 'sevalaya', 'sangam'] },
-  { id: 'u-adm', name: 'Saravanan Pillai', role: 'sector_admin', email: 'saravanan@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
+  { id: 'u-adm', name: 'Santhosh Kumar', role: 'sector_admin', email: 'saravanan@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-adm2', name: 'Lakshmi Priya', role: 'sector_admin', email: 'lakshmi.priya@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },
   { id: 'u-store', name: 'Vasanthi Murugan', role: 'store_keeper', email: 'vasanthi@omg.org', sectorIds: ['temple', 'sevalaya'] },
   { id: 'u-proc', name: 'Dinesh Kumar', role: 'procurement_officer', email: 'dinesh@omg.org', sectorIds: ['temple', 'sevalaya', 'sangam'] },

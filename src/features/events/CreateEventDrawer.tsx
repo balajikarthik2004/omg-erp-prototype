@@ -149,7 +149,7 @@ export function CreateEventDrawer({ open, onClose }: { open: boolean; onClose: (
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            {blocked ? <p className="text-[13px] text-marigold-500">Only a Sector Admin can create an event. Switch persona in the top bar (Saravanan Pillai or Lakshmi Priya).</p> : null}
+            {blocked ? <p className="text-[13px] text-marigold-500">Only a Sector Admin can create an event. Switch persona in the top bar (Santhosh Kumar or Lakshmi Priya).</p> : null}
             {error ? <p role="alert" className="text-[13px] text-danger-600">{error}</p> : null}
             <Button fullWidth disabled={blocked} icon={<Sparkles className="size-4" aria-hidden />} onClick={submit}>
               Create event and generate a poster
