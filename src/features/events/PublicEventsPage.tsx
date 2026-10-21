@@ -6,7 +6,6 @@ import { formatDateTime, formatMoney } from '@/lib/format'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { SectorChip } from '@/components/layout/PhaseChip'
-import { ModuleBodyBackground } from '@/components/layout/ModuleBodyBackground'
 import { useDb } from '@/store/db'
 import { REGISTRATION_STATES, seatsTaken } from './logic/rules'
 
@@ -16,10 +15,7 @@ export function PublicEventsPage() {
   const open = db.events.filter((e) => REGISTRATION_STATES.includes(e.status)).sort((a, b) => a.startAt.localeCompare(b.startAt))
 
   return (
-    <ModuleBodyBackground
-      gradient="bg-gradient-to-b from-[#FFFDF9] via-[#FDF8EE] to-[#FAF1DD]"
-      glow="rgba(255, 193, 7, 0.15)"
-    >
+    <>
       <div className="mx-auto max-w-8xl px-5 pt-4 sm:px-8 sm:pt-6">
         <header className="relative isolate overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl bg-gradient-to-br from-[#2E1805] via-[#482409] to-[#1C0D02] border border-amber-700/40 p-5 sm:p-6 lg:px-8 lg:py-6">
           {/* Subtle background glow */}
@@ -125,6 +121,6 @@ export function PublicEventsPage() {
       )}
       <p className="mt-10 text-center text-[13px] text-stone-500 font-normal">{SECTORS.temple.name}, {SECTORS.sevalaya.name} and {SECTORS.sangam.name} events all use the same page.</p>
       </div>
-    </ModuleBodyBackground>
+    </>
   )
 }

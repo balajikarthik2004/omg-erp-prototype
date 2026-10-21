@@ -5,7 +5,6 @@ import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Tabs } from '@/components/ui/Tabs'
-import { ModuleBodyBackground } from '@/components/layout/ModuleBodyBackground'
 import { CURRENCIES, type Currency } from '@/lib/currency'
 import { GAUSHALA_SEWAS } from '@/mock/gaushala'
 import { useDb } from '@/store/db'
@@ -95,10 +94,7 @@ export function GaushalaPage() {
   const priced = tab === 'sewas' || tab === 'adopt' || tab === 'visit' || tab === 'events'
 
   return (
-    <ModuleBodyBackground
-      gradient="bg-gradient-to-b from-[#FFFDF9] via-[#FAF6EC] to-[#EFF5EA]"
-      glow="rgba(16, 185, 129, 0.12)"
-    >
+    <>
       <div className="mx-auto max-w-8xl px-5 pt-4 sm:px-8 sm:pt-6">
         <header className="relative isolate overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl bg-gradient-to-br from-[#0B0D28] via-[#121642] to-[#181335] border border-navy-800/60 p-5 sm:p-6 lg:px-8 lg:py-6">
           {/* Subtle background mandala / etching watermark */}
@@ -239,7 +235,7 @@ export function GaushalaPage() {
           )}
         </div>
       </div>
-    </ModuleBodyBackground>
+    </>
   )
 }
 
