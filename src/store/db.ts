@@ -369,8 +369,19 @@ export function approvalBlock(
   return null
 }
 
+/** Acronyms that title-casing would otherwise flatten into "Ca Partner". */
+const ROLE_ACRONYMS = new Set(['ca', 'po', 'grn', 'csr', 'it', 'hr'])
+
 export function roleLabel(role: string): string {
-  return role.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+  return role
+    .split(/[_\s]+/)
+    .filter(Boolean)
+    .map((word) =>
+      ROLE_ACRONYMS.has(word.toLowerCase())
+        ? word.toUpperCase()
+        : word.charAt(0).toUpperCase() + word.slice(1),
+    )
+    .join(' ')
 }
 
 /** A restricted project fund may only be allotted to its own project head. */

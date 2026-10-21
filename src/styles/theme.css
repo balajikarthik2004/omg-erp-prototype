@@ -48,9 +48,17 @@
 
   /* Ink: the reference foreground ramp — a cooler, less saturated navy-grey
      than before. All three clear AA on white, on the canvas and on muted. */
-  --color-stone-900: #21263B;    /* headings, primary text  (--foreground) */
-  --color-stone-700: #434A66;    /* body text */
+  --color-stone-50:  #F5F6FA;
+  --color-stone-100: #E9EBF2;
+  --color-stone-200: #D3D6E2;    /* hairline dividers on white */
+  --color-stone-300: #B0B5C7;
+  --color-stone-400: #8187A0;    /* placeholder ink — not for body copy */
   --color-stone-500: #5E6378;    /* muted text  (--muted-foreground) */
+  --color-stone-600: #4E5470;
+  --color-stone-700: #434A66;    /* body text */
+  --color-stone-800: #2F3550;
+  --color-stone-900: #21263B;    /* headings, primary text  (--foreground) */
+  --color-stone-950: #15192A;
 
   /* Turmeric / brass: the site's --accent #FFC107. Collect phase, brass. */
   --color-turmeric-50:  #FFF8E1;
@@ -61,28 +69,59 @@
   --color-turmeric-500: #F59F0A;   /* Collect phase fills  (--warning) */
   --color-turmeric-600: #B38600;
   --color-turmeric-700: #8A6700;   /* accent text on light — AA on white */
+  --color-turmeric-800: #6B5000;
+  --color-turmeric-900: #4E3A00;
 
   /* Tulsi: success, money received, approved, Spend phase.
      500 is the reference --success and is a FILL — it clears only 3.1:1 on
      white, so text stays on 700. */
   --color-tulsi-50:  #E8F7EF;
+  --color-tulsi-100: #C9EDDA;
+  --color-tulsi-200: #9BDCBC;
+  --color-tulsi-300: #66C797;
+  --color-tulsi-400: #40B37D;
   --color-tulsi-500: #29A36A;
+  --color-tulsi-600: #1A8355;
   --color-tulsi-700: #0C6342;
+  --color-tulsi-800: #084F35;
+  --color-tulsi-900: #063B28;
+  --color-tulsi-950: #032318;
 
   /* Peacock: info, Report phase, Tamil Sangam — the navy family */
   --color-peacock-50:  #EBECF9;
+  --color-peacock-100: #D4D7F1;
+  --color-peacock-200: #B3B8E6;
+  --color-peacock-300: #8B92D9;
+  --color-peacock-400: #6971CE;
   --color-peacock-500: #4F58CA;
+  --color-peacock-600: #3C45A6;
   --color-peacock-700: #293088;
+  --color-peacock-800: #212870;
+  --color-peacock-900: #1A1F58;
 
   /* Semantic: warning and danger */
   --color-marigold-50:  #FFF4E5;
+  --color-marigold-100: #FFE3BC;
+  --color-marigold-200: #F8C88C;
+  --color-marigold-300: #EBA651;
+  --color-marigold-400: #C87B22;
   --color-marigold-500: #9A5305;  /* pending — AA on sandal-100 */
+  --color-marigold-600: #834604;
+  --color-marigold-700: #6B3903;
+  --color-marigold-800: #532C02;
   /* Destructive sits a cooler, deeper crimson than the vermillion primary,
      so a Reject button is never mistaken for the main action. Separation is
      by hue, not lightness, so it still reads as an alarm. */
   --color-danger-50:    #FCE9ED;
+  --color-danger-100:   #F8CDD6;
+  --color-danger-200:   #F0A3B2;
+  --color-danger-300:   #E3738A;
+  --color-danger-400:   #CF4660;
+  --color-danger-500:   #BA2241;
   --color-danger-600:   #A3122B;  /* rejected, overdue, over budget */
   --color-danger-700:   #7F0C20;
+  --color-danger-800:   #62081A;
+  --color-danger-900:   #45050F;
 
   /* Typography — the reference pairs a Montserrat display with a Roboto
      body (--font-display / --font-body). Hind Madurai stays last in every

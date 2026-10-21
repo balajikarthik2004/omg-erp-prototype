@@ -39,16 +39,11 @@ import { AdoptionsPage } from '@/features/gaushala/console/AdoptionsPage'
 import { BookingsPage } from '@/features/gaushala/console/BookingsPage'
 import { GaushalaEventsConsolePage } from '@/features/gaushala/console/GaushalaEventsConsolePage'
 import { VolunteersPage } from '@/features/gaushala/console/VolunteersPage'
-import { TransparencyConsolePage } from '@/features/gaushala/console/TransparencyConsolePage'
 import { SevaPage } from '@/features/gaushala/SevaPage'
 import { StatementPage } from '@/features/donor/StatementPage'
 import { EventsPage } from '@/features/events/EventsPage'
 import { EventsOverviewPage } from '@/features/events/EventsOverviewPage'
 import { BudgetsPlanningPage } from '@/features/events/BudgetsPlanningPage'
-import { ApprovalCenterPage } from '@/features/events/ApprovalCenterPage'
-import { PosterStudioPage } from '@/features/events/PosterStudioPage'
-import { RegistrationsPage } from '@/features/events/RegistrationsPage'
-import { PurchasesPage } from '@/features/events/PurchasesPage'
 import { EventReportsPage } from '@/features/events/EventReportsPage'
 import { EventDetailPage } from '@/features/events/EventDetailPage'
 import { PublicEventsPage } from '@/features/events/PublicEventsPage'
@@ -98,10 +93,15 @@ export function App() {
           <Route path="events" element={<EventsPage />} />
           <Route path="events/overview" element={<EventsOverviewPage />} />
           <Route path="events/budgets" element={<BudgetsPlanningPage />} />
-          <Route path="events/approvals" element={<ApprovalCenterPage />} />
-          <Route path="events/studio" element={<PosterStudioPage />} />
-          <Route path="events/registrations" element={<RegistrationsPage />} />
-          <Route path="events/purchases" element={<PurchasesPage />} />
+          {/* Retired: each of these re-rendered a tab that the event detail
+              page already owns, behind an event-picker dropdown. The approval
+              centre duplicated the console-wide inbox, which already lists
+              event budgets, posters and orders. Kept as redirects so existing
+              links do not 404. */}
+          <Route path="events/approvals" element={<Navigate to="/console/approvals" replace />} />
+          <Route path="events/studio" element={<Navigate to="/console/events" replace />} />
+          <Route path="events/registrations" element={<Navigate to="/console/events" replace />} />
+          <Route path="events/purchases" element={<Navigate to="/console/events" replace />} />
           <Route path="events/reports" element={<EventReportsPage />} />
           <Route path="events/:eventId" element={<EventDetailPage />} />
           <Route path="gaushala" element={<GaushalaDashboardPage />} />
@@ -119,7 +119,10 @@ export function App() {
           <Route path="gaushala/bookings" element={<BookingsPage />} />
           <Route path="gaushala/events" element={<GaushalaEventsConsolePage />} />
           <Route path="gaushala/volunteers" element={<VolunteersPage />} />
-          <Route path="gaushala/transparency" element={<TransparencyConsolePage />} />
+          {/* Retired: a read-only copy of figures the donor site already
+              publishes. Staff open the public page, which is the point of a
+              transparency report. */}
+          <Route path="gaushala/transparency" element={<Navigate to="/sevalaya/gaushala?tab=transparency" replace />} />
           <Route path="cash-counts" element={<CashCountsPage />} />
           <Route path="period-close" element={<PeriodClosePage />} />
           <Route path="onboarding" element={<OnboardingPage />} />

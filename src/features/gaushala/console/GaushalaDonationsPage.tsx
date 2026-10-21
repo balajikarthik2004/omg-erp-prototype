@@ -262,6 +262,14 @@ function PaymentDrawer({ donation, onClose }: { donation: Donation | null; onClo
       title={donation.receiptNo !== '\u2014' ? donation.receiptNo : donation.id}
       subtitle={formatDateTime(donation.createdAt)}
       width="lg"
+      accent="turmeric"
+      tone="canvas"
+      headerExtra={
+        <>
+          <StatusBadge status={statusKey(donation)} />
+          {order ? <StatusBadge status={order.status === 'completed' ? 'done' : order.status} /> : null}
+        </>
+      }
       footer={
         donation.status === 'pending' || (donation.status === 'paid' && donation.receiptNo === '\u2014') ? (
           <div className="flex flex-col gap-2">
@@ -293,12 +301,7 @@ function PaymentDrawer({ donation, onClose }: { donation: Donation | null; onClo
         ) : null
       }
     >
-      <div className="space-y-5 px-6 py-5">
-        <div className="flex flex-wrap items-center gap-2">
-          <StatusBadge status={statusKey(donation)} />
-          {order ? <StatusBadge status={order.status === 'completed' ? 'done' : order.status} /> : null}
-        </div>
-
+      <div className="space-y-5">
         {donation.disputed ? (
           <p className="rounded-xl border border-danger-50 bg-danger-50 px-3.5 py-2.5 text-[13px] leading-relaxed text-danger-600">
             The card issuer has raised a dispute on this charge. Contest it with the proof of sewa below, or refund
@@ -306,7 +309,7 @@ function PaymentDrawer({ donation, onClose }: { donation: Donation | null; onClo
           </p>
         ) : null}
 
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-[14px]">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-xl border border-navy-100 bg-sandal-50 p-4 shadow-flat text-[14px]">
           <Field label="Donation ref." value={<span className="font-mono tabular-nums">{donation.id}</span>} />
           <Field label="Sewa" value={sewa?.name ?? '\u2014'} />
           <Field label="Method" value={titleCase(donation.method)} />
@@ -331,7 +334,7 @@ function PaymentDrawer({ donation, onClose }: { donation: Donation | null; onClo
           />
         </dl>
 
-        <div className="rounded-xl border border-navy-100 bg-navy-50/50 p-4">
+        <div className="rounded-xl border border-navy-100 bg-navy-50 p-4">
           <dl className="space-y-2 text-[14px]">
             <Row label="Gross" value={<Money value={donation.gross} />} />
             <Row label="Processing fee" value={<Money value={donation.fee} tone="muted" />} />
@@ -340,7 +343,7 @@ function PaymentDrawer({ donation, onClose }: { donation: Donation | null; onClo
         </div>
 
         {donation.donorCurrency && donation.donorCurrency !== SETTLEMENT_CURRENCY && donation.displayGross ? (
-          <section className="rounded-xl border border-navy-100 bg-white p-4">
+          <section className="rounded-xl border border-navy-100 bg-sandal-50 p-4">
             <h4 className="text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">
               What the donor saw
             </h4>
@@ -367,7 +370,7 @@ function PaymentDrawer({ donation, onClose }: { donation: Donation | null; onClo
         ) : null}
 
         {template ? (
-          <section className="rounded-xl border border-navy-100 bg-white p-4">
+          <section className="rounded-xl border border-navy-100 bg-sandal-50 p-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h4 className="text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">
                 Receipted under
@@ -381,7 +384,7 @@ function PaymentDrawer({ donation, onClose }: { donation: Donation | null; onClo
         ) : null}
 
         {order ? (
-          <section className="rounded-xl border border-navy-100 bg-white p-4">
+          <section className="rounded-xl border border-navy-100 bg-sandal-50 p-4">
             <h4 className="flex items-center gap-2 text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">
               <PackageCheck className="size-4" aria-hidden />
               The sewa this paid for
@@ -405,7 +408,7 @@ function PaymentDrawer({ donation, onClose }: { donation: Donation | null; onClo
             {order.proofMedia && order.proofMedia.length > 0 ? (
               <ul className="mt-3 space-y-2">
                 {order.proofMedia.map((proof, i) => (
-                  <li key={i} className="rounded-lg border border-tulsi-50 bg-tulsi-50/50 px-3.5 py-2.5">
+                  <li key={i} className="rounded-lg border border-tulsi-50 bg-tulsi-50 px-3.5 py-2.5">
                     <p className="text-[13px] font-semibold text-tulsi-700">
                       Proof of sewa &middot; {proof.kind} sent to the donor
                     </p>
@@ -468,7 +471,7 @@ function ReceiptRules() {
       />
 
       {unreviewed.length > 0 ? (
-        <p className="mb-4 rounded-xl border border-marigold-50 bg-marigold-50/60 px-3.5 py-2.5 text-[13.5px] leading-relaxed text-marigold-500">
+        <p className="mb-4 rounded-xl border border-marigold-50 bg-marigold-50 px-3.5 py-2.5 text-[13.5px] leading-relaxed text-marigold-500">
           <strong className="font-bold">{unreviewed.length} template{unreviewed.length === 1 ? '' : 's'} need an accountant.</strong>{' '}
           The deductibility wording below is a starting draft. It must be reviewed by an accountant qualified in that
           country before a single receipt goes out, and the legal entity is not settled yet either.
@@ -477,7 +480,7 @@ function ReceiptRules() {
 
       <div className="space-y-4">
         {entities.map((entity) => (
-          <div key={entity.id} className="rounded-xl border border-navy-100 bg-navy-50/40 p-4">
+          <div key={entity.id} className="rounded-xl border border-navy-100 bg-navy-50 p-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h4 className="text-[15px] font-bold text-navy-950">{entity.name}</h4>
               <span className="text-[12.5px] text-navy-600">
@@ -501,7 +504,7 @@ function ReceiptRules() {
               {templates
                 .filter((t) => t.entityId === entity.id)
                 .map((t) => (
-                  <li key={t.id} className="rounded-lg border border-navy-100 bg-white px-3.5 py-2.5">
+                  <li key={t.id} className="rounded-lg border border-navy-100 bg-sandal-50 px-3.5 py-2.5">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <span className="text-[13.5px] font-semibold text-navy-950">{t.name}</span>
                       <StatusBadge status={t.reviewed ? 'approved' : 'pending'} />

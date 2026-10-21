@@ -17,7 +17,6 @@ import {
   Landmark,
   LayoutDashboard,
   PackageSearch,
-  QrCode,
   Receipt,
   ScrollText,
   Settings2,
@@ -25,7 +24,6 @@ import {
   ShieldCheck,
   Sprout,
   ShoppingCart,
-  Palette,
   FilePlus,
   Truck,
   Wallet,
@@ -45,7 +43,7 @@ export interface NavItem {
   roles: Role[]
   end?: boolean
   /** Shows the count of items waiting on this persona. */
-  badge?: 'approvals' | 'eventApprovals'
+  badge?: 'approvals'
   /** Hidden when the customer has not enabled this module. */
   module?: ModuleKey
 }
@@ -153,11 +151,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { to: '/console/events/overview', label: 'Overview', icon: LayoutDashboard, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events' },
       { to: '/console/events', label: 'All events', icon: CalendarDays, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events', end: true },
-      { to: '/console/events/registrations', label: 'Registrations and QR', icon: QrCode, phase: 'collect', roles: ['store_keeper', ...ADMIN_CA], module: 'events' },
-      { to: '/console/events/studio', label: 'Poster studio', icon: Palette, phase: 'collect', roles: ADMIN_CA, module: 'events' },
       { to: '/console/events/budgets', label: 'Budgets and planning', icon: Wallet, phase: 'control', roles: ADMIN_CA, module: 'events' },
-      { to: '/console/events/approvals', label: 'Approval center', icon: ClipboardCheck, phase: 'control', roles: ADMIN_CA, module: 'events', badge: 'eventApprovals' },
-      { to: '/console/events/purchases', label: 'Purchases and orders', icon: ShoppingCart, phase: 'spend', roles: ADMIN_CA, module: 'events' },
       { to: '/console/events/reports', label: 'Financial reports', icon: BarChart3, phase: 'report', roles: ADMIN_CA, module: 'events' },
     ],
   },
@@ -174,7 +168,6 @@ export const NAV_GROUPS: NavGroup[] = [
       { to: '/console/gaushala/bookings', label: 'Visits and bookings', icon: ScanLine, phase: 'collect', roles: GAU_HERD },
       { to: '/console/gaushala/events', label: 'Festivals', icon: CalendarHeart, phase: 'collect', roles: GAU_MANAGE },
       { to: '/console/gaushala/volunteers', label: 'Volunteers', icon: HandHeart, phase: 'collect', roles: GAU_MANAGE },
-      { to: '/console/gaushala/transparency', label: 'Transparency', icon: ShieldCheck, phase: 'report', roles: GAU_ALL },
     ],
   },
   {

@@ -55,7 +55,7 @@ export function Dialog({
             <X className="size-5" aria-hidden />
           </button>
         </header>
-        {children ? <div className="scrollbar-thin max-h-[65vh] overflow-y-auto px-6 py-5">{children}</div> : null}
+        {children ? <div data-lenis-prevent className="scrollbar-thin max-h-[65vh] overflow-y-auto px-6 py-5">{children}</div> : null}
         {footer ? <footer className="border-t border-sandal-200 bg-sandal-100 px-6 py-4 rounded-b-2xl">{footer}</footer> : null}
       </div>
     </div>

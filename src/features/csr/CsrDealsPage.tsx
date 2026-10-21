@@ -2,7 +2,6 @@ import { useState } from 'react'
 import {
   CheckCircle2,
   Clock,
-  Coins,
   Lock,
   LockOpen,
   ShieldCheck,
@@ -15,6 +14,7 @@ import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { userById } from '@/mock/seed'
 import { available, useDb } from '@/store/db'
 import { csrMouDecideBlock, csrTrancheReceiveBlock } from '@/store/csrRules'
@@ -66,7 +66,8 @@ export function CsrDealsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="MoUs, Grants & Tranche Disbursements"
+        title="MoUs and tranches"
+        description="Signed agreements and the instalments against them. Each grant is held in its own dedicated fund, as Schedule VII requires, so one company’s money can never pay for another’s project."
       />
 
       <div className="space-y-6">
@@ -86,28 +87,24 @@ export function CsrDealsPage() {
             .reduce((sum, t) => sum + t.amount, 0)
 
           return (
-            <Card key={deal.id} className="overflow-hidden border border-sandalwood-300">
+            <Card key={deal.id} className="overflow-hidden border border-sandal-200 shadow-card">
               {/* Header Banner */}
-              <div className="border-b border-sandalwood-200 bg-sandalwood-50/70 p-5">
+              <div className="border-b border-sandal-200 bg-sandal-100 p-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-turmeric-800">
-                        {comp?.name}
-                      </span>
-                      <span className="text-sandalwood-400">→</span>
-                      <h3 className="font-serif text-lg font-bold text-sandalwood-900">
+                      <span className="text-[13px] font-semibold text-navy-700">{comp?.name}</span>
+                      <span className="text-stone-500">→</span>
+                      <h3 className="font-display text-lg font-bold text-stone-900">
                         {proj?.title}
                       </h3>
-                      <span className="rounded-full bg-tulsi-100 px-2.5 py-0.5 text-xs font-semibold text-tulsi-800 border border-tulsi-200">
-                        {deal.status}
-                      </span>
+                      <StatusBadge status={deal.status} />
                     </div>
 
-                    <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-sandalwood-600">
-                      <span>Total Sanctioned Grant: <strong className="font-mono text-sandalwood-900">{formatMoneyShort(deal.committedAmount)}</strong></span>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-stone-700">
+                      <span>Total Sanctioned Grant: <strong className="font-mono text-stone-900">{formatMoneyShort(deal.committedAmount)}</strong></span>
                       <span>Admin Overhead: <strong className="font-mono text-tulsi-700">{deal.adminCapPct}%</strong> (Max 5.0% cap)</span>
-                      <span>Dedicated Restricted Fund: <strong className="font-mono text-sandalwood-800">{dedicatedFund?.name ?? deal.fundId ?? 'Pending creation'}</strong></span>
+                      <span>Dedicated Restricted Fund: <strong className="font-mono text-stone-900">{dedicatedFund?.name ?? deal.fundId ?? 'Pending creation'}</strong></span>
                       {deal.mouSignedOn && <span>Executed On: <strong>{deal.mouSignedOn}</strong></span>}
                       {dedicatedFund && <span>Unallotted in fund: <strong className="font-mono text-stone-900">{formatMoneyShort(dedicatedFund.balance)}</strong></span>}
                       {csrHead && (
@@ -135,7 +132,7 @@ export function CsrDealsPage() {
                     )}
                     <button
                       onClick={() => setSelectedDeal(deal)}
-                      className="rounded border border-sandalwood-300 bg-white px-3 py-1.5 text-xs font-semibold text-sandalwood-700 hover:bg-sandalwood-50 transition"
+                      className="rounded border border-sandal-300 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 hover:bg-sandal-50 transition"
                     >
                       View MoU Proposal
                     </button>
@@ -143,34 +140,34 @@ export function CsrDealsPage() {
                 </div>
 
                 {/* Dual Governance Sign-Off Status */}
-                <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-sandalwood-200/80 pt-3 text-xs">
+                <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-sandal-200/80 pt-3 text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="text-sandalwood-500">CA Partner Sanction:</span>
+                    <span className="text-stone-500">CA Partner Sanction:</span>
                     {caApproval?.decision === 'approved' ? (
                       <span className="inline-flex items-center gap-1 font-semibold text-tulsi-700">
                         <CheckCircle2 className="size-3.5" /> Approved ({caApproval.at?.slice(0, 10)})
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 font-semibold text-turmeric-700">
+                      <span className="inline-flex items-center gap-1 font-semibold text-marigold-500">
                         <Clock className="size-3.5" /> Pending Review
                       </span>
                     )}
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-sandalwood-500">Board Trustee Sanction:</span>
+                    <span className="text-stone-500">Board Trustee Sanction:</span>
                     {trusteeApproval?.decision === 'approved' ? (
                       <span className="inline-flex items-center gap-1 font-semibold text-tulsi-700">
                         <CheckCircle2 className="size-3.5" /> Approved ({trusteeApproval.at?.slice(0, 10)})
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 font-semibold text-turmeric-700">
+                      <span className="inline-flex items-center gap-1 font-semibold text-marigold-500">
                         <Clock className="size-3.5" /> Pending Sanction
                       </span>
                     )}
                   </div>
 
-                  <div className="ml-auto text-xs font-mono font-medium text-sandalwood-700">
+                  <div className="ml-auto text-xs font-mono font-medium text-stone-700">
                     Disbursed: <strong className="text-tulsi-700">{formatMoneyShort(receivedTotal)}</strong> / {formatMoneyShort(deal.committedAmount)}
                   </div>
                 </div>
@@ -178,13 +175,13 @@ export function CsrDealsPage() {
 
               {/* Tranche Milestone Schedule Table */}
               <div className="p-4">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-sandalwood-700 mb-3">
+                <h4 className="mb-3 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">
                   Instalment & Utilisation Certificate Gate Schedule
                 </h4>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm text-sandalwood-800">
-                    <thead className="border-b border-sandalwood-200 bg-sandalwood-50 text-xs font-semibold uppercase tracking-wider text-sandalwood-600">
+                  <table className="w-full text-left text-sm text-stone-900">
+                    <thead className="border-b border-sandal-200 bg-sandal-50 text-xs font-semibold uppercase tracking-wider text-stone-700">
                       <tr>
                         <th className="px-3 py-2.5">Tranche</th>
                         <th className="px-3 py-2.5">Scheduled Outlay</th>
@@ -194,25 +191,24 @@ export function CsrDealsPage() {
                         <th className="px-3 py-2.5 text-right">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-sandalwood-200 text-xs">
+                    <tbody className="divide-y divide-sandal-200 text-xs">
                       {deal.tranches.map((t) => {
                         const receiveBlock = csrTrancheReceiveBlock(deal, t, entity)
                         const isReceived =
                           t.status === 'RECEIVED' || t.status === 'UTILISED' || t.status === 'UC_SIGNED'
-                        const isUcSigned = t.status === 'UC_SIGNED'
 
                         return (
-                          <tr key={t.id} className="hover:bg-sandalwood-50/50">
-                            <td className="px-3 py-3 font-mono font-bold text-sandalwood-900">
+                          <tr key={t.id} className="hover:bg-sandal-50/50">
+                            <td className="px-3 py-3 font-mono font-bold text-stone-900">
                               #{t.seqNo}
                             </td>
-                            <td className="px-3 py-3 font-mono font-bold text-sandalwood-900">
+                            <td className="px-3 py-3 font-mono font-bold text-stone-900">
                               {formatMoneyShort(t.amount)}
                             </td>
-                            <td className="px-3 py-3 text-sandalwood-600">
+                            <td className="px-3 py-3 text-stone-700">
                               {t.dueDate}
                             </td>
-                            <td className="px-3 py-3 text-sandalwood-700 max-w-xs">
+                            <td className="px-3 py-3 text-stone-700 max-w-xs">
                               {t.conditionText}
                               {t.bankRef && (
                                 <span className="block mt-0.5 font-mono text-[10px] text-tulsi-700">
@@ -221,20 +217,7 @@ export function CsrDealsPage() {
                               )}
                             </td>
                             <td className="px-3 py-3">
-                              <span
-                                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                                  isUcSigned
-                                    ? 'bg-tulsi-100 text-tulsi-800'
-                                    : t.status === 'RECEIVED'
-                                    ? 'bg-peacock-100 text-peacock-800'
-                                    : 'bg-sandalwood-100 text-sandalwood-700'
-                                }`}
-                              >
-                                {isUcSigned && <CheckCircle2 className="size-3" />}
-                                {t.status === 'RECEIVED' && <Coins className="size-3" />}
-                                {!isReceived && <Clock className="size-3" />}
-                                {t.status}
-                              </span>
+                              <StatusBadge status={t.status} />
                             </td>
                             <td className="px-3 py-3 text-right">
                               {!isReceived ? (
@@ -254,7 +237,7 @@ export function CsrDealsPage() {
                                   </span>
                                 )
                               ) : (
-                                <span className="text-xs text-sandalwood-500 font-mono">
+                                <span className="text-xs text-stone-500 font-mono">
                                   Credited {t.receivedOn}
                                 </span>
                               )}
@@ -295,7 +278,7 @@ export function CsrDealsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+              <label className="block text-xs font-medium text-stone-700 mb-1">
                 Bank Transfer UTR / NEFT Reference Number
               </label>
               <Input
@@ -334,11 +317,11 @@ export function CsrDealsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+              <label className="block text-xs font-medium text-stone-700 mb-1">
                 Review Remarks / Resolution Reference
               </label>
               <textarea
-                className="w-full rounded-md border border-sandalwood-300 p-2 text-xs focus:border-turmeric-500 focus:outline-hidden"
+                className="w-full rounded-md border border-sandal-300 p-2 text-xs focus:border-turmeric-500 focus:outline-hidden"
                 rows={3}
                 placeholder="Sanctioned by Board Resolution / CA Partner concurrence..."
                 value={mouComment}
@@ -363,12 +346,12 @@ export function CsrDealsPage() {
         <Dialog
           open={Boolean(selectedDeal)}
           onClose={() => setSelectedDeal(null)}
-          title="Bilateral Agreement & Proposal Dossier"
+          title="Agreement and proposal dossier"
         >
           <div className="space-y-3">
             <textarea
               readOnly
-              className="w-full font-mono text-xs text-sandalwood-900 bg-sandalwood-50 border border-sandalwood-300 rounded-lg p-3 leading-relaxed"
+              className="w-full font-mono text-xs text-stone-900 bg-sandal-50 border border-sandal-300 rounded-lg p-3 leading-relaxed"
               rows={15}
               value={selectedDeal.proposalText ?? 'No proposal text attached.'}
             />

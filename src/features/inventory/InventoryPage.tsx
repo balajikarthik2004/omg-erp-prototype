@@ -326,6 +326,16 @@ export function InventoryPage() {
         onClose={() => setParams({})}
         title={focusedItem?.name ?? 'Request'}
         subtitle={focusedRequest ? `${focusedRequest.id} · raised ${formatDate(focusedRequest.requestedAt)}` : undefined}
+        accent="tulsi"
+        tone="canvas"
+        headerExtra={
+          focusedRequest ? (
+            <>
+              <StatusBadge status={focusedRequest.status} />
+              <SectorChip sectorId={focusedRequest.sectorId} />
+            </>
+          ) : null
+        }
         footer={
           focusedRequest && (focusedRequest.status === 'pending' || focusedRequest.status === 'escalated') ? (
             <div className="flex flex-col gap-3">
@@ -362,18 +372,13 @@ export function InventoryPage() {
       >
         {focusedRequest && focusedItem ? (
           <div className="flex flex-col gap-5">
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge status={focusedRequest.status} />
-              <SectorChip sectorId={focusedRequest.sectorId} />
-            </div>
-
             {focusedRequest.note ? (
               <p className="rounded-lg border border-marigold-50 bg-marigold-50 px-3 py-2.5 text-[13px] text-marigold-500">
                 {focusedRequest.note}
               </p>
             ) : null}
 
-            <dl className="grid grid-cols-2 gap-4 text-[14px]">
+            <dl className="grid grid-cols-2 gap-4 rounded-card border border-sandal-200 bg-sandal-50 p-4 text-[14px] shadow-card">
               <div>
                 <dt className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Quantity</dt>
                 <dd className="mt-0.5 font-mono text-stone-900 tabular-nums">

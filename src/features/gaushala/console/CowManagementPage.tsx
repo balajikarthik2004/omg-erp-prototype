@@ -194,6 +194,9 @@ function CowDrawer({ cow, onClose }: { cow: Cow | null; onClose: () => void }) {
       onClose={onClose}
       title={cow.name}
       subtitle={`${cow.breed} · ${titleCase(cow.kind)} · ${cow.ageYears} years`}
+      accent="tulsi"
+      tone="canvas"
+      headerExtra={<StatusBadge status={cow.status} />}
       footer={
         <div className="flex gap-2">
           <Button onClick={save}>Save changes</Button>
@@ -203,8 +206,8 @@ function CowDrawer({ cow, onClose }: { cow: Cow | null; onClose: () => void }) {
         </div>
       }
     >
-      <div className="space-y-5 px-6 py-5">
-        <div className="flex items-center gap-4">
+      <div className="space-y-5">
+        <div className="flex items-center gap-4 rounded-xl border border-navy-100 bg-sandal-50 p-4 shadow-flat">
           <span className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-navy-100 bg-navy-50">
             <CowPortrait cow={cow} size={92} />
           </span>
@@ -296,7 +299,7 @@ function NewCowDrawer({ open, onClose }: { open: boolean; onClose: () => void })
         </div>
       }
     >
-      <div className="space-y-4 px-6 py-5">
+      <div className="space-y-4">
         <Input label="Name" value={name} onChange={(e) => setName(e.target.value)} />
         <Input
           label="Name in Tamil"
@@ -394,8 +397,8 @@ function HealthDrawer({ cow, onClose }: { cow: Cow | null; onClose: () => void }
 
   return (
     <Drawer open onClose={onClose} title={`${cow.name} — health record`} width="lg">
-      <div className="space-y-6 px-6 py-5">
-        <section className="rounded-2xl border border-navy-100 bg-navy-50/50 p-4">
+      <div className="space-y-6">
+        <section className="rounded-2xl border border-navy-100 bg-navy-50 p-4">
           <h3 className="text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">Log a visit</h3>
           <div className="mt-3.5 space-y-3.5">
             <Select
@@ -436,7 +439,7 @@ function HealthDrawer({ cow, onClose }: { cow: Cow | null; onClose: () => void }
           ) : (
             <ul className="mt-3 space-y-2.5">
               {mine.map((r) => (
-                <li key={r.id} className="rounded-xl border border-navy-100 bg-white px-3.5 py-3">
+                <li key={r.id} className="rounded-xl border border-navy-100 bg-sandal-50 px-3.5 py-3">
                   <div className="flex items-baseline justify-between gap-3">
                     <span className="text-[13.5px] font-bold text-navy-950">{titleCase(r.kind)}</span>
                     <span className="font-mono text-[12.5px] text-navy-600 tabular-nums">{formatDate(r.at)}</span>

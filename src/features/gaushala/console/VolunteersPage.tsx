@@ -187,21 +187,10 @@ function VolunteerDrawer({ volunteer, onClose }: { volunteer: Volunteer | null; 
       title={volunteer.name}
       subtitle={volunteer.isGroup ? `${volunteer.organisation ?? 'Group'} · ${volunteer.groupSize} people` : volunteer.city}
       width="lg"
-      footer={
-        volunteer.status === 'pending' ? (
-          <div className="flex gap-2">
-            <Button variant="success" icon={<ThumbsUp className="size-4" aria-hidden />} onClick={() => decide('approved')}>
-              Approve
-            </Button>
-            <Button variant="danger" icon={<ThumbsDown className="size-4" aria-hidden />} onClick={() => decide('rejected')}>
-              Decline
-            </Button>
-          </div>
-        ) : null
-      }
-    >
-      <div className="space-y-5 px-6 py-5">
-        <div className="flex flex-wrap items-center gap-2">
+      accent="peacock"
+      tone="canvas"
+      headerExtra={
+        <>
           <StatusBadge status={volunteer.status} />
           {volunteer.certificateIssuedAt ? (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-tulsi-50 bg-tulsi-50 px-2.5 py-0.5 text-[12px] font-semibold text-tulsi-700">
@@ -209,27 +198,41 @@ function VolunteerDrawer({ volunteer, onClose }: { volunteer: Volunteer | null; 
               Certificate issued
             </span>
           ) : null}
-        </div>
-
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-[13.5px]">
-          <Field label="Email" value={<span className="break-all">{volunteer.email}</span>} />
+        </>
+      }
+      footer={
+        volunteer.status === 'pending' ? (
+          <div className="flex gap-2">
+            <Button variant="success" icon={<ThumbsUp className="size-4" aria-hidden />} onClick={() => decide('approved')}>
+              Approve
+            </Button>
+            <Button variant="secondary" icon={<ThumbsDown className="size-4" aria-hidden />} onClick={() => decide('rejected')}>
+              Decline
+            </Button>
+          </div>
+        ) : null
+      }
+    >
+      <div className="space-y-5">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-xl border border-navy-100 bg-sandal-50 p-4 shadow-flat text-[13.5px]">
+          <Field label="Email" value={<span className="break-words">{volunteer.email}</span>} />
           <Field label="Phone" value={volunteer.phone || '—'} />
           <Field label="Applied" value={formatDate(volunteer.appliedAt)} />
           <Field label="Hours logged" value={formatNumber(volunteer.hours)} />
         </dl>
 
-        <section>
+        <section className="rounded-xl border border-navy-100 bg-sandal-50 p-4 shadow-flat">
           <h4 className="text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">Wants to help with</h4>
           <ul className="mt-2 flex flex-wrap gap-1.5">
             {volunteer.interests.map((i) => (
-              <li key={i} className="rounded-full border border-navy-200 bg-white px-2.5 py-1 text-[12.5px] text-navy-800">
+              <li key={i} className="rounded-full border border-navy-200 bg-sandal-50 px-2.5 py-1 text-[12.5px] text-navy-800">
                 {VOLUNTEER_INTEREST_LABEL[i]}
               </li>
             ))}
           </ul>
         </section>
 
-        <section>
+        <section className="rounded-xl border border-navy-100 bg-sandal-50 p-4 shadow-flat">
           <h4 className="text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">What they can do</h4>
           <p className="mt-1.5 text-[13.5px] leading-relaxed text-navy-800">{volunteer.skills || '—'}</p>
           <p className="mt-2 text-[13px] text-navy-600">Free: {volunteer.availability}</p>
@@ -243,7 +246,7 @@ function VolunteerDrawer({ volunteer, onClose }: { volunteer: Volunteer | null; 
             hint="Required when declining, so they can be told something useful."
           />
         ) : volunteer.reviewNote ? (
-          <p className="rounded-xl border border-navy-100 bg-navy-50/50 px-3.5 py-2.5 text-[13.5px] leading-relaxed text-navy-800">
+          <p className="rounded-xl border border-navy-100 bg-sandal-50 px-3.5 py-2.5 text-[13.5px] leading-relaxed text-navy-800 shadow-flat">
             {volunteer.reviewNote}
           </p>
         ) : null}
@@ -297,7 +300,7 @@ function VolunteerDrawer({ volunteer, onClose }: { volunteer: Volunteer | null; 
                   {shifts.map((shift) => (
                     <li
                       key={shift.id}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-navy-100 bg-white px-3.5 py-2.5"
+                      className="flex items-center justify-between gap-3 rounded-lg border border-navy-100 bg-sandal-50 px-3.5 py-2.5"
                     >
                       <span className="min-w-0">
                         <span className="block truncate text-[13.5px] font-medium text-navy-950">

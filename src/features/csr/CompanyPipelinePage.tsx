@@ -17,20 +17,12 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { userById } from '@/mock/seed'
 import { useDb } from '@/store/db'
 import { csrPitchBlock } from '@/store/csrRules'
 import { useSession } from '@/store/session'
-import type { CsrCompany, CsrDealStatus, CsrProject } from '@/types'
-
-const STAGES: Array<{ key: CsrDealStatus; label: string; color: string }> = [
-  { key: 'LEAD', label: '1. Lead Identified', color: 'bg-sandalwood-100 text-sandalwood-800' },
-  { key: 'SHORTLISTED', label: '2. Shortlisted', color: 'bg-turmeric-100 text-turmeric-800' },
-  { key: 'PITCHED', label: '3. Pitched', color: 'bg-marigold-100 text-marigold-800' },
-  { key: 'PROPOSAL_SENT', label: '4. Proposal Sent', color: 'bg-peacock-100 text-peacock-800' },
-  { key: 'DUE_DILIGENCE', label: '5. Due Diligence', color: 'bg-indigo-100 text-indigo-800' },
-  { key: 'ACTIVE', label: '6. MoU Active', color: 'bg-tulsi-100 text-tulsi-800' },
-]
+import type { CsrCompany, CsrProject } from '@/types'
 
 export function CompanyPipelinePage() {
   const db = useDb()
@@ -180,7 +172,8 @@ Submitted with board resolution authorization.`
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Corporate Partner Directory & Pipeline"
+        title="Corporate pipeline"
+        description="Companies at every stage, from first contact to due diligence. A partner that clears due diligence is ready for an MoU."
         actions={
           <Button
             variant="primary"
@@ -207,44 +200,36 @@ Submitted with board resolution authorization.`
                       <Building2 className="size-5" />
                     </div>
                     <div>
-                      <h3 className="font-serif text-base font-bold text-sandalwood-900 leading-tight">
+                      <h3 className="font-display text-base font-bold text-stone-900 leading-tight">
                         {comp.name}
                       </h3>
-                      <span className="font-mono text-[11px] text-sandalwood-500">
+                      <span className="font-mono text-[11px] text-stone-500">
                         CIN: {comp.cin}
                       </span>
                     </div>
                   </div>
 
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                      activeDeal
-                        ? STAGES.find((s) => s.key === activeDeal.status)?.color ?? 'bg-sandalwood-100'
-                        : 'bg-sandalwood-100 text-sandalwood-700'
-                    }`}
-                  >
-                    {activeDeal ? activeDeal.status.replace(/_/g, ' ') : 'PROSPECT'}
-                  </span>
+                  <StatusBadge status={activeDeal ? activeDeal.status : 'draft'} />
                 </div>
 
-                <div className="mt-4 space-y-2 border-t border-sandalwood-200/80 pt-3 text-xs">
-                  <div className="flex items-center justify-between text-sandalwood-600">
+                <div className="mt-4 space-y-2 border-t border-sandal-200/80 pt-3 text-xs">
+                  <div className="flex items-center justify-between text-stone-700">
                     <span>Est. Annual CSR Obligation:</span>
-                    <strong className="font-mono text-sandalwood-900">
+                    <strong className="font-mono text-stone-900">
                       ₹{comp.avgCsrObligation} Crores
                     </strong>
                   </div>
-                  <div className="flex items-center justify-between text-sandalwood-600">
+                  <div className="flex items-center justify-between text-stone-700">
                     <span>Headquarters:</span>
-                    <span className="font-medium text-sandalwood-800">{comp.hqState}</span>
+                    <span className="font-medium text-stone-900">{comp.hqState}</span>
                   </div>
                   <div>
-                    <span className="text-sandalwood-500 block mb-1">Focus Schedule VII Areas:</span>
+                    <span className="text-stone-500 block mb-1">Focus Schedule VII Areas:</span>
                     <div className="flex flex-wrap gap-1">
                       {comp.focusAreas.map((f, i) => (
                         <span
                           key={i}
-                          className="rounded bg-sandalwood-100 px-2 py-0.5 text-[11px] text-sandalwood-800"
+                          className="rounded bg-sandal-100 px-2 py-0.5 text-[11px] text-stone-900"
                         >
                           {f}
                         </span>
@@ -254,9 +239,9 @@ Submitted with board resolution authorization.`
                 </div>
 
                 {/* Point of Contact */}
-                <div className="mt-4 rounded-lg bg-sandalwood-50 p-3 text-xs text-sandalwood-700">
-                  <p className="font-semibold text-sandalwood-900">{comp.contactName}</p>
-                  <div className="mt-1 flex flex-col gap-0.5 text-[11px] text-sandalwood-600">
+                <div className="mt-4 rounded-lg bg-sandal-50 p-3 text-xs text-stone-700">
+                  <p className="font-semibold text-stone-900">{comp.contactName}</p>
+                  <div className="mt-1 flex flex-col gap-0.5 text-[11px] text-stone-700">
                     <span className="flex items-center gap-1.5">
                       <Mail className="size-3 text-turmeric-700" />
                       {comp.contactEmail}
@@ -270,8 +255,8 @@ Submitted with board resolution authorization.`
               </div>
 
               {/* Action Strip */}
-              <div className="border-t border-sandalwood-200 bg-sandalwood-50/50 p-3 flex items-center justify-between">
-                <span className="text-xs text-sandalwood-500">
+              <div className="border-t border-sandal-200 bg-sandal-50/50 p-3 flex items-center justify-between">
+                <span className="text-xs text-stone-500">
                   {activeDeal ? `${formatMoneyShort(activeDeal.committedAmount)} grant` : 'No active MoU'}
                 </span>
                 <Button
@@ -326,11 +311,11 @@ Submitted with board resolution authorization.`
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-sandalwood-700 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
                   Generated Executive Proposal (Draft MoU Annexure)
                 </label>
                 <textarea
-                  className="w-full font-mono text-xs text-sandalwood-900 bg-sandalwood-50 border border-sandalwood-300 rounded-lg p-3 leading-relaxed focus:outline-hidden"
+                  className="w-full font-mono text-xs text-stone-900 bg-sandal-50 border border-sandal-300 rounded-lg p-3 leading-relaxed focus:outline-hidden"
                   rows={14}
                   value={generatedText}
                   onChange={(e) => setGeneratedText(e.target.value)}
@@ -338,7 +323,7 @@ Submitted with board resolution authorization.`
               </div>
             )}
 
-            <div className="flex items-center justify-between pt-2 border-t border-sandalwood-200">
+            <div className="flex items-center justify-between pt-2 border-t border-sandal-200">
               <Button variant="secondary" onClick={() => setAiProposalModal(null)}>
                 Cancel
               </Button>
@@ -364,7 +349,7 @@ Submitted with board resolution authorization.`
         >
           <form onSubmit={handleAddCompany} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+              <label className="block text-xs font-medium text-stone-700 mb-1">
                 Company Legal Name
               </label>
               <Input
@@ -377,7 +362,7 @@ Submitted with board resolution authorization.`
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                <label className="block text-xs font-medium text-stone-700 mb-1">
                   Corporate Identity Number (CIN)
                 </label>
                 <Input
@@ -388,7 +373,7 @@ Submitted with board resolution authorization.`
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                <label className="block text-xs font-medium text-stone-700 mb-1">
                   HQ State
                 </label>
                 <Input
@@ -401,7 +386,7 @@ Submitted with board resolution authorization.`
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                <label className="block text-xs font-medium text-stone-700 mb-1">
                   Est. Annual CSR Budget (₹ Cr)
                 </label>
                 <Input
@@ -412,7 +397,7 @@ Submitted with board resolution authorization.`
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-sandalwood-700 mb-1">
+                <label className="block text-xs font-medium text-stone-700 mb-1">
                   Focus Schedule VII Areas
                 </label>
                 <Input
@@ -424,8 +409,8 @@ Submitted with board resolution authorization.`
               </div>
             </div>
 
-            <div className="border-t border-sandalwood-200 pt-3">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-sandalwood-700 mb-2">
+            <div className="border-t border-sandal-200 pt-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-stone-700 mb-2">
                 Primary Contact Details
               </h4>
               <div className="space-y-2">

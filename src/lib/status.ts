@@ -113,6 +113,41 @@ const MAP: Record<string, { label: string; tone: StatusTone; icon?: LucideIcon }
   low_stock: { label: 'Low stock', tone: 'danger' },
   in_stock: { label: 'In stock', tone: 'done' },
   overdue: { label: 'Overdue', tone: 'danger' },
+
+  // CSR — the module screamed its statuses in hand-rolled pills; they belong
+  // in the one map like every other status in the console. Keys are the
+  // SCREAMING_CASE the CSR types use.
+  NOT_READY: { label: 'Not ready', tone: 'draft' },
+  DOCS_UPLOADED: { label: 'Docs uploaded', tone: 'pending', icon: Hourglass },
+  CA_VERIFIED: { label: 'CA verified', tone: 'info' },
+  CSR_READY: { label: 'CSR ready', tone: 'done' },
+  EXPIRING_SOON: { label: 'Expiring soon', tone: 'danger' },
+
+  SUBMITTED: { label: 'Submitted', tone: 'pending', icon: Hourglass },
+  TRUSTEE_APPROVED: { label: 'Trustee approved', tone: 'done' },
+  OPEN_FOR_FUNDING: { label: 'Open for funding', tone: 'info' },
+  FUNDED: { label: 'Funded', tone: 'done' },
+  IN_PROGRESS: { label: 'In progress', tone: 'info' },
+  COMPLETED: { label: 'Completed', tone: 'done' },
+  CLOSED: { label: 'Closed', tone: 'draft' },
+
+  LEAD: { label: 'Lead', tone: 'draft' },
+  SHORTLISTED: { label: 'Shortlisted', tone: 'committed' },
+  PITCHED: { label: 'Pitched', tone: 'pending', icon: Hourglass },
+  PROPOSAL_SENT: { label: 'Proposal sent', tone: 'info' },
+  DUE_DILIGENCE: { label: 'Due diligence', tone: 'pending', icon: Hourglass },
+  MOU_DRAFT: { label: 'MoU draft', tone: 'draft' },
+  MOU_APPROVED: { label: 'MoU approved', tone: 'done' },
+  MOU_SIGNED: { label: 'MoU signed', tone: 'done' },
+  ACTIVE: { label: 'Active', tone: 'done' },
+  LOST: { label: 'Lost', tone: 'danger' },
+
+  SCHEDULED: { label: 'Scheduled', tone: 'draft' },
+  CONDITIONS_MET: { label: 'Conditions met', tone: 'info' },
+  REQUESTED: { label: 'Requested', tone: 'pending', icon: Hourglass },
+  RECEIVED: { label: 'Received', tone: 'done' },
+  UTILISED: { label: 'Utilised', tone: 'committed' },
+  UC_SIGNED: { label: 'UC signed', tone: 'done' },
 }
 
 /** The one place a status becomes colour. Never style a status inline. */

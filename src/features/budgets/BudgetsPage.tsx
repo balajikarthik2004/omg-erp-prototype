@@ -252,14 +252,19 @@ export function BudgetsPage() {
         title={focused?.name ?? ''}
         subtitle={focused ? `${focused.period} · ${db.funds.find((f) => f.id === focused.fundId)?.name}` : undefined}
         width="lg"
+        accent="kumkum"
+        tone="canvas"
+        headerExtra={
+          focused ? (
+            <>
+              <SectorChip sectorId={focused.sectorId} withTamil />
+              <StatusBadge status={budgetHealth(focused)} />
+            </>
+          ) : null
+        }
       >
         {focused ? (
           <div className="flex flex-col gap-6">
-            <div className="flex flex-wrap items-center gap-2">
-              <SectorChip sectorId={focused.sectorId} withTamil />
-              <StatusBadge status={budgetHealth(focused)} />
-            </div>
-
             {budgetHealth(focused) === 'over_budget' ? (
               <div className="flex items-start gap-2.5 rounded-lg border border-danger-50 bg-danger-50 px-3 py-2.5 text-[13px] text-danger-600">
                 <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
@@ -270,7 +275,9 @@ export function BudgetsPage() {
               </div>
             ) : null}
 
-            <BudgetBar head={focused} />
+            <div className="rounded-card border border-sandal-200 bg-sandal-50 p-4 shadow-card">
+              <BudgetBar head={focused} />
+            </div>
 
             <dl className="grid grid-cols-2 gap-3 text-[14px]">
               {[
@@ -288,8 +295,8 @@ export function BudgetsPage() {
                   key={row.label}
                   className={
                     row.lead
-                      ? 'rounded-lg border border-navy-200 bg-white p-3 shadow-2xs'
-                      : 'rounded-lg border border-sandal-200 bg-sandal-100 p-3'
+                      ? 'rounded-lg border border-navy-200 bg-sandal-50 p-3 shadow-card'
+                      : 'rounded-lg border border-sandal-200 bg-sandal-50 p-3 shadow-flat'
                   }
                 >
                   <dt className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">{row.label}</dt>

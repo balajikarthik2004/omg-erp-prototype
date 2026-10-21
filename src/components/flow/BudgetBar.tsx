@@ -7,13 +7,20 @@ import type { BudgetHead } from '@/types'
 export function BudgetBar({
   head,
   showLegend = true,
+  scaleTo,
   className,
 }: {
   head: BudgetHead
   showLegend?: boolean
+  /**
+   * Draw against this total rather than the head's own. Two bars compared
+   * side by side must share one scale, or a bigger budget looks identical to
+   * a smaller one.
+   */
+  scaleTo?: number
   className?: string
 }) {
-  const total = Math.max(head.allocated, head.committed + head.spent)
+  const total = Math.max(scaleTo ?? 0, head.allocated, head.committed + head.spent)
   const pct = (value: number) => (total <= 0 ? 0 : (value / total) * 100)
   const free = Math.max(0, available(head))
   const over = utilisation(head) > 100
@@ -30,18 +37,26 @@ export function BudgetBar({
         <span className="h-full bg-sandal-300" style={{ width: `${pct(free)}%` }} />
       </div>
 
-      {showLegend ? (
-        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px]">
-          <Legend swatch={over ? 'bg-danger-600' : 'bg-tulsi-500'} label="Spent" value={head.spent} />
-          <Legend swatch="bg-turmeric-500" label="Committed" value={head.committed} />
-          <Legend
-            swatch={over ? 'bg-danger-50' : 'bg-sandal-300'}
-            label={over ? 'Over budget' : 'Available'}
-            value={over ? available(head) : free}
-            tone={over ? 'danger' : undefined}
-          />
-        </div>
-      ) : null}
+      {showLegend ? <BudgetLegend head={head} className="mt-2" /> : null}
+    </div>
+  )
+}
+
+/** The three-colour key on its own, for a panel that draws more than one bar. */
+export function BudgetLegend({ head, className }: { head: BudgetHead; className?: string }) {
+  const free = Math.max(0, available(head))
+  const over = utilisation(head) > 100
+
+  return (
+    <div className={cn('flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px]', className)}>
+      <Legend swatch={over ? 'bg-danger-600' : 'bg-tulsi-500'} label="Spent" value={head.spent} />
+      <Legend swatch="bg-turmeric-500" label="Committed" value={head.committed} />
+      <Legend
+        swatch={over ? 'bg-danger-50' : 'bg-sandal-300'}
+        label={over ? 'Over budget' : 'Available'}
+        value={over ? available(head) : free}
+        tone={over ? 'danger' : undefined}
+      />
     </div>
   )
 }

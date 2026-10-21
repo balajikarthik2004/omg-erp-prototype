@@ -77,7 +77,10 @@ export function Table<T>({
     <div className={className}>
       {/* Desktop and tablet: a real table, scrolling inside its own container.
           The head stays put, so a long list never loses its column names. */}
-      <div className="scrollbar-thin hidden max-h-[70vh] overflow-auto rounded-card border border-sandal-200 bg-sandal-50 shadow-card md:block">
+      <div
+        data-lenis-prevent
+        className="scrollbar-thin hidden max-h-[70vh] overflow-auto rounded-card border border-sandal-200 bg-sandal-50 shadow-card md:block"
+      >
         <table className="w-full border-collapse text-[14px]">
           {label ? <caption className="sr-only">{label}</caption> : null}
           <thead>

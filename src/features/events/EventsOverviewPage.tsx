@@ -47,12 +47,15 @@ export function EventsOverviewPage() {
 
   return (
     <div>
-      <PageHeader title="Events overview" actions={<Link to="/console/events"><Button variant="secondary" rightIcon={<ArrowRight className="size-4" aria-hidden />}>All events</Button></Link>} />
+      <PageHeader
+        title="Events overview"
+        description="Festivals and programmes across every sector, with what is waiting on an approver."
+        actions={<Link to="/console/events"><Button variant="secondary" rightIcon={<ArrowRight className="size-4" aria-hidden />}>All events</Button></Link>} />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Total events" value={data.all.length} sub={`${data.upcoming} upcoming · ${data.live} live · ${data.completed} completed`} accentClass="bg-turmeric-500" icon={<CalendarDays className="size-4" aria-hidden />} />
         <Stat label="Live now" value={data.live} accentClass="bg-tulsi-500" icon={<Radio className="size-4" aria-hidden />} />
-        <Stat label="Pending approvals" value={data.tasks.length} sub={<Link to="/console/events/approvals" className="text-kumkum-700 hover:underline">Open the Approval Center</Link>} accentClass="bg-marigold-500" icon={<ClipboardCheck className="size-4" aria-hidden />} />
+        <Stat label="Pending approvals" value={data.tasks.length} sub={<Link to="/console/approvals" className="font-medium text-navy-600 hover:text-navy-800 hover:underline">Open the approval inbox</Link>} accentClass="bg-marigold-500" icon={<ClipboardCheck className="size-4" aria-hidden />} />
         <Stat label="Active registrations" value={data.seats} sub="seats across public events" accentClass="bg-peacock-500" icon={<Users className="size-4" aria-hidden />} />
       </div>
 
@@ -80,7 +83,7 @@ export function EventsOverviewPage() {
 
         <div className="flex flex-col gap-6">
           <Card>
-            <CardHeader title="Pending approvals" action={<Link to="/console/events/approvals" className="text-[13px] text-kumkum-700 hover:underline">View all</Link>} />
+            <CardHeader title="Pending approvals" action={<Link to="/console/approvals" className="text-[13px] font-medium text-navy-600 hover:text-navy-800 hover:underline">View all</Link>} />
             {data.tasks.length === 0 ? (
               <p className="mt-3 text-[14px] text-stone-500">Nothing is waiting.</p>
             ) : (

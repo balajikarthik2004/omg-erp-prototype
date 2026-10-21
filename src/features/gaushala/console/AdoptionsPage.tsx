@@ -151,7 +151,7 @@ export function AdoptionsPage() {
       </div>
 
       {stats.lapsed.length > 0 ? (
-        <p className="mb-5 flex items-start gap-2.5 rounded-xl border border-marigold-50 bg-marigold-50/60 px-4 py-3 text-[13.5px] leading-relaxed text-marigold-500">
+        <p className="mb-5 flex items-start gap-2.5 rounded-xl border border-marigold-50 bg-marigold-50 px-4 py-3 text-[13.5px] leading-relaxed text-marigold-500">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
           <span>
             {stats.lapsed.length} sponsorship{stats.lapsed.length === 1 ? ' has' : 's have'} lapsed. The cow goes back
@@ -221,6 +221,9 @@ function AdoptionDrawer({ adoption, onClose }: { adoption: Adoption | null; onCl
       title={cow?.name ?? adoption.cowId}
       subtitle={`${adoption.adopterName} · ${adoption.certificateNo}`}
       width="lg"
+      accent="turmeric"
+      tone="canvas"
+      headerExtra={<StatusBadge status={adoption.status === 'lapsed' ? 'overdue' : adoption.status} />}
       footer={
         adoption.status !== 'cancelled' ? (
           <div className="flex flex-wrap gap-2">
@@ -238,8 +241,8 @@ function AdoptionDrawer({ adoption, onClose }: { adoption: Adoption | null; onCl
         ) : null
       }
     >
-      <div className="space-y-5 px-6 py-5">
-        <div className="flex items-center gap-4">
+      <div className="space-y-5">
+        <div className="flex items-center gap-4 rounded-xl border border-navy-100 bg-sandal-50 p-4 shadow-flat">
           <span className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-navy-100 bg-navy-50">
             {cow ? <CowPortrait cow={cow} size={76} /> : null}
           </span>
@@ -248,12 +251,12 @@ function AdoptionDrawer({ adoption, onClose }: { adoption: Adoption | null; onCl
             <Field label="Amount" value={<Money value={adoption.amount} />} />
             <Field label="Started" value={formatDate(adoption.startedAt)} />
             <Field label="Renews" value={formatDate(adoption.renewsAt)} />
-            <Field label="Email" value={<span className="break-all">{adoption.adopterEmail}</span>} />
+            <Field label="Email" value={<span className="break-words">{adoption.adopterEmail}</span>} />
             <Field label="Status" value={<StatusBadge status={adoption.status === 'lapsed' ? 'overdue' : adoption.status} />} />
           </dl>
         </div>
 
-        <section className="rounded-xl border border-navy-100 bg-navy-50/50 p-4">
+        <section className="rounded-xl border border-navy-100 bg-sandal-50 p-4 shadow-flat">
           <h4 className="text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">
             Send the adopter an update
           </h4>
@@ -286,7 +289,7 @@ function AdoptionDrawer({ adoption, onClose }: { adoption: Adoption | null; onCl
           ) : (
             <ul className="mt-3 space-y-2.5">
               {adoption.updates.map((update) => (
-                <li key={update.id} className="rounded-xl border border-navy-100 bg-white px-3.5 py-3">
+                <li key={update.id} className="rounded-xl border border-navy-100 bg-sandal-50 px-3.5 py-3">
                   <div className="flex items-baseline justify-between gap-3">
                     <span className="text-[13.5px] font-bold text-navy-950">{update.title}</span>
                     <span className="shrink-0 font-mono text-[12px] text-navy-600">{formatDate(update.at)}</span>

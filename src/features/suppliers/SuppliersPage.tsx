@@ -93,6 +93,9 @@ export function SuppliersPage() {
         title={open?.name ?? ''}
         subtitle={open ? `${open.city} · supplying since ${formatDate(open.since)}` : undefined}
         width="lg"
+        accent="tulsi"
+        tone="canvas"
+        headerExtra={open ? <StatusBadge status={open.status} /> : null}
       >
         {open ? <SupplierProfile supplier={open} /> : null}
       </Drawer>
@@ -163,12 +166,11 @@ function SupplierProfile({ supplier }: { supplier: Supplier }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center gap-2">
-        <StatusBadge status={supplier.status} />
-        <span className="inline-flex items-center gap-1 rounded-full border border-sandal-200 bg-sandal-100 px-2.5 py-0.5 text-[12px] text-stone-700">
+        <span className="inline-flex items-center gap-1 rounded-full border border-sandal-200 bg-sandal-50 px-2.5 py-0.5 text-[12px] text-stone-700">
           <Star className="size-3 fill-turmeric-500 text-turmeric-500" aria-hidden />
           {supplier.rating} of 5
         </span>
-        <span className="rounded-full border border-sandal-200 bg-sandal-100 px-2.5 py-0.5 text-[12px] text-stone-700">
+        <span className="rounded-full border border-sandal-200 bg-sandal-50 px-2.5 py-0.5 text-[12px] text-stone-700">
           {supplier.orderCount} orders
         </span>
       </div>
@@ -190,7 +192,7 @@ function SupplierProfile({ supplier }: { supplier: Supplier }) {
           { label: 'Rejection', value: formatPct(supplier.rejectionPct) },
           { label: 'Items carried', value: String(supplier.items.length) },
         ].map((row) => (
-          <div key={row.label} className="rounded-lg border border-sandal-200 bg-sandal-100 p-3">
+          <div key={row.label} className="rounded-lg border border-sandal-200 bg-sandal-50 p-3 shadow-flat">
             <dt className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">{row.label}</dt>
             <dd className="mt-1 font-mono text-[18px] text-stone-900 tabular-nums">{row.value}</dd>
           </div>

@@ -323,7 +323,7 @@ function RsvpDrawer({
         )
       }
     >
-      <div className="space-y-5 px-6 py-5">
+      <div className="space-y-5">
         {token ? (
           <div className="space-y-3">
             <p className="rounded-xl border border-tulsi-50 bg-tulsi-50/60 px-4 py-3 text-[13.5px] leading-relaxed text-tulsi-700">

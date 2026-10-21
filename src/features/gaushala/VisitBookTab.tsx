@@ -229,7 +229,7 @@ function BookingDrawer({
         )
       }
     >
-      <div className="space-y-5 px-6 py-5">
+      <div className="space-y-5">
         {booked ? (
           <div className="space-y-4">
             {booked.pending ? (

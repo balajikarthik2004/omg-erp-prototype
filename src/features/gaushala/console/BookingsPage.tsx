@@ -214,6 +214,9 @@ function BookingDrawer({ booking, onClose }: { booking: Booking | null; onClose:
       onClose={onClose}
       title={booking.name}
       subtitle={`${service?.name ?? booking.serviceId} · ${booking.id}`}
+      accent="peacock"
+      tone="canvas"
+      headerExtra={<StatusBadge status={booking.status === 'no_show' ? 'rejected' : booking.status} />}
       footer={
         booking.status === 'confirmed' || booking.status === 'pending' ? (
           <Button
@@ -231,20 +234,19 @@ function BookingDrawer({ booking, onClose }: { booking: Booking | null; onClose:
         ) : null
       }
     >
-      <div className="space-y-5 px-6 py-5">
-        <StatusBadge status={booking.status === 'no_show' ? 'rejected' : booking.status} />
+      <div className="space-y-5">
 
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-[13.5px]">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-xl border border-navy-100 bg-sandal-50 p-4 shadow-flat text-[13.5px]">
           <Field label="When" value={slot ? `${formatDate(slot.date)} · ${slot.startTime}–${slot.endTime}` : '—'} />
           <Field label="People" value={formatNumber(booking.people)} />
-          <Field label="Email" value={<span className="break-all">{booking.email}</span>} />
+          <Field label="Email" value={<span className="break-words">{booking.email}</span>} />
           <Field label="Phone" value={booking.phone || '—'} />
           <Field label="Paid" value={booking.amount === 0 ? 'Free' : <Money value={booking.amount} />} />
           <Field label="Booked" value={formatDate(booking.bookedAt)} />
         </dl>
 
         {booking.note ? (
-          <p className="rounded-xl border border-navy-100 bg-navy-50/50 px-3.5 py-2.5 text-[13.5px] leading-relaxed text-navy-800">
+          <p className="rounded-xl border border-navy-100 bg-sandal-50 px-3.5 py-2.5 text-[13.5px] leading-relaxed text-navy-800 shadow-flat">
             {booking.note}
           </p>
         ) : null}
@@ -253,8 +255,8 @@ function BookingDrawer({ booking, onClose }: { booking: Booking | null; onClose:
           className={cn(
             'rounded-xl border px-3.5 py-2.5 text-[13px] leading-relaxed',
             booking.consentAcceptedAt
-              ? 'border-tulsi-50 bg-tulsi-50/50 text-tulsi-700'
-              : 'border-marigold-50 bg-marigold-50/50 text-marigold-500',
+              ? 'border-tulsi-50 bg-tulsi-50 text-tulsi-700'
+              : 'border-marigold-50 bg-marigold-50 text-marigold-500',
           )}
         >
           {booking.consentAcceptedAt
@@ -262,7 +264,7 @@ function BookingDrawer({ booking, onClose }: { booking: Booking | null; onClose:
             : 'The safety waiver has not been accepted. They cannot be checked in until it is.'}
         </div>
 
-        <section className="rounded-xl border border-navy-100 bg-white p-4">
+        <section className="rounded-xl border border-navy-100 bg-sandal-50 p-4 shadow-flat">
           <h4 className="flex items-center gap-2 text-[11.5px] font-extrabold tracking-[0.14em] text-navy-700 uppercase">
             <QrCode className="size-4" aria-hidden />
             Gate code
@@ -337,7 +339,7 @@ function SlotCalendar() {
                 key={date}
                 className={cn(
                   'flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3',
-                  closed ? 'border-danger-50 bg-danger-50/40' : 'border-navy-100 bg-white',
+                  closed ? 'border-danger-50 bg-danger-50' : 'border-navy-100 bg-sandal-50',
                 )}
               >
                 <div className="min-w-0">
@@ -426,7 +428,7 @@ function CheckInPanel() {
             className={cn(
               'mt-4 flex items-start gap-2 rounded-xl border px-3.5 py-2.5 text-[13.5px] leading-relaxed',
               result.ok
-                ? 'border-tulsi-50 bg-tulsi-50/60 text-tulsi-700'
+                ? 'border-tulsi-50 bg-tulsi-50 text-tulsi-700'
                 : 'border-danger-50 bg-danger-50 text-danger-600',
             )}
           >

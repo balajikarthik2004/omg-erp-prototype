@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, SlidersHorizontal, Trash2 } from 'lucide-react'
+import { Plus, SlidersHorizontal, Sparkles, Trash2 } from 'lucide-react'
 
 import { SECTORS, SECTOR_IDS, type SectorId } from '@/config'
 import { formatMoneyShort, formatPct } from '@/lib/format'
@@ -12,6 +12,7 @@ import { Select } from '@/components/ui/Select'
 import { useDb } from '@/store/db'
 import { currentUser, useSession } from '@/store/session'
 import { DEFAULT_CATEGORIES, growthDefaultFor, suggestForCategory } from './logic/budget'
+import { PosterGenerationStep } from './PosterGenerationStep'
 import { EVENT_TYPES, fromLocalInput, toCents, toField } from './useEvent'
 
 interface Line {
@@ -26,6 +27,8 @@ export function CreateEventDrawer({ open, onClose }: { open: boolean; onClose: (
   const personaId = useSession((s) => s.personaId)
   const user = currentUser(personaId)
   const createEvent = useDb((s) => s.createEvent)
+  /** Set once the event is saved; the drawer then shows the poster step. */
+  const [createdId, setCreatedId] = useState<string>()
   const saveBudgetLines = useDb((s) => s.saveBudgetLines)
   const actuals = useDb((s) => s.eventActuals)
   const tenant = useDb((s) => s.tenants.find((t) => t.id === s.activeTenantId))
@@ -100,8 +103,22 @@ export function CreateEventDrawer({ open, onClose }: { open: boolean; onClose: (
         user,
       )
     }
+    // The event is saved. Stay in the drawer and compose its poster, so a
+    // new event never starts life without one.
+    setCreatedId(result.id)
+  }
+
+  /** Leave the drawer, whether or not a design was chosen. */
+  function finish(tab: 'poster' | 'budget') {
+    const id = createdId
+    reset()
     onClose()
-    navigate(`/console/events/${result.id}?tab=budget`)
+    if (id) navigate(`/console/events/${id}?tab=${tab}`)
+  }
+
+  function reset() {
+    setCreatedId(undefined)
+    setError(undefined)
   }
 
   const blocked = user.role !== 'sector_admin'
@@ -109,18 +126,42 @@ export function CreateEventDrawer({ open, onClose }: { open: boolean; onClose: (
   return (
     <Drawer
       open={open}
-      onClose={onClose}
-      title="Create new event"
-      subtitle="Step 1 of 6. Set the details, and quote the budget line by line."
+      onClose={() => {
+        // Closing mid-poster still leaves the event saved; say where it went.
+        if (createdId) finish('poster')
+        else onClose()
+      }}
+      accent="turmeric"
+      title={createdId ? 'Poster for your event' : 'Create new event'}
+      subtitle={
+        createdId
+          ? 'Step 2 of 2. The event is saved. Pick a design, or do it later in the poster studio.'
+          : 'Step 1 of 2. Set the details, and quote the budget line by line.'
+      }
       width="lg"
       footer={
-        <div className="flex flex-col gap-3">
-          {blocked ? <p className="text-[13px] text-marigold-500">Only a Sector Admin can create an event. Switch persona in the top bar (Saravanan Pillai or Lakshmi Priya).</p> : null}
-          {error ? <p role="alert" className="text-[13px] text-danger-600">{error}</p> : null}
-          <Button fullWidth disabled={blocked} onClick={submit}>Create event and save allocations</Button>
-        </div>
+        createdId ? (
+          <div className="flex items-center gap-2">
+            <Button fullWidth variant="secondary" onClick={() => finish('poster')}>
+              Skip for now
+            </Button>
+            <Button onClick={() => finish('budget')}>Go to the budget</Button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {blocked ? <p className="text-[13px] text-marigold-500">Only a Sector Admin can create an event. Switch persona in the top bar (Santhosh Kumar or Lakshmi Priya).</p> : null}
+            {error ? <p role="alert" className="text-[13px] text-danger-600">{error}</p> : null}
+            <Button fullWidth disabled={blocked} icon={<Sparkles className="size-4" aria-hidden />} onClick={submit}>
+              Create event and generate a poster
+            </Button>
+          </div>
+        )
       }
     >
+      {createdId ? (
+        <PosterGenerationStep eventId={createdId} user={user} onDone={() => finish('poster')} />
+      ) : (
+      <>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2"><Input label="Event name" placeholder="Margazhi Music Festival" value={f.name} onChange={(e) => set({ name: e.target.value })} /></div>
         <Select label="Sector" value={f.sectorId} onChange={(e) => retarget(e.target.value as SectorId, f.eventType)} options={sectors.map((id) => ({ value: id, label: SECTORS[id].name }))} />
@@ -191,6 +232,8 @@ export function CreateEventDrawer({ open, onClose }: { open: boolean; onClose: (
           </div>
         </div>
       </section>
+      </>
+      )}
     </Drawer>
   )
 }

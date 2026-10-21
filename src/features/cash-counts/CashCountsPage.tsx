@@ -17,7 +17,7 @@ import { TableSkeleton } from '@/components/ui/Skeleton'
 import { Tabs } from '@/components/ui/Tabs'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { SectorChip } from '@/components/layout/PhaseChip'
-import { MakerCheckerNote } from '@/components/flow/MakerCheckerNote'
+import { DecisionFooter } from '@/components/flow/DecisionFooter'
 import { CATALOG, userName } from '@/mock/seed'
 import { useDb } from '@/store/db'
 import { cashConfirmBlock, cashCountBlock } from '@/store/rules'
@@ -276,58 +276,44 @@ export function CashCountsPage() {
         }}
         title={focused ? catalogName(focused.itemId) : ''}
         subtitle={focused ? `Counted ${formatDateTime(focused.countedAt)}` : undefined}
+        accent="turmeric"
+        tone="canvas"
+        headerExtra={
+          focused ? (
+            <>
+              <StatusBadge status={focused.status} />
+              <SectorChip sectorId={focused.sectorId} />
+            </>
+          ) : null
+        }
         footer={
           focused?.status === 'pending' ? (
-            <div className="flex flex-col gap-3">
-              <MakerCheckerNote preparedBy={focused.countedBy} block={focusBlock} />
-              <Textarea
-                label="Comment"
-                placeholder="Required when rejecting a count."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-              <div className="flex gap-2">
-                <Button
-                  fullWidth
-                  variant="success"
-                  disabled={Boolean(focusBlock)}
-                  title={focusBlock ?? undefined}
-                  onClick={() => {
-                    decideCashCount(focused.id, 'approved', user)
-                    setParams({})
-                  }}
-                >
-                  Confirm the count
-                </Button>
-                <Button
-                  fullWidth
-                  variant="secondary"
-                  disabled={comment.trim().length < 5}
-                  title={comment.trim().length < 5 ? 'Add a comment explaining the rejection.' : undefined}
-                  onClick={() => {
-                    decideCashCount(focused.id, 'rejected', user, comment.trim())
-                    setParams({})
-                    setComment('')
-                  }}
-                >
-                  Reject
-                </Button>
-              </div>
-            </div>
+            <DecisionFooter
+              preparedBy={focused.countedBy}
+              block={focusBlock}
+              comment={comment}
+              onCommentChange={setComment}
+              approveLabel="Confirm the count"
+              onApprove={() => {
+                decideCashCount(focused.id, 'approved', user)
+                setParams({})
+              }}
+              onReject={() => {
+                decideCashCount(focused.id, 'rejected', user, comment.trim())
+                setParams({})
+                setComment('')
+              }}
+            />
           ) : null
         }
       >
         {focused ? (
           <div className="flex flex-col gap-5">
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge status={focused.status} />
-              <SectorChip sectorId={focused.sectorId} />
-            </div>
-            <div className="rounded-card border border-sandal-200 bg-sandal-100 p-4">
+            <div className="rounded-card border border-sandal-200 bg-sandal-50 p-4 shadow-card">
               <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Counted</p>
               <Money value={focused.amount} className="mt-1 font-display text-[22px] sm:text-[30px] text-stone-900" />
             </div>
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-[14px]">
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-card border border-sandal-200 bg-sandal-50 p-4 text-[14px] shadow-flat">
               <div className="col-span-2">
                 <dt className="text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Donor</dt>
                 <dd className="mt-0.5 text-stone-900">

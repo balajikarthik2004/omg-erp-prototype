@@ -90,6 +90,9 @@ export function PeriodClosePage() {
         title={focused ? periodLabel(focused.period) : ''}
         subtitle={focused ? 'Month-end close' : undefined}
         width="lg"
+        accent="kumkum"
+        tone="canvas"
+        headerExtra={focused ? <StatusBadge status={focused.status} /> : null}
         footer={
           focused?.status === 'open' ? (
             <div className="flex flex-col gap-3">
@@ -168,7 +171,6 @@ export function PeriodClosePage() {
       >
         {focused ? (
           <div className="flex flex-col gap-5">
-            <StatusBadge status={focused.status} />
             {focused.status === 'closed' ? (
               <p className="rounded-lg bg-tulsi-50 px-3 py-2.5 text-[14px] text-tulsi-700">
                 Locked by {focused.closedBy ? userName(focused.closedBy) : 'the CA Partner'}
@@ -176,11 +178,15 @@ export function PeriodClosePage() {
                 reconciliations dated in this month are refused.
               </p>
             ) : null}
-            {focused.note ? <p className="rounded-lg bg-sandal-100 px-3 py-2.5 text-[14px] text-stone-700">{focused.note}</p> : null}
+            {focused.note ? (
+              <p className="rounded-lg border border-sandal-200 bg-sandal-50 px-3 py-2.5 text-[14px] text-stone-700 shadow-flat">
+                {focused.note}
+              </p>
+            ) : null}
 
             <section>
               <h3 className="mb-2 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Close checklist</h3>
-              <ul className="flex flex-col divide-y divide-sandal-200 rounded-card border border-sandal-200">
+              <ul className="flex flex-col divide-y divide-sandal-200 rounded-card border border-sandal-200 bg-sandal-50 shadow-flat">
                 {checks.map((c) => {
                   const Icon = c.ok ? CheckCircle2 : c.blocking ? AlertTriangle : Circle
                   return (

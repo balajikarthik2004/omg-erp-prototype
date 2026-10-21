@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search } from 'lucide-react'
 
-import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Input } from '@/components/ui/Input'
 import { Money } from '@/components/ui/Money'
@@ -45,12 +44,14 @@ export function BudgetsPlanningPage() {
     { key: 'req', header: 'Requested', align: 'right', cell: (r) => <Money value={r.requested} /> },
     { key: 'app', header: 'Approved', align: 'right', cell: (r) => (r.approved > 0 ? <Money value={r.approved} tone="in" /> : <span className="text-stone-500">Pending</span>) },
     { key: 'spent', header: 'Spent', align: 'right', hideOnMobile: true, cell: (r) => <Money value={r.spent} tone="out" /> },
-    { key: 'open', header: '', align: 'right', cell: (r) => <Button size="sm" variant="secondary" onClick={(e) => { e.stopPropagation(); navigate(`/console/events/${r.event.id}?tab=budget`) }}>Open budget</Button> },
   ]
 
   return (
     <div>
-      <PageHeader title="Budgets and financial planning" >
+      <PageHeader
+        title="Budgets and financial planning"
+        description="Every event budget in one table: what was asked for, what a CA approved, and what has actually been paid. Open a row for the line-by-line workspace."
+      >
         <div className="flex flex-col gap-3">
           <Tabs value={tab} onChange={setTab} items={GROUPS.map((g) => ({ id: g.id, label: g.label, count: rows.filter((r) => g.match(r.event.status)).length }))} />
           <Input aria-label="Search events" placeholder="Search events" value={query} onChange={(e) => setQuery(e.target.value)} leading={<Search className="size-4" aria-hidden />} />

@@ -235,6 +235,16 @@ export function DonationsPage() {
         onClose={() => setParams({})}
         title={focused && focused.receiptNo !== '—' ? focused.receiptNo : (focused?.id ?? '')}
         subtitle={focused ? formatDateTime(focused.createdAt) : undefined}
+        accent="turmeric"
+        tone="canvas"
+        headerExtra={
+          focused ? (
+            <>
+              <StatusBadge status={statusKey(focused)} />
+              <SectorChip sectorId={focused.sectorId} withTamil />
+            </>
+          ) : null
+        }
         footer={
           focused && (focused.status === 'pending' || (focused.status === 'paid' && focused.receiptNo === '—')) ? (
             <div className="flex flex-col gap-2">
@@ -269,11 +279,6 @@ export function DonationsPage() {
       >
         {focused ? (
           <div className="flex flex-col gap-5">
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge status={statusKey(focused)} />
-              <SectorChip sectorId={focused.sectorId} withTamil />
-            </div>
-
             {focused.disputed ? (
               <div className="rounded-lg border border-danger-50 bg-danger-50 px-3 py-2.5 text-[13px] text-danger-600">
                 The card issuer has raised a dispute on this charge. Decide whether to contest it with evidence or
@@ -281,7 +286,7 @@ export function DonationsPage() {
               </div>
             ) : null}
 
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-[14px]">
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-card border border-sandal-200 bg-sandal-50 p-4 text-[14px] shadow-flat">
               <Field
                 label="Receipt no."
                 value={<span className="font-mono tabular-nums">{focused.receiptNo}</span>}
@@ -303,7 +308,7 @@ export function DonationsPage() {
               ) : null}
             </dl>
 
-            <div className="rounded-card border border-sandal-200 bg-sandal-100 p-4">
+            <div className="rounded-card border border-sandal-200 bg-sandal-50 p-4 shadow-card">
               <dl className="space-y-2 text-[14px]">
                 <Row label="Gross" value={<Money value={focused.gross} />} />
                 <Row label="Processing fee" value={<Money value={focused.fee} tone="muted" />} />
@@ -319,7 +324,7 @@ export function DonationsPage() {
               <h3 className="mb-2 text-[11px] font-semibold tracking-[0.12em] text-stone-500 uppercase">Lines</h3>
               <ul className="flex flex-col gap-2">
                 {focused.lines.map((line, i) => (
-                  <li key={i} className="rounded-lg border border-sandal-200 p-3">
+                  <li key={i} className="rounded-lg border border-sandal-200 bg-sandal-50 p-3 shadow-flat">
                     <div className="flex items-center justify-between gap-3">
                       <span className="text-[14px] text-stone-900">
                         {offeringName(line.itemId)}

@@ -27,7 +27,8 @@ export function Money({
   const short = !exact && (compact || abs >= COMPACT_FROM)
   const full = formatMoney(abs)
   const text = short ? formatMoneyCompact(abs) : full
-  const sign = signed ? (value < 0 ? '−' : '+') : value < 0 ? '−' : ''
+  // Zero is neither a gain nor a loss, so a signed column prints it bare.
+  const sign = value < 0 ? '−' : signed && value > 0 ? '+' : ''
 
   return (
     <span
