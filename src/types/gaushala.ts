@@ -245,6 +245,7 @@ export interface VisitService {
   /** A school or corporate visit is confirmed by hand, not automatically. */
   needsApproval: boolean
   active: boolean
+  image?: string
 }
 
 export interface Slot {

@@ -92,6 +92,7 @@ export const VISIT_SERVICES: VisitService[] = [
     maxPeople: 8,
     needsApproval: false,
     active: true,
+    image: '/images/catalogue/view/Cow Feeding.png',
   },
   {
     id: 'vs-pooja',
@@ -105,6 +106,7 @@ export const VISIT_SERVICES: VisitService[] = [
     maxPeople: 12,
     needsApproval: false,
     active: true,
+    image: '/images/catalogue/view/Go Pooja.png',
   },
   {
     id: 'vs-darshan',
@@ -118,6 +120,7 @@ export const VISIT_SERVICES: VisitService[] = [
     maxPeople: 6,
     needsApproval: false,
     active: true,
+    image: '/images/catalogue/view/Darshan.png',
   },
   {
     id: 'vs-pitru',
@@ -131,6 +134,7 @@ export const VISIT_SERVICES: VisitService[] = [
     maxPeople: 10,
     needsApproval: false,
     active: true,
+    image: '/images/catalogue/view/Pitru Paksha.png',
   },
   {
     id: 'vs-tour',
@@ -143,6 +147,7 @@ export const VISIT_SERVICES: VisitService[] = [
     maxPeople: 20,
     needsApproval: false,
     active: true,
+    image: '/images/catalogue/view/Guided Tour.png',
   },
   {
     id: 'vs-stay',
@@ -155,6 +160,7 @@ export const VISIT_SERVICES: VisitService[] = [
     maxPeople: 4,
     needsApproval: true,
     active: true,
+    image: '/images/catalogue/view/Goshala Stay.png',
   },
   {
     id: 'vs-school',
@@ -167,6 +173,7 @@ export const VISIT_SERVICES: VisitService[] = [
     maxPeople: 60,
     needsApproval: true,
     active: true,
+    image: '/images/catalogue/view/School Visit.png',
   },
   {
     id: 'vs-corporate',
@@ -179,6 +186,7 @@ export const VISIT_SERVICES: VisitService[] = [
     maxPeople: 40,
     needsApproval: true,
     active: true,
+    image: '/images/catalogue/view/CSR visit.png',
   },
 ]
 
@@ -361,10 +369,10 @@ export function makeProgramsSeed(now: Date, cows: Cow[], donors: Donor[]): Progr
     })
   }
 
-  /* ---- slots for the next three weeks ---- */
+  /* ---- slots for the next two months ---- */
   const slots: Slot[] = []
   let slotSeq = 1
-  for (let d = 0; d < 21; d++) {
+  for (let d = 0; d < 60; d++) {
     const date = addDays(now, d)
     const closed = date.getDay() === CLOSED_WEEKDAY
     for (const service of VISIT_SERVICES.filter((s) => s.active)) {
